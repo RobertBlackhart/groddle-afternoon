@@ -286,8 +286,22 @@ export function parseEventCode(code) {
       steps.push({ type: 'stop_sound', name: m[1] });
       continue;
     }
+    // A quoin set down by the script (Radial Heights' hide_cover and spawn_reward events): where,
+    // and the instance props it sets (items/quoin.js onPropsChanged applies a class_name's preset).
+    if ((m = stmt.match(/^var\s+(\w+)\s*=\s*loc\.createItemStack\(\s*['"]quoin['"]\s*,\s*1\s*,\s*(-?\d+)\s*,\s*(-?\d+)\s*\)$/))) {
+      steps.push({ type: 'quoin', x: Number(m[2]), y: Number(m[3]), props: {}, _var: m[1] });
+      continue;
+    }
+    if ((m = stmt.match(/^(\w+)\.setInstanceProp\(\s*['"](\w+)['"]\s*,\s*(?:['"]([^'"]*)['"]|(-?\d+(?:\.\d+)?))\s*\)$/))) {
+      const quoin = steps[steps.length - 1];
+      if (quoin?.type === 'quoin' && quoin._var === m[1]) {
+        quoin.props[m[2]] = m[3] !== undefined ? m[3] : Number(m[4]);
+        continue;
+      }
+    }
     return { type: 'code', supported: false, reason: codeReason(src) };
   }
+  for (const step of steps) delete step._var;
   if (!steps.length) return { type: 'noop' };
   return steps.length === 1 ? steps[0] : { type: 'steps', steps };
 }

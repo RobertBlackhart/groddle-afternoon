@@ -25,7 +25,7 @@ import {
 } from '../public/js/street-model.js?v=a9a05f9d';
 import { buildPlatformCandidates, planStreetPlacements } from '../public/js/street-ecology.js?v=1401a97c';
 import { landingY, nearestSurfaceY, walkSurfaceY } from '../public/js/walk-surface.js?v=3c919d5b';
-import { parseLocationEvents, runLocationEvent, createEventRuntime } from '../public/js/location-events.js?v=c43d0f0b';
+import { parseLocationEvents, runLocationEvent, createEventRuntime } from '../public/js/location-events.js?v=44ee645e';
 import { convertLocationXml } from '../public/js/location-xml.js?v=9bae75b2';
 
 const root = join(import.meta.dirname, '..');

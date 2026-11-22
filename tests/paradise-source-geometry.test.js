@@ -8,9 +8,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import {
   PARADISE_COURSES,
-  RADIAL_HEIGHTS_MOON_FADE_MS,
   RADIAL_HEIGHTS_START_PEN,
-  openRadialStartPen,
   paradiseFlightCollide,
   paradiseGeometryBarriers,
   paradiseGeometryLines,
@@ -20,7 +18,8 @@ import {
   paradiseSourcePoints,
   paradiseSpawnFeet,
   radialStartPenOpens,
-} from '../public/js/paradise-flight.js?v=3eca39b5';
+} from '../public/js/paradise-flight.js?v=e70e955f';
+import { RADIAL_FLITTERBUG_EVENTS, applyGeometryEffects, createRadialSession, radialFire } from '../public/js/radial-heights.js?v=57df1ee2';
 import { platformYAt } from '../public/js/street-model.js?v=a9a05f9d';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
@@ -100,7 +99,8 @@ describe('Radial Heights start cloud (#599, G1119)', () => {
       opened = radialStartPenOpens(body, 1);
     }
     assert.ok(opened, 'flying up reaches the flitterbug');
-    openRadialStartPen(geometry);
+    // hide_start_clouds, run by the flitterbug's box on the shared event runtime.
+    applyGeometryEffects(geometry, radialFire(createRadialSession(data.events), RADIAL_FLITTERBUG_EVENTS, 0));
     for (let frame = 0; frame < 120; frame += 1) flyFrame(body, radial, geometry, { lift: true });
     assert.ok(body.y < 847, `out over the roof (${body.y})`);
     // And back down through the soft cloud.
@@ -116,15 +116,6 @@ describe('Radial Heights start cloud (#599, G1119)', () => {
     assert.match(setup, /paradiseSpawnFeet\(course, streetPlatforms\)/);
     assert.doesNotMatch(setup, /streetPlatforms = \[\]/);
     assert.match(fnBody(src, 'paradiseFlightPhysics'), /paradiseFlightCollide\(player, prevX, prevY/);
-  });
-
-  it('the moon stays hidden over the start cloud until every star is found', () => {
-    const src = game();
-    assert.match(fnBody(src, 'buildRadialBackground'), /moon\.alpha = moon\._preview \? 1 : 0;/);
-    const update = fnBody(src, 'updateParadiseFlight');
-    assert.match(update, /paradiseObjectiveComplete\(paradiseRun\)\) radialMoon\._revealAt = now/);
-    assert.match(update, /\/ RADIAL_HEIGHTS_MOON_FADE_MS/);
-    assert.equal(RADIAL_HEIGHTS_MOON_FADE_MS, 2000);
   });
 });
 

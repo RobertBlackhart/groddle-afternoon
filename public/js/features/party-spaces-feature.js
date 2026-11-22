@@ -84,13 +84,13 @@ import {
   stackAvailable,
   startParty,
   teleporterPhase,
-} from '../party-spaces.js?v=51c3257b';
+} from '../party-spaces.js?v=b026ad60';
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=729b29ea';
 import { readVisitScene } from '../neighbours-mp.js?v=b34eb45a';
 import { STREET_INDEX } from '../street-loader.js?v=10376267';
 import { isNeighbourSceneTsid } from '../neighbours.js?v=13f35acd';
 import { energyMax as tankEnergyMax, loseEnergy } from '../metabolics.js?v=48f784bf';
-import { MP_PARTY_TEXT, MP_SPACE_STREET_RE, kickVerb, mpActivationBlock, normalizeSpace, partyFromSpace } from '../party-spaces-mp.js?v=c3e788b0';
+import { MP_PARTY_TEXT, MP_SPACE_STREET_RE, kickVerb, mpActivationBlock, normalizeSpace, partyFromSpace } from '../party-spaces-mp.js?v=4d6c5b85';
 import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=a593b732';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 

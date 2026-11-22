@@ -53,7 +53,7 @@ import {
 import { gainMetabolic } from '../metabolics.js?v=48f784bf';
 import { frameTexture, isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=729b29ea';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
-import { partySpaceForStreet } from '../party-spaces.js?v=51c3257b';
+import { partySpaceForStreet } from '../party-spaces.js?v=b026ad60';
 import { anchorBottomCentre } from '../sprite-feet.js?v=a593b732';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 

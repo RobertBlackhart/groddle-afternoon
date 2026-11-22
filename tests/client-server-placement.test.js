@@ -24,10 +24,10 @@ import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs, setZoneStreetsSho
 import { platformsScreen, streetWidth } from '../public/js/street-model.js?v=a9a05f9d';
 import { ecologyForStreet, gardenPlacementRequest, planStreetPlacements, populationForStreet, rockPlacementRequest, rockSpawnPlan, setStreetEcologyCatalog, shrinePlacementRequest, streetGardenBoxBeds, streetReservedSpots, treePlacementRequest } from '../public/js/street-ecology.js?v=1401a97c';
 import { resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=cc2902d7';
-import { FEATURES } from '../public/js/features/index.js?v=43e61c84';
+import { FEATURES } from '../public/js/features/index.js?v=84a564a7';
 import { streetGardenBeds } from '../public/js/garden.js?v=751ef424';
 import { isZoneTsid } from '../public/js/zone-streets.js?v=b40010d5';
-import { partySpaceForStreet } from '../public/js/party-spaces.js?v=51c3257b';
+import { partySpaceForStreet } from '../public/js/party-spaces.js?v=b026ad60';
 import { streetQuoinLayout } from '../tools/build-realtime-quoins.mjs';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
 

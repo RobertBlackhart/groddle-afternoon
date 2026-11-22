@@ -11,7 +11,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { assertStreetGeometry, platformsScreen, platformYAt, worldToScreen } from '../public/js/street-model.js?v=a9a05f9d';
-import { reachStreet } from '../public/js/builder/reach-graph.js?v=52856c5d';
+import { reachStreet } from '../public/js/builder/reach-graph.js?v=467ca20f';
 import {
   ENCHANTED_FORESTS,
   ENCHANTED_MUSIC,
@@ -43,7 +43,7 @@ import {
 } from '../public/js/woodcutting.js?v=9e9af511';
 import { isTreeTarget } from '../public/js/features/tree-death-feature.js?v=75cd4472';
 import { enchantedForestFeature, hollowTrees, treeScreenSpots } from '../public/js/features/enchanted-forest-feature.js?v=77c6e4e0';
-import { FEATURES } from '../public/js/features/index.js?v=43e61c84';
+import { FEATURES } from '../public/js/features/index.js?v=84a564a7';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const streets = join(spike, 'public/assets/streets');

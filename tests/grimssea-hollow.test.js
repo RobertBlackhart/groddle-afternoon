@@ -15,7 +15,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { assertStreetGeometry } from '../public/js/street-model.js?v=a9a05f9d';
 import { arrivalInTarget } from '../public/js/location-navigation.js?v=9555ce80';
-import { reachStreet } from '../public/js/builder/reach-graph.js?v=52856c5d';
+import { reachStreet } from '../public/js/builder/reach-graph.js?v=467ca20f';
 import { ENCHANTED_FORESTS, hollowTreeSpots } from '../public/js/enchanted-forests.js?v=17ac01e4';
 import { treeScreenSpots } from '../public/js/features/enchanted-forest-feature.js?v=77c6e4e0';
 

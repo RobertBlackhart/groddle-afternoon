@@ -116,7 +116,7 @@ import { KITTY_PET } from '../public/js/heli-kitties.js?v=e4af4096';
 import { FIRE_DRAGON_PLACEMENT_KEY, FIRE_DRAGON_WALK, fireDragonPlacementGroups } from '../public/js/fire-dragon.js?v=b7f3d751';
 import { isZoneTsid } from '../public/js/zone-streets.js?v=b40010d5';
 import { upgradeEcologyEntry } from '../public/js/street-jobs.js?v=884e34b3';
-import { partyEcologyEntry, partyExitSignpost, partySpaceForStreet } from '../public/js/party-spaces.js?v=51c3257b';
+import { partyEcologyEntry, partyExitSignpost, partySpaceForStreet } from '../public/js/party-spaces.js?v=b026ad60';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const streetsDir = join(root, 'public/assets/streets');

@@ -22,7 +22,7 @@ import {
   dueEventTimers,
   eventPlatformIds,
   runLocationEvent,
-} from '../public/js/location-events.js?v=c43d0f0b';
+} from '../public/js/location-events.js?v=44ee645e';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const raw = JSON.parse(readFileSync(join(root, 'public/assets/content/puzzle-triggers.json'), 'utf8'));
@@ -198,7 +198,7 @@ describe('location-events trigger API', () => {
   });
 
   test('without a strict hook, a platform only lost boxes switch back stays walkable', async () => {
-    const { locationEventsFeature, locationEventsApi } = await import('../public/js/features/location-events-feature.js?v=3836af7a');
+    const { locationEventsFeature, locationEventsApi } = await import('../public/js/features/location-events-feature.js?v=ac6acbc9');
     const street = make();
     const engine = fakeEngine(street);
     locationEventsFeature.onStreetEnter(street, engine);
@@ -208,7 +208,7 @@ describe('location-events trigger API', () => {
   });
 
   test('a strict hook runs the scripts as written and restart re-applies them', async () => {
-    const { locationEventsFeature, locationEventsApi } = await import('../public/js/features/location-events-feature.js?v=3836af7a');
+    const { locationEventsFeature, locationEventsApi } = await import('../public/js/features/location-events-feature.js?v=ac6acbc9');
     let strict = false;
     locationEventsApi.register({ strict: (s) => strict && s.tsid === 'GTESTPUZZLE0001' });
     const street = make();
@@ -247,7 +247,7 @@ describe('gut tubes', () => {
   });
 
   test('a phone flips with its Jump button, and the toasts name it (Greyving Grays chat "stuck", 2026-11-13)', async () => {
-    const { puzzleToast } = await import('../public/js/features/puzzles-feature.js?v=46990ebb');
+    const { puzzleToast } = await import('../public/js/features/puzzles-feature.js?v=9b4fd1f4');
     const src = readFileSync(join(root, 'public/js/features/puzzles-feature.js'), 'utf8');
     // The phone has no Space key: its Jump button sends TOUCH_JUMP_EVENT (game.js installTouchControls).
     assert.match(src, /window\.addEventListener\(TOUCH_JUMP_EVENT, \(\) => flipGravity\(engine\)\);/);
@@ -320,7 +320,7 @@ describe('lost puzzle levels (scenes)', async () => {
     assert.match(body, /beamConeTexture\(PIXI, scene\)/);
     assert.match(body, /beamLanding\(PIXI, root, scene\)/);
     assert.match(body, /ufo_1\.webp/);
-    const { BEAM_ART } = await import('../public/js/features/puzzle-scenes-feature.js?v=01c1801e');
+    const { BEAM_ART } = await import('../public/js/features/puzzle-scenes-feature.js?v=3c70a562');
     for (const n of BEAM_ART.clouds) assert.ok(existsSync(join(root, `public/assets/decos/groddle/${n}.webp`)), n);
     assert.ok(existsSync(join(root, 'public', BEAM_ART.door)));
     assert.ok(existsSync(join(root, `public/assets/decos/groddle/${BEAM_ART.plank}.webp`)));

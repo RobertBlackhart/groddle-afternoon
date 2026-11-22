@@ -3,6 +3,7 @@
 import { EXTRA_PARADISE_COURSES, paradiseReward } from './paradise-courses.js?v=17579e08';
 import { qrazyRewardForLevel, quoinPay, quoinTouches } from './quoins.js?v=5abad2c7';
 import { getGameDayKey } from './game-day.js?v=50c112eb';
+import { RADIAL_ARRIVAL_EVENTS, applyGeometryEffects, createRadialSession, radialFire } from './radial-heights.js?v=57df1ee2';
 import { avatarHeadReach, barriersScreen, blockBarrierCrossing, headCeiling, isStandable, platformYAt, platformsScreen } from './street-model.js?v=a9a05f9d';
 
 export const PARADISE_DURATION_MS = 4 * 60 * 1000;
@@ -33,13 +34,6 @@ export const RADIAL_HEIGHTS_MOON = Object.freeze({
   width: 322,
   height: 322,
 });
-
-/**
- * G1119: the moon is hidden while you fly (LHFQOLEIHN63P27.xml instance_created deco_hide
- * moon_asset_smile_1339642021284) and fades in over 2000 ms once all 53 stars are found
- * (master_check deco_show, fade 2000). Shown from the start it covered the start cloud.
- */
-export const RADIAL_HEIGHTS_MOON_FADE_MS = 2000;
 
 export const STARLIT_NIGHT_MOON = Object.freeze({
   plain: Object.freeze({
@@ -287,13 +281,11 @@ export const PARADISE_COURSES = Object.freeze({
     objective: 'Follow the spiral and find all 53 stars',
     // source: the street's completion sign (GHFQOLEIHN63P27.xml groddle_sign_blank sign_txt)
     completion: "Good work, you've got all the stars!",
-    rewards: Object.freeze([
-      reward('xp', 12),
-      reward('xp', 15),
-      reward('currants', 10),
-      reward('energy', 12),
-      reward('mood', 10),
-    ]),
+    // G1119: a star pays nothing itself (show_star_NN lights it and plays its note); the course pays
+    // through the 14 quoins its hide_cover chain sets down and the Qurazies at the end
+    // (js/radial-heights.js, eventQuoinReward).
+    rewards: Object.freeze([]),
+    eventQuoins: true,
     completionReward: reward('xp', 600),
   }),
   starlit_night: Object.freeze({
@@ -621,11 +613,14 @@ export function collectParadisePickup(run, index, now = Date.now(), { level = 1,
   if (run.collected.includes(pickupIndex)) {
     return { ok: false, reason: 'already_collected', run };
   }
-  const rewardDef = resolveParadiseReward(course.rewards[pickupIndex % course.rewards.length], { level, multiplier });
+  // A course whose pickups pay nothing themselves (Radial Heights' stars) counts the touch only.
+  const rewardDef = course.rewards.length
+    ? resolveParadiseReward(course.rewards[pickupIndex % course.rewards.length], { level, multiplier })
+    : null;
   run.collected.push(pickupIndex);
   run.collected.sort((a, b) => a - b);
-  noteReward(run, rewardDef);
-  return { ok: true, reason: 'collected', reward: { ...rewardDef }, run };
+  if (rewardDef) noteReward(run, rewardDef);
+  return { ok: true, reason: 'collected', reward: rewardDef ? { ...rewardDef } : null, run };
 }
 
 export function passParadiseRing(run, index, now = Date.now(), { multiplier = 1 } = {}) {
@@ -727,23 +722,19 @@ export function finishParadiseRun(run, now = Date.now(), { multiplier = 1 } = {}
  * sky. Screen space here is the street's own (bounds l and t taken off), the same as the stars.
  *
  * Radial Heights starts you penned on a cloud in the middle. Its source lines are soft (pc_perm 0,
- * GHFQOLEIHN63P27.xml); the location's instance_created event (LHFQOLEIHN63P27.xml) makes the pen:
- * the start cloud plat_1339609697362 a floor (-1), its roof plat_1339609697364 solid from below (1),
- * and the side walls wall_1339609697367 (1) and wall_1339609697366 (-1) solid from inside.
- * hide_start_clouds opens it again (the three start clouds fade over 500 ms, every pen line back to 0,
- * the flitterbug fades). The collision box that ran it was an item the archive lost, and the
- * flitterbug's hide_cover_01 plays FLITTERBUG_COLLISION, so the pen opens when you fly up into the
- * flitterbug (flitterbug_limbo1_1339609697352, 68 x 82 at 9, -1056: 1009, 944 here), as the 2012 run
+ * GHFQOLEIHN63P27.xml); the location's instance_created event (LHFQOLEIHN63P27.xml, run here on the
+ * shared event runtime, js/radial-heights.js) makes the pen: the start cloud plat_1339609697362 a
+ * floor (-1), its roof plat_1339609697364 solid from below (1), and the side walls
+ * wall_1339609697367 (1) and wall_1339609697366 (-1) solid from inside. hide_start_clouds opens it
+ * again (the start clouds fade over 500 ms, every pen line back to 0, the flitterbug fades). The
+ * collision box that ran it was an item the archive lost, and the flitterbug's hide_cover_01 plays
+ * FLITTERBUG_COLLISION, so the pen opens when you fly up into the flitterbug
+ * (flitterbug_limbo1_1339609697352, 68 x 82 at 9, -1056: 1009, 944 here), as the 2012 run
  * kxnjN86TqNY shows: on the cloud, up past the sign, and the clouds are gone.
  */
 export const RADIAL_HEIGHTS_START_PEN = Object.freeze({
-  shut: Object.freeze({
-    plat_1339609697362: -1,
-    plat_1339609697364: 1,
-    wall_1339609697367: 1,
-    wall_1339609697366: -1,
-  }),
   floorId: 'plat_1339609697362',
+  flitterbug: Object.freeze({ id: 'flitterbug_limbo1_1339609697352', sprite: 'flitterbug_limbo1' }),
   trigger: Object.freeze({ x: 1009, y: 944, w: 68, h: 82 }),
   /** The three cloud_fluffy_1 decos over the start cloud (middleground, bottom centre, x + 1000, y + 2000). */
   clouds: Object.freeze([
@@ -751,11 +742,19 @@ export const RADIAL_HEIGHTS_START_PEN = Object.freeze({
     Object.freeze({ id: 'cloud_fluffy_1_1339609697360', x: 1049, y: 1128, w: 324, h: 126, z: 1, flip: true }),
     Object.freeze({ id: 'cloud_fluffy_1_1339609697359', x: 966, y: 1129, w: 319, h: 124, z: 2 }),
   ]),
-  fadeMs: 500,
 });
 
-/** The pen's perms per course: what instance_created set on arrival. */
-const PARADISE_START_PERMS = Object.freeze({ radial_heights: RADIAL_HEIGHTS_START_PEN.shut });
+/** G1119: "You're a star" (your_a_star_01a in layer T_1339635044318), shown by verify_53. */
+export const RADIAL_HEIGHTS_STAR_ART = Object.freeze({ id: 'your_a_star_01a_1340664945756', sprite: 'your_a_star_01a', x: 947, y: 1244, w: 691, h: 655 });
+
+/**
+ * G1119: Radial Heights' other deco signs, their sign_txt printed in their boxes: the start sign over
+ * the pen (middleground, x + 1000, y + 2000) and the one master_check shows (T_1339635044318).
+ */
+export const RADIAL_HEIGHTS_SIGNS = Object.freeze([
+  Object.freeze({ id: 'groddle_sign_blank_1339609697347', text: 'Spacebar to fly!', x: 1015, y: 1092, w: 425, h: 248 }),
+  Object.freeze({ id: 'groddle_sign_blank_1340666150612', text: "Good work, you've\ngot all the stars!", x: 325, y: 1146, w: 425, h: 248 }),
+]);
 
 /** PURE: the course's star pickups from its source street ('yellow stars' for Radial Heights). */
 export function paradiseSourcePoints(course, data) {
@@ -775,20 +774,21 @@ export function paradiseSourcePoints(course, data) {
       radius: Math.max(10, Math.min(28, Number(deco.w || 30) * 0.42)),
       major: String(deco.sprite) === 'star_asset_01',
       r: Number(deco.r) || 0,
+      id: String(deco.id || ''),
     }));
 }
 
 /**
- * PURE: the course's lines and walls from its source street, in course space, with the arrival
- * perms applied: `{ platforms, barriers }` in the street's own shape (x1, y1, x2, y2, pc_perm; x, y,
- * h, pc_perm), ready for platformsScreen / barriersScreen of a street whose bounds start at 0.
+ * PURE: the course's lines and walls from its source street, in course space, with the perms its
+ * arrival events set (instance_created, player_enter on the shared event runtime): `{ platforms,
+ * barriers }` in the street's own shape (x1, y1, x2, y2, pc_perm; x, y, h, pc_perm), ready for
+ * platformsScreen / barriersScreen of a street whose bounds start at 0.
  */
 export function paradiseSourceGeometry(course, data) {
   if (!course?.sourceStreetTsid || !data) return { platforms: [], barriers: [] };
   const l = Number(data.bounds?.l) || 0;
   const t = Number(data.bounds?.t) || 0;
-  const perms = PARADISE_START_PERMS[course.id] || {};
-  const perm = (row) => (Object.prototype.hasOwnProperty.call(perms, row.id) ? perms[row.id] : row.pc_perm);
+  const perm = (row) => row.pc_perm;
   const platforms = (data.platforms || []).map((p) => ({
     id: p.id,
     x1: p.x1 - l,
@@ -799,7 +799,9 @@ export function paradiseSourceGeometry(course, data) {
     item_perm: p.item_perm,
   }));
   const barriers = (data.barriers || []).map((w) => ({ id: w.id, x: w.x - l, y: w.y - t, h: w.h, pc_perm: perm(w) }));
-  return { platforms, barriers };
+  const geometry = { platforms, barriers };
+  if (data.events) applyGeometryEffects(geometry, radialFire(createRadialSession(data.events), RADIAL_ARRIVAL_EVENTS, 0));
+  return geometry;
 }
 
 /** PURE: a geometry's lines as the avatar meets them (street-model platformsScreen; bounds start at 0). */
@@ -840,14 +842,6 @@ export function radialStartPenOpens(feet, scale = 1) {
     head <= box.y &&
     feet.y >= box.y - box.h
   );
-}
-
-/** Mutates `geometry`: hide_start_clouds sets every pen line and wall back to 0 (soft both ways). */
-export function openRadialStartPen(geometry) {
-  for (const row of [...(geometry?.platforms || []), ...(geometry?.barriers || [])]) {
-    if (Object.prototype.hasOwnProperty.call(RADIAL_HEIGHTS_START_PEN.shut, row.id)) row.pc_perm = 0;
-  }
-  return geometry;
 }
 
 /**
@@ -893,4 +887,25 @@ export function paradiseFlightCollide(body, prevX, prevY, { lines = [], barriers
 /** PURE: a street-shaped view of a geometry for barriersScreen (bounds start at 0). */
 export function paradiseGeometryBarriers(geometry) {
   return barriersScreen({ bounds: { l: 0, t: 0 }, barriers: geometry?.barriers || [] });
+}
+
+/**
+ * G1119: a quoin a course's script set down (Radial Heights' hide_cover chain and Qurazies), collected
+ * once: its reward def (js/radial-heights.js eventQuoinReward) paid as a Paradise quoin and noted in
+ * the run's totals. `id` keys it in the run (run.eventQuoins).
+ */
+export function collectParadiseEventQuoin(run, id, rewardDef, now = Date.now(), { level = 1, multiplier = 1 } = {}) {
+  const course = PARADISE_COURSES[run?.courseId];
+  if (!run || !course) return { ok: false, reason: 'missing', run };
+  if (paradiseRemainingMs(run, now) <= 0) {
+    expireParadiseRun(run, now);
+    return { ok: false, reason: 'expired', run };
+  }
+  if (!Array.isArray(run.eventQuoins)) run.eventQuoins = [];
+  const key = String(id || '');
+  if (!key || run.eventQuoins.includes(key)) return { ok: false, reason: 'already_collected', run };
+  const reward = resolveParadiseReward(rewardDef, { level, multiplier });
+  run.eventQuoins.push(key);
+  noteReward(run, reward);
+  return { ok: true, reason: 'collected', reward: { ...reward }, run };
 }

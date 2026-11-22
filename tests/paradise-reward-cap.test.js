@@ -63,8 +63,8 @@ describe('#156 Paradise energy and mood rewards', () => {
     assert.match(fn, /creditMetabolicReward\(pc, rewardDef\.type, amount\)/);
     assert.doesNotMatch(fn, /clamp\([^)]*,\s*0,\s*100\)/);
     assert.doesNotMatch(fn, /already full/);
-    // The three callers: pickups, rings, the finish.
-    assert.equal((game.match(/applyParadiseReward\(result\.(reward|completionReward)\)/g) || []).length, 3);
+    // The four callers: pickups, rings, the finish, and Radial Heights' scripted quoins (G1119).
+    assert.equal((game.match(/applyParadiseReward\(result\.(reward|completionReward)\)/g) || []).length, 4);
   });
 
   it('the source: Paradise skips the daily limit and quoins add through metabolics', { skip: !existsSync(gsjs) && 'no GSJS checkout' }, () => {

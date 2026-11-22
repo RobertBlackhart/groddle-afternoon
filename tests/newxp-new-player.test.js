@@ -18,10 +18,10 @@ import { join } from 'node:path';
 
 import { newPlayerInventory, newPlayerStats } from '../public/js/new-player.js?v=f76dcbaf';
 import { createInventory } from '../public/js/inventory.js?v=6414dbdc';
-import { PARADISE_TICKET_IDS } from '../public/js/paradise-flight.js?v=3eca39b5';
-import { createPlayerSave, parsePlayerSave, restorePlayerSave, serializePlayerSave, normalizePlayerSnapshot } from '../public/js/player-save.js?v=f59c1d86';
+import { PARADISE_TICKET_IDS } from '../public/js/paradise-flight.js?v=e70e955f';
+import { createPlayerSave, parsePlayerSave, restorePlayerSave, serializePlayerSave, normalizePlayerSnapshot } from '../public/js/player-save.js?v=c565105f';
 import { cloudsLayout, SCENE_TSIDS, GENTLE_ISLAND } from '../public/js/newxp.js?v=5aa81665';
-import { newxpFeature, __newxpTest, cloudEdge, cloudStepOff, cloudStepOffAny, CLOUD_BODY_DEPTH, CLOUD_EDGE_CLEAR, CLOUD_END_PUFFS } from '../public/js/features/newxp-feature.js?v=33e043ae';
+import { newxpFeature, __newxpTest, cloudEdge, cloudStepOff, cloudStepOffAny, CLOUD_BODY_DEPTH, CLOUD_EDGE_CLEAR, CLOUD_END_PUFFS } from '../public/js/features/newxp-feature.js?v=9446092b';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => readFileSync(join(root, rel), 'utf8');
