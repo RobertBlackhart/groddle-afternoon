@@ -2,6 +2,55 @@
   "note": "Written by tools/made-art/build-data.mjs from the provenance lists in tools/provenance/, tools/made-art/showcase.json and tools/made-art/pieces.json. Edit those, never this file.",
   "pieces": [
     {
+      "id": "decos:cc",
+      "anchor": "made-coral-caves-crystals-spires-and-kelp",
+      "name": "Coral Caves' crystals, spires and kelp",
+      "made": "2026-11-22",
+      "madeLabel": "22 November 2026",
+      "caption": "Coral Caves, one of the home street styles: a sandy sea floor in murky olive light, with rocks, beaded branches, fiddleheads and an old boat. The street itself was never saved, only its small header picture from 2012. Most of its pieces are Tiny Speck's own, found in other streets, but nothing in Tiny Speck's files matches its dark and pale crystal clusters, its tall pale spires or its curling kelp stalks, so those four were drawn again.",
+      "display": {
+        "w": 289,
+        "h": 126
+      },
+      "image": {
+        "src": "/assets/made-art/cc-street.webp",
+        "w": 720,
+        "h": 315,
+        "label": "With the pictures made for Groddle",
+        "alt": "A murky olive sea floor: tall wavy kelp stalks with curled tips behind the rocks, pale banded stone spires, black-green crystal clusters with bright green edges by the boat and on the sand, among beaded branches and fiddleheads."
+      },
+      "original": {
+        "src": "/assets/made-art/cc-street-before.webp",
+        "w": 720,
+        "h": 315,
+        "kind": "original",
+        "alt": "The same street before: rocks, beaded branches, fiddleheads, mushrooms and the boat, with no crystals, spires or kelp.",
+        "label": "Before"
+      },
+      "facts": [
+        {
+          "label": "What the 2012 street had",
+          "text": "Clusters of dark crystals with pale ones beside them out on the sand, tall pale spires standing behind them, and wavy kelp stalks rising behind the rocks, as the header picture and players' pictures show."
+        },
+        {
+          "label": "How it was made",
+          "text": "Drawn by an image model (GPT Image 2.6 Sunburst) for Austin, one picture for each piece, from our drawing of their sizes, three crops of the 2012 header and Tiny Speck's own pieces from the street for the look. They are drawn in natural colours, and the street tints them olive with everything else."
+        },
+        {
+          "label": "How it was checked",
+          "text": "Each piece was measured against the boat in the header and placed where it shows them: the spires and kelp behind the rocks, the crystals among them and on the sand in front, a pale cluster beside every second dark one. The street was looked at in the game before and after."
+        },
+        {
+          "label": "In the game",
+          "text": "Your home street, in the Coral Caves style (Change Style by your house)."
+        },
+        {
+          "label": "Licence",
+          "text": "Dedicated to the public domain under CC0 1.0, like the Tiny Speck art it comes from."
+        }
+      ]
+    },
+    {
       "id": "pld_badge_feast_bringer",
       "anchor": "made-feast-bringer-badge-picture",
       "name": "Feast Bringer badge picture",

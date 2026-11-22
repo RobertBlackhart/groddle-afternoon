@@ -7,7 +7,7 @@ and what it was made from), which tools/made-art/build-data.mjs checks against t
 
   python3.11 -I tools/made-art/compose.py --shots <dir> [--only <group>,...]
 
---only recomposes those groups (subway, ezc, lp, rg, lp-room, rg-room, ww, ww-room, wh, om, vv) and keeps every other record of
+--only recomposes those groups (subway, ezc, lp, rg, lp-room, rg-room, ww, ww-room, wh, om, vv, cc) and keeps every other record of
 showcase.json as it is, so a new piece does not need the older pieces' screenshots.
 
 <dir> holds the PNG screenshots of the game served from this checkout at deviceScaleFactor 2
@@ -35,6 +35,11 @@ showcase.json as it is, so a new piece does not need the older pieces' screensho
                       at x 560 as the room opens (before the first Scion), every page element but the canvas hidden,
                       with purple-journey-scene.js of 064a563494c (before the made art and the Uralia decos)
   vv-after.png        the same with today's room
+  cc-before.png       the home street in the Coral Caves style (?autostart=1&questoffer=off&fresh=1&resetgame=1&homedemo=home
+                      &homestreetstyle=pol_ext_coral_high, 1280 x 800), the avatar placed 1100 right of where it starts
+                      (x 1680, the boat), every page element but the canvas hidden, with recipes.mjs of 5ffed3be11c
+                      (before the made art)
+  cc-after.png        the same with today's style
 
 Everything else is drawn from shipped files: Tiny Speck's CC0 art and the made art whose provenance
 is in tools/provenance/ (made-decos.json, repainted-maps.json, subway-map-paper.json).
@@ -334,6 +339,19 @@ def main():
             put(name, webp(s, name, q=84), what,
                 f"screenshot of the game (1280 x 800, deviceScaleFactor 2, purpledemo=1&purpleautoplay=room, the avatar placed at x 560 as the room opens), every page element but the canvas hidden, {module}; cropped to y {box[1] // 2}-{box[3] // 2} (CSS px), Lanczos to 720 x 315",
                 [{'shot': f'vv-{which}.png', 'sha256': sha(shot)}])
+    if want('cc'):
+        box = (0, 60, 2560, 1180)
+        for which in ('before', 'after'):
+            shot = os.path.join(args.shots, f'cc-{which}.png')
+            s = Image.open(shot).convert('RGBA')
+            assert s.size == (2560, 1600), s.size
+            s = s.crop(box).resize((720, 315), Image.LANCZOS)
+            name = 'cc-street-before' if which == 'before' else 'cc-street'
+            what = "Coral Caves before: Tiny Speck's rocks, beaded branches, fiddleheads and boat, no crystals, spires or kelp" if which == 'before' else "Coral Caves with its made crystal clusters, pale spires and kelp stalks among Tiny Speck's rocks, branches and boat"
+            recipe = 'tools/home-styles/recipes.mjs of 5ffed3be11c (before the made art)' if which == 'before' else "today's style"
+            put(name, webp(s, name, q=84), what,
+                f"screenshot of the game (1280 x 800, deviceScaleFactor 2, homedemo=home&homestreetstyle=pol_ext_coral_high, the avatar placed at x 1680), every page element but the canvas hidden, {recipe}; cropped to y {box[1] // 2}-{box[3] // 2} (CSS px), Lanczos to 720 x 315",
+                [{'shot': f'cc-{which}.png', 'sha256': sha(shot)}])
     if want('ww-room'):
         box = (360, 60, 2160, 1118)
         for which in ('before', 'after'):

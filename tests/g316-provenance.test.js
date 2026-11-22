@@ -33,6 +33,9 @@
  * 2026-11-17 (lane vviolet, G964): a made deco may belong to a scene outside the quest-room catalog
  * (`scene` and the `code` that draws it), as Le Voyage Violet's stump and spiral stone do.
  *
+ * 2026-11-22 (lane corak, G223): a made deco may belong to home street styles (`homeStyles`, the style
+ * keys, and the `code` that composes them): each style's built look in js/home-styles-data.js draws it.
+ *
  * 2026-11-17 (lane art45, G922): a made deco may come without a @1.5x copy when its drop holds less than
  * 3 px a unit (Winter Haven's trees, the Outer Mind's head), and a chat may have been given four files.
  */
@@ -154,7 +157,8 @@ describe('Tiny Speck\'s 2012 Encyclopedia maps (2026-11-14)', () => {
   });
 });
 
-describe('new art from published zones (level builder P6) and made decos', () => {
+describe('new art from published zones (level builder P6) and made decos', async () => {
+  const homeStylesData = await import('../public/js/home-styles-data.js?v=04ec2420');
   it('every gz_ file is listed in tools/provenance/new-art.json or made-decos.json with its bytes, maker and a CC0 1.0 dedication', () => {
     const file = join(root, 'tools/provenance/new-art.json');
     const art = existsSync(file) ? JSON.parse(readFileSync(file, 'utf8')).art : {};
@@ -199,6 +203,18 @@ describe('new art from published zones (level builder P6) and made decos', () =>
         assert.ok(row.rooms.length > 0 && row.rooms.every((r) => roomSrc.includes(`id: '${r}'`) || roomSrc.includes(`ROOM_ID = '${r}'`)), `${name}: rooms`);
         assert.ok(readFileSync(join(root, row.code), 'utf8').includes(`'${name}'`), `${name}: ${row.code} draws it`);
         assert.ok(row.inputFiles.filter((f) => /^ref:/.test(row.inputs.find((i) => i.includes(f.file)) || '')).every((f) => /reference only/.test(f.source)), `${name}: snaps are reference only`);
+        continue;
+      }
+      if (row.homeStyles) {
+        // Home street styles (G223: Coral Caves, tools/home-styles/recipes.mjs): every named style is built and its look draws the deco.
+        assert.ok(readFileSync(join(root, row.code), 'utf8').includes(`'${name}'`), `${name}: ${row.code} draws it`);
+        const { EXTERIOR_STYLES, INTERIOR_STYLES } = homeStylesData;
+        for (const key of row.homeStyles) {
+          const style = [...EXTERIOR_STYLES, ...INTERIOR_STYLES].find((r) => r.key === key);
+          assert.ok(style?.built && style.look, `${name}: ${key} is a built style`);
+          assert.ok(JSON.stringify(style.look).includes(`"s":"${name}"`), `${name}: ${key} draws it`);
+        }
+        assert.ok(row.inputFiles.filter((f) => /^ref:/.test(row.inputs.find((i) => i.includes(f.file)) || '')).every((f) => /reference only/.test(f.source)), `${name}: references are reference only`);
         continue;
       }
       if (row.scene) {
@@ -264,7 +280,7 @@ describe('sprites, decos and garden art (G316)', () => {
   it('every manifest deco has its file; renamed twins draw their CC0 SWF render', async () => {
     const names = JSON.parse(readFileSync(join(pub, 'assets/decos/manifest.json'), 'utf8'));
     for (const n of names) assert.ok(existsSync(join(pub, 'assets/decos/groddle', `${n}.webp`)), n);
-    const { DECO_TWINS } = await import('../public/js/street-render.js?v=fbc658a9');
+    const { DECO_TWINS } = await import('../public/js/street-render.js?v=966122ea');
     for (const [alias, twin] of Object.entries(DECO_TWINS)) {
       assert.ok(!names.includes(alias), alias);
       assert.ok(names.includes(twin), twin);

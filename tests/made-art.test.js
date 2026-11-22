@@ -61,8 +61,9 @@ describe('Made for Groddle data (tools/made-art/build-data.mjs)', () => {
     // 2026-11-17 leads: Pot Luck Day's badge pictures and Harvest Stuffing's icon (G982), then The Outer Mind, re-laid with its made pictures (G922). Then 2026-11-16: Winter Walk's tree arch and plants and the walk (G912), Winter Haven's snowy trees (G922), the light-puzzle rooms' props (Walk Toward the Light, Radiant Glare).
     // Then 2026-11-13 in the curated order: the Groddle Meadow map restored from 2012, EZ Cookin's props, its room, the subway paper, the World
     // map at 2x; then the quest book (2026-11-12).
+    // 2026-11-22 leads: Coral Caves' crystals, spires and kelp (lane corak, G223).
     // G982: Pot Luck Day's badge pictures and Harvest Stuffing's icon lead the curated list; (2026-11-17, after them in the curated order): Pot Luck Day's two chicken costumes, a parts edit of Tiny Speck's Chicken.
-    assert.deepEqual(made.pieces.map((p) => p.id), ['pld_badge_feast_bringer', 'pld_badge_plume_fluffer', 'pld_badge_good_neighbor', 'harvest_stuffing', 'decos:vv', 'decos:om', 'chicken_turkey_tailfan', 'chicken_rooster_plume', 'decos:ww', 'decos:ww:room', 'decos:wh', 'decos:lp', 'decos:lp:room', 'decos:rg', 'decos:rg:room', 'map:58', 'decos:ezc', 'decos:ezc:room', 'subway:paper', 'world:2x', 'quest_book_award']);
+    assert.deepEqual(made.pieces.map((p) => p.id), ['decos:cc', 'pld_badge_feast_bringer', 'pld_badge_plume_fluffer', 'pld_badge_good_neighbor', 'harvest_stuffing', 'decos:vv', 'decos:om', 'chicken_turkey_tailfan', 'chicken_rooster_plume', 'decos:ww', 'decos:ww:room', 'decos:wh', 'decos:lp', 'decos:lp:room', 'decos:rg', 'decos:rg:room', 'map:58', 'decos:ezc', 'decos:ezc:room', 'subway:paper', 'world:2x', 'quest_book_award']);
     const book = made.pieces.find((p) => p.id === 'quest_book_award');
     assert.equal(book.madeLabel, '12 November 2026');
     assert.deepEqual([book.original.src, book.original.w, book.original.h, book.original.pixelated], ['/assets/ui/quest-book.webp', 86, 58, true]);
@@ -104,7 +105,7 @@ describe('Made for Groddle data (tools/made-art/build-data.mjs)', () => {
     assert.ok(ez.facts.some((f) => f.label === 'What the 2012 street had' && /glass-topped serving counters/.test(f.text)));
     assert.deepEqual([piece('decos:ezc:room').original.src, piece('decos:ezc:room').image.src], ['/assets/made-art/ezc-room-stand-ins.webp', '/assets/made-art/ezc-room.webp']);
     // And the light-puzzle rooms' eleven (lane art01, 2026-11-16): one composed sheet each for gz_ai_lp_* and gz_ai_rg_*.
-    assert.deepEqual(Object.keys(more.decos.art).filter((n) => /^gz_ai_(ezc|lp|rg|ww|wh|om|vv)_/.test(n)).sort(), Object.keys(more.decos.art).sort());
+    assert.deepEqual(Object.keys(more.decos.art).filter((n) => /^gz_ai_(ezc|lp|rg|ww|wh|om|vv|cc)_/.test(n)).sort(), Object.keys(more.decos.art).sort());
     // Winter Walk's three (lane art03, 2026-11-16, G912): one sheet of the arch and a plant of each kind, and the walk before and after.
     assert.equal(piece('decos:ww').image.src, '/assets/made-art/ww-props.webp');
     assert.deepEqual([piece('decos:ww:room').original.src, piece('decos:ww:room').image.src], ['/assets/made-art/ww-room-before.webp', '/assets/made-art/ww-room.webp']);
@@ -118,6 +119,9 @@ describe('Made for Groddle data (tools/made-art/build-data.mjs)', () => {
     // Le Voyage Violet's stump and spiral stone (lane vviolet, G964): the room before and after.
     assert.deepEqual([piece('decos:vv').original.src, piece('decos:vv').image.src], ['/assets/made-art/vv-room-vectors.webp', '/assets/made-art/vv-room.webp']);
     assert.ok(piece('decos:vv').made === '2026-11-17' && /2012/.test(piece('decos:vv').caption));
+    // Coral Caves' four (lane corak, 2026-11-22, G223): the home street style before and after.
+    assert.deepEqual([piece('decos:cc').original.src, piece('decos:cc').image.src], ['/assets/made-art/cc-street-before.webp', '/assets/made-art/cc-street.webp']);
+    assert.ok(piece('decos:cc').made === '2026-11-22' && /2012/.test(piece('decos:cc').caption));
     assert.equal(piece('decos:lp').image.src, '/assets/made-art/lp-props.webp');
     assert.equal(piece('decos:rg').image.src, '/assets/made-art/rg-props.webp');
     for (const r of ['lp', 'rg']) assert.deepEqual([piece(`decos:${r}:room`).original.src, piece(`decos:${r}:room`).image.src], [`/assets/made-art/${r}-room-vectors.webp`, `/assets/made-art/${r}-room.webp`]);

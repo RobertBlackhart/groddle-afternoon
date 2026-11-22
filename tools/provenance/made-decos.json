@@ -4,10 +4,11 @@
  "references": [
   "Players' full-street snaps of Breezy, EZ Cookin' from the Eleven collections (zoi, mackenzie, cleops, Nov-Dec 2012): reference only, never given to the model and never in the repo; the sizes in attach/01 were measured from them and the prompts describe them in words",
   "Players' 2012 Snaps of Walk Toward the Light, Radiant Glare, Winter Walk and The Outer Mind, and Cleops' 2013 pictures of Winter Haven (research/art-briefs/quest-rooms-2026-11-16/*/ref): reference only. Unlike EZ Cookin', three of them (or crops) were attached to the prompts, as Austin allowed on 2026-11-16; none is in the repo, and the made pictures ship CC0 1.0",
-  "Players' 2012 Snaps of Le Voyage Violet (research/art-briefs/quest-rooms-pack3-2026-11-17/03-voyage-violet/ref): reference only. Three crops (no player in them) were attached to the prompts, as Austin allowed on 2026-11-16; none is in the repo, and the made pictures ship CC0 1.0"
+  "Players' 2012 Snaps of Le Voyage Violet (research/art-briefs/quest-rooms-pack3-2026-11-17/03-voyage-violet/ref): reference only. Three crops (no player in them) were attached to the prompts, as Austin allowed on 2026-11-16; none is in the repo, and the made pictures ship CC0 1.0",
+  "Tiny Speck's 2012 Coral Caves header panorama (research/wayback/raw/home-images/headers/header-1346981279.jpg) and two players' pictures of the street (research/art-briefs/house-exteriors-2026-11-22/01-coral-caves/ref): reference only. Three crops of the header (no player in them) were attached to the prompts; none is in the repo, and the made pictures ship CC0 1.0"
  ],
- "pack": "research/art-briefs/ez-cookin (outside git): brief.md, pack.md, prompts/, attach/ and attach/t3/ (the five files given), drop/ (model.txt); research/art-briefs/quest-rooms-2026-11-16 (outside git), rooms 01 to 05: readme.md, */brief.md, */prompts/, */attach/, */ref/, */drop/model.txt; research/art-briefs/quest-rooms-pack3-2026-11-17 (outside git), room 03: readme.md, 03-voyage-violet/brief.md, prompts/, attach/, ref/, drop/model.txt",
- "count": 28,
+ "pack": "research/art-briefs/ez-cookin (outside git): brief.md, pack.md, prompts/, attach/ and attach/t3/ (the five files given), drop/ (model.txt); research/art-briefs/quest-rooms-2026-11-16 (outside git), rooms 01 to 05: readme.md, */brief.md, */prompts/, */attach/, */ref/, */drop/model.txt; research/art-briefs/quest-rooms-pack3-2026-11-17 (outside git), room 03: readme.md, 03-voyage-violet/brief.md, prompts/, attach/, ref/, drop/model.txt; research/art-briefs/house-exteriors-2026-11-22 (outside git), 01-coral-caves: readme.md, brief.md, prompts/, attach/, ref/, drop/model.txt",
+ "count": 32,
  "art": {
   "gz_ai_ezc_glass_counter": {
    "what": "The glass serving counter (three on the street, the food on their lids)",
@@ -2577,6 +2578,402 @@
    "intake": {
     "on": "2026-11-17",
     "by": "Claude (lane vviolet): sizes checked against attach/1, the brief and the Snaps; keyed, trimmed and resized as model.txt asks, nothing redrawn"
+   }
+  },
+  "gz_ai_cc_kelp": {
+   "what": "The kelp stalks (piece A): four thin olive-brown stalks from one base, each curled at the tip like a fiddlehead; the style tints them to its murk",
+   "file": "public/assets/decos/groddle/gz_ai_cc_kelp.webp",
+   "sha256": "881ae24c4f65e8d74d396e0dcdfdf730f29f1226d3657ba00b4843d273ab4ced",
+   "bytes": 48848,
+   "file3": "public/assets/decos/groddle/gz_ai_cc_kelp@1.5x.webp",
+   "sha256_3": "162aec20fede28c5c76c6840e0e8476cd56a47acad1ee07f0b74af0b1175a5b7",
+   "bytes3": 78072,
+   "w": 145,
+   "h": 400,
+   "size": "brief 180 x 400 units (1 : 2.2); drawn 2.76 : 1, just over the brief's 1.8 to 2.7 (Austin 2026-11-22: placed, as drawn or squeezed slightly); taken in as drawn, by its height, as 145 x 400 units at 2 and 3 px a unit (290 x 800, 435 x 1200); the drop holds 3.72 px a unit",
+   "replaces": "nothing: the header's tall kelp-like stalks were left out (no CC0 symbol matched, lane coral 2026-11-08)",
+   "homeStyles": [
+    "pol_ext_coral_high"
+   ],
+   "code": "tools/home-styles/recipes.mjs",
+   "licence": "ai-generated",
+   "author": "Austin Ginder (directed and chose it)",
+   "madeBy": "Grok Bot, for Austin Ginder, who directed and chose it",
+   "tool": "GPT Image 2.6 Sunburst in T3 Chat canvas",
+   "model": "GPT Image 2.6 Sunburst",
+   "made": "2026-11-22",
+   "settings": "T3 Chat canvas; Flare and Nano Banana 2.1 off; Standard 1K; transparency on; 9:16; one image; 864 x 1536 RGBA",
+   "chosen": {
+    "by": "Austin Ginder",
+    "on": "2026-11-22",
+    "of": "1 generation, no re-ask: research/art-briefs/house-exteriors-2026-11-22/01-coral-caves/drop/model.txt; Austin 2026-11-22: \"Place A, B and B2 now\", then \"Send C to Grok Bot too\""
+   },
+   "reimagined": "No Tiny Speck picture of this Coral Caves piece survives (lane coral matched every symbol in the 62 production location bundles); drawn fresh from the 2012 header, so it ships as made art. The rest of the style is Tiny Speck's own decos.",
+   "modelNote": "A-kelp.png: T3 Chat canvas, GPT Image 2.6 Sunburst (Flare and Nano Banana 2.1 unticked), Standard 1K, transparent background on, aspect 9:16, attachments 1-5, full A-kelp-stalks.txt prompt, 1 try; returned 864x1536 with alpha (cluster about 2.76 tall:wide, just over 2.7).",
+   "prompt": "Draw piece A from attachment 1: a cluster of tall wavy stalks, like kelp or giant fiddleheads, from the underwater cave scenery \"Coral Caves\" in the video game Glitch (attachment 4 shows several of them rising behind the rocks at the back; the whole scene sits in a murky olive light, which the game adds later).\n\nShape first: a cluster about 2.2 times as tall as it is wide (180 x 400 units, about 1 : 2.2): three to five thin stalks growing from one small base on a flat bottom edge, each one gently wavy, of different heights, the tallest reaching the top. Each stalk ends in a small curl or hook at the tip, like a fiddlehead that has not opened. The stalks lean a little apart as they rise, one crossing another once.\n\nWhat it is: smooth, slightly flattened stalks, a little thicker at the base and tapering to the curled tips. No leaves, no beads, no flowers: just the stalks.\n\nColour: natural olive brown, a little lighter on the left and darker on the right, with a clear range from light to dark. Draw it a little lighter than it looks in attachment 4: the game darkens the whole scene.\n\nSize: 180 x 400 units. Draw it at 4 px per unit, 720 x 1600 px, on a larger canvas if needed. Keep the proportions (about 2.2 times as tall as wide) above the exact pixel size: a larger picture with the same shape is fine.\n\nStyle: flat vector game art in the style of Tiny Speck's Glitch (2011-2012), the same family as the Tiny Speck pieces in the last attachment: clean shapes, soft painted shading, a thin darker edge, no outlines thicker than the shading, no photo texture, not 3D-rendered. Side view with the camera a little above, as the game's scenery is drawn.\nOutput: one PNG, the piece alone and centred, on a fully transparent background (if transparency is not possible, a flat pure magenta #FF00FF background with no shadow on it). No text, no ground, no shadow on the ground, no characters, no frame, no watermark.\nThe pictures of the original game in the attachments are a guide to the look only: draw the piece fresh and clean, as its own isolated object, at the size asked. Do not copy the lighting, the murky colour cast, the background or any other piece from them.\n",
+   "promptNote": "The prompt exactly as given to the model: research/art-briefs/house-exteriors-2026-11-22/01-coral-caves/prompts/A-kelp-stalks.txt (outside git), with the five attachments in inputFiles in this order.",
+   "inputs": [
+    "own:our measurement drawing of the pieces, sizes from Tiny Speck's 2012 header (attach/1-measurements-ours.png)",
+    "ref:2-ref-crystal-clusters-header.png (a crop of Tiny Speck's 2012 header panorama: reference only, never in the repo)",
+    "ref:3-ref-pale-spires-header.png (a crop of Tiny Speck's 2012 header panorama: reference only, never in the repo)",
+    "ref:4-ref-kelp-stalks-header.png (a crop of Tiny Speck's 2012 header panorama: reference only, never in the repo)",
+    "deco:cone_top_rock_01a_al1",
+    "deco:underground_bogwillow_1",
+    "deco:plant_giant_fern_2",
+    "deco:plant_fern_1",
+    "deco:purple_mushroom_3",
+    "deco:rock_rubble_01b_al1",
+    "deco:boat",
+    "deco:cave_icicle_1"
+   ],
+   "inputFiles": [
+    {
+     "n": 1,
+     "file": "1-measurements-ours.png",
+     "sha256": "c3716d31d4154d0d177986e2eae0ce904408ba54e30fadbaa237f152a0c23e53",
+     "what": "the four pieces as plain outlines with their sizes in game units (kelp 180 x 400, dark crystals 70 x 115, pale crystals 50 x 110, spires 90 x 220)",
+     "source": "our own measurement drawing (research/art-briefs/house-exteriors-2026-11-22/01-coral-caves/attach/1-measurements-ours.svg): sizes and shapes measured from the header at about 0.65 px a unit (its boat against the CC0 boat deco), measurements only"
+    },
+    {
+     "n": 2,
+     "file": "2-ref-crystal-clusters-header.png",
+     "sha256": "d8f6270597218b8ee8918d1f702c45f1b0db0e2da704e02f555a0caf0bbc98ab",
+     "what": "the header at x 870-1200: the dark and pale crystal clusters",
+     "source": "reference only: a crop of Tiny Speck's 2012 Coral Caves header panorama (research/wayback/raw/home-images/headers/header-1346981279.jpg, Wayback, no player), 3x and brightened, kept in research/art-briefs/house-exteriors-2026-11-22/01-coral-caves/attach, never copied into the repo"
+    },
+    {
+     "n": 3,
+     "file": "3-ref-pale-spires-header.png",
+     "sha256": "652c543af1c606593610ba1208fa1fc6b077f05e1149c913923deaeb1f328b7c",
+     "what": "the header at x 1270-1570: the tan spires behind the crystals",
+     "source": "reference only: a crop of Tiny Speck's 2012 Coral Caves header panorama (research/wayback/raw/home-images/headers/header-1346981279.jpg, Wayback, no player), 3x and brightened, kept in research/art-briefs/house-exteriors-2026-11-22/01-coral-caves/attach, never copied into the repo"
+    },
+    {
+     "n": 4,
+     "file": "4-ref-kelp-stalks-header.png",
+     "sha256": "749c7620ee561962821a65f91a4acb3f048849656095ed844e63a3e0d6c3f85c",
+     "what": "the header at x 1900-2200: wavy stalks with curled tips behind the rocks",
+     "source": "reference only: a crop of Tiny Speck's 2012 Coral Caves header panorama (research/wayback/raw/home-images/headers/header-1346981279.jpg, Wayback, no player), 3x and brightened, kept in research/art-briefs/house-exteriors-2026-11-22/01-coral-caves/attach, never copied into the repo"
+    },
+    {
+     "n": 5,
+     "file": "5-cc0-style.png",
+     "sha256": "708ef443e06e948d561c89a7d11dc06a4f0542b190dd574ff285351ae48b7082",
+     "what": "cone_top_rock_01a_al1, underground_bogwillow_1, plant_giant_fern_2, plant_fern_1, purple_mushroom_3, rock_rubble_01b_al1, boat, cave_icicle_1: Tiny Speck decos the style already draws (and cave_icicle_1, the closest shape to the spires), for the style",
+     "source": "Tiny Speck, CC0 1.0: library decos cone_top_rock_01a_al1, underground_bogwillow_1, plant_giant_fern_2, plant_fern_1, purple_mushroom_3, rock_rubble_01b_al1, boat, cave_icicle_1 (public/assets/decos/groddle)"
+    }
+   ],
+   "source": {
+    "drop": "research/art-briefs/house-exteriors-2026-11-22/01-coral-caves/drop/A-kelp.png",
+    "dropSha256": "cb97d3c92e0271506cd3d19424e326797a67741a4d408e23c69c7458b59547df",
+    "trim": "alpha over 20: x 171-708, y 26-1512 (538 x 1487, 2.764 tall:wide); alpha under 20 cut to 0",
+    "resize": "premultiplied Lanczos to whole units at 2 and 3 px a unit: 290 x 800 and 435 x 1200",
+    "masterSha256": {
+     "x2": "32bef53c21db91a38a5290a396a6d239b87a1c3805cb4468d496d853be6a90f4",
+     "x3": "7c572b7e72830f5636a3b0d688fd7414d013e56f07143fc8ccbe50238971b975"
+    },
+    "encode": "cwebp 1.6.0: -metadata none -q 82 -m 4 -sharp_yuv -alpha_q 100 -alpha_filter best (tools/deco-pipeline/build.py's lossy settings)"
+   },
+   "intake": {
+    "on": "2026-11-22",
+    "by": "Claude (lane corak): sizes checked against attach/1 and the brief; trimmed and resized as the brief asks, nothing redrawn"
+   }
+  },
+  "gz_ai_cc_crystal_dark": {
+   "what": "The dark crystal cluster (piece B): black-green shards with bright green edges, one bent over at the top",
+   "file": "public/assets/decos/groddle/gz_ai_cc_crystal_dark.webp",
+   "sha256": "cf64b919f5ac6f6817d60342d27d60f79261c4032f24c76bccc27f0bf8eaf48c",
+   "bytes": 8202,
+   "file3": "public/assets/decos/groddle/gz_ai_cc_crystal_dark@1.5x.webp",
+   "sha256_3": "a889a8b64397026593a22af5ce71613d8e49d1826cbc1fceea782c9b6a2b385c",
+   "bytes3": 12690,
+   "w": 63,
+   "h": 115,
+   "size": "brief 70 x 115 units (3 : 5); drawn 1.83 : 1 (accepted 1.4 to 1.9), taken in by its height as 63 x 115 units at 2 and 3 px a unit (126 x 230, 189 x 345); the drop holds 5.7 px a unit",
+   "replaces": "nothing: the header's dark crystal columns were left out (no CC0 symbol matched, lane coral 2026-11-08)",
+   "homeStyles": [
+    "pol_ext_coral_high"
+   ],
+   "code": "tools/home-styles/recipes.mjs",
+   "licence": "ai-generated",
+   "author": "Austin Ginder (directed and chose it)",
+   "madeBy": "Grok Bot, for Austin Ginder, who directed and chose it",
+   "tool": "GPT Image 2.6 Sunburst in T3 Chat canvas",
+   "model": "GPT Image 2.6 Sunburst",
+   "made": "2026-11-22",
+   "settings": "T3 Chat canvas; Flare and Nano Banana 2.1 off; Standard 1K; transparency on; 4:3; one image (the model returned B only); 1024 x 768 RGBA",
+   "chosen": {
+    "by": "Austin Ginder",
+    "on": "2026-11-22",
+    "of": "1 generation, no re-ask: research/art-briefs/house-exteriors-2026-11-22/01-coral-caves/drop/model.txt; Austin 2026-11-22: \"Place A, B and B2 now\", then \"Send C to Grok Bot too\""
+   },
+   "reimagined": "No Tiny Speck picture of this Coral Caves piece survives (lane coral matched every symbol in the 62 production location bundles); drawn fresh from the 2012 header, so it ships as made art. The rest of the style is Tiny Speck's own decos.",
+   "modelNote": "B-crystal-dark.png: T3 Chat canvas, GPT Image 2.6 Sunburst (Flare and Nano Banana 2.1 unticked), Standard 1K, transparent background on, aspect 4:3, attachments 1-5, full B-crystal-clusters.txt prompt, 1 try (returned B only); returned 1024x768 with alpha (cluster about 1.82 tall:wide).",
+   "prompt": "Draw piece B from attachment 1: a small cluster of dark crystals standing on the sand, from the underwater cave scenery \"Coral Caves\" in the video game Glitch (attachment 2 shows several of them: the black-green ones, and the pale grey-teal ones beside them; the whole scene sits in a murky olive light, which the game adds later).\n\nShape first: a cluster a little taller than it is wide (70 x 115 units, about 3 : 5): three to five upright shards of different heights growing from one flat base, each shard flat-sided with a few facets, like a crystal, the tallest in the middle. The top of one shard bends over slightly, like a curled leaf.\n\nWhat it is: dark crystal, black-green faces with thin bright green edges where the facets catch the light, a little lighter on the left.\n\nColour: black-green with bright green edge lights. Do not make it brown or yellow: the game adds the colour cast later.\n\nSize: 70 x 115 units. Draw it at 4 px per unit, 280 x 460 px, on a larger canvas if needed. Keep the proportions (a little taller than wide) above the exact pixel size: a larger picture with the same shape is fine.\n\nStyle: flat vector game art in the style of Tiny Speck's Glitch (2011-2012), the same family as the Tiny Speck pieces in the last attachment: clean shapes, soft painted shading, a thin darker edge, no outlines thicker than the shading, no photo texture, not 3D-rendered. Side view with the camera a little above, as the game's scenery is drawn.\nOutput: one PNG, the piece alone and centred, on a fully transparent background (if transparency is not possible, a flat pure magenta #FF00FF background with no shadow on it). No text, no ground, no shadow on the ground, no characters, no frame, no watermark.\nThe pictures of the original game in the attachments are a guide to the look only: draw the piece fresh and clean, as its own isolated object, at the size asked. Do not copy the lighting, the murky colour cast, the background or any other piece from them.\n",
+   "promptNote": "The prompt exactly as given to the model: research/art-briefs/house-exteriors-2026-11-22/01-coral-caves/prompts/B-crystal-clusters.txt (outside git), with the five attachments in inputFiles in this order. The chat drew B only; the prompt here is the file without its last paragraph (B2), which went to a separate generate (gz_ai_cc_crystal_pale).",
+   "inputs": [
+    "own:our measurement drawing of the pieces, sizes from Tiny Speck's 2012 header (attach/1-measurements-ours.png)",
+    "ref:2-ref-crystal-clusters-header.png (a crop of Tiny Speck's 2012 header panorama: reference only, never in the repo)",
+    "ref:3-ref-pale-spires-header.png (a crop of Tiny Speck's 2012 header panorama: reference only, never in the repo)",
+    "ref:4-ref-kelp-stalks-header.png (a crop of Tiny Speck's 2012 header panorama: reference only, never in the repo)",
+    "deco:cone_top_rock_01a_al1",
+    "deco:underground_bogwillow_1",
+    "deco:plant_giant_fern_2",
+    "deco:plant_fern_1",
+    "deco:purple_mushroom_3",
+    "deco:rock_rubble_01b_al1",
+    "deco:boat",
+    "deco:cave_icicle_1"
+   ],
+   "inputFiles": [
+    {
+     "n": 1,
+     "file": "1-measurements-ours.png",
+     "sha256": "c3716d31d4154d0d177986e2eae0ce904408ba54e30fadbaa237f152a0c23e53",
+     "what": "the four pieces as plain outlines with their sizes in game units (kelp 180 x 400, dark crystals 70 x 115, pale crystals 50 x 110, spires 90 x 220)",
+     "source": "our own measurement drawing (research/art-briefs/house-exteriors-2026-11-22/01-coral-caves/attach/1-measurements-ours.svg): sizes and shapes measured from the header at about 0.65 px a unit (its boat against the CC0 boat deco), measurements only"
+    },
+    {
+     "n": 2,
+     "file": "2-ref-crystal-clusters-header.png",
+     "sha256": "d8f6270597218b8ee8918d1f702c45f1b0db0e2da704e02f555a0caf0bbc98ab",
+     "what": "the header at x 870-1200: the dark and pale crystal clusters",
+     "source": "reference only: a crop of Tiny Speck's 2012 Coral Caves header panorama (research/wayback/raw/home-images/headers/header-1346981279.jpg, Wayback, no player), 3x and brightened, kept in research/art-briefs/house-exteriors-2026-11-22/01-coral-caves/attach, never copied into the repo"
+    },
+    {
+     "n": 3,
+     "file": "3-ref-pale-spires-header.png",
+     "sha256": "652c543af1c606593610ba1208fa1fc6b077f05e1149c913923deaeb1f328b7c",
+     "what": "the header at x 1270-1570: the tan spires behind the crystals",
+     "source": "reference only: a crop of Tiny Speck's 2012 Coral Caves header panorama (research/wayback/raw/home-images/headers/header-1346981279.jpg, Wayback, no player), 3x and brightened, kept in research/art-briefs/house-exteriors-2026-11-22/01-coral-caves/attach, never copied into the repo"
+    },
+    {
+     "n": 4,
+     "file": "4-ref-kelp-stalks-header.png",
+     "sha256": "749c7620ee561962821a65f91a4acb3f048849656095ed844e63a3e0d6c3f85c",
+     "what": "the header at x 1900-2200: wavy stalks with curled tips behind the rocks",
+     "source": "reference only: a crop of Tiny Speck's 2012 Coral Caves header panorama (research/wayback/raw/home-images/headers/header-1346981279.jpg, Wayback, no player), 3x and brightened, kept in research/art-briefs/house-exteriors-2026-11-22/01-coral-caves/attach, never copied into the repo"
+    },
+    {
+     "n": 5,
+     "file": "5-cc0-style.png",
+     "sha256": "708ef443e06e948d561c89a7d11dc06a4f0542b190dd574ff285351ae48b7082",
+     "what": "cone_top_rock_01a_al1, underground_bogwillow_1, plant_giant_fern_2, plant_fern_1, purple_mushroom_3, rock_rubble_01b_al1, boat, cave_icicle_1: Tiny Speck decos the style already draws (and cave_icicle_1, the closest shape to the spires), for the style",
+     "source": "Tiny Speck, CC0 1.0: library decos cone_top_rock_01a_al1, underground_bogwillow_1, plant_giant_fern_2, plant_fern_1, purple_mushroom_3, rock_rubble_01b_al1, boat, cave_icicle_1 (public/assets/decos/groddle)"
+    }
+   ],
+   "source": {
+    "drop": "research/art-briefs/house-exteriors-2026-11-22/01-coral-caves/drop/B-crystal-dark.png",
+    "dropSha256": "f7586c7641edad5114469e84186c2293d2dfa3fa312ec1faef128de799f7e3b4",
+    "trim": "alpha over 20: x 327-685, y 61-715 (359 x 655, 1.825 tall:wide); alpha under 20 cut to 0",
+    "resize": "premultiplied Lanczos to whole units at 2 and 3 px a unit: 126 x 230 and 189 x 345",
+    "masterSha256": {
+     "x2": "c48eedad63ae5c5af9c35e63ffb021e1517c9053b010afcc39f21b0e91dd9e67",
+     "x3": "241d10052208b486778b8ac4aef9c3524669d945c3f77519dfe4680f5c1f0608"
+    },
+    "encode": "cwebp 1.6.0: -metadata none -q 82 -m 4 -sharp_yuv -alpha_q 100 -alpha_filter best (tools/deco-pipeline/build.py's lossy settings)"
+   },
+   "intake": {
+    "on": "2026-11-22",
+    "by": "Claude (lane corak): sizes checked against attach/1 and the brief; trimmed and resized as the brief asks, nothing redrawn"
+   }
+  },
+  "gz_ai_cc_crystal_pale": {
+   "what": "The pale crystal cluster (piece B2): three straight pointed grey-teal blades with darker edges; drawn beside every second dark cluster",
+   "file": "public/assets/decos/groddle/gz_ai_cc_crystal_pale.webp",
+   "sha256": "b1ff7d63296a4bf8e3b59b254a2293e9175b93644764604daab8da30a8d86bbe",
+   "bytes": 5674,
+   "file3": "public/assets/decos/groddle/gz_ai_cc_crystal_pale@1.5x.webp",
+   "sha256_3": "d004a8a8186e4bc776d6cfc3402e9854649c9c841a1db3a43039133773810748",
+   "bytes3": 9134,
+   "w": 42,
+   "h": 110,
+   "size": "brief 50 x 110 units (1 : 2.2); drawn 2.60 : 1 (accepted 1.9 to 2.6), taken in by its height as 42 x 110 units at 2 and 3 px a unit (84 x 220, 126 x 330); the drop holds 12.46 px a unit",
+   "replaces": "nothing: the header's pale crystal clusters were left out with the dark ones (lane coral 2026-11-08)",
+   "homeStyles": [
+    "pol_ext_coral_high"
+   ],
+   "code": "tools/home-styles/recipes.mjs",
+   "licence": "ai-generated",
+   "author": "Austin Ginder (directed and chose it)",
+   "madeBy": "Grok Bot, for Austin Ginder, who directed and chose it",
+   "tool": "GPT Image 2.6 Sunburst in T3 Chat canvas",
+   "model": "GPT Image 2.6 Sunburst",
+   "made": "2026-11-22",
+   "settings": "T3 Chat canvas; Flare and Nano Banana 2.1 off; Standard 1K; transparency on; 9:16; one image; 864 x 1536 RGBA",
+   "chosen": {
+    "by": "Austin Ginder",
+    "on": "2026-11-22",
+    "of": "1 generation, no re-ask: research/art-briefs/house-exteriors-2026-11-22/01-coral-caves/drop/model.txt; Austin 2026-11-22: \"Place A, B and B2 now\", then \"Send C to Grok Bot too\""
+   },
+   "reimagined": "No Tiny Speck picture of this Coral Caves piece survives (lane coral matched every symbol in the 62 production location bundles); drawn fresh from the 2012 header, so it ships as made art. The rest of the style is Tiny Speck's own decos.",
+   "modelNote": "B2-crystal-pale.png: T3 Chat canvas, GPT Image 2.6 Sunburst (Flare and Nano Banana 2.1 unticked), Standard 1K, transparent background on, aspect 9:16, attachments 1-5, separate generate (canvas has no follow-up thread) with the B2 paragraph plus the B prompt's Style/Output/guide paragraphs and \"Keep the proportions in attachment 1.\"; 1 try; returned 864x1536 with alpha (cluster about 2.60 tall:wide).",
+   "prompt": "Then, in a second picture in this chat, piece B2: the same kind of crystal cluster, narrower and taller (50 x 110 units, about 1 : 2.2; 200 x 440 px at 4 px per unit), its shards straight and pointed like blades, in pale grey-teal with darker teal edges. The same style and output rules as above.\n\nStyle: flat vector game art in the style of Tiny Speck's Glitch (2011-2012), the same family as the Tiny Speck pieces in the last attachment: clean shapes, soft painted shading, a thin darker edge, no outlines thicker than the shading, no photo texture, not 3D-rendered. Side view with the camera a little above, as the game's scenery is drawn.\nOutput: one PNG, the piece alone and centred, on a fully transparent background (if transparency is not possible, a flat pure magenta #FF00FF background with no shadow on it). No text, no ground, no shadow on the ground, no characters, no frame, no watermark.\nThe pictures of the original game in the attachments are a guide to the look only: draw the piece fresh and clean, as its own isolated object, at the size asked. Do not copy the lighting, the murky colour cast, the background or any other piece from them.\nKeep the proportions in attachment 1.\n",
+   "promptNote": "The prompt exactly as given to the model: research/art-briefs/house-exteriors-2026-11-22/01-coral-caves/prompts/B-crystal-clusters.txt (outside git), with the five attachments in inputFiles in this order. T3 Chat's canvas has no follow-up thread, so B2 was its own generate (drop/model.txt): the file's last paragraph (B2), then its Style, Output and guide paragraphs, then \"Keep the proportions in attachment 1.\", assembled here in that order.",
+   "inputs": [
+    "own:our measurement drawing of the pieces, sizes from Tiny Speck's 2012 header (attach/1-measurements-ours.png)",
+    "ref:2-ref-crystal-clusters-header.png (a crop of Tiny Speck's 2012 header panorama: reference only, never in the repo)",
+    "ref:3-ref-pale-spires-header.png (a crop of Tiny Speck's 2012 header panorama: reference only, never in the repo)",
+    "ref:4-ref-kelp-stalks-header.png (a crop of Tiny Speck's 2012 header panorama: reference only, never in the repo)",
+    "deco:cone_top_rock_01a_al1",
+    "deco:underground_bogwillow_1",
+    "deco:plant_giant_fern_2",
+    "deco:plant_fern_1",
+    "deco:purple_mushroom_3",
+    "deco:rock_rubble_01b_al1",
+    "deco:boat",
+    "deco:cave_icicle_1"
+   ],
+   "inputFiles": [
+    {
+     "n": 1,
+     "file": "1-measurements-ours.png",
+     "sha256": "c3716d31d4154d0d177986e2eae0ce904408ba54e30fadbaa237f152a0c23e53",
+     "what": "the four pieces as plain outlines with their sizes in game units (kelp 180 x 400, dark crystals 70 x 115, pale crystals 50 x 110, spires 90 x 220)",
+     "source": "our own measurement drawing (research/art-briefs/house-exteriors-2026-11-22/01-coral-caves/attach/1-measurements-ours.svg): sizes and shapes measured from the header at about 0.65 px a unit (its boat against the CC0 boat deco), measurements only"
+    },
+    {
+     "n": 2,
+     "file": "2-ref-crystal-clusters-header.png",
+     "sha256": "d8f6270597218b8ee8918d1f702c45f1b0db0e2da704e02f555a0caf0bbc98ab",
+     "what": "the header at x 870-1200: the dark and pale crystal clusters",
+     "source": "reference only: a crop of Tiny Speck's 2012 Coral Caves header panorama (research/wayback/raw/home-images/headers/header-1346981279.jpg, Wayback, no player), 3x and brightened, kept in research/art-briefs/house-exteriors-2026-11-22/01-coral-caves/attach, never copied into the repo"
+    },
+    {
+     "n": 3,
+     "file": "3-ref-pale-spires-header.png",
+     "sha256": "652c543af1c606593610ba1208fa1fc6b077f05e1149c913923deaeb1f328b7c",
+     "what": "the header at x 1270-1570: the tan spires behind the crystals",
+     "source": "reference only: a crop of Tiny Speck's 2012 Coral Caves header panorama (research/wayback/raw/home-images/headers/header-1346981279.jpg, Wayback, no player), 3x and brightened, kept in research/art-briefs/house-exteriors-2026-11-22/01-coral-caves/attach, never copied into the repo"
+    },
+    {
+     "n": 4,
+     "file": "4-ref-kelp-stalks-header.png",
+     "sha256": "749c7620ee561962821a65f91a4acb3f048849656095ed844e63a3e0d6c3f85c",
+     "what": "the header at x 1900-2200: wavy stalks with curled tips behind the rocks",
+     "source": "reference only: a crop of Tiny Speck's 2012 Coral Caves header panorama (research/wayback/raw/home-images/headers/header-1346981279.jpg, Wayback, no player), 3x and brightened, kept in research/art-briefs/house-exteriors-2026-11-22/01-coral-caves/attach, never copied into the repo"
+    },
+    {
+     "n": 5,
+     "file": "5-cc0-style.png",
+     "sha256": "708ef443e06e948d561c89a7d11dc06a4f0542b190dd574ff285351ae48b7082",
+     "what": "cone_top_rock_01a_al1, underground_bogwillow_1, plant_giant_fern_2, plant_fern_1, purple_mushroom_3, rock_rubble_01b_al1, boat, cave_icicle_1: Tiny Speck decos the style already draws (and cave_icicle_1, the closest shape to the spires), for the style",
+     "source": "Tiny Speck, CC0 1.0: library decos cone_top_rock_01a_al1, underground_bogwillow_1, plant_giant_fern_2, plant_fern_1, purple_mushroom_3, rock_rubble_01b_al1, boat, cave_icicle_1 (public/assets/decos/groddle)"
+    }
+   ],
+   "source": {
+    "drop": "research/art-briefs/house-exteriors-2026-11-22/01-coral-caves/drop/B2-crystal-pale.png",
+    "dropSha256": "d9e5abeaebe9da6f8434bb68e43da5067ac0dc70ca419e85fe34455fde843bdc",
+    "trim": "alpha over 20: x 161-688, y 91-1461 (528 x 1371, 2.597 tall:wide); alpha under 20 cut to 0",
+    "resize": "premultiplied Lanczos to whole units at 2 and 3 px a unit: 84 x 220 and 126 x 330",
+    "masterSha256": {
+     "x2": "430171c8479ba332d11a64f930ed5a7f9b70c766cda1f5b3be0aaac27a555bfc",
+     "x3": "54c10c4cd0b190649084d3d7009e58c897cc4e51d0aedfb671a8d096765cf21f"
+    },
+    "encode": "cwebp 1.6.0: -metadata none -q 82 -m 4 -sharp_yuv -alpha_q 100 -alpha_filter best (tools/deco-pipeline/build.py's lossy settings)"
+   },
+   "intake": {
+    "on": "2026-11-22",
+    "by": "Claude (lane corak): sizes checked against attach/1 and the brief; trimmed and resized as the brief asks, nothing redrawn"
+   }
+  },
+  "gz_ai_cc_spires": {
+   "what": "The pale spires (piece C): three cream-tan banded spires of dripped stone joined at a flat base",
+   "file": "public/assets/decos/groddle/gz_ai_cc_spires.webp",
+   "sha256": "671c3fc33469d90668efec02785de9452deb7877143dad8609ea2b9d28b27c13",
+   "bytes": 16652,
+   "file3": "public/assets/decos/groddle/gz_ai_cc_spires@1.5x.webp",
+   "sha256_3": "c74ea246eeb78153683df070c3c45a43f9e7270181f44a0f92f7de163b2a2d2b",
+   "bytes3": 26592,
+   "w": 99,
+   "h": 220,
+   "size": "brief 90 x 220 units (2 : 5); drawn 2.21 : 1 (accepted 2.1 to 2.9), taken in by its height as 99 x 220 units at 2 and 3 px a unit (198 x 440, 297 x 660); the drop holds 6.8 px a unit",
+   "replaces": "nothing: the header's pale spires were left out (closest CC0 shape Ilmenskie cave_icicle_*, whose teal a tint cannot turn tan; lane coral 2026-11-08)",
+   "homeStyles": [
+    "pol_ext_coral_high"
+   ],
+   "code": "tools/home-styles/recipes.mjs",
+   "licence": "ai-generated",
+   "author": "Austin Ginder (directed and chose it)",
+   "madeBy": "Grok Bot, for Austin Ginder, who directed and chose it",
+   "tool": "GPT Image 2.6 Sunburst in T3 Chat canvas",
+   "model": "GPT Image 2.6 Sunburst",
+   "made": "2026-11-22",
+   "settings": "T3 Chat canvas; Flare and Nano Banana 2.1 off; Standard 1K; transparency on; 9:16; one image; 864 x 1536 RGBA",
+   "chosen": {
+    "by": "Austin Ginder",
+    "on": "2026-11-22",
+    "of": "1 generation, no re-ask: research/art-briefs/house-exteriors-2026-11-22/01-coral-caves/drop/model.txt; Austin 2026-11-22: \"Place A, B and B2 now\", then \"Send C to Grok Bot too\""
+   },
+   "reimagined": "No Tiny Speck picture of this Coral Caves piece survives (lane coral matched every symbol in the 62 production location bundles); drawn fresh from the 2012 header, so it ships as made art. The rest of the style is Tiny Speck's own decos.",
+   "modelNote": "C-spires.png: T3 Chat canvas, GPT Image 2.6 Sunburst (Flare and Nano Banana 2.1 unticked), Standard 1K, transparent background on, aspect 9:16, attachments 1-5, full C-pale-spires.txt prompt, 1 try; returned 864x1536 with alpha (spires about 2.21 tall:wide).",
+   "prompt": "Draw piece C from attachment 1: a group of tall pale stone spires, from the underwater cave scenery \"Coral Caves\" in the video game Glitch (attachment 3 shows several of them standing behind the dark crystals; the whole scene sits in a murky olive light, which the game adds later).\n\nShape first: a group about 2.5 times as tall as it is wide (90 x 220 units, about 2 : 5): two or three tall pointed spires joined at a wide flat base, like stalagmites, the tallest one about twice the height of the shortest, each narrowing to a sharp tip and leaning very slightly.\n\nWhat it is: smooth dripped stone with soft horizontal bands and a few small bumps down the sides, like wax that has run and set. The shape is close to the Tiny Speck cave icicle in the last attachment, standing up, but in pale stone colours.\n\nColour: pale cream tan with lighter bands, a little lighter on the left and darker on the right. Do not make it blue or teal. Draw it a little lighter than it looks in attachment 3: the game darkens the whole scene.\n\nSize: 90 x 220 units. Draw it at 4 px per unit, 360 x 880 px, on a larger canvas if needed. Keep the proportions (about 2.5 times as tall as wide) above the exact pixel size: a larger picture with the same shape is fine.\n\nStyle: flat vector game art in the style of Tiny Speck's Glitch (2011-2012), the same family as the Tiny Speck pieces in the last attachment: clean shapes, soft painted shading, a thin darker edge, no outlines thicker than the shading, no photo texture, not 3D-rendered. Side view with the camera a little above, as the game's scenery is drawn.\nOutput: one PNG, the piece alone and centred, on a fully transparent background (if transparency is not possible, a flat pure magenta #FF00FF background with no shadow on it). No text, no ground, no shadow on the ground, no characters, no frame, no watermark.\nThe pictures of the original game in the attachments are a guide to the look only: draw the piece fresh and clean, as its own isolated object, at the size asked. Do not copy the lighting, the murky colour cast, the background or any other piece from them.\n",
+   "promptNote": "The prompt exactly as given to the model: research/art-briefs/house-exteriors-2026-11-22/01-coral-caves/prompts/C-pale-spires.txt (outside git), with the five attachments in inputFiles in this order.",
+   "inputs": [
+    "own:our measurement drawing of the pieces, sizes from Tiny Speck's 2012 header (attach/1-measurements-ours.png)",
+    "ref:2-ref-crystal-clusters-header.png (a crop of Tiny Speck's 2012 header panorama: reference only, never in the repo)",
+    "ref:3-ref-pale-spires-header.png (a crop of Tiny Speck's 2012 header panorama: reference only, never in the repo)",
+    "ref:4-ref-kelp-stalks-header.png (a crop of Tiny Speck's 2012 header panorama: reference only, never in the repo)",
+    "deco:cone_top_rock_01a_al1",
+    "deco:underground_bogwillow_1",
+    "deco:plant_giant_fern_2",
+    "deco:plant_fern_1",
+    "deco:purple_mushroom_3",
+    "deco:rock_rubble_01b_al1",
+    "deco:boat",
+    "deco:cave_icicle_1"
+   ],
+   "inputFiles": [
+    {
+     "n": 1,
+     "file": "1-measurements-ours.png",
+     "sha256": "c3716d31d4154d0d177986e2eae0ce904408ba54e30fadbaa237f152a0c23e53",
+     "what": "the four pieces as plain outlines with their sizes in game units (kelp 180 x 400, dark crystals 70 x 115, pale crystals 50 x 110, spires 90 x 220)",
+     "source": "our own measurement drawing (research/art-briefs/house-exteriors-2026-11-22/01-coral-caves/attach/1-measurements-ours.svg): sizes and shapes measured from the header at about 0.65 px a unit (its boat against the CC0 boat deco), measurements only"
+    },
+    {
+     "n": 2,
+     "file": "2-ref-crystal-clusters-header.png",
+     "sha256": "d8f6270597218b8ee8918d1f702c45f1b0db0e2da704e02f555a0caf0bbc98ab",
+     "what": "the header at x 870-1200: the dark and pale crystal clusters",
+     "source": "reference only: a crop of Tiny Speck's 2012 Coral Caves header panorama (research/wayback/raw/home-images/headers/header-1346981279.jpg, Wayback, no player), 3x and brightened, kept in research/art-briefs/house-exteriors-2026-11-22/01-coral-caves/attach, never copied into the repo"
+    },
+    {
+     "n": 3,
+     "file": "3-ref-pale-spires-header.png",
+     "sha256": "652c543af1c606593610ba1208fa1fc6b077f05e1149c913923deaeb1f328b7c",
+     "what": "the header at x 1270-1570: the tan spires behind the crystals",
+     "source": "reference only: a crop of Tiny Speck's 2012 Coral Caves header panorama (research/wayback/raw/home-images/headers/header-1346981279.jpg, Wayback, no player), 3x and brightened, kept in research/art-briefs/house-exteriors-2026-11-22/01-coral-caves/attach, never copied into the repo"
+    },
+    {
+     "n": 4,
+     "file": "4-ref-kelp-stalks-header.png",
+     "sha256": "749c7620ee561962821a65f91a4acb3f048849656095ed844e63a3e0d6c3f85c",
+     "what": "the header at x 1900-2200: wavy stalks with curled tips behind the rocks",
+     "source": "reference only: a crop of Tiny Speck's 2012 Coral Caves header panorama (research/wayback/raw/home-images/headers/header-1346981279.jpg, Wayback, no player), 3x and brightened, kept in research/art-briefs/house-exteriors-2026-11-22/01-coral-caves/attach, never copied into the repo"
+    },
+    {
+     "n": 5,
+     "file": "5-cc0-style.png",
+     "sha256": "708ef443e06e948d561c89a7d11dc06a4f0542b190dd574ff285351ae48b7082",
+     "what": "cone_top_rock_01a_al1, underground_bogwillow_1, plant_giant_fern_2, plant_fern_1, purple_mushroom_3, rock_rubble_01b_al1, boat, cave_icicle_1: Tiny Speck decos the style already draws (and cave_icicle_1, the closest shape to the spires), for the style",
+     "source": "Tiny Speck, CC0 1.0: library decos cone_top_rock_01a_al1, underground_bogwillow_1, plant_giant_fern_2, plant_fern_1, purple_mushroom_3, rock_rubble_01b_al1, boat, cave_icicle_1 (public/assets/decos/groddle)"
+    }
+   ],
+   "source": {
+    "drop": "research/art-briefs/house-exteriors-2026-11-22/01-coral-caves/drop/C-spires.png",
+    "dropSha256": "e622c0f80ea836028f5929df01792e64585483f8170488aad14b00473909a7b3",
+    "trim": "alpha over 20: x 90-766, y 16-1512 (677 x 1497, 2.211 tall:wide); alpha under 20 cut to 0",
+    "resize": "premultiplied Lanczos to whole units at 2 and 3 px a unit: 198 x 440 and 297 x 660",
+    "masterSha256": {
+     "x2": "9f6424efc5a7538f5302b0be6961d9088a990dc4abc3f8b723950c322943126c",
+     "x3": "4197c9b4df7d73da8dbe31e89dabb5b069718de1a258f9b4e23379a9b3c2ebbd"
+    },
+    "encode": "cwebp 1.6.0: -metadata none -q 82 -m 4 -sharp_yuv -alpha_q 100 -alpha_filter best (tools/deco-pipeline/build.py's lossy settings)"
+   },
+   "intake": {
+    "on": "2026-11-22",
+    "by": "Claude (lane corak): sizes checked against attach/1 and the brief; trimmed and resized as the brief asks, nothing redrawn"
    }
   }
  }

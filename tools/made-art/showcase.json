@@ -2,6 +2,32 @@
  "format": "groddle-made-showcase/1",
  "about": "Pictures of the Made for Groddle section composed by tools/made-art/compose.py from shipped files and game screenshots; tools/made-art/build-data.mjs checks each against its sha256.",
  "files": {
+  "public/assets/made-art/cc-street-before.webp": {
+   "what": "Coral Caves before: Tiny Speck's rocks, beaded branches, fiddleheads and boat, no crystals, spires or kelp",
+   "w": 720,
+   "h": 315,
+   "sha256": "caed6e32084c968d9cd03fb3e2cd1ea602bc578c91b83fd848a14a0166389196",
+   "made": "screenshot of the game (1280 x 800, deviceScaleFactor 2, homedemo=home&homestreetstyle=pol_ext_coral_high, the avatar placed at x 1680), every page element but the canvas hidden, tools/home-styles/recipes.mjs of 5ffed3be11c (before the made art); cropped to y 30-590 (CSS px), Lanczos to 720 x 315",
+   "from": [
+    {
+     "shot": "cc-before.png",
+     "sha256": "b650bab9a3b89744e2009b13a404a9888654d1ed45c96a192f2c54c9930c2d8f"
+    }
+   ]
+  },
+  "public/assets/made-art/cc-street.webp": {
+   "what": "Coral Caves with its made crystal clusters, pale spires and kelp stalks among Tiny Speck's rocks, branches and boat",
+   "w": 720,
+   "h": 315,
+   "sha256": "66332ed2f7dfa3c1e162d17d8a0c498591b7924ddd849e02d5b7d95c1e82e520",
+   "made": "screenshot of the game (1280 x 800, deviceScaleFactor 2, homedemo=home&homestreetstyle=pol_ext_coral_high, the avatar placed at x 1680), every page element but the canvas hidden, today's style; cropped to y 30-590 (CSS px), Lanczos to 720 x 315",
+   "from": [
+    {
+     "shot": "cc-after.png",
+     "sha256": "a460650ff5e95ed8db04dfa95354e532354e651583607afe99acd150ddc2e6ba"
+    }
+   ]
+  },
   "public/assets/made-art/ezc-props-outline.webp": {
    "what": "Our drawing of EZ Cookin's table, counter and lamp, at their measured sizes",
    "w": 750,
