@@ -14584,7 +14584,7 @@ body:has(#quest-dialogue:not([hidden])) .prompt-stack { z-index: calc(var(--z-mo
 /* #600 (a tall street on an upright phone): the map takes only the room the head and the list leave it
    (flex-basis 0, measured once the list is in), and the head and the list draw over it, so the X, the
    Map button and the signposts stay in reach whatever the street's shape. */
-.smm-sheet-head, .smm-sheet-signs { position: relative; z-index: 1; }
+.smm-sheet-head, .smm-sheet-signs { position: relative; z-index: var(--z-raised); }
 /* The map itself: the corner card's frame, placed in the sheet at the width the feature gives it. */
 .smm-sheet .street-minimap.is-phone-sheet { position: relative; top: auto; right: auto; z-index: auto; }
 .smm-sheet .street-minimap.is-phone-sheet .smm-hide,

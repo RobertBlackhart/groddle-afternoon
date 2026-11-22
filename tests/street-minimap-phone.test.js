@@ -36,7 +36,7 @@ describe('the street map on a phone', () => {
     assert.ok(measured > listIn && measured > noneIn, 'the map box is measured after the list takes its room');
     assert.ok(open.indexOf('view = createStreetMinimap(') > measured);
     assert.match(block, /\.smm-sheet-map \{ position: relative; flex: 1 1 0; min-height: 0;/);
-    assert.match(block, /\.smm-sheet-head, \.smm-sheet-signs \{ position: relative; z-index: 1; \}/);
+    assert.match(block, /\.smm-sheet-head, \.smm-sheet-signs \{ position: relative; z-index: var\(--z-raised\); \}/);
   });
 
   it('lists the signposts left to right with the way they stand from you', () => {
