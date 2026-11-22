@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url';
 
 import { HOUSE_HEADROOM, HOUSE_STYLE_IDS, houseFitViewH, houseLot } from '../public/js/home-house.js?v=3c88c47c';
 import { homeStreetLayout } from '../public/js/home-cultivation.js?v=6d39d0d8';
-import { MIN_PACK_HEIGHT, stageFor } from '../public/js/location-view.js?v=08013079';
+import { LANDSCAPE_PHONE_FIT_MIN_SHARE, MIN_PACK_HEIGHT, stageFor } from '../public/js/location-view.js?v=8060082c';
 import { MIN_GROUND_CLEARANCE, cameraTargetY, cameraWorldHeightForGround, yCamOffsetAnchor } from '../public/js/movement.js?v=f4be1a05';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -92,13 +92,19 @@ test('only zooms out: a view already big enough keeps its stage, and a street wi
   assert.ok(huge.viewH <= WORLD_H);
 });
 
-test('phones keep the avatar and the ground: sideways zooms out to the house, upright already shows the street', () => {
+test('phones keep the avatar and the ground: sideways zooms out toward the house, capped; upright already shows the street', () => {
   for (const [width, height] of [[844, 390], [874, 402], [667, 375]]) {
-    const { stage, top, feet } = frame('firebog', { width, height, phone: true, zoom: 1 });
+    const { stage, feet } = frame('firebog', { width, height, phone: true, zoom: 1 });
     assert.ok(stage.landscape, 'a sideways phone');
     assert.ok(feet > 0 && feet <= stage.viewH - MIN_GROUND_CLEARANCE, `${width}x${height}: the feet in view over the pack`);
-    assert.ok(top >= 0, `${width}x${height}: the house top in view`);
+    // Austin 2026-11-22 "cap it": the fit zooms out to LANDSCAPE_PHONE_FIT_MIN_SHARE of the usual scale, no further.
+    const usual = stageFor({ width, height, phone: true, zoom: 1, packReserve: MIN_PACK_HEIGHT, sceneWidth: STREET_W, sceneHeight: WORLD_H });
+    assert.ok(stage.scale >= usual.scale * LANDSCAPE_PHONE_FIT_MIN_SHARE - 1e-9, `${width}x${height}: ${stage.scale} not under the cap`);
+    assert.ok(stage.scale < usual.scale, `${width}x${height}: still zooms out some`);
   }
+  // A computer keeps the full fit: the whole house shows.
+  const { top } = frame('firebog', { width: 1400, height: 820, zoom: 1 });
+  assert.ok(top >= 0, 'the house top in view on a computer');
   for (const [width, height] of [[390, 844], [393, 659], [430, 932]]) {
     const args = { width, height, phone: true, packReserve: MIN_PACK_HEIGHT, sceneWidth: STREET_W, sceneHeight: WORLD_H };
     assert.deepEqual(stageFor({ ...args, fitViewH: fitOf('firebog') }), stageFor(args), `${width}x${height}: the upright rule as it was`);

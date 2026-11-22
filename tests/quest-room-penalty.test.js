@@ -10,7 +10,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { homedir } from 'node:os';
 
-import * as kit from '../public/js/quest-rooms/kit.js?v=0d5af055';
+import * as kit from '../public/js/quest-rooms/kit.js?v=15fb2b7a';
 import {
   BARS_X,
   DIG_COUNTER,

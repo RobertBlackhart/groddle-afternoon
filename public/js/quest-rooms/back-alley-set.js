@@ -17,7 +17,7 @@
  * Shady Bureaucrat sheets.
  */
 
-import * as kit from './kit.js?v=0d5af055';
+import * as kit from './kit.js?v=15fb2b7a';
 import { textureFromUrl } from '../textures.js?v=729b29ea';
 import { BACK_ALLEY_FILES } from './back-alley-art.js?v=08af5d4f';
 

@@ -270,7 +270,7 @@ export function stageFor({
  * max_vp_w = Math.min(max_vp_w, layer.w)): the game asks for no borders now (game.js stageArgs), so
  * such a street magnifies just enough to fill the window; every other street keeps the zoom's scale.
  */
-function computerStage({ width: W, height: H, packReserve: pack, sceneWidth, sceneHeight, pinnedHeight: pinned, zoom, borders = false, fitViewH }) {
+function computerStage({ width: W, height: H, packReserve: pack, sceneWidth, sceneHeight, pinnedHeight: pinned, zoom, borders = false, fitViewH, fitMinShare = 0 }) {
   if (pinned > 0 || !(W > 0) || !(H > 0)) {
     const viewW = LOCATION_VIEW_W;
     const viewH = locationViewHeightFor({ forced: pinned > 0 ? pinned : NaN, sceneHeight });
@@ -293,7 +293,10 @@ function computerStage({ width: W, height: H, packReserve: pack, sceneWidth, sce
   if (z > 0) scale *= (ruleScale(ORIGINAL_VIEW_W, ORIGINAL_VIEW_H) / scale) ** z;
   // HOUSE FIT: out until the view holds `fitViewH`, never past the scene's own height or width.
   const fit = Math.min(finite(fitViewH), sh, VIEW_HOLD_H);
-  if (fit > 0) scale = Math.min(scale, Math.max(H / (fit + pack), border ? 0 : W / sw));
+  // fitMinShare (a sideways phone): the fit may zoom out to that share of the usual scale and no
+  // further, so the player stays a size you can see (Austin 2026-11-22: cap it); a tall house's top
+  // may then run off a short screen.
+  if (fit > 0) scale = Math.max(Math.min(scale, Math.max(H / (fit + pack), border ? 0 : W / sw)), scale * Math.min(1, Math.max(0, finite(fitMinShare, 0))));
   const fullW = Math.round(W / scale);
   const bordered = border && fullW > Math.round(sw);
   const viewW = bordered ? Math.round(sw) : fullW;
@@ -375,6 +378,13 @@ export function phoneStage({ width, height, packReserve = MIN_PACK_HEIGHT, scene
 }
 
 /**
+ * The least share of a sideways phone's usual scale the house fit (G796) may zoom out to: 0.72x
+ * on a 844x390 phone would fall to 0.38x for the Firebog House, the avatar about 45 CSS px tall;
+ * capped it stays at about 0.5x (Austin 2026-11-22: cap it).
+ */
+export const LANDSCAPE_PHONE_FIT_MIN_SHARE = 0.7;
+
+/**
  * PURE (LANDSCAPE PHONE, Austin 2026-11-13: phones play upright and sideways): the stage of a phone
  * held sideways (the phone gate's phone, a window at least as wide as tall). Level 0 is exactly the
  * computer rule it always took (a 408 px tall view filling the short side: 1174 x 408 world px on a
@@ -394,7 +404,7 @@ export function landscapePhoneStage({ width, height, packReserve = MIN_PACK_HEIG
   const W = finite(width);
   const H = finite(height);
   const pack = finite(packReserve, MIN_PACK_HEIGHT);
-  const base = computerStage({ width: W, height: H, packReserve: pack, sceneWidth, sceneHeight, pinnedHeight: NaN, zoom, fitViewH });
+  const base = computerStage({ width: W, height: H, packReserve: pack, sceneWidth, sceneHeight, pinnedHeight: NaN, zoom, fitViewH, fitMinShare: LANDSCAPE_PHONE_FIT_MIN_SHARE });
   const c = Math.min(1, Math.max(0, finite(closeup, 0)));
   const top = Math.max(W, H) / (VIEW_FLOOR_H + pack);
   if (!(c > 0) || !(top > base.scale) || !(W > 0) || !(H > 0)) return { ...base, phone: true, landscape: true };
