@@ -1,6 +1,6 @@
 // The home graphics are stored at least as finely as a Retina screen draws them (the in-world
 // sharpness audit of 2026-11-02, batch 2, approved by Austin: magnification = world scale x 2.52 /
-// stored density, flagged over 1.2). Every Tower article and scaffolding stage, depleted
+// stored density, flagged over 1.2). Every house piece (G796, tools/house-art), Tower article and scaffolding stage, depleted
 // cultivation proto and Note Pole part is a 1x file with a 3x twin rendered from Tiny Speck's
 // vector SWF (tools/tower-art, tools/proto-art, tools/note-pole-art: they replaced 2x art drawn at
 // 1.26); the Door in its four states and the three placed Magic Animal Sticks have 3x twins from
@@ -43,6 +43,19 @@ async function homeArt() {
     assert.ok(TOWER_ART[id], id);
   }
   rows.push({ name: 'Tower articles', paths: articles, scale: towerScale });
+  // G796: every piece of the ten houses (tools/house-art), at the largest scale js/home-house.js composeHouse draws any.
+  const { HOUSE_ART } = await import('../public/js/home-house-art.js?v=b949a0f7');
+  const pieces = new Set();
+  let houseScale = 0;
+  for (const a of Object.values(HOUSE_ART)) {
+    for (const l of a.layers) {
+      for (const row of l.band ? [l.art] : l.art) if (row) pieces.add(`assets/sprites/home-house/${row[0]}`);
+      // The piece's scale: house_mc's (a.foot) times its container's.
+      const m = l.band ? [1, 1] : l.m;
+      houseScale = Math.max(houseScale, Math.abs(a.foot[0] * m[0]), Math.abs(a.foot[1] * m[1]));
+    }
+  }
+  rows.push({ name: 'House pieces', paths: [...pieces], scale: houseScale });
   // home-tower-feature protoSprite draws the scaffolding stage at 1.
   rows.push({ name: 'Tower scaffolding', paths: [1, 2, 3].map((n) => `${TOWER_ART_DIR}${PROTO_ART[n]}`), scale: 1 });
   // homes-feature spawnProtos / drawVisitorYard and home-street-mp size them to their 1x w x h.
@@ -63,6 +76,8 @@ async function homeArt() {
 test('every sharpened home graphic is found, with the counts the audit measured', async () => {
   const by = Object.fromEntries((await homeArt()).map((r) => [r.name, r]));
   assert.equal(by['Tower articles'].paths.length, 165);
+  assert.equal(by['House pieces'].paths.length, 431);
+  assert.ok(by['House pieces'].scale <= 1, `${by['House pieces'].scale}`);
   assert.equal(by['Tower scaffolding'].paths.length, 3);
   assert.equal(by['depleted protos'].paths.length, 16);
   assert.equal(by['Note Pole parts'].paths.length, 48);
@@ -75,7 +90,7 @@ test('every sharpened home graphic is found, with the counts the audit measured'
 });
 
 test('each 3x twin exists and is exactly three times its 1x file; the 1x files stay as the fallback', async () => {
-  const { HIRES_SPRITES } = await import('../public/js/sprite-hires.js?v=f6344117');
+  const { HIRES_SPRITES } = await import('../public/js/sprite-hires.js?v=ad1e46a9');
   const { DENSE_SPRITES } = await import('../public/js/sprite-dense.js?v=67101472');
   const bad = [];
   for (const row of await homeArt()) {
@@ -95,7 +110,7 @@ test('each 3x twin exists and is exactly three times its 1x file; the 1x files s
 });
 
 test('each sharpened home graphic stores at least as many pixels as its largest draw scale', async () => {
-  const { HIRES_SPRITES } = await import('../public/js/sprite-hires.js?v=f6344117');
+  const { HIRES_SPRITES } = await import('../public/js/sprite-hires.js?v=ad1e46a9');
   const { DENSE_SPRITES } = await import('../public/js/sprite-dense.js?v=67101472');
   const stage = await stageScale();
   assert.ok(stage > 2 && stage < 3, `stage ${stage}`);
