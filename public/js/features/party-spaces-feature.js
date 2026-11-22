@@ -64,6 +64,8 @@ import {
   createPartyTeleporter,
   extendParty,
   formatPartyClock,
+  PARTY_LEFT_TEXT,
+  partySpaceLeftLine,
   isPartyPack,
   normalizePartyRecord,
   partyAlive,
@@ -82,13 +84,13 @@ import {
   stackAvailable,
   startParty,
   teleporterPhase,
-} from '../party-spaces.js?v=559a618a';
+} from '../party-spaces.js?v=51c3257b';
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=729b29ea';
 import { readVisitScene } from '../neighbours-mp.js?v=b34eb45a';
 import { STREET_INDEX } from '../street-loader.js?v=10376267';
 import { isNeighbourSceneTsid } from '../neighbours.js?v=13f35acd';
 import { energyMax as tankEnergyMax, loseEnergy } from '../metabolics.js?v=48f784bf';
-import { MP_PARTY_TEXT, MP_SPACE_STREET_RE, kickVerb, mpActivationBlock, normalizeSpace, partyFromSpace } from '../party-spaces-mp.js?v=ba71aac2';
+import { MP_PARTY_TEXT, MP_SPACE_STREET_RE, kickVerb, mpActivationBlock, normalizeSpace, partyFromSpace } from '../party-spaces-mp.js?v=c3e788b0';
 import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=a593b732';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 
@@ -263,7 +265,7 @@ function buildChrome(engine) {
   const bar = el('section', { id: 'party-hud', class: 'party-hud', hidden: true, 'aria-live': 'polite' }, `
     <img alt="" data-party-icon />
     <b data-party-name></b>
-    <span data-party-clock></span>
+    <span data-party-clock title="${PARTY_LEFT_TEXT.tip}"></span>
     <button type="button" data-party-leave>Leave party</button>`);
   host.appendChild(bar);
   bar.querySelector('[data-party-leave]').addEventListener('click', () => leaveParty(engine));
@@ -281,7 +283,8 @@ function renderHud(engine) {
   hud.bar.querySelector('[data-party-name]').textContent = s.label;
   const left = partyRemainingMs(p);
   const clock = hud.bar.querySelector('[data-party-clock]');
-  clock.textContent = formatPartyClock(left);
+  // G806: the clock says what it counts ("59:55 left").
+  clock.textContent = PARTY_LEFT_TEXT.left(left);
   clock.classList.toggle('is-late', left <= 5 * 60 * 1000);
 }
 
@@ -1600,6 +1603,17 @@ export const partySpacesFeature = {
     if (!isPartyPack(classTsid) || verbId !== 'activate') return false;
     activatePack(engine, classTsid);
     return true;
+  },
+
+  /**
+   * G806: the live Party Space's time left for the party panel (features/party-feature.js), or null:
+   * { label, ms, line } from the clock the HUD runs (online, the server's "left", js/party-spaces-mp.js).
+   */
+  partySpaceLeft(now = Date.now()) {
+    const p = party();
+    if (!p || !space() || !partyAlive(p, now)) return null;
+    const ms = partyRemainingMs(p, now);
+    return { label: space().label, ms, line: partySpaceLeftLine(space().label, ms) };
   },
 
   mapCards(engine) {

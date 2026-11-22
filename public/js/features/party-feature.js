@@ -18,7 +18,8 @@
  * - Chat: /p <text> (or /party <text>) talks to the party; /invite <name>
  *   invites someone online by name; /leaveparty leaves. Party lines show in
  *   the panel and in the chat stream marked "Party".
- * - Party Spaces between the members (and their quoins) are party-spaces-feature.js (G334).
+ * - Party Spaces between the members (and their quoins) are party-spaces-feature.js (G334). G806:
+ *   while the party has one, the panel says its time left under the head (the drawer's Party chat too).
  * - Someone you block (buddies-feature realtimeHidden): their party lines are never shown (the
  *   server does not send them either, party.go chatLine), as Glitch's client dropped any chat
  *   from an ignored player (RightSideManager.as chatUpdate 218-223); an invite from them is
@@ -30,7 +31,8 @@
  *   to the party (/p). No Party pill then.
  *
  * QA: canvas data partyState (none|in), partyMembers (name@where,...),
- * partyLeader, partyInvites (prompts waiting), partyLastSaid;
+ * partyLeader, partyInvites (prompts waiting), partyLastSaid, partySpaceLeft (G806: the
+ * party panel's "Party Space: <name> · 23:14 left" line, '' with no space);
  * window.groddleParty in multiplayer.
  */
 
@@ -75,6 +77,8 @@ const STYLE = `
 .party-log li { margin: var(--sp-1) 0; overflow-wrap: anywhere; }
 .party-log li b { color: var(--c-violet-50); }
 .party-log li.is-note { color: var(--text-muted); font-style: italic; }
+.party-space-left { margin: var(--sp-2) 0 0; font-weight: 700; color: var(--c-violet-50); font-variant-numeric: tabular-nums; }
+.party-space-left[hidden] { display: none; }
 .party-hint { margin: 0.3rem 0 0; color: var(--text-subtle); font-size: var(--fs-xs); }
 `;
 
@@ -121,11 +125,15 @@ function createSession(engine, client) {
   const count = el('span', { class: 'party-count' });
   const leaveBtn = el('button', { type: 'button', 'data-party-leave': '', hidden: true }, 'Leave');
   head.append(el('b', {}, PARTY_TEXT.title), count, leaveBtn);
+  // G806: the Party Space's time left, while the party has one (features/party-spaces-feature.js partySpaceLeft).
+  const spaceLine = el('p', { class: 'party-space-left', 'data-party-space-left': '', hidden: true });
+  let spaceText = '';
+  let spaceAt = 0;
   const roster = el('ul', { class: 'party-roster', 'data-party-roster': '' });
   const inviteRow = el('div', { class: 'party-invites', 'data-party-invites': '' });
   const logList = el('ol', { class: 'party-log', 'aria-live': 'polite', 'data-party-log': '' });
   const hint = el('p', { class: 'party-hint' }, 'Type /p and a message to talk to your party.');
-  box.append(head, roster, inviteRow, logList, hint);
+  box.append(head, spaceLine, roster, inviteRow, logList, hint);
   const social = engine.social || null;
   if (social) {
     // The drawer's Party chat holds the box (shown whenever the tab is): no pill.
@@ -177,6 +185,7 @@ function createSession(engine, client) {
       return b;
     });
     inviteRow.replaceChildren(...(buttons.length ? [el('span', {}, 'On this street:'), ...buttons] : [el('span', {}, 'Nobody else on this street to invite. /invite <name> finds someone online.')]));
+    renderSpaceLeft();
     if (!box.hidden) renderLog();
     if (social) {
       // The drawer's Chats list has the party under Private, with how many are in it by its name.
@@ -191,6 +200,17 @@ function createSession(engine, client) {
       }
     }
     publish();
+  }
+
+  /** G806: "Party Space: Toxic Moon · 23:14 left" under the head, redrawn only when the words change. */
+  function renderSpaceLeft() {
+    const left = party ? engine.query?.('partySpaceLeft', Date.now()) : null;
+    const text = left?.line || '';
+    if (text === spaceText) return;
+    spaceText = text;
+    spaceLine.textContent = text;
+    spaceLine.hidden = !text;
+    engine.setData?.('partySpaceLeft', text);
   }
 
   function renderLog() {
@@ -395,6 +415,12 @@ function createSession(engine, client) {
     confirmLeave,
     tick() {
       syncTargets();
+      // The clock moves a second at a time: look twice a second, not every frame.
+      const now = Date.now();
+      if (now - spaceAt >= 500) {
+        spaceAt = now;
+        renderSpaceLeft();
+      }
       if (invites.size) dropBlockedInvites();
     },
     clear() {

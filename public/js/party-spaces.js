@@ -512,6 +512,21 @@ export function formatPartyClock(ms) {
   return h ? `${h}:${mm}:${String(s).padStart(2, '0')}` : `${mm}:${String(s).padStart(2, '0')}`;
 }
 
+/**
+ * G806 (players running back-to-back parties could not tell when the Party Space ends): the remake's
+ * readout of its time left. Glitch only said "Our Party Space will expire in 5 minutes." (groups/party.js
+ * 729). The HUD in the space shows "59:55 left"; the party panel shows partySpaceLeftLine.
+ */
+export const PARTY_LEFT_TEXT = Object.freeze({
+  tip: 'Time left in this Party Space',
+  left: (ms) => `${formatPartyClock(ms)} left`,
+});
+
+/** "Party Space: Toxic Moon · 23:14 left" (the party panel, inside the space or out). */
+export function partySpaceLeftLine(label, ms) {
+  return `Party Space: ${label} · ${PARTY_LEFT_TEXT.left(ms)}`;
+}
+
 /** party_atm extend: the two offers for this party (taster 5/15, full 10/30). */
 export function partyExtendOptions(party) {
   const space = PARTY_SPACES[party?.template];
