@@ -2814,9 +2814,14 @@
   "deployed": "2026-11-22"
  },
  "git": {
-  "commits": 3060,
+  "commits": 3062,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-22",
+    "kind": "fix",
+    "text": "The \"!\" in a street project's bubble is sharp instead of blurry"
+   },
    {
     "date": "2026-11-22",
     "kind": "improve",
@@ -2931,14 +2936,9 @@
     "date": "2026-11-21",
     "kind": "improve",
     "text": "A Party Space shows its time left, in the space and in the party panel"
-   },
-   {
-    "date": "2026-11-21",
-    "kind": "improve",
-    "text": "Street project windows name every work step's skill and mark the ones you don't know"
    }
   ]
  },
- "tests": 1260,
+ "tests": 1261,
  "generatedAt": "2026-11-22"
 }
