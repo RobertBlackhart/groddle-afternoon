@@ -41,7 +41,7 @@ import {
   solidRects,
   solvingPlans,
   staticPlatforms,
-} from '../public/js/quest-rooms/mental-block.js?v=32b358bf';
+} from '../public/js/quest-rooms/mental-block.js?v=6e44ad0d';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const GS = join(homedir(), 'Documents/glitch-audit/glitch-GameServerJS');

@@ -20,9 +20,9 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { SIGN_FIRST_ARM_Y, SIGN_SCALE, addSignBoard, setSignpostHover, setSignpostKeys, signpostBoardAt } from '../public/js/street-render.js?v=eca8926c';
-import { SIGN_PROMPT_LIFT } from '../public/js/features/homes-feature.js?v=cfb6042c';
-import { FRIENDS_HIT_H } from '../public/js/features/home-street-mp-feature.js?v=c726f682';
+import { SIGN_FIRST_ARM_Y, SIGN_SCALE, addSignBoard, setSignpostHover, setSignpostKeys, signpostBoardAt } from '../public/js/street-render.js?v=c3b6187d';
+import { SIGN_PROMPT_LIFT } from '../public/js/features/homes-feature.js?v=659d7bcb';
+import { FRIENDS_HIT_H } from '../public/js/features/home-street-mp-feature.js?v=afd9b7a6';
 
 const root = join(import.meta.dirname, '..');
 const read = (p) => readFileSync(join(root, 'public', p), 'utf8');

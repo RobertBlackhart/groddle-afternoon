@@ -217,12 +217,12 @@ import { DISPATCHER_HALF, DISPATCHER_TEXT, MOVABLE_FIXTURES, MOVABLE_FIXTURE_IDS
 import { displayTopOf, itemstackOverlayPoint, overlayAlpha, overlayLifeMs, playPoofIn, trackOverlay } from '../overlay-art.js?v=95f23414';
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=bac259c0';
 import { fadeInNewNear } from '../poof-fade.js?v=83361da5';
-import { projectApi } from './street-jobs-feature.js?v=e2554b8b';
+import { projectApi } from './street-jobs-feature.js?v=4fe1df67';
 import { TOWER_CHASSIS, TOWER_CONFIG, TOWER_DOOR_DX, TOWER_GEO, TOWER_PROTO, normalizeTowerState } from '../home-tower.js?v=18889f7a';
-import { drawTowerBench, drawTowerElevator, drawTowerExit, towerApi, visitorTowerView } from './home-tower-feature.js?v=4fbee29f';
+import { drawTowerBench, drawTowerElevator, drawTowerExit, towerApi, visitorTowerView } from './home-tower-feature.js?v=ddc3a6fc';
 import { pieceUrl, roomPieces, surfaceAt, swatchPiece, wallTargetAt } from '../home-wallpaper.js?v=99228166';
-import { maxTextureSizeOf, sharpDeco, wantsHiresDecos } from '../deco-hires.js?v=21d9dc87';
-import { SHARP_DECOS } from '../deco-sharp-list.js?v=d8a31eff';
+import { maxTextureSizeOf, sharpDeco, wantsHiresDecos } from '../deco-hires.js?v=34f36d77';
+import { SHARP_DECOS } from '../deco-sharp-list.js?v=7d615f20';
 import { resourceNodesFeature } from './resource-nodes-feature.js?v=47458aef';
 import { patchesFeature } from './patches-feature.js?v=035b5f61';
 import { GROWN_TREE_LABELS, createPlot, growTree, plotLabel } from '../patches.js?v=2498e678';
@@ -247,7 +247,7 @@ import {
 } from '../home-styles.js?v=ec5d2f69';
 import { frameTexture, isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=729b29ea';
 import { FALLBACK_MAX as WORLD_ART_FALLBACK_MAX, worldArtFor } from '../world-art.js?v=2b3cf8d5';
-import { oneArmSignpost } from '../street-render.js?v=eca8926c';
+import { oneArmSignpost } from '../street-render.js?v=c3b6187d';
 import { ROCK_CATALOG } from '../mining.js?v=8463f2ac';
 import {
   HOUSE_SIGN,

@@ -9,7 +9,7 @@
 
 import { NEIGHBOUR_SCENE, hash01, neighbourLayout } from '../neighbours.js?v=13f35acd';
 import { textureFromUrl } from '../textures.js?v=729b29ea';
-import { sharpRoomDeco } from '../deco-hires.js?v=21d9dc87';
+import { sharpRoomDeco } from '../deco-hires.js?v=34f36d77';
 import { LANDSCAPE_VIEW_W, landscapeWindow, rowRange, soilTiles } from '../landscape-reach.js?v=2f2d7cb3';
 import { anchorBottomCentre } from '../sprite-feet.js?v=6ffaec43';
 
