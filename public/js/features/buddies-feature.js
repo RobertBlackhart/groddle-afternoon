@@ -83,7 +83,7 @@ import {
 } from '../buddies.js?v=16407f62';
 import { UNNAMED_PLAYER } from '../player-names.js?v=f9b78094';
 import { PLAYER_REPORT_TEXT, playerReportView } from '../player-report.js?v=8d7e5653';
-import { openReportView } from '../note-view.js?v=eca7de52';
+import { openReportView } from '../note-view.js?v=c512b345';
 import { createBuddyFaces } from '../ui/buddy-face.js?v=cb11f179';
 
 export const BUDDIES_FEATURE_ID = 'buddies';

@@ -257,8 +257,11 @@ export function openNotePicker(opts = {}) {
 
 /**
  * Report a note (multiplayer): why, in the player's words (optional), then Send.
- * opts: { kicker, title, label, hint, send, maxWhy, onSend(why) -> Promise<{ ok, text }>, onBack? }
+ * opts: { kicker, title, label, hint, send, maxWhy, armMs?, onSend(why) -> Promise<{ ok, text }>, onBack? }
+ * Send waits REPORT_ARM_MS before it can be pressed (report #643: a report sent by a second tap landing on
+ * Send as the window opened), so a report always takes a deliberate press.
  */
+export const REPORT_ARM_MS = 1000;
 export function openReportView(opts = {}) {
   if (typeof document === 'undefined') return null;
   const card = el('div', { className: 'note-card', 'data-note-report': '' });
@@ -273,11 +276,18 @@ export function openReportView(opts = {}) {
   form.appendChild(status);
   const actions = el('div', { className: 'note-actions' });
   actions.appendChild(button('Cancel', () => (opts.onBack ? opts.onBack() : closeNoteView())));
-  const send = el('button', { type: 'submit', className: 'is-primary' }, opts.send || 'Send');
+  const send = el('button', { type: 'submit', className: 'is-primary', disabled: true, 'data-report-arming': '' }, opts.send || 'Send');
   actions.appendChild(send);
   form.appendChild(actions);
+  let armed = false;
+  setTimeout(() => {
+    armed = true;
+    send.disabled = false;
+    send.removeAttribute('data-report-arming');
+  }, Number.isFinite(opts.armMs) ? Math.max(0, opts.armMs) : REPORT_ARM_MS);
   form.addEventListener('submit', async (event) => {
     event.preventDefault();
+    if (!armed) return;
     send.disabled = true;
     status.textContent = '';
     const out = await Promise.resolve(opts.onSend ? opts.onSend(why.value) : { ok: true });
