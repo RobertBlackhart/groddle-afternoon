@@ -62,7 +62,7 @@
  * style), and a letter's sender stands in for getPlayer(sender).label.
  */
 
-import { mailSender } from './mailbox.js?v=6ec01afb';
+import { mailSender } from './mailbox.js?v=d50d0d05';
 
 export const COURIER = Object.freeze({
   /** inc_mail.js 936-938. */

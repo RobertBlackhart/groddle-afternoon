@@ -25,8 +25,8 @@ import {
 } from '../public/js/tools.js?v=4156bba8';
 import { copyNote, copyPicks, copyWire, markLeaving, packPicks, pickKey, pickRanks, takeCopies } from '../public/js/copy-picks.js?v=01de4c58';
 import { scriptTag } from '../public/js/teleportation.js?v=1bbe1ab3';
-import { playerMailFeature } from '../public/js/features/player-mail-feature.js?v=a9c67252';
-import { MAIL_COMPANIONS, createMailboxState, sendMail } from '../public/js/mailbox.js?v=6ec01afb';
+import { playerMailFeature } from '../public/js/features/player-mail-feature.js?v=97876694';
+import { MAIL_COMPANIONS, createMailboxState, sendMail } from '../public/js/mailbox.js?v=d50d0d05';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => readFileSync(join(root, 'public', rel), 'utf8');
@@ -348,7 +348,7 @@ describe('R18 solo mail (G974): a letter to a companion takes the copy chosen in
   it('game.js: solo Attach offers each copy and sends the chosen one', () => {
     const src = read('game.js');
     const solo = src.slice(src.indexOf('function renderMailboxCompose('), src.indexOf('function themeMailPickers('));
-    assert.match(solo, /const attachable = packPicks\(toolState, listPackItemSlots\(inv\)/);
+    assert.match(solo, /const attachable = packPicks\(toolState, mailAttachSlots\(listPackSlots\(inv\)\)/);
     assert.match(solo, /beforeTake: pick \? \(\) => \{ if \(markLeaving\(engine, classTsid, pick, count\)\) takeCopies\(toolState, classTsid, pick, count\); \} : null/);
   });
 });

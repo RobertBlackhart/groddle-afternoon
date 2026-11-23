@@ -236,6 +236,34 @@ export function seedMailbox(state, now = Date.now()) {
 }
 
 /**
+ * What a letter may not hold, the same table the site refuses by (tools/build-mail.mjs refused,
+ * written into the site's data/mail.json): items tagged no_mail (items/catalog_tags.js 2198-2201),
+ * stacks soulbound to the sender and the hogtied piggy (AbstractMailUI.as isDroppable 60-74,
+ * RESTRICTED_ITEMS 22), and the wrapped Gift Box, a bag that always holds something
+ * (inc_mail.js mail_can_send 26-29). tests/mail-attach-1197.test.js keeps the two equal.
+ */
+export const MAIL_REFUSED = Object.freeze({
+  bag_gift_box_wrapped: 'bag',
+  conch: 'no_mail',
+  faded_heart: 'no_mail',
+  greeter_twig: 'soulbound',
+  hogtied_piggy: 'restricted',
+  play_cube: 'soulbound',
+});
+
+/**
+ * G1197: the stacks Attach offers, from every pack slot (js/inventory.js listPackSlots): all of
+ * them but what Glitch refused, tools too. Glitch's mail took any itemstack dragged from the pack
+ * (AbstractMailUI.as isDroppable 60-74; main.js doMailSend 6654-6666 checks only mail_can_send),
+ * so a pick, a Quill or a Teleportation Script went by mail. The old list left tools out and kept
+ * only the first 80 classes in catalog order, so a pack with many kinds of things lost the later
+ * ones (a Teleportation Script comes about 390th of some 800).
+ */
+export function mailAttachSlots(slots = []) {
+  return (Array.isArray(slots) ? slots : []).filter((slot) => slot && Number(slot.count) > 0 && !Object.hasOwn(MAIL_REFUSED, slot.classTsid));
+}
+
+/**
  * A letter to a companion (solo). `beforeTake(item)`: called once the letter will go, just before
  * the attached stack's count goes down (R18 G974: the copy chosen in Attach moves last so it is the
  * one that leaves, js/copy-picks.js takeCopies).

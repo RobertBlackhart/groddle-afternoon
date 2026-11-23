@@ -21,9 +21,9 @@
  */
 
 import { REPORT_PICTURE, base64Size, pictureSize } from '../reports.js?v=08604732';
-import { listMailboxMessages, mailSender, normalizeMailboxState } from '../mailbox.js?v=6ec01afb';
+import { listMailboxMessages, mailSender, normalizeMailboxState } from '../mailbox.js?v=d50d0d05';
 import { addedYouOnly, normalizeList } from '../buddies.js?v=16407f62';
-import { letterRow, normalizePlayerMailSlice } from '../player-mail.js?v=36973be4';
+import { letterRow, normalizePlayerMailSlice } from '../player-mail.js?v=b6003af8';
 
 /** The player mail feature's save slice (js/features/player-mail-feature.js PLAYER_MAIL_FEATURE_ID). */
 const PLAYER_MAIL_SLICE = 'player-mail';

@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=ac244ca0';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=ce7bae54';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=50916de3';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE, playerClickBox } from './js/reach.js?v=456da8a8';
@@ -563,7 +563,7 @@ import {
   inspectPlayerSave,
   serializePlayerSave,
   restorePlayerSave,
-} from './js/player-save.js?v=cc7a6efd';
+} from './js/player-save.js?v=773ea75c';
 import {
   HOME_INTERIOR_TSID,
   HOME_STREET_TSID,
@@ -588,6 +588,7 @@ import {
   deliverMail,
   mailTitle,
   listMailboxMessages,
+  mailAttachSlots,
   mailCost,
   readMail,
   receiveMailAttachments,
@@ -595,7 +596,7 @@ import {
   seedMailbox,
   sendMail,
   unreadMailCount,
-} from './js/mailbox.js?v=6ec01afb';
+} from './js/mailbox.js?v=d50d0d05';
 import {
   TOOL_CONDITION_CATALOG,
   createToolConditionState,
@@ -25556,9 +25557,8 @@ function renderMailboxCompose(recipient = '', replyTo = null) {
   const reply = mailboxState.messages.find((message) => message.id === replyTo);
   const selectedRecipient = recipient || reply?.sender || MAIL_COMPANIONS[0];
   // R18 (G974): one choice per copy where a class's copies differ, as online (js/copy-picks.js).
-  const attachable = packPicks(toolState, listPackItemSlots(inv)
-    .filter((slot) => slot.count > 0)
-    .slice(0, 80)
+  // G1197: every pack stack but what Glitch refused, tools too, however many (js/mailbox.js mailAttachSlots).
+  const attachable = packPicks(toolState, mailAttachSlots(listPackSlots(inv))
     .map((slot) => ({ ...slot, c: slot.classTsid })))
     .map((slot) => ({ ...slot, label: slot.note ? `${slot.label} (${slot.note})` : slot.label }));
   reader.innerHTML = `
@@ -25686,7 +25686,8 @@ function renderPlayerMailCompose(reader, online, recipient = '', replyTo = null)
   const reply = mailboxState.messages.find((message) => message.id === replyTo);
   const rules = online.rules || {};
   // R18 (G974): one choice per copy where a class's copies differ (player-mail-feature attachable).
-  const packSlots = listPackItemSlots(inv).filter((slot) => slot.count > 0).slice(0, 80);
+  // G1197: every pack stack but what Glitch refused, tools too, however many (js/mailbox.js mailAttachSlots).
+  const packSlots = mailAttachSlots(listPackSlots(inv));
   const attachable = online.attachable ? online.attachable(packSlots) : packSlots;
   const buddies = (online.buddies || []).map((b) => b.name).filter(Boolean);
   reader.innerHTML = `

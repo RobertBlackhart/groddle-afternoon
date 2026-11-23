@@ -18,7 +18,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { MAIL_FULL_BAGS, MAIL_RESTRICTED, NO_MAIL, mailJson, mailTable } from '../tools/build-mail.mjs';
-import { playerMailCost } from '../public/js/player-mail.js?v=36973be4';
+import { playerMailCost } from '../public/js/player-mail.js?v=b6003af8';
 import { ITEM_BASE_COSTS } from '../public/js/store-catalog.js?v=c6ebb2bd';
 import { HAS_SITE, SITE_DIR, sitePath } from '../tools/repos.mjs';
 

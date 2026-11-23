@@ -140,7 +140,7 @@ import {
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=729b29ea';
 import { playOverlay } from '../overlays.js?v=1f5027a3';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { MAIL_POST_SENDER } from '../mailbox.js?v=6ec01afb';
+import { MAIL_POST_SENDER } from '../mailbox.js?v=d50d0d05';
 import { filterText } from '../word-filter.js?v=9a7a7ebb';
 import { trophyGotText } from '../home-trophies.js?v=4eb640c3';
 

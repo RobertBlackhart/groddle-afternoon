@@ -96,7 +96,7 @@ import { questRoomConverse } from './quest-instances-feature.js?v=ce1bcac6';
 import { hellFeature } from './hell-feature.js?v=0f649865';
 import { DISPATCHER_ART, FROG_ART, MAIL_NPC_ART_DIR } from '../mail-npc-art.js?v=1ed97a5d';
 import { DISPATCHER_GAP, DISPATCHER_HALF, DISPATCHER_TEXT, SIGNPOST } from '../home-street-fixtures.js?v=bad831a1';
-import { MAIL_POST_SENDER } from '../mailbox.js?v=6ec01afb';
+import { MAIL_POST_SENDER } from '../mailbox.js?v=d50d0d05';
 import {
   AUCTION_PAGE,
   COURIER,
@@ -120,7 +120,7 @@ import {
   sendAuctionsToMailbox,
   sendCarriedToMailbox,
   sendDueToMailbox,
-} from '../mail-courier.js?v=f4555a8b';
+} from '../mail-courier.js?v=a210c94c';
 import { AUCTION_SENDER, mailSubject, mailText } from '../auctions.js?v=2b806ad4';
 import { formatStack } from '../gifts.js?v=37ce7d76';
 import { itemZ } from '../item-bands.js?v=e98b10bc';

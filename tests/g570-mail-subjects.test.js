@@ -9,10 +9,10 @@ import assert from 'node:assert/strict';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { MAIL_SUBJECTS, createMailboxState, deliverMail, mailTitle, normalizeMailboxState, seedMailbox, sendMail } from '../public/js/mailbox.js?v=6ec01afb';
+import { MAIL_SUBJECTS, createMailboxState, deliverMail, mailTitle, normalizeMailboxState, seedMailbox, sendMail } from '../public/js/mailbox.js?v=d50d0d05';
 import { deliveryMail, mailSubject } from '../public/js/auctions.js?v=2b806ad4';
 import { NEIGHBOURS, doChore, normalizeNeighbourState, postNoteReply, visitorLetter } from '../public/js/neighbours.js?v=13f35acd';
-import { PLAYER_MAIL_TEXT, letterRow } from '../public/js/player-mail.js?v=36973be4';
+import { PLAYER_MAIL_TEXT, letterRow } from '../public/js/player-mail.js?v=b6003af8';
 import { HAS_SITE, SITE_DIR } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');

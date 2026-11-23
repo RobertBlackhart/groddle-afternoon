@@ -31,12 +31,12 @@ import {
   normalizePlayerMailSlice,
   playerMailCost,
   sentRow,
-} from '../public/js/player-mail.js?v=36973be4';
-import { playerMailFeature } from '../public/js/features/player-mail-feature.js?v=a9c67252';
-import { createMailboxState, deliverMail, listMailboxMessages, mailCost, normalizeMailboxState, recordSentMail } from '../public/js/mailbox.js?v=6ec01afb';
-import { handOver, isExpressPending, sendDueToMailbox } from '../public/js/mail-courier.js?v=f4555a8b';
+} from '../public/js/player-mail.js?v=b6003af8';
+import { playerMailFeature } from '../public/js/features/player-mail-feature.js?v=97876694';
+import { createMailboxState, deliverMail, listMailboxMessages, mailCost, normalizeMailboxState, recordSentMail } from '../public/js/mailbox.js?v=d50d0d05';
+import { handOver, isExpressPending, sendDueToMailbox } from '../public/js/mail-courier.js?v=a210c94c';
 import { mailText } from '../public/js/ui/topbar.js?v=11479bf3';
-import { mergePlayerMail } from '../public/js/phone/companion-data.js?v=90fae2f9';
+import { mergePlayerMail } from '../public/js/phone/companion-data.js?v=94d82efc';
 import { mailJson } from '../tools/build-mail.mjs';
 import { ITEM_BASE_COSTS } from '../public/js/store-catalog.js?v=c6ebb2bd';
 import { HAS_SITE, SITE_DIR, sitePath } from '../tools/repos.mjs';
