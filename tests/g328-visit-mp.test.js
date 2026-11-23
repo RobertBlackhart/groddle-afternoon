@@ -25,10 +25,10 @@ import {
   visitorNode,
   visitorRock,
 } from '../public/js/yard-stock-mp.js?v=6479e937';
-import { normalizeYardActs } from '../public/js/yard-verbs-mp.js?v=41efd5a1';
-import { nodeKeyMap, rockItems } from '../public/js/features/homes-feature.js?v=71d59968';
+import { normalizeYardActs } from '../public/js/yard-verbs-mp.js?v=141c23af';
+import { nodeKeyMap, rockItems } from '../public/js/features/homes-feature.js?v=aeda69f4';
 import { homeStreetFor, readVisitScene, sharedHomeStreet, visitSceneTsid } from '../public/js/neighbours-mp.js?v=a9888115';
-import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=ae06084e';
+import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=ae0c68d1';
 import { HAS_SERVER, HAS_SITE, SITE_DIR, serverPath } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');

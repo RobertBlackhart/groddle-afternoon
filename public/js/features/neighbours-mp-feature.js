@@ -116,8 +116,8 @@ import { cultivationDef, homeStreetLayout } from '../home-cultivation.js?v=0fc0b
 import { getPlot, tickGarden } from '../garden.js?v=9caea9c6';
 import { BUTLER_RIG_SCALE, ButlerPainter, butlerRigNow, loadButlerRig } from '../butler-rig.js?v=3acda854';
 import { BUTLER, BUTLER_INFO, butlerInfoText, butlerPostRx, normalizeButlerParts } from '../butler.js?v=52b4f74d';
-import { butlerApi } from './butler-feature.js?v=6c4abdf3';
-import { homesFeature, visitorHomeScene, visitorHomeState } from './homes-feature.js?v=71d59968';
+import { butlerApi } from './butler-feature.js?v=4a210ded';
+import { homesFeature, visitorHomeScene, visitorHomeState } from './homes-feature.js?v=aeda69f4';
 import { homeMusicFile } from '../homes.js?v=10f6604f';
 import { visitGardenPlots, visitSceneKey } from '../home-live.js?v=cebb24d4';
 import {
@@ -173,9 +173,9 @@ import {
   visitSceneTsid,
 } from '../neighbours-mp.js?v=a9888115';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { butlerCarries, registerButlerDrop } from '../butler-drop.js?v=dca2c6f5';
+import { butlerCarries, registerButlerDrop } from '../butler-drop.js?v=41070626';
 import { takeDragged } from '../drag-stack.js?v=536cddfb';
-import { worldPoint } from './world-drop-feature.js?v=62707db6';
+import { worldPoint } from './world-drop-feature.js?v=703ad5c9';
 import { clampToExpansion, elevatorStops, floorJobFor, TOWER_JOBS } from '../home-tower.js?v=18889f7a';
 
 export const NEIGHBOURS_MP_FEATURE_ID = 'neighbours-mp';

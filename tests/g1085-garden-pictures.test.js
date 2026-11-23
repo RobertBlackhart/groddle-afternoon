@@ -26,12 +26,12 @@ import {
   populationForStreet,
   setStreetEcologyCatalog,
   streetReservedSpots,
-} from '../public/js/street-ecology.js?v=8dea93f8';
+} from '../public/js/street-ecology.js?v=ff90efe4';
 import { GARDEN_SPOTS } from '../public/js/garden-spots-data.js?v=3c5d4164';
 import { gardenBedWidth, measuredGardenVendor } from '../public/js/garden-beds.js?v=2ac6a12c';
 import { VENDOR_NPC_ART, VENDOR_PLACEMENT_KEY, vendorNpcList, vendorNpcPlacementGroups, vendorNpcStoreProfile, vendorNpcsFor } from '../public/js/vendor-npcs.js?v=90b0c123';
 import { VENDOR_PROFILES } from '../public/js/vendor.js?v=3cb21978';
-import { VENDOR_REACH } from '../public/js/vendor-walk.js?v=909f0912';
+import { VENDOR_REACH } from '../public/js/vendor-walk.js?v=d35b3d77';
 import { followFloorY } from '../public/js/walk-surface.js?v=3c919d5b';
 import { streetGardenBeds } from '../public/js/garden.js?v=9caea9c6';
 import { placementRequests } from '../tools/build-realtime-objects.mjs';

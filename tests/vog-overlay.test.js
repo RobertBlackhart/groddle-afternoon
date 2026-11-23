@@ -215,7 +215,7 @@ describe('Enter during the crab\'s call-out', () => {
   it('the crab holds no Enter, so Enter opens its menu while the call-out is up', async () => {
     const crabs = read('js/features/crabs-feature.js');
     assert.doesNotMatch(crabs, /holdsEnter\(/);
-    const { crabsFeature } = await import('../public/js/features/crabs-feature.js?v=8d02d63a');
+    const { crabsFeature } = await import('../public/js/features/crabs-feature.js?v=afc59012');
     assert.equal(crabsFeature.holdsEnter, undefined);
     // The generic hook stays for any later feature; nothing answers it now.
     assert.match(game, /function enterHeldBy\(\) \{\s*return features\.query\('holdsEnter', engine\) \|\| null;\s*\}/);
