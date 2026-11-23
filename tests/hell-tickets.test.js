@@ -12,7 +12,7 @@ import { loadContentCatalogsFromDir, resetContentCatalogs, getQuestCatalog } fro
 import { createQuestState } from '../public/js/quests.js?v=90a2ee3d';
 import { classifyQuests, eventCounters, isEventEmitted, questRoutingReport, requirementRoute } from '../public/js/quest-offers.js?v=32d4127e';
 import { HELL_LOCATION, HELL_QUESTS, createHellState, croak } from '../public/js/hell.js?v=d77f15ef';
-import { PANKA_TSID, HELL_BAR_TSID } from '../public/js/hell-bar.js?v=7f3bc564';
+import { PANKA_TSID, HELL_BAR_TSID } from '../public/js/hell-bar.js?v=60c97c46';
 import {
   GRAVE_VISIT,
   GRAVE_VISITORS,
@@ -27,12 +27,12 @@ import {
   recognitionBranch,
   ticketDue,
 } from '../public/js/hell-tickets.js?v=d5074b41';
-import { hellTicketsFeature } from '../public/js/features/hell-tickets-feature.js?v=0c82778b';
+import { hellTicketsFeature } from '../public/js/features/hell-tickets-feature.js?v=e52a57b6';
 import { hellFeature } from '../public/js/features/hell-feature.js?v=9575e2c8';
-import { hellBarFeature } from '../public/js/features/hell-bar-feature.js?v=8f5057ff';
+import { hellBarFeature } from '../public/js/features/hell-bar-feature.js?v=e9f142eb';
 import { questOffersFeature } from '../public/js/features/quest-offers-feature.js?v=ffa7a657';
 import { questFlagsFeature } from '../public/js/features/quest-flags-feature.js?v=17c6ef48';
-import { FEATURES } from '../public/js/features/index.js?v=94dff347';
+import { FEATURES } from '../public/js/features/index.js?v=6178f2f0';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const CONTENT = join(spike, 'public/assets/content');

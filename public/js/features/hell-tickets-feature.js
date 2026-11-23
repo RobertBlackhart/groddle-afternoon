@@ -46,7 +46,7 @@ import { acceptOffer, ensureQuestOfferState, markOffered } from '../quest-offers
 import { getQuestCatalog } from '../content-catalogs.js?v=10b118dd';
 import { parseQuestConversation } from '../quests.js?v=90a2ee3d';
 import { HELL_LOCATION, HELL_QUESTS, isInHell, isInHellOne } from '../hell.js?v=d77f15ef';
-import { BARTENDER, PANKA_DOOR, PANKA_TSID, isHellBarTsid } from '../hell-bar.js?v=7f3bc564';
+import { BARTENDER, PANKA_DOOR, PANKA_TSID, isHellBarTsid } from '../hell-bar.js?v=60c97c46';
 import {
   GRAVE_VISIT,
   HELL_HOLE_ACCEPTED_TEXT,

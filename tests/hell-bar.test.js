@@ -27,6 +27,7 @@ import {
   STOOLS,
   STOOL_SEAT_Y,
   TALK_EXTRA,
+  bartenderTalkLine,
   bartenderTalkOptions,
   buyWineConditions,
   buyWinePlan,
@@ -37,10 +38,10 @@ import {
   isHellBarTsid,
   pickBartenderLine,
   talkStateFor,
-} from '../public/js/hell-bar.js?v=7f3bc564';
-import { hellBarFeature } from '../public/js/features/hell-bar-feature.js?v=8f5057ff';
+} from '../public/js/hell-bar.js?v=60c97c46';
+import { hellBarFeature } from '../public/js/features/hell-bar-feature.js?v=e9f142eb';
 import { hellFeature } from '../public/js/features/hell-feature.js?v=9575e2c8';
-import { FEATURES } from '../public/js/features/index.js?v=94dff347';
+import { FEATURES } from '../public/js/features/index.js?v=6178f2f0';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pub = join(spike, 'public');
@@ -153,7 +154,7 @@ describe("Hell's Bartender", () => {
   it('speaks source lines only', { skip: !bartenderSrc && 'GSJS checkout not beside this worktree' }, () => {
     const lines = [
       ...HELL_BARTENDER.talkGeneral, ...Object.values(TALK_EXTRA).flat(), ...HELL_BARTENDER.wineResponses,
-      BARTENDER_TEXT.firstWine, BARTENDER_TEXT.packFull, BARTENDER_TEXT.needTicket, BARTENDER_TEXT.needTicketReason,
+      BARTENDER_TEXT.firstWine, BARTENDER_TEXT.packFull, BARTENDER_TEXT.needTicket, BARTENDER_TEXT.needTicketReason, BARTENDER_TEXT.ticketHow,
       BARTENDER_TEXT.bought, BARTENDER_TEXT.tried, BARTENDER_TEXT.talkTooltip, BARTENDER_TEXT.buyTooltip,
       ...Object.values(HELL_BARTENDER.conversations).flat().flatMap((b) => [b.text, b.response]),
     ];
@@ -178,8 +179,18 @@ describe("Hell's Bartender", () => {
     assert.notEqual(pickBartenderLine(pool, pool[0], () => 0), pool[0], 'never the same line twice running');
   });
 
+  it('G1196: every no-ticket line says where tickets come from, in his own words', () => {
+    assert.equal(BARTENDER_TEXT.ticketHow, 'Ask a friend among the living to Mourn your death or Celebrate your life at your gravestone.');
+    assert.equal(bartenderTalkLine(TALK_EXTRA.doneNoTicket[0]), `${TALK_EXTRA.doneNoTicket[0]} ${BARTENDER_TEXT.ticketHow}`);
+    assert.equal(bartenderTalkLine(TALK_EXTRA.doneTicket[0]), TALK_EXTRA.doneTicket[0], 'a line with a ticket in hand is left alone');
+    assert.equal(bartenderTalkLine(HELL_BARTENDER.talkGeneral[0]), HELL_BARTENDER.talkGeneral[0]);
+    assert.match(buyWineConditions({ hasTicket: false }).reason, /Mourn your death or Celebrate your life at your gravestone\.$/);
+    assert.deepEqual(buyWinePlan({ hasTicket: false }).activity, [BARTENDER_TEXT.needTicket, BARTENDER_TEXT.ticketHow, BARTENDER_TEXT.tried]);
+    assert.deepEqual(grantWine({ hasTicket: false }).activity, [BARTENDER_TEXT.needTicket, BARTENDER_TEXT.ticketHow, BARTENDER_TEXT.tried]);
+  });
+
   it('sells one Wine of the Dead for one Diabolical Drink Ticket', () => {
-    assert.deepEqual(buyWineConditions({ hasTicket: false }), { state: 'disabled', reason: BARTENDER_TEXT.needTicketReason });
+    assert.deepEqual(buyWineConditions({ hasTicket: false }), { state: 'disabled', reason: `${BARTENDER_TEXT.needTicketReason} ${BARTENDER_TEXT.ticketHow}` });
     assert.equal(buyWineConditions({ hasTicket: true }).state, 'enabled');
     assert.equal(buyWinePlan({ hasTicket: false }).ok, false);
     // quests_get_flag is 0 outside the quest, so the first-purchase conversation runs every time.
@@ -234,7 +245,7 @@ describe('Hell Bar in play', () => {
     const engine = { inv: {}, streetTsid: PANKA_TSID };
     const verbs = hellBarFeature.verbsFor({ classId: 'hell_bartender' }, engine);
     assert.deepEqual(verbs.map((v) => [v.id, v.enabled]), [['buy_wine', false], ['talk_to', true]]);
-    assert.equal(verbs[0].reason, BARTENDER_TEXT.needTicketReason);
+    assert.equal(verbs[0].reason, `${BARTENDER_TEXT.needTicketReason} ${BARTENDER_TEXT.ticketHow}`);
     engine.inv.drink_ticket = 1;
     assert.equal(hellBarFeature.verbsFor({ classId: 'hell_bartender' }, engine)[0].enabled, true);
     assert.deepEqual(hellBarFeature.packVerbs('drink_ticket', engine), [], 'only in the bar');

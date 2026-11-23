@@ -5389,6 +5389,26 @@
    "rows": [
     "G1191"
    ]
+  },
+  {
+   "id": "bartender-ticket-how",
+   "title": "Hell's Bartender's no-ticket lines (the talk line, the Buy refusal) are followed by his own \"Ask a friend among the living to Mourn your death or Celebrate your life at your gravestone.\" (G1196).",
+   "kind": "UI",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/hell-bar.js",
+     "symbol": "BARTENDER_TEXT.ticketHow withTicketHow bartenderTalkLine buyWineConditions"
+    },
+    {
+     "file": "public/js/features/hell-bar-feature.js",
+     "symbol": "talkTo"
+    }
+   ],
+   "why": "The words are Glitch's (hell_bartender.js yes_quest_no_ticket 763), but Glitch said them only in the first-visit conversations; the Buy refusal and the after-quest talk line just said a ticket was needed, so players who croaked expected a ticket for nothing (#505, #596).",
+   "rows": [
+    "G1196"
+   ]
   }
 ]
 }

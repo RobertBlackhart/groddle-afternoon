@@ -38,6 +38,7 @@ import {
   BARTENDER_TEXT,
   HELL_BAR_LABEL,
   HELL_BAR_SOURCE_TSID,
+  bartenderTalkLine,
   bartenderTalkOptions,
   buyWineConditions,
   buyWinePlan,
@@ -48,7 +49,7 @@ import {
   isHellBarTsid,
   pickBartenderLine,
   talkStateFor,
-} from '../hell-bar.js?v=7f3bc564';
+} from '../hell-bar.js?v=60c97c46';
 import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=6ffaec43';
 
 export const HELL_BAR_FEATURE_ID = 'hell-bar';
@@ -220,7 +221,9 @@ function talkTo(engine) {
   const text = pickBartenderLine(options, lastTalk);
   lastTalk = text;
   speakTo(engine, 3000);
-  say(engine, text, 5000);
+  const line = bartenderTalkLine(text);
+  // G1196: the no-ticket line with where tickets come from stays up long enough to read.
+  say(engine, line, line === text ? 5000 : 8000);
 }
 
 function applyGrant(engine, result) {

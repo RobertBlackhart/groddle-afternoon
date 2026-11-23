@@ -313,6 +313,12 @@ export const BARTENDER_TEXT = Object.freeze({
   needTicketReason: 'You need a Diabolical Drink Ticket to buy Wine of the Dead.',
   /** buy_wine handler / grantWine: no ticket. */
   needTicket: HELL_BARTENDER.needTicket,
+  /**
+   * G1196: where a ticket comes from, in the Bartender's own words (hell_bartender.js
+   * conversation yes_quest_no_ticket 763). Glitch said it only in his first-visit conversations;
+   * here it also follows every no-ticket line, so a player who missed those learns it.
+   */
+  ticketHow: 'Ask a friend among the living to Mourn your death or Celebrate your life at your gravestone.',
   bought: "You bought wine from Hell's Bartender.",
   tried: "You tried to buy wine from Hell's Bartender.",
   /** items/drink_ticket.js buy_wine: no bartender within 200 px. */
@@ -364,9 +370,19 @@ export function pickBartenderLine(options, last = '', rng = Math.random) {
   return pool[Math.min(pool.length - 1, Math.floor(rng() * pool.length))];
 }
 
-/** buy_wine conditions(). */
+/** G1196: a no-ticket line, then where tickets come from (BARTENDER_TEXT.ticketHow). */
+export function withTicketHow(line) {
+  return `${line} ${BARTENDER_TEXT.ticketHow}`;
+}
+
+/** The talk_to line as said: G1196, the no-ticket line says where tickets come from. */
+export function bartenderTalkLine(text) {
+  return TALK_EXTRA.doneNoTicket.includes(text) ? withTicketHow(text) : text;
+}
+
+/** buy_wine conditions(); G1196: the refusal says where tickets come from. */
 export function buyWineConditions({ hasTicket = false } = {}) {
-  return hasTicket ? { state: 'enabled', reason: '' } : { state: 'disabled', reason: BARTENDER_TEXT.needTicketReason };
+  return hasTicket ? { state: 'enabled', reason: '' } : { state: 'disabled', reason: withTicketHow(BARTENDER_TEXT.needTicketReason) };
 }
 
 /**
@@ -375,7 +391,7 @@ export function buyWineConditions({ hasTicket = false } = {}) {
  * a quest not in the todo list, so outside the quest it runs every time), then grantWine.
  */
 export function buyWinePlan({ hasTicket = false, questStatus = 'none', buyFlag = false } = {}) {
-  if (!hasTicket) return { ok: false, conversation: null, activity: [BARTENDER_TEXT.needTicket, BARTENDER_TEXT.tried] };
+  if (!hasTicket) return { ok: false, conversation: null, activity: [BARTENDER_TEXT.needTicket, BARTENDER_TEXT.ticketHow, BARTENDER_TEXT.tried] };
   const flagged = questStatus === 'todo' && buyFlag;
   return { ok: true, conversation: flagged ? null : 'quest_buy_wine', activity: [] };
 }
@@ -386,7 +402,7 @@ export function buyWinePlan({ hasTicket = false, questStatus = 'none', buyFlag =
  * with the "Not this time!" line; any other purchase gets a wineResponse line.
  */
 export function grantWine({ hasTicket = false, packFull = false, questStatus = 'none', buyFlag = false, rng = Math.random } = {}) {
-  if (!hasTicket) return { ok: false, effects: [], bubble: null, activity: [BARTENDER_TEXT.needTicket, BARTENDER_TEXT.tried] };
+  if (!hasTicket) return { ok: false, effects: [], bubble: null, activity: [BARTENDER_TEXT.needTicket, BARTENDER_TEXT.ticketHow, BARTENDER_TEXT.tried] };
   if (packFull) return { ok: false, effects: [], bubble: BARTENDER_TEXT.packFull, activity: [BARTENDER_TEXT.tried] };
   const effects = [
     { type: 'consume_item', classTsid: 'drink_ticket', count: 1 },
