@@ -2814,9 +2814,19 @@
   "deployed": "2026-11-23"
  },
  "git": {
-  "commits": 3195,
+  "commits": 3199,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-23",
+    "kind": "improve",
+    "text": "A Pot Luck Day Chicken dressed in one costume can be re-dressed in the other, and each Chicken counts once per player"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "The Bureaucracy clerks sell Card-Carrying Qualifications to badge holders too, for street projects"
+   },
    {
     "date": "2026-11-23",
     "kind": "improve",
@@ -2926,16 +2936,6 @@
     "date": "2026-11-22",
     "kind": "fix",
     "text": "Players standing at a dirt pile no longer block clicking it"
-   },
-   {
-    "date": "2026-11-22",
-    "kind": "fix",
-    "text": "The Greedy Street Spirit's EXIT takes you back, and the box before it warns about unread acts"
-   },
-   {
-    "date": "2026-11-22",
-    "kind": "fix",
-    "text": "The missing floor and Symphonious Maximus put each deco on a layer Tiny Speck used it on"
    }
   ]
  },
