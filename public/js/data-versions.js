@@ -4284,7 +4284,6 @@
       "assets/decos/groddle/rock_dull_bg1.webp": "5bb05acf",
       "assets/decos/groddle/rock_dull_bg1@1.5x.webp": "7be268c5",
       "assets/decos/groddle/rock_dull_bg1@1.75x.webp": "2d2f52eb",
-      "assets/decos/groddle/rock_dull_bg2@1.75x.webp": "1f3d72f5",
       "assets/decos/groddle/rock_dull_bg4.webp": "e021bb02",
       "assets/decos/groddle/rock_dull_bg4@1.5x.webp": "ca9afcf2",
       "assets/decos/groddle/rock_dull_bg4@3.25x.webp": "63b94c0e",
