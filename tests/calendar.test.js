@@ -28,9 +28,9 @@ import {
   urHolidaysOn,
   urMidnight,
   urYear,
-} from '../public/js/calendar.js?v=f925d03e';
+} from '../public/js/calendar.js?v=3c4ef4cc';
 import { GAME_DAY_MS, dametimeParts } from '../public/js/game-day.js?v=50c112eb';
-import { RUN_MS, runAt } from '../public/js/feats-mp.js?v=d5cb2199';
+import { RUN_MS, runAt } from '../public/js/feats-mp.js?v=809b0452';
 import { calendarSeasons, isDametimeZilloween } from '../public/js/seasons.js?v=9588a3f5';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

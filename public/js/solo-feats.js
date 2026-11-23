@@ -221,7 +221,8 @@ export const SOLO_FEATS = Object.freeze([
     mp: true,
     goal: 4,
     unit: 'points',
-    what: "Leave a package with a neighbour's Butler. Each Butler counts once per Feat.",
+    // #631: Glitch gave 2 points per Butler (bag_butler.js 3801-3804); Glitch's own feat text has no line for it.
+    what: "Leave a package with a neighbour's Butler: 2 points for each Butler, once per Feat.",
     source: 'items/bag_butler.js 3802-3805 onLeavePackage: feats_increment(visiting_stones, 2) when this Butler holds nothing from you; neighbours-mp-feature butler_left settled',
   }),
   feat('pet_only', {

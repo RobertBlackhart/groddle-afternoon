@@ -38,7 +38,7 @@ import { spawnSync } from 'node:child_process';
 import { persist as persistGarden } from '../public/js/features/shared-gardens-feature.js?v=3800e7d5';
 import { persist as persistPatch } from '../public/js/features/shared-patches-feature.js?v=d49882be';
 import { persist as persistTrade } from '../public/js/features/trade-feature.js?v=9bd8db07';
-import { persist as persistFeat } from '../public/js/features/solo-feats-feature.js?v=13b5cb98';
+import { persist as persistFeat } from '../public/js/features/solo-feats-feature.js?v=51f322a7';
 import { persist as persistMayhem } from '../public/js/features/mayhem-feature.js?v=aed6ccb7';
 import { mpPersist as persistCrowns } from '../public/js/features/crowns-feature.js?v=ce40dbf9';
 import { flush as flushHomeStreet } from '../public/js/features/home-street-mp-feature.js?v=7483b7a9';

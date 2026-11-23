@@ -126,7 +126,7 @@ import { machineRoomsFeature } from './machine-rooms-feature.js?v=e83e9814'; FEA
 import { gardenGuanoFeature } from './garden-guano-feature.js?v=12e5a652'; FEATURES.push(gardenGuanoFeature);
 import { worldDropFeature } from './world-drop-feature.js?v=62707db6'; FEATURES.push(worldDropFeature);
 import { gardenNoticesFeature } from './garden-notices-feature.js?v=3235848a'; FEATURES.push(gardenNoticesFeature);
-import { soloFeatsFeature } from './solo-feats-feature.js?v=13b5cb98'; FEATURES.push(soloFeatsFeature);
+import { soloFeatsFeature } from './solo-feats-feature.js?v=51f322a7'; FEATURES.push(soloFeatsFeature);
 import { slashCommandsFeature } from './slash-commands-feature.js?v=2b9fe6a8'; FEATURES.push(slashCommandsFeature);
 import { hellTicketsFeature } from './hell-tickets-feature.js?v=d3ba4e1c'; FEATURES.push(hellTicketsFeature);
 import { packTreeVerbsFeature } from './pack-tree-verbs-feature.js?v=0ffcfd94'; FEATURES.push(packTreeVerbsFeature);
@@ -211,7 +211,7 @@ import { potLuckFeature } from './pot-luck-feature.js?v=a878804e'; FEATURES.push
 import { potLuckFeastFeature } from './pot-luck-feast-feature.js?v=18ea090d'; FEATURES.push(potLuckFeastFeature);
 // G1009 Thanksgiving Day's feast: eat-in-place piles of the week's table food (asks pot-luck-feast for its counts).
 import { feastDayFeature } from './feast-day-feature.js?v=785f283b'; FEATURES.push(feastDayFeature);
-import { calendarFeature } from './calendar-feature.js?v=0b10be39'; FEATURES.push(calendarFeature);
+import { calendarFeature } from './calendar-feature.js?v=5691d63f'; FEATURES.push(calendarFeature);
 import { streetObjectsFeature } from './street-objects-feature.js?v=514c23da'; FEATURES.push(streetObjectsFeature);
 import { realtimeFeature } from './realtime-feature.js?v=faf1bb4d'; FEATURES.push(realtimeFeature);
 import { accountBackupFeature } from './account-backup-feature.js?v=1b10b444'; FEATURES.push(accountBackupFeature);

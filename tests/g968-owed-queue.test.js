@@ -10,7 +10,7 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
-import { MP_ACTS, MP_ORDER, MP_PACE, RUN_MS } from '../public/js/feats-mp.js?v=d5cb2199';
+import { MP_ACTS, MP_ORDER, MP_PACE, RUN_MS } from '../public/js/feats-mp.js?v=809b0452';
 import {
   OWED_ANSWER_MS,
   OWED_MAX,
@@ -21,8 +21,8 @@ import {
   owedRestore,
   owedSave,
   retryDelay,
-} from '../public/js/feat-owed.js?v=83eb6c59';
-import { soloFeatsFeature } from '../public/js/features/solo-feats-feature.js?v=13b5cb98';
+} from '../public/js/feat-owed.js?v=7dccad6e';
+import { soloFeatsFeature } from '../public/js/features/solo-feats-feature.js?v=51f322a7';
 
 const root = join(import.meta.dirname, '..');
 const RUN = 5400;

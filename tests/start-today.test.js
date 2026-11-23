@@ -12,8 +12,8 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { androidBrowser, badgeCandidates, featTile, pickNudge, pickTip, skillTile, START_TIPS, studyLeft, tipText } from '../public/js/start-today.js?v=d2df732c';
-import { runAt } from '../public/js/feats-mp.js?v=d5cb2199';
-import { FEAT_BY_ID } from '../public/js/solo-feats.js?v=3bc9b43c';
+import { runAt } from '../public/js/feats-mp.js?v=809b0452';
+import { FEAT_BY_ID } from '../public/js/solo-feats.js?v=ed1492fc';
 
 const read = (rel) => readFileSync(join(import.meta.dirname, '..', rel), 'utf8');
 

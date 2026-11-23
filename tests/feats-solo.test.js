@@ -41,10 +41,10 @@ import {
   reopenDueFeats,
   reopenText,
   reopensAt,
-} from '../public/js/solo-feats.js?v=3bc9b43c';
+} from '../public/js/solo-feats.js?v=ed1492fc';
 import { DAY_NAMES, GAME_DAY_MS } from '../public/js/game-day.js?v=50c112eb';
-import { soloFeatsFeature } from '../public/js/features/solo-feats-feature.js?v=13b5cb98';
-import { FEATURES } from '../public/js/features/index.js?v=81e98d50';
+import { soloFeatsFeature } from '../public/js/features/solo-feats-feature.js?v=51f322a7';
+import { FEATURES } from '../public/js/features/index.js?v=c33e4161';
 import { createPlayerSave, parsePlayerSave, serializePlayerSave } from '../public/js/player-save.js?v=cc7a6efd';
 import { createResourceNode, harvestResourceNode } from '../public/js/resource-nodes.js?v=cf9aae18';
 
@@ -692,5 +692,17 @@ describe('G171: Feats open again each game week', () => {
     assert.match(done.calls.data.soloFeats, /animal_love:50\/50/);
     const left = Number(done.calls.data.soloFeatReopens.split(':')[1]);
     assert.ok(Math.abs(left - 6 * GAME_DAY_MS) < 5000, String(left));
+  });
+});
+
+describe('#631: The Good Neighbor says what a package is worth', () => {
+  it('2 points for each Butler, as Glitch gave (bag_butler.js 3801-3804 feats_increment visiting_stones 2)', () => {
+    const f = FEAT_BY_ID.visiting_stones;
+    assert.match(f.what, /2 points for each Butler/);
+    assert.equal(f.unit, 'points');
+    if (!hasGsjs) return;
+    const butler = readFileSync(join(GSJS, 'items', 'bag_butler.js'), 'utf8');
+    assert.match(butler, /pc\.feats_increment\('visiting_stones', 2\);/);
+    assert.doesNotMatch(f.what, /—/);
   });
 });

@@ -124,7 +124,7 @@ import {
   resetPending,
   streakCheck,
   takePending,
-} from '../solo-feats.js?v=3bc9b43c';
+} from '../solo-feats.js?v=ed1492fc';
 import { saveStore, savedThrough } from '../save-store.js?v=cd053443';
 import {
   capHeld,
@@ -140,7 +140,7 @@ import {
   owedSent,
   placeOwed,
   runKey,
-} from '../feat-owed.js?v=83eb6c59';
+} from '../feat-owed.js?v=7dccad6e';
 import { gainMetabolic } from '../metabolics.js?v=48f784bf';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { GIANTS } from '../shrines.js?v=de74a29b';
@@ -161,7 +161,7 @@ import {
   runFromServer,
   vogFor,
   youLine,
-} from '../feats-mp.js?v=d5cb2199';
+} from '../feats-mp.js?v=809b0452';
 
 const POLL_MS = 500;
 /** How often an open panel redraws its "Opens again in" lines. */
