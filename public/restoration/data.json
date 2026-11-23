@@ -2814,9 +2814,29 @@
   "deployed": "2026-11-23"
  },
  "git": {
-  "commits": 3140,
+  "commits": 3145,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-22",
+    "kind": "fix",
+    "text": "The missing floor and Symphonious Maximus put each deco on a layer Tiny Speck used it on"
+   },
+   {
+    "date": "2026-11-22",
+    "kind": "fix",
+    "text": "The sharp-deco SVG check runs on machines without Playwright's own Chromium"
+   },
+   {
+    "date": "2026-11-22",
+    "kind": "fix",
+    "text": "Symphonious Maximus is its real size and layout: 4000 x 1500 with the star arcs, eight craters, the ladder and a lower tier of ground chunks"
+   },
+   {
+    "date": "2026-11-22",
+    "kind": "fix",
+    "text": "The missing floor looks as it did in 2012: night windows with the moon, bulbs on two ropes, filing cabinets and a painted EXIT arrow"
+   },
    {
     "date": "2026-11-22",
     "kind": "improve",
@@ -2916,26 +2936,6 @@
     "date": "2026-11-22",
     "kind": "fix",
     "text": "Furniture stands at its own depth: back wall, chair line, rug line or front"
-   },
-   {
-    "date": "2026-11-22",
-    "kind": "fix",
-    "text": "The check and cross on prompts like \"Are you stuck?\" sit on a light cream face so they read"
-   },
-   {
-    "date": "2026-11-22",
-    "kind": "fix",
-    "text": "The featured line follows a stand-in while the featured project waits between phases, and says when it is back"
-   },
-   {
-    "date": "2026-11-22",
-    "kind": "fix",
-    "text": "Get off the Subway keeps your ride until the station loads, and a car with no ride shows the way out"
-   },
-   {
-    "date": "2026-11-22",
-    "kind": "fix",
-    "text": "A trip that fails to load tries once more, then leaves you where you were and says so"
    }
   ]
  },
