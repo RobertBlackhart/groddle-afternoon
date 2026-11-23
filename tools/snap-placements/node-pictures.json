@@ -1,0 +1,31 @@
+{
+  "about": "Peat Bogs, Dirt Piles and trants where whole-street pictures of 2011-2012 show them, on streets no player's full-street snap covers (lane nodek, 2026-11-23, #633 G1182). Glitch set all three by hand (peat_1.js, dirt_pile.js, trant_*.js obey_physics false) and the 2012 location files only count them, so the planner chose floors of its own: Bonelington Hole's Dirt Pile stood at the far west end, not in the cave, and Luiro Run's and Naatamo Way's fourth Peat Bog had no planned seat at all (street-ecology.js PLANNED_NODE_CAPS: 3 planned bogs at most). Read off each street's pictures (paths under research/; reference only, never shipped): every picture resized to the street (each is the whole street, aspect within 0.1%), then our own CC0 art (js/resource-nodes.js sheets, assets/sprites/trants/frames) matched in a 140 px window around the spot seen by eye, masked normalized cross-correlation as tools/snap-placements/nodes.py does on snaps, and every hit checked by eye on a zoomed crop. Scores: Luiro Run's bogs 0.85-0.92 on the Nov 2012 Flickr picture and 0.79-0.84 on the Tumblr one, the same spots and variants on both and on the Sept 2012 Wayback render; Naatamo Way's 0.83-0.89 (the fourth 0.72, a harvested bog behind grass, plain on the crop); Bonelington Hole's Egg Plants 0.83-0.90 and its Dirt Pile 0.65-0.67 (a small blob at these sizes, plain on both crops) on the July 2011 Wayback render and the Tumblr picture. Good to about 10 px: one picture px is 2.4 to 5.6 street px. Spots are street px (0, 0 = the street's top left, as street-model.js platformsScreen): peat_1 and dirt_pile [x, y, variant] (the frame cell's bottom centre, peat<n>, dirt<n>), trees [x, y, class, stage] (the trunk's foot, as nodes.py's TREE_SPOTS). tools/snap-placements/node-pictures.mjs seats a node that hangs more than 25 px over its floor (nodes.py's rule) and writes public/js/node-picture-spots-data.js. Hand-kept: edit here, then run that tool.",
+  "streets": {
+    "GCRHSGTEION115H": {
+      "label": "Bonelington Hole",
+      "pictures": [
+        "wayback/raw/street-images/groddle-meadow/LCRHSGTEION115H_main_1311272112.jpg",
+        "community-2026-11-22/tumblr/johnexploresur/johnexploresur_53787158435_0_bonelington-hole-groddle-meadow.png"
+      ],
+      "dirt_pile": [[2646, 1241, 1]],
+      "trees": [[1836, 1229, "trant_egg", 10], [2200, 1219, "trant_egg", 10]]
+    },
+    "GIF12EQUGVU1RPI": {
+      "label": "Luiro Run",
+      "pictures": [
+        "community-2026-11-22/flickr/emdot-at-glitch/8195217636_luiro-run.jpg",
+        "community-2026-11-22/tumblr/johnexploresur/johnexploresur_57733036335_0_luiro-run-jethimadh.png",
+        "wayback/raw/street-images/jethimadh/LIF12EQUGVU1RPI_main_1346718658.jpg"
+      ],
+      "peat_1": [[490, 852, 1], [1714, 918, 3], [2646, 869, 2], [4720, 797, 1]]
+    },
+    "GIFN3FI0TNU10PS": {
+      "label": "Naatamo Way",
+      "pictures": [
+        "community-2026-11-22/flickr/emdot-at-glitch/8195246350_naatamo-way.jpg",
+        "community-2026-11-22/tumblr/johnexploresur/johnexploresur_57909525300_0_naatamo-way-jethimadh.png"
+      ],
+      "peat_1": [[1181, 836, 2], [1869, 775, 3], [3379, 866, 2], [4584, 776, 2]]
+    }
+  }
+}

@@ -20,6 +20,7 @@ import {
   ROCK_SPARKLY_SPOTS,
   TREE_SPOTS,
 } from './node-spots-data.js?v=97d4281c';
+import { DIRT_PILE_PICTURE_SPOTS, PEAT_PICTURE_SPOTS, TREE_PICTURE_SPOTS } from './node-picture-spots-data.js?v=36608622';
 import { SHRINE_SPOTS } from './shrine-spots-data.js?v=c45dc2c2';
 import { gardenBedWidth, measuredGardenBeds, pictureGardenBeds } from './garden-beds.js?v=2ac6a12c';
 import { JELLISAC_HOLE_SPOTS } from './jellisac-hole-spots-data.js?v=256c00e9';
@@ -200,7 +201,12 @@ export const MEASURED_NODE_SPOTS = Object.freeze({
   // G933 (#453): a Jellisac the snaps never measured sits in its street's empty hole first
   // (tools/build-jellisac-hole-spots.mjs); only those left over are planned on a floor.
   jellisac: Object.freeze({ variantPrefix: 'jellySack', streets: Object.freeze({ ...JELLISAC_SPOTS, ...JELLISAC_HOLE_SPOTS }) }),
-  peat_1: Object.freeze({ variantPrefix: 'peat', streets: PEAT_SPOTS }),
+  // #633 (G1182): a street no snap covers takes the spots its 2011-2012 pictures show
+  // (tools/snap-placements/node-pictures.mjs): Luiro Run's and Naatamo Way's four bogs.
+  peat_1: Object.freeze({ variantPrefix: 'peat', streets: Object.freeze({ ...PEAT_PICTURE_SPOTS, ...PEAT_SPOTS }) }),
+  // #633 (G1182): Dirt Piles were set by hand too (dirt_pile.js obey_physics false); no snap shows
+  // one, so only a street picture places one (Bonelington Hole's, in the cave): the rest are planned.
+  dirt_pile: Object.freeze({ variantPrefix: 'dirt', streets: DIRT_PILE_PICTURE_SPOTS }),
   // A Paper Tree's art follows its paper and care, never a variant: its spots carry none (null).
   paper_tree: Object.freeze({ variantPrefix: '', streets: PAPER_TREE_SPOTS }),
   // A rock's variant is the class of the shape the snap shows (rock_metal_2: items/rock_metal_2.js, proxy_item rock_metal_1).
@@ -430,7 +436,8 @@ export function rockSpawnPlan(population, points = [], tsid = '') {
  */
 export function measuredTreeSpots(tsid) {
   for (const alias of streetEcologyAliases(tsid)) {
-    const rows = TREE_SPOTS[alias];
+    // #633 (G1182): a street no snap covers takes the trants its 2011-2012 pictures show (node-picture-spots-data.js).
+    const rows = TREE_SPOTS[alias] || TREE_PICTURE_SPOTS[alias];
     if (rows?.length) {
       return rows
         .filter((row) => Number.isFinite(row?.[0]) && Number.isFinite(row?.[1]))
@@ -1393,7 +1400,7 @@ export function streetReservedSpots(street) {
 }
 
 /**
- * Report #319: the measured Peat Bogs, Jellisacs, Mortar Barnacles and Paper Trees (measuredNodeSpots,
+ * Report #319: the measured Peat Bogs, Jellisacs, Mortar Barnacles, Paper Trees and Dirt Piles (measuredNodeSpots,
  * drawn where the snaps show them, resource-nodes-feature resourceSpawnPlan) as keep-clear spots, so
  * a planned shrine, tree, rock, vendor, garden or animal never stands on one and a quoin keeps its
  * distance, as of a measured rock or tree (Viscid Pud's shrine was planned 32 px from its peat).
@@ -1408,6 +1415,8 @@ export const MEASURED_NODE_COVERS = Object.freeze({
   mortar_barnacle: Object.freeze({ clearance: 42, cells: Object.freeze({ blister1: [39, 44], blister2: [35, 40], blister3: [35, 39], blister4: [36, 40], blister5: [32, 39], blister6: [39, 47] }) }),
   jellisac: Object.freeze({ clearance: 42, cells: Object.freeze({ jellySack1: [40, 48], jellySack2: [42, 46], jellySack3: [44, 39], jellySack4: [47, 52] }) }),
   peat_1: Object.freeze({ clearance: 115, cells: Object.freeze({ peat1: [211, 52], peat2: [166, 46], peat3: [178, 57] }) }),
+  // #633: resource-nodes.js dirt_pile sheets dirt1 and dirt2, 195 x 71.
+  dirt_pile: Object.freeze({ clearance: 110, cells: Object.freeze({ dirt1: [195, 71], dirt2: [195, 71] }) }),
   // One art for every Paper Tree (its sheet follows its care): 232 x 216.
   paper_tree: Object.freeze({ clearance: 135, cells: Object.freeze({ '': [232, 216] }) }),
 });
