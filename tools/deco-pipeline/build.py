@@ -89,6 +89,18 @@ SWF_WINS = {
     # Grimssea Hollow's bark: FFDec's raster and SVG agree but for anti-aliasing on a 25 px wide
     # deco (alpha 6.2 against svg_alpha 5).
     'tree_knot_01b_et1': 'the old PNG is the same knot drawn wider and blockier',
+    # G1169/G1170: Children of Ur PNG exports that lost the SWF's bitmap fill (wood grain, stone
+    # texture) and came out as flat colour; FFDec's SVG export drops bitmap fills too, so only the
+    # raster render has them. The 2012 street templates show the textured hut, leg and body3.
+    'bottletree_burb_wndw_1': 'the old PNG lost the wood-grain bitmap fill (a flat orange blob)',
+    'legs_front_1_small': 'the old PNG lost the bark bitmap fill (a flat olive pipe, no spots)',
+    'column1': 'the old PNG lost the wood-grain bitmap fill (flat brown)',
+    'column3': 'the old PNG lost the wood-grain bitmap fill (flat red)',
+    'column_plain': 'the old PNG lost the wood-grain bitmap fill (flat red)',
+    'adobe_2_short': 'the old PNG lost the plaster bitmap fill (flat tan)',
+    'archway_x_middleplus': 'the old PNG lost the stone bitmap fill (flat tan)',
+    'door_asset_gray': 'the old PNG lost the stone bitmap fill (flat grey)',
+    'bottletree_body3': 'the old PNG is yellow with spots; the SWF and the 2012 templates draw brown wood grain',
 }
 
 SETTINGS = {
