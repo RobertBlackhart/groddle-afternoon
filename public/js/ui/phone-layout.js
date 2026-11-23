@@ -67,12 +67,13 @@ const num = (v, d = 0) => (Number.isFinite(Number(v)) ? Number(v) : d);
  * `sheet` the open sheet ('' | 'map' | 'half' | 'bag'); `pack` the pack row's box (null: the
  * fallback band, centred; `packShown: false` none, the tutorial's); `bagTop` the open bag tray's
  * top; `caption` and `pin` the measured { w, h } of the street's caption and the pinned quest card
- * (pin null when nothing is pinned); `captionUnder` whether the caption sits under the strip (upright,
+ * (pin null when nothing is pinned; null in the result when it has no room clear of the controls);
+ * `controls` the measured { stick, act, jump } boxes where the page has them; `captionUnder` whether the caption sits under the strip (upright,
  * and sideways when the pills leave it no room: topbar.js .is-under). Returns { upright, strip, caption, notices, pin, stick, act,
  * jump, pack, sheet, dock } (boxes { left, top, right, bottom }, null where a piece has no room or
  * is covered; dock is what engine.setStageDock takes).
  */
-export function phoneRegions({ width, height, safe = {}, sheet = '', pack = null, packShown = true, bagTop = NaN, caption = null, captionUnder = null, pin = null } = {}) {
+export function phoneRegions({ width, height, safe = {}, sheet = '', pack = null, packShown = true, bagTop = NaN, caption = null, captionUnder = null, pin = null, controls = null } = {}) {
   const W = Math.max(0, num(width));
   const H = Math.max(0, num(height));
   const st = Math.max(0, num(safe.t));
@@ -99,10 +100,14 @@ export function phoneRegions({ width, height, safe = {}, sheet = '', pack = null
   const under = capUnder ? captionBox.bottom : strip.bottom;
 
   // The controls stand on the pack row; Act a little higher, beside Jump (style.css TOUCH, #327).
-  const base = floor - 4;
-  let stick = box(sl + EDGE, base - STICK, sl + EDGE + STICK, base);
-  let jump = box(W - sr - 12 - JUMP, base - 12 - JUMP, W - sr - 12, base - 12);
-  let act = box(jump.left - 10 - ACT, base - 12 - 44 - ACT, jump.left - 10, base - 12 - 44);
+  // Where the page has them laid out (`controls`, measured), those win: the tutorial hides the pack row
+  // but the controls keep standing on its band.
+  const real = (b) => b && b.right > b.left && b.bottom > b.top;
+  let base = floor - 4;
+  if (real(controls?.stick)) base = Math.round(controls.stick.bottom);
+  let stick = real(controls?.stick) ? box(controls.stick.left, controls.stick.top, controls.stick.right, controls.stick.bottom) : box(sl + EDGE, base - STICK, sl + EDGE + STICK, base);
+  let jump = real(controls?.jump) ? box(controls.jump.left, controls.jump.top, controls.jump.right, controls.jump.bottom) : box(W - sr - 12 - JUMP, base - 12 - JUMP, W - sr - 12, base - 12);
+  let act = real(controls?.act) ? box(controls.act.left, controls.act.top, controls.act.right, controls.act.bottom) : box(jump.left - 10 - ACT, base - 12 - 44 - ACT, jump.left - 10, base - 12 - 44);
 
   // The pinned quest: over the stick upright; beside it sideways, clear of its ring.
   let pinBox = null;
@@ -112,7 +117,9 @@ export function phoneRegions({ width, height, safe = {}, sheet = '', pack = null
     pinBox = upright
       ? box(stick.left, stick.top - GAP - ph, stick.left + pw, stick.top - GAP)
       : box(stick.right + GAP, base - ph, stick.right + GAP + pw, base);
-    if (!upright && pinBox.right > act.left - GAP) pinBox = null;
+    // No room clear of the controls, the caption or the pack row: it waits (hidden) rather than cover one.
+    const keep = [stick, act, jump, packBox, captionBox, strip];
+    if (pinBox.top < (capUnder ? captionBox.bottom : strip.bottom) + GAP || keep.some((b) => boxesOverlap(pinBox, b))) pinBox = null;
   }
 
   let sheetBox = null;
@@ -408,13 +415,20 @@ export function mountPhoneLayout({ doc = globalThis.document, root, sheets = {},
       bagTop: Number.isFinite(s.top) ? s.top - rr.top : NaN,
       caption: shown(plate) ? { w: plate.offsetWidth, h: plate.offsetHeight } : null,
       captionUnder: rr.height > rr.width || Boolean(plate?.classList.contains('is-under')),
-      pin: shown(pins) ? { w: pins.offsetWidth, h: pins.offsetHeight } : null,
+      pin: pins && !pins.hidden && pins.getClientRects().length ? { w: pins.offsetWidth, h: pins.offsetHeight } : null,
+      controls: Object.fromEntries(['stick', 'act', 'jump'].map((k) => {
+        const el = doc.querySelector(`#game-root .touch-${k}`);
+        return [k, el?.getClientRects().length ? shift(rectOf(el)) : null];
+      })),
     });
     const key = JSON.stringify([s.kind, regions]);
     if (key === last) return;
     last = key;
     current = regions;
     html.dataset.phoneSheet = s.kind;
+    // The pinned quest waits (hidden) where it has no room clear of the controls.
+    if (pins && !pins.hidden) html.dataset.phonePin = regions.pin ? 'on' : 'off';
+    else delete html.dataset.phonePin;
     const set = (name, v) => {
       const px = `${Math.round(v)}px`;
       if (html.style.getPropertyValue(name) !== px) html.style.setProperty(name, px);

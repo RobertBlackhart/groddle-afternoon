@@ -15525,6 +15525,8 @@ body.is-booting .touch-controls { display: none; }
 
 /* Docked beside a sheet or a bag (engine.setStageDock), the room the canvas leaves is the dark band (G880). */
 :root.phone-layout[data-ui="modern"] #game-root[data-stage-docked] { background-color: var(--c-grey-29); }
+/* No room for the pinned quest clear of the controls (js/ui/phone-layout.js): it waits. */
+:root.phone-layout[data-ui="modern"][data-phone-pin="off"] #game-root #quest-pins { visibility: hidden; }
 /* A sheet or an open bag covers the street's floor: the controls and the pinned quest wait. */
 :root.phone-layout[data-ui="modern"]:is([data-phone-sheet="map"], [data-phone-sheet="half"], [data-phone-sheet="bag"]) #game-root :is(.touch-controls, #quest-pins) { visibility: hidden; }
 

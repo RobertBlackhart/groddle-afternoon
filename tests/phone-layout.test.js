@@ -10,7 +10,9 @@
  * - a sheet, the Social drawer and an open bag dock the stage (engine.setStageDock, owners);
  * - notices keep to their region (js/notify-view.js `region`);
  * - #595: nothing in the top row or the caption is cut (an ellipsis, or text wider than its box)
- *   with big counts at 360 to 402 px wide, and in the tutorial the pill is only as wide as its icons.
+ *   with big counts at 360 to 402 px wide, and in the tutorial the pill is only as wide as its icons;
+ * - the pinned quest never covers the stick (the tutorial too), and the action chip ("Tap · choose
+ *   from 4", drawn on the canvas) keeps off Act, Jump, the stick and the card (R1 audit #5).
  * Run: node --test tests/phone-layout.test.js
  */
 import { describe, it, before, after } from 'node:test';
@@ -20,7 +22,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
   GAP, PILL_IDS, STICK, boxesOverlap, fullScreenWay, layoutProblems, phoneRegions, pillBadge,
-} from '../public/js/ui/phone-layout.js?v=3c2af581';
+} from '../public/js/ui/phone-layout.js?v=d5780ebf';
 import { phonePins } from '../public/js/ui/quest-pin-button.js?v=ec4d53fa';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -65,6 +67,18 @@ describe('phone layout: the regions (pure)', () => {
     assert.equal(side.stick.right - side.stick.left, STICK);
     assert.ok(!boxesOverlap(side.pin, side.act) && !boxesOverlap(side.pin, side.stick));
     for (const sheet of ['bag', 'map', 'half']) assert.equal(phoneRegions({ width: 375, height: 667, sheet, bagTop: 400, pin: { w: 200, h: 50 } }).pin, null, sheet);
+  });
+
+  it('the pinned quest follows the controls where the page laid them out, and waits rather than cover the stick', () => {
+    // The tutorial hides the pack row but the controls keep standing on its band: measured, they win.
+    const stick = { left: 8, top: 520, right: 140, bottom: 652 };
+    const r = phoneRegions({ width: 390, height: 844, packShown: false, pin: { w: 200, h: 50 }, controls: { stick, act: { left: 232, top: 576, right: 292, bottom: 636 }, jump: { left: 302, top: 564, right: 378, bottom: 640 } } });
+    assert.deepEqual(r.stick, stick);
+    assert.equal(r.pin.bottom, stick.top - GAP);
+    assert.ok(!boxesOverlap(r.pin, r.stick));
+    // A stick so high there is no room above it under the caption: the card waits.
+    const high = phoneRegions({ width: 390, height: 844, pin: { w: 200, h: 50 }, controls: { stick: { left: 8, top: 80, right: 140, bottom: 212 } } });
+    assert.equal(high.pin, null);
   });
 
   it('the Map takes the whole height (sideways the whole screen) and leaves the notices no room', () => {
@@ -207,6 +221,7 @@ describe('phone layout: no overlaps on the real game (Chrome)', { skip: !chromiu
             caption: document.getElementById('street-nameplate'),
             notices: document.querySelector('.notify-notices:not(.is-waiting)'),
             pin: document.getElementById('quest-pins'),
+            prompt: null,
             stick: document.querySelector('.touch-stick'),
             act: document.querySelector('.touch-act'),
             jump: document.querySelector('.touch-jump'),
@@ -216,20 +231,27 @@ describe('phone layout: no overlaps on the real game (Chrome)', { skip: !chromiu
           };
           const boxes = {};
           for (const [k, el] of Object.entries(pieces)) if (seen(el) && (k !== 'notices' || el.children.length)) boxes[k] = rect(el);
+          // The action chip ("Tap · choose from 4") is drawn on the canvas: its box is canvas data promptCss.
+          const pc = document.querySelector('#game-root canvas')?.dataset.promptCss;
+          // Under the Map it is covered, as the street is.
+          if (pc && st !== 'map') {
+            const [left, top, right, bottom] = pc.split(',').map(Number);
+            boxes.prompt = { left, top, right, bottom };
+          }
           // The Map covers everything under it (sideways the top row too): only what is in front counts.
           const front = (k) => {
             const b = boxes[k];
             const at = document.elementFromPoint(Math.min(innerWidth - 1, Math.max(0, (b.left + b.right) / 2)), Math.min(innerHeight - 1, Math.max(0, (b.top + b.bottom) / 2)));
             return st !== 'map' || k === 'sheet' || Boolean(at && (pieces[k].contains(at) || at.contains(pieces[k])));
           };
-          for (const k of Object.keys(boxes)) if (!front(k)) delete boxes[k];
+          for (const k of Object.keys(boxes)) if (k !== 'prompt' && !front(k)) delete boxes[k];
           const pillShown = [...document.querySelectorAll('.top-bar .top-actions > *, .top-bar .top-actions .more-menu > button')].filter((b) => seen(b) && (b.tagName === 'BUTTON' || b.tagName === 'A')).sort((a, b) => a.getBoundingClientRect().left - b.getBoundingClientRect().left).map((b) => b.id);
           return { boxes, pillShown, sheet: document.documentElement.dataset.phoneSheet, dock: document.querySelector('#game-root canvas')?.dataset.phoneDock || '' };
         }, state);
         const where = `${w}x${h} ${state}`;
         if (!got.boxes.sheet && state !== 'street' && state !== 'bag') bad.push(`${where}: the sheet did not open`);
         if (state === 'bag' && !got.boxes.bag) bad.push(`${where}: the bag did not open`);
-        for (const p of layoutProblems(got.boxes, { width: w, height: h })) bad.push(`${where}: ${p}`);
+        for (const p of layoutProblems(got.boxes, { width: w, height: h })) bad.push(`${where}: ${p}${/prompt/.test(p) ? ` ${JSON.stringify(got.boxes.prompt)}` : ''}`);
         if (state !== 'map' && got.pillShown.join(',') !== 'fullscreen-btn,bug-btn,social-btn,more-btn') bad.push(`${where}: the pill shows ${got.pillShown.join(',')}`);
         if (['bag', 'quests', 'social', 'menu'].includes(state) && !got.dock) bad.push(`${where}: the stage did not dock`);
         // Every piece is there to be checked (a missing one would pass by not being measured).
@@ -268,7 +290,12 @@ describe('phone layout: no overlaps on the real game (Chrome)', { skip: !chromiu
         else if (getComputedStyle(el).textOverflow === 'ellipsis' && el.clientWidth > 0 && el.scrollWidth > el.clientWidth) cut.push(`${name} ellipsis`);
       }
       const boxes = {};
-      for (const [k, el] of Object.entries({ stats: document.getElementById('hud-stats'), tutorial: document.getElementById('newxp-pill'), pill: document.querySelector('.top-bar .top-actions'), caption: document.getElementById('street-nameplate') })) if (seen(el)) boxes[k] = rect(el);
+      for (const [k, el] of Object.entries({ stats: document.getElementById('hud-stats'), tutorial: document.getElementById('newxp-pill'), pill: document.querySelector('.top-bar .top-actions'), caption: document.getElementById('street-nameplate'), pin: document.getElementById('quest-pins'), stick: document.querySelector('.touch-stick'), act: document.querySelector('.touch-act'), jump: document.querySelector('.touch-jump') })) if (seen(el)) boxes[k] = rect(el);
+      const pc = document.querySelector('#game-root canvas')?.dataset.promptCss;
+      if (pc) {
+        const [left, top, right, bottom] = pc.split(',').map(Number);
+        boxes.prompt = { left, top, right, bottom };
+      }
       // The pill is as wide as what it shows (the tutorial left it four icons wide holding only Sound).
       const pill = document.querySelector('.top-bar .top-actions');
       const shown = [...pill.querySelectorAll('button, a')].filter((b) => seen(b) && b.closest('.more-list') == null);
@@ -278,7 +305,7 @@ describe('phone layout: no overlaps on the real game (Chrome)', { skip: !chromiu
     const bad = [];
     const check = (where, got, w, h) => {
       for (const c of got.cut) bad.push(`${where}: cut ${c}`);
-      for (const p of layoutProblems(got.boxes, { width: w, height: h })) bad.push(`${where}: ${p}`);
+      for (const p of layoutProblems(got.boxes, { width: w, height: h })) bad.push(`${where}: ${p}${/prompt/.test(p) ? ` ${JSON.stringify(got.boxes.prompt)}` : ''}`);
       if (got.pillW - got.used > 24) bad.push(`${where}: the pill is ${Math.round(got.pillW)} px wide for ${Math.round(got.used)} px of ${got.shown} icons`);
       // Pills that do not touch: at least a few px apart.
       const left = got.boxes.stats || got.boxes.tutorial;
@@ -298,10 +325,14 @@ describe('phone layout: no overlaps on the real game (Chrome)', { skip: !chromiu
     }
     await tab.goto(`${base}/play/?autostart=1&questoffer=off&hstip=0&newxp=clouds`);
     await tab.waitForFunction(() => document.getElementById('newxp-pill') && !document.getElementById('newxp-pill').hidden, null, { timeout: 60_000 });
-    for (const [w, h] of [[360, 780], [390, 844]]) {
+    // A quest pinned before the tutorial (its card stood on the stick there, Austin's iPhone).
+    await tab.evaluate(() => window.groddleQA?.questPins?.pin('animalkinship_pet_piggies'));
+    for (const [w, h] of [[360, 780], [390, 844], [844, 390]]) {
       await tab.setViewportSize({ width: w, height: h });
       await tab.waitForTimeout(700);
-      check(`${w}x${h} tutorial`, await tab.evaluate(look), w, h);
+      const got = await tab.evaluate(look);
+      if (!got.boxes.stick) bad.push(`${w}x${h} tutorial: no stick to measure`);
+      check(`${w}x${h} tutorial`, got, w, h);
     }
     await ctx.close();
     assert.deepEqual(bad, []);

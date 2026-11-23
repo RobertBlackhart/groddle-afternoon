@@ -1128,7 +1128,7 @@ import { contextNeedsResume, createAudioResumer } from './js/audio-resume.js?v=7
 import { bubbleMs } from './js/read-time.js?v=3151fb1a';
 import { mountNotifyView } from './js/notify-view.js?v=0fbfad68';
 import { mountSocialDrawer } from './js/ui/social-drawer.js?v=a41889ed';
-import { installPhonePill, mountPhoneLayout } from './js/ui/phone-layout.js?v=3c2af581';
+import { installPhonePill, mountPhoneLayout } from './js/ui/phone-layout.js?v=d5780ebf';
 import { bindChatLinks } from './js/chat-links.js?v=b717fac7';
 import { SIDE_SHEET_IDS, bindTabs, inSideSheet, mountPanelShell, sheetKeyToWorld } from './js/ui/panel-shell.js?v=06a0d3fe';
 import { createQuestSheet, failedQuestPin, questLogNeedsSwap, questStep, visibleRowCount } from './js/ui/quest-sheet.js?v=b612c898';
@@ -8124,7 +8124,10 @@ function settlePrompt(want, now) {
  * they have gone. Rects in Pixi global px (app.screen), from #game-root px.
  */
 function promptKeepClear(arms = null) {
-  if (!prompt?.visible) return;
+  if (!prompt?.visible) {
+    syncPromptCss(0);
+    return;
+  }
   if (Number.isFinite(prompt._baseY)) prompt.y = prompt._baseY;
   if (arms && Number.isFinite(prompt._baseX)) prompt.x = clampWorldOverlayX(prompt._baseX, prompt.width, 12);
   const boxes = notifyZoneGlobalBoxes();
@@ -8150,8 +8153,59 @@ function promptKeepClear(arms = null) {
       else alpha = 0;
     }
   }
+  // PHONE LAYOUT (G1194, R1 audit #5): on a phone the chip ("Tap · choose from 4") sat under Act. It
+  // keeps off Act, Jump, the stick and the pinned quest: it rises above them, or waits.
+  if (alpha && TOUCH_PHONE) {
+    const controls = phoneControlGlobalBoxes();
+    const b = prompt.getBounds();
+    const chip = { left: b.x, right: b.x + b.width, top: b.y, bottom: b.y + b.height };
+    const near = (c, o) => c.left < o.right + 4 && c.right > o.left - 4 && c.top < o.bottom + 4 && c.bottom > o.top - 4;
+    const hit = controls.filter((o) => near(chip, o));
+    if (hit.length) {
+      const dy = Math.min(...hit.map((o) => o.top)) - 6 - chip.bottom;
+      const moved = { ...chip, top: chip.top + dy, bottom: chip.bottom + dy };
+      const scale = Math.abs(promptLayer?.worldTransform?.d || 1) || 1;
+      if (dy >= -220 && moved.top >= 0 && ![...boxes, ...controls].some((o) => near(moved, o))) prompt.y += dy / scale;
+      else alpha = 0;
+    }
+  }
   if (prompt.alpha !== alpha) prompt.alpha = alpha;
+  syncPromptCss(alpha);
   if (app?.canvas) app.canvas.dataset.promptZone = alpha ? (prompt.y !== prompt._baseY ? 'moved' : side !== null ? 'beside' : '') : 'waiting';
+}
+
+/** PHONE LAYOUT (G1194): the touch controls and the pinned quest card in Pixi global px, re-read every 100 ms. */
+let phoneControlCache = { at: -Infinity, boxes: [] };
+function phoneControlGlobalBoxes() {
+  const now = performance.now();
+  if (now - phoneControlCache.at < 100) return phoneControlCache.boxes;
+  phoneControlCache = { at: now, boxes: [] };
+  const canvas = app?.canvas;
+  const c = canvas?.getBoundingClientRect();
+  if (!c?.width || !c.height) return phoneControlCache.boxes;
+  const gx = (app.screen?.width || VIEW_W) / c.width;
+  const gy = (app.screen?.height || VIEW_H) / c.height;
+  for (const el of document.querySelectorAll('#game-root .touch-stick, #game-root .touch-act, #game-root .touch-jump, #game-root #quest-pins')) {
+    if (!el.checkVisibility?.({ visibilityProperty: true })) continue;
+    const r = el.getBoundingClientRect();
+    if (!r.width || !r.height) continue;
+    phoneControlCache.boxes.push({ left: (r.left - c.left) * gx, right: (r.right - c.left) * gx, top: (r.top - c.top) * gy, bottom: (r.bottom - c.top) * gy });
+  }
+  return phoneControlCache.boxes;
+}
+
+/** PHONE LAYOUT QA (G1194): the action chip's box in page px on a phone (canvas data promptCss), '' while hidden. */
+function syncPromptCss(alpha) {
+  if (!TOUCH_PHONE || !app?.canvas) return;
+  let v = '';
+  if (alpha && prompt?.visible) {
+    const c = app.canvas.getBoundingClientRect();
+    const b = prompt.getBounds();
+    const sx = c.width / (app.screen?.width || VIEW_W);
+    const sy = c.height / (app.screen?.height || VIEW_H);
+    v = [c.left + b.x * sx, c.top + b.y * sy, c.left + (b.x + b.width) * sx, c.top + (b.y + b.height) * sy].map(Math.round).join(',');
+  }
+  if (app.canvas.dataset.promptCss !== v) app.canvas.dataset.promptCss = v;
 }
 
 /** The notifier's zones (notices, banner) in Pixi global px, re-read every 100 ms. */
@@ -36645,9 +36699,10 @@ async function main() {
           app.canvas.dataset.promptScreenX = (prompt.x - camTarget).toFixed(2);
           app.canvas.dataset.promptSafeRight = horizontalLocationViewWidth().toFixed(2);
           app.canvas.dataset.promptWidth = prompt.width.toFixed(2);
-        }
+        } else syncPromptCss(0);
       } else {
         prompt.visible = false;
+        syncPromptCss(0);
         showSignpostKeys(null);
       }
     });
