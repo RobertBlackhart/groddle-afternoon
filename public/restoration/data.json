@@ -2814,9 +2814,19 @@
   "deployed": "2026-11-22"
  },
  "git": {
-  "commits": 3107,
+  "commits": 3110,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-22",
+    "kind": "fix",
+    "text": "Top of Tree on a phone shows the tree at once and stops just under the ground"
+   },
+   {
+    "date": "2026-11-22",
+    "kind": "fix",
+    "text": "On a phone the camera stops at the street's ground art, not in the bare strip under it"
+   },
    {
     "date": "2026-11-22",
     "kind": "fix",
@@ -2926,19 +2936,9 @@
     "date": "2026-11-22",
     "kind": "fix",
     "text": "The \"!\" in a street project's bubble is sharp instead of blurry"
-   },
-   {
-    "date": "2026-11-22",
-    "kind": "improve",
-    "text": "Circle the spot on a report's picture"
-   },
-   {
-    "date": "2026-11-22",
-    "kind": "fix",
-    "text": "A party teleporter taken in one of the eight hand-built quest places keeps the place and its run, and the party leads back to the spot you left"
    }
   ]
  },
- "tests": 1277,
+ "tests": 1278,
  "generatedAt": "2026-11-22"
 }
