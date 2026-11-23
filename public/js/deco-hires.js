@@ -25,12 +25,12 @@
  * decoUrl loads it where the renderer's MAX_TEXTURE_SIZE is below the 2x file; every other GPU
  * draws the 2x file as before.
  */
-import { HIRES_DECOS, HIRES_DECOS_BIG } from './deco-hires-list.js?v=8f207e5f';
+import { HIRES_DECOS, HIRES_DECOS_BIG } from './deco-hires-list.js?v=bf6d4a0c';
 import { NEW_DECOS, NEW_DECOS_HIRES } from './deco-new-list.js?v=e9cba68f';
 
 /** A published zone's new art (gz_ decos, js/deco-new-list.js): drawn like library decos. */
 export { NEW_DECOS };
-import { SHARP_DECOS } from './deco-sharp-list.js?v=33bf93b4';
+import { SHARP_DECOS } from './deco-sharp-list.js?v=d8a31eff';
 import { SMALL_GPU_DECOS } from './deco-small-list.js?v=5d29e2f1';
 
 const DECO_PNG = /^(.*?(?:^|\/)assets\/decos\/groddle\/)([^/?#]+)\.png([?#].*)?$/;

@@ -16,7 +16,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { enterResult, tripWithRetry } from '../public/js/street-trip.js?v=89addd51';
 import { CAR_TSID, FARE, STATIONS, createRide, disembarkSpot, nextStation, rideTiming, stationById } from '../public/js/subway.js?v=0a87a908';
-import { subwayFeature } from '../public/js/features/subway-feature.js?v=9336e925';
+import { subwayFeature } from '../public/js/features/subway-feature.js?v=19b05802';
 import { FakeEl, page } from './social-fake-dom.js';
 
 // The subway's cards build with appendChild (social-fake-dom has append).

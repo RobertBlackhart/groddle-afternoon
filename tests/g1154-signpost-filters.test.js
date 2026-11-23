@@ -9,7 +9,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { buildSignDecoView, colourSignpost, glitchLayerMatrix } from '../public/js/street-render.js?v=993b200b';
+import { buildSignDecoView, colourSignpost, glitchLayerMatrix } from '../public/js/street-render.js?v=eca8926c';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const street = (tsid) => JSON.parse(readFileSync(join(root, 'public/assets/streets', `${tsid}.json`), 'utf8'));

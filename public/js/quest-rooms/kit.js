@@ -11,7 +11,7 @@
 
 import { frameTexture, isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=729b29ea';
 import { quoinTouches } from '../quoins.js?v=5abad2c7';
-import { sharpRoomDeco } from '../deco-hires.js?v=5e0a7f7a';
+import { sharpRoomDeco } from '../deco-hires.js?v=21d9dc87';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 import { VIEW_FLOOR_H } from '../location-view.js?v=9f1380d7';
 

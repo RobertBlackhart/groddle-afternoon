@@ -20,7 +20,7 @@ import {
 } from '../public/js/quest-rooms/falling-room-scene.js?v=656aa960';
 import { FALLING_ROOM_FILES } from '../public/js/quest-rooms/falling-room-art.js?v=6d588773';
 import { room as fireflyRoom } from '../public/js/quest-rooms/firefly-whistle.js?v=22c48d91';
-import * as kit from '../public/js/quest-rooms/kit.js?v=23f0b2d4';
+import * as kit from '../public/js/quest-rooms/kit.js?v=ac9b9b15';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const publicDir = join(root, 'public');
