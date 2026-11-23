@@ -26,10 +26,48 @@ export const JOB_ASK_TEXT = Object.freeze({
   notLearned: "you don't know it yet",
 });
 
+/**
+ * #641: what an item ask's part takes to make, on the project row itself. Glitch's job window named
+ * each item as a link (JobDetailsUI.as 195-197: "We need 16 more Wall Segments"), and the item's info
+ * card it opened said how it is made and with which skills; a player gathering a Tower's parts only
+ * learned at the Construction Tool that Wall Segments need Furnituremaking II. The row now says it:
+ * the tool, every skill the recipe takes, and the ones you have not learned.
+ * @param {object} r a requirement row ({ type, classId, done })
+ * @param {{ recipesFor: (cls: string) => object[], skillLabel?: (id: string) => string, itemName?: (cls: string) => string, learned?: string[] }} ctx
+ * @returns {{ text: string, missing: string[] } | null}
+ */
+export function itemMakeNote(r, { recipesFor, skillLabel = (id) => String(id), itemName = (id) => String(id), learned = [] } = {}) {
+  if (!r || r.type !== 'item' || r.done || !r.classId || typeof recipesFor !== 'function') return null;
+  const known = new Set(learned || []);
+  const skillsOf = (x) => [...new Set((x.skills?.length ? x.skills : [x.skill]).filter(Boolean))];
+  // The recipe you are closest to: fewest skills you lack, then fewest skills.
+  const ways = (recipesFor(r.classId) || []).map((x) => ({ x, skills: skillsOf(x) }))
+    .map((w) => ({ ...w, missing: w.skills.filter((s) => !known.has(s)) }))
+    .sort((a, b) => a.missing.length - b.missing.length || a.skills.length - b.skills.length);
+  const best = ways[0];
+  if (!best || !best.skills.length) return null;
+  const list = (ids) => {
+    const names = ids.map(skillLabel);
+    return names.length < 2 ? names.join('') : `${names.slice(0, -1).join(', ')} and ${names.at(-1)}`;
+  };
+  const tool = best.x.tool ? itemName(best.x.tool) : '';
+  const made = tool ? `made with ${/^[aeiou]/i.test(tool) ? 'an' : 'a'} ${tool}, ` : '';
+  const lack = best.missing.length ? `; you don't know ${list(best.missing)} yet` : '';
+  const text = `${made}needs ${list(best.skills)}${lack}`;
+  return { text: text[0].toUpperCase() + text.slice(1), missing: best.missing };
+}
+
 /** The item page's "In the remake" heading (tools/encyclopedia: How to get it is under it). */
 export const ITEM_GET_ANCHOR = '#remake-h';
 
 const ROMAN = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
+
+/** PURE: 'furnituremaking_2' -> 'Furnituremaking II' (the source's requirement wording); `skills` is the skill catalog. */
+export function skillRankLabel(id, skills = null) {
+  const name = skills?.[id]?.name || String(id).replace(/_\d+$/, '').replace(/_/g, ' ').replace(/^\w/, (c) => c.toUpperCase());
+  const rank = Number(String(id).match(/_(\d+)$/)?.[1]);
+  return rank ? `${name} ${ROMAN[rank] || rank}` : name;
+}
 
 /** PURE: true when the board shows the rule line: the project takes contributions and asks for items or work. */
 export function showAskRule(reqs, open) {

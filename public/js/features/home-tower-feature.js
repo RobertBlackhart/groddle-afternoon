@@ -52,7 +52,9 @@ import { playOverlay } from '../overlays.js?v=1f5027a3';
 import { ITEM_CATALOG, countItem, ensureItem, itemIcon } from '../inventory.js?v=6414dbdc';
 import { canUseTool, useToolCondition, workStepCost } from '../tools.js?v=4156bba8';
 import { acceptOffer, npcQuestOffers } from '../quest-offers.js?v=32d4127e';
-import { getQuestCatalog } from '../content-catalogs.js?v=10b118dd';
+import { getQuestCatalog, getSkillCatalog } from '../content-catalogs.js?v=10b118dd';
+import { listRecipesProducing } from '../making.js?v=5a718e7f';
+import { JOB_ASK_TEXT, itemAskSubject, itemGetHref, itemMakeNote, skillRankLabel } from '../street-job-asks.js?v=84b712a3';
 import { XP_FOR_LEVEL } from '../progression.js?v=05ff0260';
 import {
   BUILD_A_TOWER,
@@ -793,6 +795,9 @@ const CSS = `
 .ht-mark{display:grid;place-items:center;width:32px;height:32px;border-radius:var(--radius-sm);background:linear-gradient(var(--c-sand-85),var(--c-sand-73));color:var(--c-grey-29);font:400 var(--fs-xl)/var(--lh-none) var(--font-serif)}
 .ht-row b{display:block;font-size:var(--fs-md);color:var(--c-sand-33)}
 .ht-row small{display:block;font-size:var(--fs-sm);color:var(--c-sand-56)}
+.ht-row small.ht-make.is-missing{font-weight:700;color:var(--c-umber-45)}
+.ht-row small.ht-make.is-missing::before{content:"✕ "}
+.ht-row a.ht-get{display:inline-block;font-size:var(--fs-sm);color:var(--c-blue-51);text-decoration:underline}
 .ht-row.is-done{opacity:.6}
 .ht-row.is-locked{opacity:.55;background:color-mix(in srgb, var(--surface-parchment) 80%, transparent)}
 .ht-card button{font:inherit;font-size:var(--fs-sm);font-weight:700;border-radius:var(--radius-md);border:1px solid var(--c-gold-78);background:var(--surface-bright);color:var(--c-umber-45);padding:.3rem var(--sp-5);cursor:pointer;white-space:nowrap}
@@ -960,6 +965,12 @@ function renderProject(engine, q, body) {
     if (r.type === 'work') meta.push(workStepCost(r));
     if (!r.done && !r.open) meta.push('opens after the earlier steps');
     text.append(el('small', {}, meta.join(' · ')));
+    // #641: what the part takes to make (Wall Segments: a Construction Tool, Engineering I and
+    // Furnituremaking II), and where to get it, as a street project's row says (js/street-job-asks.js).
+    const make = itemMakeNote(r, { recipesFor: listRecipesProducing, skillLabel: (id) => skillRankLabel(id, getSkillCatalog()), itemName: (cls) => itemLabel(cls), learned: engine.learnedSkills || [] });
+    if (make) text.append(el('small', { class: `ht-make${make.missing.length ? ' is-missing' : ''}`, dataset: { htMake: r.classId } }, make.text));
+    const getLink = getItLink(engine, itemAskSubject(r, itemLabel));
+    if (getLink) text.append(getLink);
     const acts = el('div');
     if (r.open && r.type === 'item') {
       acts.append(givePicker(engine, r, Math.min(countItem(engine.inv, r.classId), r.need - r.got)));
@@ -978,6 +989,25 @@ function renderProject(engine, q, body) {
   body.append(el('p', { class: 'ht-note' }, project.key === 'project'
     ? 'Your Tower opens with two floors. Add more from inside, up to nine.'
     : `When this project is done your Tower has ${tower.floors + 1} floors.`));
+}
+
+/** An item ask's "Where to get it": its Encyclopedia page at How to get it (street-jobs-feature askGetLink). */
+let getItIndexAsked = false;
+function getItLink(engine, subject) {
+  if (!subject || typeof engine?.encyclopediaLink !== 'function') return null;
+  const a = engine.encyclopediaLink(subject, 'ht-get');
+  if (!a) {
+    if (!engine.encyclopediaReady && !getItIndexAsked && typeof engine.encyclopediaLoad === 'function') {
+      getItIndexAsked = true;
+      Promise.resolve(engine.encyclopediaLoad()).then(() => renderPanel(engine), () => {});
+    }
+    return null;
+  }
+  a.href = itemGetHref(a.href);
+  a.textContent = JOB_ASK_TEXT.getIt;
+  a.title = JOB_ASK_TEXT.getItTip;
+  a.dataset.htGet = subject.id;
+  return a;
 }
 
 /**

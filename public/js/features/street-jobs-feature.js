@@ -57,6 +57,7 @@ import { worldToScreen } from '../street-model.js?v=a9a05f9d';
 import { signArmWidth } from '../street-render.js?v=c3b6187d';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 import { getSkillCatalog } from '../content-catalogs.js?v=10b118dd';
+import { listRecipesProducing } from '../making.js?v=5a718e7f';
 import { GIANTS } from '../shrines.js?v=d5d7a471';
 import { giantDisplayName } from '../giant-names.js?v=0e295891';
 import { teleportationFeature } from './teleportation-feature.js?v=aece67b4';
@@ -166,7 +167,7 @@ import { trophyGotText } from '../home-trophies.js?v=4eb640c3';
 import { FEATURED_TEXT, featuredChanged, featuredFromServer, featuredNeedsLine, featuredToast, featuredWaitMins, readFeaturedMemo, writeFeaturedMemo } from '../featured-project.js?v=5b2ee7c1';
 import { featuredStore, renderFeaturedLine, renderFeaturedRow } from '../ui/featured-project.js?v=ed9eded9';
 import { GEM_HINTS, isGem } from '../gem-hints.js?v=4b65f7ac';
-import { JOB_ASK_TEXT, itemAskSubject, itemGetHref, showAskRule, workSkillMissing, workSkillNote } from '../street-job-asks.js?v=5b3e6bd0';
+import { JOB_ASK_TEXT, itemAskSubject, itemGetHref, itemMakeNote, showAskRule, skillRankLabel, workSkillMissing, workSkillNote } from '../street-job-asks.js?v=84b712a3';
 import { applySoloScale, hopsFromStart, soloAmountsLine } from '../street-jobs-solo.js?v=3bcf5d1c';
 import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=6ffaec43';
 
@@ -515,13 +516,8 @@ const itemLabel = (cls, n = 1) => {
   if (known?.label) return n === 1 ? known.label : known.labelPlural || known.namePlural || known.label;
   return String(cls || '').replace(/_/g, ' ');
 };
-const ROMAN = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII'];
 /** 'mining_4' -> 'Mining IV' (the source requirement wording). */
-const skillLabel = (id) => {
-  const name = getSkillCatalog()?.[id]?.name || String(id).replace(/_\d+$/, '').replace(/_/g, ' ');
-  const rank = Number(String(id).match(/_(\d+)$/)?.[1]);
-  return rank ? `${name} ${ROMAN[rank] || rank}` : name;
-};
+const skillLabel = (id) => skillRankLabel(id, getSkillCatalog());
 /** The source's own requirement line without its multiplayer total. */
 const reqTitle = (r) => String(r.desc || '').replace(/\s*-\s*[\d,]+ (?:units )?needed.*$/i, '').trim();
 
@@ -1917,6 +1913,9 @@ function renderPanel(engine) {
     // (#425: lower or waived near the start, solo).
     const skillNote = workSkillNote(r, skillLabel, ctx.learned || []);
     if (skillNote) text.append(el('small', { class: `sj-skill${workSkillMissing(r, ctx.learned) ? ' is-missing' : ''}`, dataset: { sjSkill: r.skill || '' } }, skillNote));
+    // #641: what an item ask's part takes to make (its tool and skills), the ones you lack marked.
+    const make = itemMakeNote(r, { recipesFor: listRecipesProducing, skillLabel, itemName: (cls) => itemLabel(cls), learned: ctx.learned || [] });
+    if (make) text.append(el('small', { class: `sj-skill${make.missing.length ? ' is-missing' : ''}`, dataset: { sjMake: r.classId } }, make.text));
     // G617: how gems are found, under a gem ask still open (the remake's own line; no source).
     if (r.type === 'item' && isGem(r.classId) && !r.done) text.append(el('small', { class: 'sj-hint', dataset: { sjHint: 'gems' } }, GEM_HINTS.project));
     // G1073: where an item comes from: its Encyclopedia page's How to get it (the item card's link).
