@@ -499,7 +499,8 @@ export const WINTER_WALK_GROUND_TINT = 0xf2d2ae;
  * tan ground with many drifts to the frame bottom). [bottom over the feet, patch scale].
  */
 export const WINTER_WALK_SNOW_ROWS = Object.freeze([[24, 0.22], [58, 0.3], [100, 0.36], [150, 0.42], [215, 0.5], [290, 0.56]]);
-const SNOW_PATCHES = Object.freeze({ whitesnow_patch_1c_g1: [564, 74], whitesnow_patch_1d_g1: [1014, 148], whitesnow_patch_1e_g1: [948, 134], whitesnow_splotch_1a_g1: [330, 42], whitesnow_splotch_1b_g1: [432, 52], snow_patch_2: [194, 32] });
+/** Patches Tiny Speck laid on front (middleplus) layers too (deco catalog; builder rule STY-005). */
+const SNOW_PATCHES = Object.freeze({ whitesnow_patch_1c_g1: [564, 74], snow_patch_4: [1014, 148], snow_patch_5: [948, 134], whitesnow_splotch_1a_g1: [330, 42], whitesnow_splotch_1b_g1: [432, 52], snow_patch_3: [564, 74] });
 
 /** In front of the walk line: snow patches, drifts and snowy boulders along the bottom, in street-local coordinates. */
 function walkFrontDecos() {
