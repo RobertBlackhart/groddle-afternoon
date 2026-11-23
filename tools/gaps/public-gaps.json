@@ -5074,6 +5074,69 @@
       "commits": [
         "game:dd658319b8d"
       ]
+    },
+    {
+      "id": "G1194",
+      "area": "Phones",
+      "text": "On a phone the top of the screen was crowded: a growing row of icons, stacked rows, a small map, and panels that covered your Glitch and the controls.",
+      "show": "fixing",
+      "commits": [
+        "game:75d5d4c86a0"
+      ]
+    },
+    {
+      "id": "G1212",
+      "area": "Phones",
+      "text": "On a narrow phone an open bag's last column ran off the right edge.",
+      "show": "fixing",
+      "commits": [
+        "game:ca582a57be6"
+      ]
+    },
+    {
+      "id": "G1216",
+      "area": "Encyclopedia",
+      "text": "Some things had several near-identical Encyclopedia pages, and only one listed where to find them.",
+      "show": "fixing",
+      "commits": [
+        "game:2271c6b099e"
+      ]
+    },
+    {
+      "id": "G1217",
+      "area": "Chat",
+      "text": "Long chat lines in Global, Help, Trade, groups and IMs were cut short for the people reading them.",
+      "show": "fixing",
+      "commits": [
+        "game:39c8cc1d205"
+      ]
+    },
+    {
+      "id": "G1218",
+      "area": "Streets",
+      "text": "Mining a Metal Rock, a barnacle, peat, a dirt pile or an ice knob could show its result twice.",
+      "show": "fixing",
+      "commits": [
+        "game:dc0e355c32b"
+      ]
+    },
+    {
+      "id": "G1219",
+      "area": "Homes",
+      "text": "Tower and street project parts did not say which skills making them takes.",
+      "show": "fixing",
+      "commits": [
+        "game:d38fb544dbc"
+      ]
+    },
+    {
+      "id": "G1220",
+      "area": "Streets",
+      "text": "A mined-out rock left a faint ghost of itself until it reformed.",
+      "show": "fixing",
+      "commits": [
+        "game:c065829a6d6"
+      ]
     }
   ]
 }

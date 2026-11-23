@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.60.0",
+  "release": "v0.61.0",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -42,7 +42,7 @@
     "fixing": 3,
     "known": 15,
     "unreleased": 0,
-    "fixed": 503,
+    "fixed": 510,
     "lost": 5,
     "purpose": 16,
     "idea": 10
@@ -672,6 +672,18 @@
           "text": "On Winter Walk, tapping an icicle did nothing even though the street invites you to.",
           "state": "fixed",
           "version": "v0.59.0"
+        },
+        {
+          "id": "G1218",
+          "text": "Mining a Metal Rock, a barnacle, peat, a dirt pile or an ice knob could show its result twice.",
+          "state": "fixed",
+          "version": "v0.61.0"
+        },
+        {
+          "id": "G1220",
+          "text": "A mined-out rock left a faint ghost of itself until it reformed.",
+          "state": "fixed",
+          "version": "v0.61.0"
         }
       ]
     },
@@ -1197,6 +1209,12 @@
           "text": "Things dropped on a house or Tower floor were only seen by the player who dropped them, so visitors saw an empty floor.",
           "state": "fixed",
           "version": "v0.59.0"
+        },
+        {
+          "id": "G1219",
+          "text": "Tower and street project parts did not say which skills making them takes.",
+          "state": "fixed",
+          "version": "v0.61.0"
         },
         {
           "id": "G48",
@@ -2313,6 +2331,18 @@
           "text": "In the installed iPhone app, a haze from the status bar showed over the top of the game.",
           "state": "fixed",
           "version": "v0.58.2"
+        },
+        {
+          "id": "G1194",
+          "text": "On a phone the top of the screen was crowded: a growing row of icons, stacked rows, a small map, and panels that covered your Glitch and the controls.",
+          "state": "fixed",
+          "version": "v0.61.0"
+        },
+        {
+          "id": "G1212",
+          "text": "On a narrow phone an open bag's last column ran off the right edge.",
+          "state": "fixed",
+          "version": "v0.61.0"
         }
       ]
     },
@@ -3252,6 +3282,12 @@
           "text": "There was no list of which streets have dirt piles, peat bogs, gas plants, paper and wood trees or sloths.",
           "state": "fixed",
           "version": "v0.59.0"
+        },
+        {
+          "id": "G1216",
+          "text": "Some things had several near-identical Encyclopedia pages, and only one listed where to find them.",
+          "state": "fixed",
+          "version": "v0.61.0"
         }
       ]
     },
@@ -3275,6 +3311,12 @@
           "text": "It was easy to type a line in Local chat that was meant for Global, or the other way round.",
           "state": "fixed",
           "version": "v0.59.0"
+        },
+        {
+          "id": "G1217",
+          "text": "Long chat lines in Global, Help, Trade, groups and IMs were cut short for the people reading them.",
+          "state": "fixed",
+          "version": "v0.61.0"
         }
       ]
     },
