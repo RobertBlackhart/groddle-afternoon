@@ -2814,9 +2814,29 @@
   "deployed": "2026-11-23"
  },
  "git": {
-  "commits": 3227,
+  "commits": 3233,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-23",
+    "kind": "new",
+    "text": "Animal names may hold an apostrophe, a hyphen and a period"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "new",
+    "text": "Tapping a Winter Walk icicle plays a chime"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "new",
+    "text": "Everyone helping with Peter out Peat sees its 9 second countdown"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "improve",
+    "text": "Character names can be two letters long"
+   },
    {
     "date": "2026-11-23",
     "kind": "improve",
@@ -2916,26 +2936,6 @@
     "date": "2026-11-23",
     "kind": "improve",
     "text": "The Good Neighbor Feat says each Butler you leave a package with is worth 2 points"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "Streets being built are a blue road with a road-works sign on the Map, so they no longer look like streets you have not visited"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "Customize your house docks on a phone and the street zooms out to show the house"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "The installed iPhone app keeps the top pills clear of the status bar haze"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "The Decorate and Cultivate rows scroll with a sideways swipe on a phone"
    }
   ]
  },
