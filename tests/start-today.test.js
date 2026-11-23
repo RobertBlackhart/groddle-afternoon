@@ -90,8 +90,11 @@ describe('the tiles', () => {
       'On Android, pick Install app or Add to Home screen in your browser menu to play full screen.',
       'Click your currants to find the nearest vendor.',
       'Click your favor to find the nearest shrine.',
-      'Each skill takes a little longer to learn than the last.',
+      'After 20 skills, each skill you know or have started (paused ones too) makes learning a little slower.',
+      'Spend an emblem from your pack (its Spend verb) to unlock a skill or learn one faster. Shrines do not take emblems.',
     ]) assert.ok(START_TIPS.includes(t), t);
+    // G1150 follow-up: learning does not slow with every skill (inc_skills.js 1792-1807: only past brain capacity, 20).
+    assert.ok(!START_TIPS.some((t) => /longer to learn than the last/.test(t)), 'the old, wrong skill tip is gone');
     assert.ok(!START_TIPS.some((t) => /Upgrade|Rook/.test(t)), 'Upgrades and Rooks are left for players to teach');
     const seen = (o) => new Set(Array.from({ length: 400 }, (_, i) => pickTip(() => i / 400, o)));
     assert.ok(![...seen({})].some((t) => /^On Android/.test(t)), 'not on a desktop');

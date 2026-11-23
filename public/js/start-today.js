@@ -34,7 +34,12 @@ export const START_TIPS = Object.freeze([
   'On Android, pick Install app or Add to Home screen in your browser menu to play full screen.',
   'Click your currants to find the nearest vendor.',
   'Click your favor to find the nearest shrine.',
-  'Each skill takes a little longer to learn than the last.',
+  // G1150 follow-up: learning slows only past 20 skills, 5% for each skill known or queued, paused
+  // ones too (inc_skills.js skills_get_learning_time_modifier 1792-1807; imagination-feature.js
+  // skillTimeFactor). Emblems are spent from the pack (emblem_base verbs.spend: unlock a skill or
+  // speed one up); a shrine takes favor, not emblems.
+  'After 20 skills, each skill you know or have started (paused ones too) makes learning a little slower.',
+  'Spend an emblem from your pack (its Spend verb) to unlock a skill or learn one faster. Shrines do not take emblems.',
 ]);
 
 /** The tips that only make sense in an Android browser. */
