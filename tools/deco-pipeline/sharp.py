@@ -28,6 +28,11 @@ Format, decided per deco by measurement against FFDec's raster render:
   has no embedded bitmaps and matches the raster render (`svg_rgb`, `svg_alpha`, `svg_bad`):
   FFDec's SVG export drops some placement colour transforms (alpha) and draws masks differently.
   Bytes are tiny; the game rasterises it at the screen's need (js/deco-hires.js sharpDeco).
+  Seams (G1162): Chromium's raster must be as solid inside as the PNG (build.seam_gaps <= build.py
+  `seam_max`); an export with FFDec's seams ships sealed (seal_svg: each opaque region gets a thin
+  non-scaling stroke of its own fill, so shared edges are solid as Flash drew them; `sealed` in
+  the row) when that copy passes the same checks, else the WebP ships. The FFDec check
+  render and the WebPs come from the sealed raster render (build.seal_seams).
 - aligned webp (ALIGN_TO_PNG): a deco kept as its PNG only because the PNG frames the same art a
   few px off the SWF's stage gets the raster render registered onto the PNG's frame.
 - webp: otherwise the raster render sized to `target` texels per view px at the largest near
@@ -73,6 +78,7 @@ SETTINGS = {
     'svg_bad': 3.0,       #                                  % of visible px off by more than 32 (both after check_box)
     'check_side': 1200,   # longest side of the SVG check renders
     'check_box': 4,       # box filter (px) both check renders get before they are compared
+    'seal_stroke': 0.75,  # screen px of the own-colour stroke seal_svg gives each opaque region (G1162)
 }
 
 
@@ -513,6 +519,42 @@ def tidy_svg(text, stage):
     return text + '\n'
 
 
+CLIP = re.compile(r'<clipPath\b.*?</clipPath>', re.S)
+GRADIENT = re.compile(r'<(linear|radial)Gradient\b[^>]*\bid="([^"]+)"[^>]*>(.*?)</\1Gradient>', re.S)
+FILLED = re.compile(r'<path\b[^>]*>')
+
+
+def seal_svg(text):
+    """Seal FFDec's seams in an SVG the way seal_seams does in a raster (G1162, #624): FFDec exports
+    each Flash colour region as its own path, so where two regions share an edge each is
+    anti-aliased to part coverage and the background shows through between them; Flash drew the
+    edge once. Every opaque filled path (a solid colour or a gradient with no see-through stop, no
+    fill-opacity, not a clip path) gets a stroke of its own fill, `seal_stroke` screen px wide
+    whatever the scale (vector-effect non-scaling-stroke) with round joins, which covers the shared
+    edge from both sides. Semi-transparent fills are left alone: a stroke would draw over their own
+    edge twice."""
+    solid = {gid for _, gid, body in GRADIENT.findall(text)
+             if not any(float(v) < 1 for v in re.findall(r'stop-opacity="([\d.]+)"', body))}
+    w = SETTINGS['seal_stroke']
+
+    def path(m):
+        tag = m.group(0)
+        if 'stroke="none"' not in tag or 'fill-opacity=' in tag or 'opacity=' in tag.replace('fill-opacity=', ''):
+            return tag
+        f = re.search(r'\bfill="(#[0-9a-fA-F]{6}|#[0-9a-fA-F]{3}|url\(#([^)]+)\))"', tag)
+        if not f or (f.group(2) and f.group(2) not in solid):
+            return tag
+        return tag.replace('stroke="none"', f'stroke="{f.group(1)}" stroke-width="{w:g}" stroke-linejoin="round" vector-effect="non-scaling-stroke"', 1)
+
+    out, last = [], 0
+    for c in CLIP.finditer(text):
+        out.append(FILLED.sub(path, text[last:c.start()]))
+        out.append(c.group(0))
+        last = c.end()
+    out.append(FILLED.sub(path, text[last:]))
+    return ''.join(out)
+
+
 def export_svgs(work, items):
     """items [(name, swf)] -> {name: svg text}; one JVM per batch."""
     src = os.path.join(work, 'src-svg')
@@ -666,6 +708,7 @@ def cmd_build(args):
         r['_swf'] = build.default_state(audit.swf_path(prow['swf'], work, index), work)[0]
         r['base'] = 1.5 if prow.get('hires') else 1
         r['stage'] = prow['stage']
+        r['_prow'] = prow
         todo.append(r)
     print(f'{len(rows)} decos drawn near; {len(cand)} sharp candidates, {len(skipped)} without a source, '
           f'{len(soft)} soft; to do {len(todo)}', flush=True)
@@ -722,7 +765,9 @@ def build_chunk(work, chunk, args):
         found, tmp = build.render_batch(work, z, [(r['name'], r['_swf']) for r in rs])
         for r in rs:
             if r['name'] in found:
-                ref = build.stage_resample(build.load(found[r['name']]), r['stage'], z, r['_check'])
+                # Seams sealed as in build.py's files (G1162): the SVG is checked against the art Flash drew.
+                ren = build.render_sealed(r['name'], r['_prow'], build.load(found[r['name']]), r['stage'], z)
+                ref = build.stage_resample(ren, r['stage'], z, r['_check'])
                 p = os.path.join(cdir, r['name'] + '.ref.png')
                 ref.save(p, compress_level=1)
                 refs[r['name']] = p
@@ -733,9 +778,12 @@ def build_chunk(work, chunk, args):
         text = svgs.get(r['name'])
         r['_svg'] = tidy_svg(text, r['stage']) if text and r['name'] not in HAND_SVGS and r['name'] not in ALIGN_TO_PNG else None
         if r['_svg'] and r['name'] in refs:
-            p = os.path.join(cdir, r['name'] + '.svg')
-            open(p, 'w').write(r['_svg'])
-            jobs.append((p, os.path.join(cdir, r['name'] + '.svg.png'), *r['_check']))
+            # Drawn as exported and sealed (seal_svg, G1162); the sealed copy ships only where the
+            # export has seams, since its strokes also widen every outer edge a fraction of a px.
+            for tag, text in (('svg', r['_svg']), ('sealed.svg', seal_svg(r['_svg']))):
+                p = os.path.join(cdir, f"{r['name']}.{tag}")
+                open(p, 'w').write(text)
+                jobs.append((p, p + '.png', *r['_check']))
     if jobs:
         browser_raster(work, jobs)
     webps = []
@@ -744,17 +792,25 @@ def build_chunk(work, chunk, args):
             r['kind'] = None
             r['why'] = 'FFDec produced no frame'
             continue
-        svgpng = os.path.join(cdir, r['name'] + '.svg.png')
-        if r['_svg'] and os.path.exists(svgpng):
-            r['svg_check'] = list(visible_diff(build.load(refs[r['name']]), build.load(svgpng)))
-            ok = (r['svg_check'][0] <= S['svg_rgb'] and r['svg_check'][1] <= S['svg_alpha'] and r['svg_check'][2] <= S['svg_bad'])
-        else:
-            r['svg_check'] = None
-            ok = False
+        ok = False
+        r['svg_check'] = None
+        for tag in ('svg', 'sealed.svg') if r['_svg'] else ():
+            svgpng = os.path.join(cdir, f"{r['name']}.{tag}.png")
+            if not os.path.exists(svgpng):
+                continue
+            raster = build.load(svgpng)
+            r['svg_check'] = list(visible_diff(build.load(refs[r['name']]), raster))
+            # As solid inside as the PNG (G1162), measured on Chromium's raster.
+            r['seam'] = build.seam_gaps(raster, build.load(build.src_png(r['name'])), r['_prow'].get('shift'))
+            r['sealed'] = tag == 'sealed.svg'
+            ok = (r['svg_check'][0] <= S['svg_rgb'] and r['svg_check'][1] <= S['svg_alpha'] and r['svg_check'][2] <= S['svg_bad']
+                  and r['seam'] <= build.SETTINGS['seam_max'])
+            if ok:
+                break
         if ok:
             r['kind'] = 'svg'
             dst = os.path.join(OUT, r['name'] + '.svg')
-            open(dst, 'w').write(r['_svg'])
+            open(dst, 'w').write(seal_svg(r['_svg']) if r['sealed'] else r['_svg'])
             r['bytes'] = os.path.getsize(dst)
             r['sha'] = sha(dst)
             stale = [f for f in os.listdir(OUT) if f.startswith(r['name'] + '@') and f.endswith('x.webp') and f != r['name'] + '@1.5x.webp' and f not in small_copies()]
@@ -762,8 +818,10 @@ def build_chunk(work, chunk, args):
                 os.remove(os.path.join(OUT, f))
         else:
             r['kind'] = 'webp'
+            r.pop('sealed', None)
             r['why'] = ('aligned: ' + ALIGN_TO_PNG[r['name']] if r['name'] in ALIGN_TO_PNG
-                        else 'bitmap or not plain vector' if not r['_svg'] else 'SVG differs from the raster render')
+                        else 'bitmap or not plain vector' if not r['_svg']
+                        else 'SVG see-through inside' if r.get('seam', 0) > build.SETTINGS['seam_max'] and r.get('svg_check') else 'SVG differs from the raster render')
             webps.append(r)
     # WebP fallbacks: the raster render sized to the need.
     g2 = collections.defaultdict(list)
@@ -782,7 +840,7 @@ def build_chunk(work, chunk, args):
                     r['kind'] = None
                     r['why'] = 'FFDec produced no frame'
                     continue
-                ren = build.load(found[r['name']])
+                ren = build.render_sealed(r['name'], r['_prow'], build.load(found[r['name']]), r['stage'], z)
                 if r['name'] in ALIGN_TO_PNG:
                     src = build.load(build.src_png(r['name']))
                     r['fit'] = fit_to_png(ren, r['stage'], z, src)
@@ -803,6 +861,7 @@ def build_chunk(work, chunk, args):
                     os.remove(svg_old)
                 r['bytes'], r['lossless'], r['err'] = build.encode(img, dst, os.path.join(work, 'enc'))
                 r['sha'] = sha(dst)
+                r['seam'] = build.seam_gaps(img, build.load(build.src_png(r['name'])), None if r['name'] in ALIGN_TO_PNG else r['_prow'].get('shift'))
             for p in tmp:
                 shutil.rmtree(p, ignore_errors=True)
     if os.environ.get('SHARP_KEEP_CHECK'):
@@ -813,7 +872,7 @@ def build_chunk(work, chunk, args):
         if not r.get('kind'):
             continue
         keep = ('name', 'kind', 's', 'sf', 'sb', 'sh', 'bneed', 'size2', 'ratio', 'front', 'placements', 'over', 'worst', 'edge', 'edge_of', 'swf_sha',
-                'key', 'svg_check', 'why', 'fit', 'aligned_diff', 'res', 'size', 'bytes', 'sha', 'lossless', 'err')
+                'key', 'svg_check', 'seam', 'sealed', 'why', 'fit', 'aligned_diff', 'res', 'size', 'bytes', 'sha', 'lossless', 'err')
         out.append({k: r[k] for k in keep if k in r and r[k] is not None})
     return out
 
@@ -888,6 +947,11 @@ def cmd_check(args):
                 text = open(f).read()
                 if tidy_svg(text, [1, 1]) is None or 'viewBox=' not in text:
                     problems.append(f'{n}: {os.path.basename(f)} is not a plain vector SVG with a viewBox')
+                elif r.get('sealed') and seal_svg(text) != text:
+                    problems.append(f'{n}: {os.path.basename(f)} has unsealed opaque regions (seal_svg, G1162)')
+        # Interior as solid as the PNG (G1162): the SVG's Chromium raster or the WebP, measured at build.
+        if r.get('seam') is None or r['seam'] > build.SETTINGS['seam_max']:
+            problems.append(f"{n}: {r.get('seam')}% of the inside is see-through where the PNG is solid (seams; rebuild)")
     shipped = set()
     for r in have.values():
         shipped |= {os.path.basename(f) for f in out_files(r)}

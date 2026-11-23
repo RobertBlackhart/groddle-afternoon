@@ -27,6 +27,13 @@ from their code. HIDDEN_BY_DEFAULT names those (the POL houses' For Sale `sign`)
 off the root timeline before rendering (swfinfo.drop_root_places), the row records `hidden`, and
 the decos' source PNGs are door-signs.py's sign-free copies (assets-src/decos/door-signs).
 
+Seams (G1162, #624): FFDec draws each Flash colour region as its own anti-aliased path, so where two
+regions share an edge the background shows through in a light hairline; Flash drew the edge once and
+the art was solid. Every render is sealed before it is resampled (seal_seams: a small grey closing
+of the alpha, capped by the PNG's alpha where it is the same art, so the PNG's real gaps stay open),
+and --check measures each shipped 2x file against its PNG (seam_gaps: % of the PNG's solid interior
+left see-through in thin lines) and fails over `seam_max`.
+
 3x files are left out where they cannot be seen: decos only placed on blurred layers (baked at half
 resolution), decos every street places at 2/3 of the PNG size or less (the 2x file already has 3
 texels per world pixel), decos whose 3x render adds almost nothing over the 2x one upscaled
@@ -116,6 +123,10 @@ SETTINGS = {
     'dense': 2.9,           # texels per world pixel at which the 2x file is already enough
     'max_3x': 8192,         # longest side of a 3x file
     'big_3x': 4096,         # 3x files longer than this only load where MAX_TEXTURE_SIZE allows
+    'seam_radius': 3,       # grey closing (render px) that seals FFDec's hairline seams (seal_seams, G1162), capped by the PNG
+    'seam_radius_free': 2,  # the same where the PNG is other art (no cap: only narrower gaps close)
+    'seam_min': 4,          # least alpha a seam pixel must gain to be changed (0-255)
+    'seam_max': 0.2,        # --check: most % of the PNG's interior a shipped 2x file may leave see-through (seam_gaps)
 }
 
 
@@ -260,6 +271,129 @@ def gain_3x(img3, img2):
     return round(float(np.percentile(visible_error(img3, up), 99)), 1)
 
 
+# ---------- seams (G1162) ----------
+
+def _rank(a, r, fn):
+    """Grey max (np.maximum) or min (np.minimum) filter of a uint8 array over a (2r+1) square."""
+    h, w = a.shape
+    p = np.pad(a, r, mode='edge')
+    out = p[0:h, 0:w].copy()
+    for dy in range(2 * r + 1):
+        for dx in range(2 * r + 1):
+            if dy or dx:
+                fn(out, p[dy:dy + h, dx:dx + w], out=out)
+    return out
+
+
+def _erode_mask(m, r):
+    h, w = m.shape
+    p = np.pad(m, r, mode='constant', constant_values=False)
+    out = m.copy()
+    for dy in range(2 * r + 1):
+        for dx in range(2 * r + 1):
+            out &= p[dy:dy + h, dx:dx + w]
+    return out
+
+
+def ref_alpha(src, shift, size):
+    """The reference PNG's alpha moved by the art's `shift` (build.py best_shift: where the SWF
+    stage draws the PNG's art) and resized (bilinear) to `size`: uint8."""
+    a = np.asarray(src, dtype=np.uint8)[..., 3]
+    dx, dy = shift or (0, 0)
+    if dx or dy:
+        h, w = a.shape
+        out = np.zeros_like(a)
+        ys, yd = (slice(0, h - dy), slice(dy, h)) if dy >= 0 else (slice(-dy, h), slice(0, h + dy))
+        xs, xd = (slice(0, w - dx), slice(dx, w)) if dx >= 0 else (slice(-dx, w), slice(0, w + dx))
+        out[yd, xd] = a[ys, xs]
+        a = out
+    im = Image.fromarray(a, 'L')
+    if im.size != tuple(size):
+        im = im.resize(tuple(size), Image.BILINEAR)
+    return np.asarray(im, dtype=np.uint8)
+
+
+def seal_seams(render, ref=None):
+    """Close the see-through hairlines FFDec leaves where two colour regions of the vector art meet.
+    Flash drew each shared edge once (the scanline fill had the left and right fill of every edge),
+    so the art is solid there; FFDec draws each region as its own anti-aliased path, so a pixel on a
+    shared edge is covered c by one side and 1 - c by the other and comes out 1 - c(1 - c) opaque:
+    a light line where the background shows through (#624). Pixels whose alpha a grey closing of
+    `seam_radius` px raises (the hairline is narrower than the closing) take the closed alpha where
+    the art is solid all round them after the closing and `ref` (the reference PNG's alpha at the
+    render's size, ref_alpha) is solid there too, so outer edges, concave corners, the space between
+    thin branches and any gap the PNG has keep their own pixels (no ref: the PNG is other art, and
+    the closing is the smaller `seam_radius_free`). They take the colour of their
+    neighbourhood (5 x 5, weighted by alpha squared: FFDec's faint edge pixels carry no reliable
+    colour).
+    render: RGBA image; returns (image, pixels changed)."""
+    x = np.asarray(render, dtype=np.uint8)
+    a = x[..., 3]
+    r = SETTINGS['seam_radius'] if ref is not None else SETTINGS['seam_radius_free']
+    want = _rank(_rank(a, r, np.maximum), r, np.minimum)
+    # Only inside solid art: the closed alpha is solid all round the pixel (not a concave outer
+    # edge or the space between thin branches), and so is the PNG there.
+    solid = _rank(want, 1, np.minimum) >= 250
+    if ref is not None:
+        h, w = a.shape
+        cap = np.zeros_like(a)
+        rh, rw = min(h, ref.shape[0]), min(w, ref.shape[1])
+        cap[:rh, :rw] = ref[:rh, :rw]
+        solid &= cap >= 250
+    fill = solid & (want.astype(np.int16) - a >= SETTINGS['seam_min'])
+    n = int(fill.sum())
+    if not n:
+        return render, 0
+    ys, xs = np.nonzero(fill)
+    h, w = a.shape
+    acc = np.zeros((n, 4), np.float32)
+    for dy in range(-2, 3):
+        for dx in range(-2, 3):
+            v = x[np.clip(ys + dy, 0, h - 1), np.clip(xs + dx, 0, w - 1)].astype(np.float32)
+            wt = (v[:, 3:4] / 255) ** 2
+            acc[:, :3] += v[:, :3] * wt
+            acc[:, 3:4] += wt
+    rgb = np.where(acc[:, 3:4] > 0, acc[:, :3] / np.maximum(acc[:, 3:4], 1e-9), x[ys, xs, :3])
+    out = x.copy()
+    out[ys, xs, :3] = np.clip(np.rint(rgb), 0, 255).astype(np.uint8)
+    out[ys, xs, 3] = want[ys, xs]
+    return Image.fromarray(out, 'RGBA'), n
+
+
+def seam_ref(name, row, size):
+    """The reference alpha seal_seams caps a render of deco `name` with at `size` (the render's
+    stage at its zoom), or None where the PNG is other art than the SWF (reason 'corrected')."""
+    if not str(row.get('reason', 'swf')).startswith('swf'):
+        return None
+    return ref_alpha(load(src_png(name)), row.get('shift'), size)
+
+
+def render_sealed(name, row, render, stage, zoom):
+    """FFDec's render of a deco with its seams sealed (seal_seams), capped by the PNG where it is the same art."""
+    size = (max(1, round(stage[0] * zoom)), max(1, round(stage[1] * zoom)))
+    ref = seam_ref(name, row, size)
+    return seal_seams(render, ref)[0]
+
+
+def seam_gaps(img, src, shift):
+    """How see-through the inside of a shipped image is where its reference PNG is solid: the % of
+    the PNG's interior (alpha >= 250, eroded 2 px; moved by `shift`, resized to img's size) where
+    img's alpha is 235 or less in a thin line (img opaque 3 px to both sides across it), the
+    hairline a seam leaves (#624, G1162). Wider differences are other art, which same_alpha judges."""
+    ref = ref_alpha(src, shift, img.size)
+    b = np.asarray(img, dtype=np.uint8)[..., 3]
+    core = _erode_mask(ref >= 250, 2)
+    if not core.any():
+        return 0.0
+    bo = b >= 250
+    k = 3
+    h, w = b.shape
+    p = np.pad(bo, k, mode='constant', constant_values=False)
+    across = (p[0:h, k:k + w] & p[2 * k:2 * k + h, k:k + w]) | (p[k:k + h, 0:w] & p[k:k + h, 2 * k:2 * k + w])
+    thin = core & (b <= 235) & across
+    return round(float(thin.sum() * 100 / core.sum()), 3)
+
+
 def stage_resample(render, stage, zoom, size):
     """The render's stage rectangle (stage w x h at `zoom`, from the origin) resampled to size."""
     box = (0, 0, min(render.width, stage[0] * zoom), min(render.height, stage[1] * zoom))
@@ -362,7 +496,7 @@ def summarize(rows):
 
 
 # Thresholds that only pick between the SWF render and the PNG (see expect_swf) stay out of the key.
-DECISION = ('same_colour', 'same_alpha', 'svg_colour', 'svg_alpha')
+DECISION = ('same_colour', 'same_alpha', 'svg_colour', 'svg_alpha', 'seam_max')
 
 
 def same_art(diff):
@@ -451,6 +585,10 @@ def process(work, d, render_png, plan_row_extra):
         d['reason'] = 'corrected: the bundle SWF differs from the old PNG; FFDec raster and SVG agree'
     else:
         d['reason'] = 'swf'
+    # Both sizes come from the render with FFDec's seams sealed (G1162).
+    ren = render_sealed(n, d, ren, d['stage'], z)
+    img2 = stage_resample(ren, d['stage'], z, d['size2'])
+    d['seam'] = seam_gaps(img2, src, d['shift'])
     tmp = os.path.join(work, 'enc')
     out2 = os.path.join(OUT, n + '.webp')
     d['bytes2'], d['lossless2'], d['err2'] = encode(img2, out2, tmp)
@@ -485,7 +623,7 @@ def emit_png(work, d, src=None):
     out3 = os.path.join(OUT, n + '@1.5x.webp')
     if os.path.exists(out3):
         os.remove(out3)
-    for k in ('bytes3', 'lossless3', 'err3', 'sha3', 'big', 'gain'):
+    for k in ('bytes3', 'lossless3', 'err3', 'sha3', 'big', 'gain', 'seam'):
         d.pop(k, None)
     return d
 
@@ -647,6 +785,25 @@ def write_js(plan):
 
 # ---------- check ----------
 
+def _seam_of(row):
+    out2 = os.path.join(OUT, row['name'] + '.webp')
+    if not os.path.exists(out2):
+        return row['name'], None
+    return row['name'], seam_gaps(decode_webp(out2), load(src_png(row['name'])), row.get('shift'))
+
+
+def seam_problems(rows):
+    """The SWF decos whose shipped 2x file is see-through inside where the PNG is solid (seam_gaps
+    over `seam_max` %, measured on the files): FFDec's seams left unsealed (G1162)."""
+    rows = [r for r in rows if r.get('mode') == 'swf']
+    out = []
+    with concurrent.futures.ProcessPoolExecutor(min(4, os.cpu_count() or 1)) as pool:
+        for n, g in pool.map(_seam_of, rows, chunksize=16):
+            if g is not None and g > SETTINGS['seam_max']:
+                out.append(f'{n}: {g}% of the inside is see-through where the PNG is solid (seams; rebuild)')
+    return out
+
+
 def cmd_check(args):
     problems = []
     plan = read_plan()
@@ -694,6 +851,7 @@ def cmd_check(args):
                 problems.append(f'{n}: {n}@1.5x.webp is not the built file')
         elif os.path.exists(out3):
             problems.append(f'{n}: stray {n}@1.5x.webp')
+    problems += seam_problems([plan['decos'][n] for n in names if n in plan['decos']])
     known = set(names)
     for f in os.listdir(OUT):
         stem = f[:-len('@1.5x.webp')] if f.endswith('@1.5x.webp') else f.rsplit('.', 1)[0]
