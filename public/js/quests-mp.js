@@ -145,6 +145,17 @@ export const MP_QUEST_COUNTERS = Object.freeze({
   raceLeave: 'race_leave',
 });
 
+/** Multiply Your Meditation (quests/meditative_arts_with_friends.js). */
+export const MEDITATE_TOGETHER_QUEST = 'meditative_arts_with_friends';
+
+/**
+ * G1165: our hint under the quest's step, beside Tiny Speck's words ("Meditate with 10 players",
+ * kept as they were). Players read 10 as everyone there; the count is the others meditating on your
+ * street at the same time (the realtime server's radiance.go recount: everyone meditating there less
+ * you; features/quests-mp-feature.js MEDITATE_TOGETHER 10), so 11 in all, the quest's eleven-ness.
+ */
+export const MEDITATE_TOGETHER_HINT = 'Hint: 10 others, 11 in all. You and 10 more Glitchen meditate on the same street at the same time, each with a Focusing Orb.';
+
 /** Facts the ours-triggers test (features/quests-mp-feature.js keeps them in its save slice). */
 export const MP_FACTS = Object.freeze({
   /** Stood on a friend's home street holding their house key. */

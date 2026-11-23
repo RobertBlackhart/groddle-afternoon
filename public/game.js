@@ -1107,6 +1107,7 @@ import { energyMax, forceMetabolic, gainMetabolic, loseMood, moodMax, setMetabol
 import { MOOD_DECAY_TEXT } from './js/mood-decay.js?v=49175993';
 import { installHiresIcons } from './js/icon-hires.js?v=fb952dde';
 import { IT_TAKES_TWO_HINT, IT_TAKES_TWO_QUEST } from './js/help-dig.js?v=ca0cc848';
+import { MEDITATE_TOGETHER_HINT, MEDITATE_TOGETHER_QUEST } from './js/quests-mp.js?v=1fc5ff58';
 import { installHiresDecos, maxTextureSizeOf } from './js/deco-hires.js?v=6908b4fe';
 import { loadAudioLevels, loadMutedPreference, loadOtherMusic, saveAudioLevel, saveMutedPreference, saveOtherMusic } from './js/audio-pref.js?v=80d433c3';
 import { createAudioBuses, fadeGain } from './js/audio-buses.js?v=af167b54';
@@ -6557,6 +6558,13 @@ function drawQuestLogCard(p) {
     const hint = document.createElement('div');
     hint.className = 'q-req q-hint';
     hint.textContent = IT_TAKES_TWO_HINT;
+    card.appendChild(hint);
+  }
+  // G1165: Multiply Your Meditation keeps Tiny Speck's "Meditate with 10 players"; our hint gives the count.
+  if (p.active && p.def.classTsid === MEDITATE_TOGETHER_QUEST) {
+    const hint = document.createElement('div');
+    hint.className = 'q-req q-hint';
+    hint.textContent = MEDITATE_TOGETHER_HINT;
     card.appendChild(hint);
   }
   if (p.active && p.def.classTsid === PHANTOM_QUEST_ID) {
