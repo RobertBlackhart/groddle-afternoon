@@ -278,3 +278,16 @@ describe('the server and the site', () => {
     assert.match(readFileSync(join(SITE_DIR, 'src', 'Neighbours.php'), 'utf8'), /'stacks' => self::stackRows\(self::savedEntry\(\$db, \$owner, 'droppedItems'\), self::feature\(\$theirs, 'homes'\)\)/);
   });
 });
+
+describe('G1190: a visitor sees the owner\'s stacks where the owner set them', () => {
+  it('house and Tower visit scenes keep a stack\'s height instead of dropping it to the floor', () => {
+    const game = readFileSync(join(GAME_DIR, 'public', 'game.js'), 'utf8');
+    const fn = game.slice(game.indexOf('function restingStackY('), game.indexOf('function droppedStacksTsid('));
+    const visit = /\/(\^MPH_[^/]+)\/\.test/.exec(fn);
+    assert.ok(visit, 'restingStackY checks the visit scene tsid');
+    const re = new RegExp(visit[1]);
+    for (const t of ['MPH_42_IN', 'MPH_42_T0', 'MPH_42_T3']) assert.ok(re.test(t), t);
+    for (const t of ['MPH_42', 'RH_HOME_EXT', 'LIF101']) assert.ok(!re.test(t), t);
+    assert.ok(fn.indexOf(visit[0]) < fn.indexOf('stackRestY('), 'kept before the floor search');
+  });
+});

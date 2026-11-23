@@ -15727,6 +15727,8 @@ function spawnDroppedItemStack(stack) {
  */
 function restingStackY(x, y) {
   if (homeIsInstanced() && currentStreetTsid === HOME_INTERIOR_TSID) return y;
+  // G1190: a visitor's house and Tower scenes show the owner's stacks where the owner set them (a table, a shelf).
+  if (/^MPH_\d+(?:_IN|_T\d+)$/.test(String(currentStreetTsid || ''))) return y;
   return stackRestY(streetPlatforms, x, y) ?? y;
 }
 
