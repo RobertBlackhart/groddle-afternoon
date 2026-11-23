@@ -270,7 +270,7 @@ import { HOME_TICKET, HOME_TICKET_CLASS } from '../home-ticket.js?v=acb21418';
 import { MIN_GROUND_CLEARANCE, yCamOffsetAnchor } from '../movement.js?v=f4be1a05';
 import { LANDSCAPE_VIEW_W, landscapeWindow, rowRange, soilTiles } from '../landscape-reach.js?v=2f2d7cb3';
 import { takeFromHouse } from '../ledger-house.js?v=b34f5c89';
-import { storagePickupLock } from '../home-storage.js?v=b0225465';
+import { STORAGE_TEXT, storagePickupLock } from '../home-storage.js?v=b0225465';
 import {
   DOOR_CLASS,
   DOOR_JOB_PHASES,
@@ -5079,13 +5079,31 @@ function runFurnitureAction(engine, action, arg) {
     result = displayDeposit(decor, engine.inv, id, arg, engine.inv[arg] || 1);
     if (result.ok) engine.refreshPack();
   } else if (action === 'withdraw') {
-    result = displayWithdraw(decor, engine.inv, id);
-    if (result.ok) engine.refreshPack();
+    result = withdrawWhatFits(engine, id);
   }
   if (result && !result.ok && result.msg) engine.toast(result.msg);
   renderFurniture(engine);
   renderBar(engine);
   engine.save();
+  return result;
+}
+
+/**
+ * Take out: what the pack has room for (G1204, as the box's remove in play does: features/home-storage-feature.js
+ * openRemove). bag_furniture_sdb.js remove 538-546 put back what pc.addItemStack could not take and said
+ * "You don't have enough room for all of that!"; a pack with no room at all takes nothing.
+ */
+function withdrawWhatFits(engine, id) {
+  const box = placedItem(decor, id);
+  const cls = box?.display?.classTsid;
+  if (!cls) return { ok: false, reason: 'empty' };
+  const room = engine.query?.('packRoom', cls, box.display.count, engine);
+  const fits = Number.isFinite(room) ? Math.min(box.display.count, Math.max(0, Math.floor(room))) : box.display.count;
+  if (fits < 1) return { ok: false, reason: 'pack', msg: STORAGE_TEXT.noRoom };
+  const result = displayWithdraw(decor, engine.inv, id, fits);
+  if (!result.ok) return result;
+  engine.refreshPack();
+  if (box.display?.count > 0) engine.toast(STORAGE_TEXT.noRoom);
   return result;
 }
 

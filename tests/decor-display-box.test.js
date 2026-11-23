@@ -18,7 +18,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createHomeDecorState, DISPLAY_TEXT, displayDeposit, displayRefusal, surfaceHeight } from '../public/js/home-decor.js?v=b51e16a6';
+import { createHomeDecorState, DISPLAY_TEXT, displayDeposit, displayRefusal, displayWithdraw, surfaceHeight } from '../public/js/home-decor.js?v=b51e16a6';
 import { FURNITURE_UPGRADES } from '../public/js/furniture-upgrades-data.js?v=4fe80b0f';
 import { basePlats } from '../tools/furniture-upgrades/build.mjs';
 
@@ -168,5 +168,27 @@ describe('#314 the shown item keeps its shape', async () => {
     assert.doesNotMatch(body, /icon\.(width|height) =/);
     assert.match(body, /icon\.scale\.set\(displayIconScale\(icon\.texture\.width, icon\.texture\.height\)\)/);
     assert.match(body, /onLoaded\(icon\.texture, fit\)/);
+  });
+});
+
+describe('G1204: Take out in Decoration Mode takes what fits the pack (bag_furniture_sdb.js remove 518-546)', () => {
+  it('a part of what the box holds comes out, the rest stays in it', () => {
+    const state = room();
+    const inv = { plain_bubble: 9 };
+    displayDeposit(state, inv, 8, 'plain_bubble', 9);
+    const out = displayWithdraw(state, inv, 8, 4);
+    assert.deepEqual([out.ok, out.qty], [true, 4]);
+    assert.equal(inv.plain_bubble, 4);
+    assert.deepEqual(state.placed[0].display, { classTsid: 'plain_bubble', count: 5 });
+  });
+
+  it('asks the pack how many fit first, says the source\'s words when not all did, and takes none into a full pack', () => {
+    const fn = homes.slice(homes.indexOf('function withdrawWhatFits('), homes.indexOf('function expandHouse('));
+    assert.match(fn, /engine\.query\?\.\('packRoom', cls, box\.display\.count, engine\)/);
+    assert.match(fn, /if \(fits < 1\) return \{ ok: false, reason: 'pack', msg: STORAGE_TEXT\.noRoom \};/);
+    assert.match(fn, /displayWithdraw\(decor, engine\.inv, id, fits\)/);
+    assert.match(fn, /if \(box\.display\?\.count > 0\) engine\.toast\(STORAGE_TEXT\.noRoom\);/);
+    assert.match(homes, /\} else if \(action === 'withdraw'\) \{\s+result = withdrawWhatFits\(engine, id\);/);
+    assert.doesNotMatch(homes, /result = displayWithdraw\(decor, engine\.inv, id\);/, 'never everything whatever the room');
   });
 });
