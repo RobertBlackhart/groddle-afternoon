@@ -116,7 +116,7 @@ describe('G978: no exit sign in Storyland', () => {
     dropped('storyland-exit-sign');
     // The made-up sign stays gone; Glitch's own walk-in exit box (instance_exit, G1163) is the way out again.
     assert.doesNotMatch(game, /greedy_story_exit|createGreedyExitSprite|RETURN TO UR/);
-    assert.match(game, /instance_exit/);
+    assert.match(read('public/js/greedy-street-spirit.js'), /GREEDY_EXIT_BOX_ID = 'instance_exit'/);
     assert.doesNotMatch(read('public/content.js'), /leave_storyland/);
     assert.match(game, /getElementById\('greedy-street-leave-btn'\)\?\.addEventListener\('click', confirmLeaveGreedyStreetSpirit\)/);
   });
