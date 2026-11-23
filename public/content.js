@@ -59,14 +59,14 @@ import {
   ensureAnimalState,
   listAnimalFeedOptions,
   feedAnimal,
-} from './js/animals.js?v=c463bef9';
+} from './js/animals.js?v=354bc506';
 import {
   quoteAnimalKinship,
   ANIMAL_KINSHIP_CLICK_REFUSALS,
   performAnimalKinship,
   highestAnimalKinshipRank,
 } from './js/animal-kinship.js?v=75d3cb34';
-import { MUSICBLOCK_CATALOG } from './js/musicblocks.js?v=97129d87';
+import { MUSICBLOCK_CATALOG } from './js/musicblocks.js?v=fd84b634';
 import { nextDialogue, formatSpokenLine } from './js/dialogue.js?v=fcfed1af';
 import {
   ensureWoodTreeState,
@@ -84,12 +84,12 @@ import {
   namingVerbs,
   queuePlops,
   startIncubation,
-} from './js/animal-husbandry.js?v=385a150f';
+} from './js/animal-husbandry.js?v=53debb87';
 import { loseEnergy, metabolicGain, moodMax } from './js/metabolics.js?v=48f784bf';
 import { SET_FREE, setFreeVerbState } from './js/animal-set-free.js?v=6fcd8355';
 import { BUTTER_UP, SING_TO, butterUpVerbState, butterUpChicken, singToVerbState, singToButterfly } from './js/animal-flattery.js?v=3374cf3a';
 import { levelInfoForXp } from './js/progression.js?v=05ff0260';
-import { getGameDayKey } from './js/game-day.js?v=50c112eb';
+import { getGameDayKey } from './js/game-day.js?v=a532775d';
 import { PACK_COPY, isElementClass } from './js/pack-slots.js?v=d9ab4a0b';
 import { hasPouch } from './js/elemental-pouch.js?v=42702eda';
 import { ITEM_CATALOG, countItem } from './js/inventory.js?v=6414dbdc';

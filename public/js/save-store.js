@@ -28,7 +28,7 @@
  */
 
 import { GAME_MODE, MULTIPLAYER } from './game-mode.js?v=1ecf2899';
-import { leaveHandoff, listenForClaims, newWriterId } from './save-claim.js?v=30cf5250';
+import { leaveHandoff, leaveSpot, listenForClaims, newWriterId, newerSpot } from './save-claim.js?v=f538f8c7';
 import { CHARACTER_CHANGED_EVENT, characterHeaders, characterId, isCharacterChanged } from './character-guard.js?v=510034a7';
 import { buildRefuses, cleanBuild, pageBuild } from './save-build.js?v=588eae75';
 
@@ -508,6 +508,9 @@ export function createMultiplayerSaveStore(opts = {}) {
   const boot = 'boot' in opts ? opts.boot : scope?.GRODDLE_MP_BOOT;
   if (!boot || typeof boot !== 'object' || typeof boot.saveUrl !== 'string') return createRefusingMultiplayerStore();
   const entries = entriesOf(boot.entries);
+  // G1202: the spot this tab saved last, when the save holds an older one (js/save-claim.js newerSpot).
+  const tabSpot = newerSpot({ scope, player: boot.player?.id, location: entries.has('location') ? entries.get('location') : null });
+  if (tabSpot) entries.set('location', tabSpot);
   const writer = typeof boot.writer === 'string' && /^[A-Za-z0-9]{8,32}$/.test(boot.writer) ? boot.writer : newWriterId();
   // G737: every write names this page's build; the site keeps it with the save (SaveShape build).
   const build = cleanBuild('build' in opts ? opts.build : pageBuild(scope?.document));
@@ -544,6 +547,8 @@ export function createMultiplayerSaveStore(opts = {}) {
   }
   // The save was loaded from a newer build than this page (an old copy of the page): it never writes.
   if (buildRefuses(boot.build, build)) sync.outdated();
+  // G1202: the newer spot goes into the stored save too.
+  if (tabSpot) sync.changed();
   // Another tab of this browser opening the same character asks this one to save and stand down first.
   const claims = listenForClaims({ scope, player: boot.player?.id, writer, onClaim: () => sync.yieldTo() });
   const check = (name) => {
@@ -561,6 +566,8 @@ export function createMultiplayerSaveStore(opts = {}) {
     set(name, value) {
       check(name);
       const text = String(value);
+      // G1202: every spot saved is left in the tab too, however the save fares.
+      if (name === 'location') leaveSpot({ scope, player: boot.player?.id, location: text });
       if (entries.get(name) === text) return;
       entries.set(name, text);
       sync.changed();

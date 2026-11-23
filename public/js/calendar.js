@@ -37,10 +37,10 @@ import {
   MONTH_LENGTHS,
   MONTH_NAMES,
   dametimeParts,
-} from './game-day.js?v=50c112eb';
+} from './game-day.js?v=a532775d';
 import { SEASONS, SEASON_TIME_ZONE, potLuckWindow, urDate } from './seasons.js?v=64c72251';
-import { MP_ORDER, RUN_EPOCH_MS, RUN_MS, runAt } from './feats-mp.js?v=809b0452';
-import { FEAT_BY_ID } from './solo-feats.js?v=ed1492fc';
+import { MP_ORDER, RUN_EPOCH_MS, RUN_MS, runAt } from './feats-mp.js?v=49ed2393';
+import { FEAT_BY_ID } from './solo-feats.js?v=0ec0bd95';
 
 export const CALENDAR_TEXT = Object.freeze({
   title: 'Calendar',

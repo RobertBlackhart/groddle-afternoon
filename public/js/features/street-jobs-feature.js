@@ -57,9 +57,9 @@ import { worldToScreen } from '../street-model.js?v=a9a05f9d';
 import { signArmWidth } from '../street-render.js?v=c3b6187d';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 import { getSkillCatalog } from '../content-catalogs.js?v=10b118dd';
-import { GIANTS } from '../shrines.js?v=de74a29b';
+import { GIANTS } from '../shrines.js?v=d5d7a471';
 import { giantDisplayName } from '../giant-names.js?v=0e295891';
-import { teleportationFeature } from './teleportation-feature.js?v=31009d39';
+import { teleportationFeature } from './teleportation-feature.js?v=aece67b4';
 import {
   SOLO_DIVISOR,
   WORK_UNIT_MS,
@@ -122,7 +122,7 @@ import { holdNote, placeIndex, questHold, questStoryKey } from '../quest-reach.j
 import { fewestClosures, loadStreetGraph, reachableStreets, streetGraph, worldRoads } from '../street-graph.js?v=dcc5cae4';
 import { openWorld } from '../open-roads.js?v=597feeb5';
 import { getQuestCatalog as questCatalog } from '../content-catalogs.js?v=10b118dd';
-import { saveStore, savedThrough } from '../save-store.js?v=cd053443';
+import { saveStore, savedThrough } from '../save-store.js?v=4e720735';
 import {
   HALL_TEXT,
   MP_TEXT,

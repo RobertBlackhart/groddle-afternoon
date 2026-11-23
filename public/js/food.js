@@ -9,7 +9,7 @@
  * to 20 times the player's energy maximum per game day.
  */
 
-import { GAME_DAY_MS } from './game-day.js?v=50c112eb';
+import { GAME_DAY_MS } from './game-day.js?v=a532775d';
 import { ITEM_CATALOG } from './inventory.js?v=6414dbdc';
 
 export const FOOD_VARIETY_UPGRADE = 'food_variety_bonus';

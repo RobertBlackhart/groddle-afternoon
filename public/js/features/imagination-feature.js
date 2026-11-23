@@ -27,7 +27,7 @@
  */
 
 import { addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=6414dbdc';
-import { getGameDayKey } from '../game-day.js?v=50c112eb';
+import { getGameDayKey } from '../game-day.js?v=a532775d';
 import { quoinDailyLimitFor } from '../quoins.js?v=5abad2c7';
 import { XP_FOR_LEVEL } from '../progression.js?v=05ff0260';
 import {
@@ -58,7 +58,7 @@ import { brainCapacityRescale, skillTimeFactor } from '../imagination-effects.js
 import { betterLearningDiscount } from '../better-learning.js?v=044ff9ff';
 import { rescaleStudiesForLearningModifier } from '../skills.js?v=db7039d9';
 import { isOfferedInRemake, isOfferedOnline, remakeStatus } from '../imagination-remake.js?v=c37ad887';
-import { hellFeature } from './hell-feature.js?v=0f649865';
+import { hellFeature } from './hell-feature.js?v=9575e2c8';
 import { CARD_ZOOM_MS, createImgReveal, createLabelPicker, measureArt, playAreaRect, revealContent } from '../img-reveal.js?v=0386b354';
 import { autoplayLog } from '../autoplay-log.js?v=55bb4823';
 import { forceMetabolic } from '../metabolics.js?v=48f784bf';

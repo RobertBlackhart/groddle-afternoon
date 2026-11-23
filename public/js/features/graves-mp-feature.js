@@ -39,13 +39,13 @@ import {
   graveVerbs,
   normalizeGraveDone,
   normalizeGraveMourned,
-} from '../graves-mp.js?v=23893ef1';
-import { HELL_SPRITES } from '../hell.js?v=e77adbf2';
+} from '../graves-mp.js?v=3f774f83';
+import { HELL_SPRITES } from '../hell.js?v=d77f15ef';
 import { publicStreet } from '../shared-street.js?v=dce5694b';
 import { frameTexture, sourceFromUrl } from '../textures.js?v=729b29ea';
 import { standOnFeet } from '../sprite-feet.js?v=6ffaec43';
-import { hellFeature } from './hell-feature.js?v=0f649865';
-import { hellTicketsFeature } from './hell-tickets-feature.js?v=d3ba4e1c';
+import { hellFeature } from './hell-feature.js?v=9575e2c8';
+import { hellTicketsFeature } from './hell-tickets-feature.js?v=0c82778b';
 
 export const GRAVES_MP_FEATURE_ID = 'graves-mp';
 const CLASS_ID = 'graveside_marker';

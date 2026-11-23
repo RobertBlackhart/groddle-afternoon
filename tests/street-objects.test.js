@@ -38,11 +38,11 @@ import {
   takeObjs,
   treeReady,
   treeSkill,
-} from '../public/js/street-objects.js?v=1fffb428';
-import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=ae0c68d1';
-import { FEATURES } from '../public/js/features/index.js?v=50916de3';
+} from '../public/js/street-objects.js?v=c7c69227';
+import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=18be8588';
+import { FEATURES } from '../public/js/features/index.js?v=4896e2ea';
 import { createMineRock, mineRock } from '../public/js/mining.js?v=8463f2ac';
-import { createResourceNode } from '../public/js/resource-nodes.js?v=cf9aae18';
+import { createResourceNode } from '../public/js/resource-nodes.js?v=30b69928';
 import { createTrantState, fruitCapacityAt, setTrantTables } from '../public/js/trants.js?v=864ea9ff';
 import { placementRequests, ruleTables, streetObjectLayout } from '../tools/build-realtime-objects.mjs';
 import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs } from '../public/js/street-loader.js?v=10376267';

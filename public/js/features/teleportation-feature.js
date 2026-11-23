@@ -52,7 +52,7 @@
  */
 
 import { addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=6414dbdc';
-import { getGameDayKey } from '../game-day.js?v=50c112eb';
+import { getGameDayKey } from '../game-day.js?v=a532775d';
 import { canUseTool, copyForVerb, copyTag, copyTags, setCopyTag, takeToolCopy, useToolCondition } from '../tools.js?v=4156bba8';
 import {
   PAPER_CLASS,

@@ -92,8 +92,8 @@
 
 import { ITEM_CATALOG, itemIcon } from '../inventory.js?v=6414dbdc';
 import { frameTexture, sourceFromUrl } from '../textures.js?v=729b29ea';
-import { questRoomConverse } from './quest-instances-feature.js?v=ce1bcac6';
-import { hellFeature } from './hell-feature.js?v=0f649865';
+import { questRoomConverse } from './quest-instances-feature.js?v=3428e504';
+import { hellFeature } from './hell-feature.js?v=9575e2c8';
 import { DISPATCHER_ART, FROG_ART, MAIL_NPC_ART_DIR } from '../mail-npc-art.js?v=1ed97a5d';
 import { DISPATCHER_GAP, DISPATCHER_HALF, DISPATCHER_TEXT, SIGNPOST } from '../home-street-fixtures.js?v=bad831a1';
 import { MAIL_POST_SENDER } from '../mailbox.js?v=d50d0d05';

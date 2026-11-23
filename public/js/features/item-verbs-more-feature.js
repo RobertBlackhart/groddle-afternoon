@@ -41,7 +41,7 @@
 import { displayTopOf } from '../overlay-art.js?v=95f23414';
 import { OVERLAY_USES, playOverlay } from '../overlays.js?v=1f5027a3';
 import { addItem, countItem, removeItem } from '../inventory.js?v=6414dbdc';
-import { getGameDayKey } from '../game-day.js?v=50c112eb';
+import { getGameDayKey } from '../game-day.js?v=a532775d';
 import { levelInfoForXp, XP_FOR_LEVEL } from '../progression.js?v=05ff0260';
 import { itemVerbAchievementCounters } from '../item-verbs.js?v=ecade42e';
 import { hasPouch, POUCH_CLASS } from '../elemental-pouch.js?v=42702eda';
@@ -49,7 +49,7 @@ import { GENTLE_ISLAND_TSIDS, isNewxpSceneTsid } from '../newxp.js?v=5aa81665';
 import { SKILLQUEST_AK_TSID } from '../skillquest-ak.js?v=397a9d19';
 import { getToolCondition, migrateClassValue, setToolRemaining, TOOL_CONDITION_CATALOG, toolCopies, useToolCondition } from '../tools.js?v=4156bba8';
 import { copyChargesLeft, keepsCopies, spendCopyCharge, verbCopy } from '../copy-charges.js?v=ab07e909';
-import { HERDKEEPING, hogtieEscapeDelayMs, husbandryPack } from '../animal-husbandry.js?v=385a150f';
+import { HERDKEEPING, hogtieEscapeDelayMs, husbandryPack } from '../animal-husbandry.js?v=53debb87';
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=bac259c0';
 import { sourceFromUrl, frameTexture } from '../textures.js?v=729b29ea';
 import { landingY, walkSurfaceY } from '../walk-surface.js?v=3c919d5b';

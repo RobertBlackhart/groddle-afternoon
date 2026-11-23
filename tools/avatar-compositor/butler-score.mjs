@@ -19,7 +19,7 @@ import { existsSync, readFileSync, readdirSync, statSync, writeFileSync } from '
 import { homedir } from 'node:os';
 import { dirname, extname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { BUTLER_LOOKS } from '../../public/js/butler.js?v=52b4f74d';
+import { BUTLER_LOOKS } from '../../public/js/butler.js?v=6c66ebf5';
 import { BUTLER_OPTIONS } from './butler.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));

@@ -29,10 +29,10 @@ import { HAS_SERVER, HAS_SITE, SITE_DIR, serverPath, sitePath } from '../tools/r
 import { bagLabel } from '../public/js/bag-names.js?v=bba085e1';
 import { BAG_DEFS, PACK_CAPACITY, layoutPack, normalizePrefs, ownBagLabel, renameBag } from '../public/js/pack-slots.js?v=d9ab4a0b';
 import { ITEM_CATALOG, isToolItem } from '../public/js/inventory.js?v=6414dbdc';
-import { nameAnimal, namedAnimalLabel } from '../public/js/animal-husbandry.js?v=385a150f';
+import { nameAnimal, namedAnimalLabel } from '../public/js/animal-husbandry.js?v=53debb87';
 import { kittyLabel, nameKitty } from '../public/js/heli-kitties.js?v=e4af4096';
 import { nameCubimal } from '../public/js/cubimals.js?v=07f59f2f';
-import { createButlerState, renameButler, teachButler } from '../public/js/butler.js?v=52b4f74d';
+import { createButlerState, renameButler, teachButler } from '../public/js/butler.js?v=6c66ebf5';
 import { cleanTowerName } from '../public/js/home-tower.js?v=18889f7a';
 import { PENMANSHIP_SKILL, editNote, writePaperNote } from '../public/js/street-furniture.js?v=071203fc';
 import { MAIL_COMPANIONS, createMailboxState, sendMail } from '../public/js/mailbox.js?v=d50d0d05';

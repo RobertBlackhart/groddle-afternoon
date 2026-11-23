@@ -22,10 +22,10 @@ import {
   capYardAnimals,
   sadnessMax,
   yardClassCap,
-} from '../public/js/animal-crowding.js?v=1966bc21';
-import { normalizeYardView, visitorHerdCap, yardStreetWidth } from '../public/js/yard-verbs-mp.js?v=141c23af';
+} from '../public/js/animal-crowding.js?v=64dee3e0';
+import { normalizeYardView, visitorHerdCap, yardStreetWidth } from '../public/js/yard-verbs-mp.js?v=39a21ce2';
 import { homeStreetLayout, normalizeCultivationState } from '../public/js/home-cultivation.js?v=0fc0b231';
-import { normalizeHusbandrySlot } from '../public/js/features/animal-husbandry-feature.js?v=7cd1f2e0';
+import { normalizeHusbandrySlot } from '../public/js/features/animal-husbandry-feature.js?v=0dc4f6ec';
 import { HAS_SITE, SITE_DIR, sitePath } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');

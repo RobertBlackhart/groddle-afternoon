@@ -38,7 +38,7 @@ import {
   paradiseSkyStops,
   paradiseTicketCost,
   resolveParadiseReward,
-} from '../public/js/paradise-flight.js?v=fa182469';
+} from '../public/js/paradise-flight.js?v=165732ba';
 import { QURAZY_REWARDS } from '../public/js/quoins.js?v=5abad2c7';
 import { remakeStatus } from '../public/js/imagination-remake.js?v=c37ad887';
 

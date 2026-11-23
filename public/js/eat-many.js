@@ -33,7 +33,7 @@
 import { CONSUME_FLAVOUR_LINES, ITEM_CATALOG, countItem, getItemUseInfo, removeItem, useItem } from './inventory.js?v=6414dbdc';
 import { metabolicGain, moodMax, shiftMetabolic } from './metabolics.js?v=48f784bf';
 import { grantMoodXp } from './mood-xp.js?v=e311b45c';
-import { quoteFoodVarietyBonus, foodFullness } from './food.js?v=328b3274';
+import { quoteFoodVarietyBonus, foodFullness } from './food.js?v=4a8587cf';
 
 /**
  * Eat and drink verbs marked "is_single": 1 in GSJS items/*.js (verbs.eat:

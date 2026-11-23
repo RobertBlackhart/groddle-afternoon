@@ -19,8 +19,8 @@ import { HOME_POOL_REFRESH_MS, collectAmount, normalizePool, poolView } from '..
 import { homePoolMpFeature } from '../public/js/features/home-pool-mp-feature.js?v=eda3419c';
 import { CULTIVATION_REWARDS_CAP, imgRewards, imgRewardLine } from '../public/js/magic-rock-home.js?v=c07b2327';
 import { DROP_TEXT, eatenStack, normalizeGroundStack, pigAnimalKey } from '../public/js/drops-mp.js?v=ad34ae0a';
-import { dropsMpFeature } from '../public/js/features/drops-mp-feature.js?v=3f718120';
-import { GAME_DAY_MS, GAME_EPOCH_MS, getGameDayKey } from '../public/js/game-day.js?v=50c112eb';
+import { dropsMpFeature } from '../public/js/features/drops-mp-feature.js?v=e5d63f64';
+import { GAME_DAY_MS, GAME_EPOCH_MS, getGameDayKey } from '../public/js/game-day.js?v=a532775d';
 import { normalizeToolConditionState } from '../public/js/tools.js?v=4156bba8';
 import { tradeTable } from '../tools/build-realtime-trade.mjs';
 import { HAS_SERVER, HAS_SITE, SITE_DIR, serverPath, sitePath } from '../tools/repos.mjs';
@@ -133,7 +133,7 @@ describe('the game shows the site\'s pool (home-pool-mp)', () => {
   });
 
   it('the rock hands over the site\'s amount in multiplayer, after the site marked the day', async () => {
-    const { homesFeature } = await import('../public/js/features/homes-feature.js?v=506557cd');
+    const { homesFeature } = await import('../public/js/features/homes-feature.js?v=daebf01d');
     homesFeature.restore({ decor: {}, cult: {}, magicRock: { cultivate: 'cultivate_complete', changestyle: 'howto_shown', expand: 'howto_shown' } });
     const beats = [];
     const data = {};

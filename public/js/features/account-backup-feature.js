@@ -36,11 +36,11 @@
 
 import { createMinnAccount } from '../minn-account.js?v=edf182bb';
 import { mountAccountForms, mountAccountSettings, mountPresenceSetting } from '../account-forms.js?v=6729bb05';
-import { createBrowserSaveStore, freezeSoloSaves, restoreSoloSave, saveStore, savedAtOf, soloSaveSnapshot, thawSoloSaves } from '../save-store.js?v=cd053443';
-import { formatGameDayLabel } from '../game-day.js?v=50c112eb';
+import { createBrowserSaveStore, freezeSoloSaves, restoreSoloSave, saveStore, savedAtOf, soloSaveSnapshot, thawSoloSaves } from '../save-store.js?v=4e720735';
+import { formatGameDayLabel } from '../game-day.js?v=a532775d';
 import { multiplayerEntryUrl } from '../game-mode.js?v=1ecf2899';
-import { markContinued, quietSession } from '../online-boot.js?v=d3834f20';
-import { installCharacterSwitcher } from '../character-switcher.js?v=5d09bc88';
+import { markContinued, quietSession } from '../online-boot.js?v=a65605e5';
+import { installCharacterSwitcher } from '../character-switcher.js?v=a1dd6b43';
 
 /** Which slot a new backup goes to: the first empty one, else the oldest (which then needs a yes). */
 export function slotForNewBackup(backups, slots) {

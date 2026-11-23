@@ -46,7 +46,7 @@
  */
 
 import { ensureItem } from './inventory.js?v=6414dbdc';
-import { GAME_DAY_MS, getGameDayKey, getGameDayStartMs } from './game-day.js?v=50c112eb';
+import { GAME_DAY_MS, getGameDayKey, getGameDayStartMs } from './game-day.js?v=a532775d';
 import { giantDisplayName } from './giant-names.js?v=0e295891';
 import { energyMax as tankEnergyMax, moodMax as tankMoodMax } from './metabolics.js?v=48f784bf';
 

@@ -55,6 +55,57 @@ export function takeHandoff({ scope = globalThis, player } = {}) {
   }
 }
 
+/**
+ * G1202 (#307): a reload put the player back where an older write had them. The handoff above
+ * carries the page's last write only when the page still writes; a page whose save had stopped
+ * (elsewhere, conflict, error, signed out, outdated, held) or whose last write never went left
+ * nothing, so the next page read the spot of the last write that landed, which could be minutes or
+ * hours old. Glitch kept the player's location on the server as they moved, so a reload came back
+ * where they stood. So every spot the page saves is also left in the tab (leaveSpot), and the next
+ * page of this tab takes it over the save's when it is newer (newerSpot): another window or device
+ * that played since saved a newer spot, and that one wins.
+ */
+export const SPOT_KEY = 'groddle-tab-spot';
+
+/** The savedAt of a saved location entry (the raw string game.js savePlayerLocation writes), or 0. */
+export function spotSavedAt(location) {
+  try {
+    const at = Number(JSON.parse(String(location || 'null'))?.savedAt);
+    return Number.isFinite(at) && at > 0 ? at : 0;
+  } catch {
+    return 0;
+  }
+}
+
+/** Leaves the location entry just saved for the next page of this tab. */
+export function leaveSpot({ scope = globalThis, player, location }) {
+  if (player == null || typeof location !== 'string' || !spotSavedAt(location)) return false;
+  try {
+    scope.sessionStorage.setItem(SPOT_KEY, JSON.stringify({ player, location }));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** The location this tab saved last for this player, when it is newer than `location` (the save's); else null. */
+export function newerSpot({ scope = globalThis, player, location = null } = {}) {
+  let raw = null;
+  try {
+    raw = scope.sessionStorage.getItem(SPOT_KEY);
+  } catch {
+    return null;
+  }
+  try {
+    const left = JSON.parse(raw || 'null');
+    if (!left || player == null || String(left.player) !== String(player) || typeof left.location !== 'string') return null;
+    const at = spotSavedAt(left.location);
+    return at && at > spotSavedAt(location) ? left.location : null;
+  } catch {
+    return null;
+  }
+}
+
 export const SAVE_CHANNEL = 'groddle-save';
 
 /** A page's name for itself on the save (MultiplayerSave.php WRITER): 16 random hex digits, new each page load. */

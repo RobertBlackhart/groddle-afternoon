@@ -78,7 +78,7 @@ import {
   ITEM_CATALOG,
 } from './inventory.js?v=6414dbdc';
 import { TOOL_CONDITION_CATALOG, canUseTool, toolCopies, useToolCondition } from './tools.js?v=4156bba8';
-import { getGameDayKey } from './game-day.js?v=50c112eb';
+import { getGameDayKey } from './game-day.js?v=a532775d';
 import { grantMoodXp } from './mood-xp.js?v=e311b45c';
 import { gainMetabolic, loseEnergy, loseMood } from './metabolics.js?v=48f784bf';
 import { superHarvestWords } from './words.js?v=274023af';

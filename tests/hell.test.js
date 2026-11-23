@@ -61,11 +61,11 @@ import {
   shouldWarnLowEnergy,
   squishGrape,
   wineDrinkConditions,
-} from '../public/js/hell.js?v=e77adbf2';
+} from '../public/js/hell.js?v=d77f15ef';
 import { ITEM_CATALOG } from '../public/js/inventory.js?v=6414dbdc';
-import { hellFeature } from '../public/js/features/hell-feature.js?v=0f649865';
+import { hellFeature } from '../public/js/features/hell-feature.js?v=9575e2c8';
 import { Display, fakePixi } from './fake-scene.js';
-import { GAME_DAY_MS, getGameDayKey, getGameDayStartMs } from '../public/js/game-day.js?v=50c112eb';
+import { GAME_DAY_MS, getGameDayKey, getGameDayStartMs } from '../public/js/game-day.js?v=a532775d';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
 import {
   applyAchievementProgress,

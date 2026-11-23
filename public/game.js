@@ -2,9 +2,9 @@
  * Groddle Afternoon — original street geometry + layered decos
  * PixiJS 8 · locations-xml streets · CoU PNG decos · quests/items
  */
-import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=ac244ca0';
+import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=e517a49b';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=50916de3';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=4896e2ea';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE, playerClickBox } from './js/reach.js?v=456da8a8';
@@ -414,7 +414,7 @@ import {
   slipTerrainY,
   starlitMoonPlainAlpha,
   starlitRevealAlpha,
-} from './js/paradise-flight.js?v=fa182469';
+} from './js/paradise-flight.js?v=165732ba';
 import {
   RADIAL_ARRIVAL_EVENTS,
   RADIAL_FLITTERBUG_EVENTS,
@@ -543,8 +543,8 @@ import { beginDrag, installDropRegistry, packStackOf, registerDropTarget, touchL
 import { FLOAT_TEXT_Z, SPEECH_BUBBLE_Z } from './js/fx-z.js?v=18dda7e3';
 import { hasPouch } from './js/elemental-pouch.js?v=42702eda';
 import { createPackRow, mountPackClearance, packBandRange, packCountText, packSearchEntries, packSearchResults, packSlotTip } from './js/ui/pack-row.js?v=62e891eb';
-import { listAnimalFeedOptions, piggyFeedTip } from './js/animals.js?v=c463bef9';
-import { pickerEmptyLine, pickerMaxCount, pickerOptionsFor, pickerTakesCount } from './js/animals.js?v=c463bef9';
+import { listAnimalFeedOptions, piggyFeedTip } from './js/animals.js?v=354bc506';
+import { pickerEmptyLine, pickerMaxCount, pickerOptionsFor, pickerTakesCount } from './js/animals.js?v=354bc506';
 import {
   createDroppedItemState,
   parseDroppedItemState,
@@ -563,7 +563,7 @@ import {
   inspectPlayerSave,
   serializePlayerSave,
   restorePlayerSave,
-} from './js/player-save.js?v=773ea75c';
+} from './js/player-save.js?v=bfaedb35';
 import {
   HOME_INTERIOR_TSID,
   HOME_STREET_TSID,
@@ -673,11 +673,11 @@ import {
   verbBatchWornLine,
   recipeToolChosen,
   pluralizeItem,
-} from './js/making.js?v=d28b2a24';
+} from './js/making.js?v=5a718e7f';
 import { outputIconsHtml, outputsPhrase, productHaveRows, recipeOutputRows } from './js/ui/recipe-outputs.js?v=610c067f';
 import { MAKE_TOOL_SHEETS } from './js/make-tool-sheets.js?v=6f758e09';
-import { createTestTubePanel, tryTileHtml, TRY_TILE_LABEL } from './js/test-tube-panel.js?v=75208dce';
-import { COMPOUND_RECIPE_IDS, EXPERIMENT_TOOL, experimentTooltip } from './js/test-tube.js?v=0b4144eb';
+import { createTestTubePanel, tryTileHtml, TRY_TILE_LABEL } from './js/test-tube-panel.js?v=09f0d86f';
+import { COMPOUND_RECIPE_IDS, EXPERIMENT_TOOL, experimentTooltip } from './js/test-tube.js?v=3ee87e2d';
 import { groupMakingTools, makeToolCounts, makeToolCountLine, makeToolSpokenLine, makeOpeningTool, gridStep, stationForRecipe, MAKING_BUSY } from './js/make-tools.js?v=86877c3e';
 import { LOW_FUEL_LINE, craftSessionElapsedMs, isLowFuel, isMachineArt, machineArtHtml, packMakeState, playMachineHandOver, setMachineArtFrame } from './js/machine-art.js?v=55d312b7';
 import {
@@ -782,7 +782,7 @@ import {
   getGameDayKey,
   timestampForGameHour,
   msUntilNewDay,
-} from './js/game-day.js?v=50c112eb';
+} from './js/game-day.js?v=a532775d';
 import {
   FOOD_VARIETY_UPGRADE,
   createFoodState,
@@ -792,7 +792,7 @@ import {
   canEatFood,
   recordFoodEat,
   resetFoodDay,
-} from './js/food.js?v=328b3274';
+} from './js/food.js?v=4a8587cf';
 import {
   consumeTakesCount,
   consumeCountCap,
@@ -802,7 +802,7 @@ import {
   limitCountCap,
   useItemMany,
   recordFoodEatMany,
-} from './js/eat-many.js?v=1a681dc1';
+} from './js/eat-many.js?v=d9ad6be0';
 import {
   TRIPLE_JUMP_UPGRADES,
   createJumpState,
@@ -849,7 +849,7 @@ import {
   trantFruitArt,
   trantFrameKey,
 } from './js/trants.js?v=864ea9ff';
-import { growStreetTrant } from './js/patches.js?v=2498e678';
+import { growStreetTrant } from './js/patches.js?v=3f6b9b05';
 import {
   runStreetTransition,
   showAwardScreen,
@@ -888,7 +888,7 @@ import { PATH_END_ALLOWANCE, createUserPath, stepUserPath, walkInterrupts } from
 import { TOUCH_JUMP_EVENT, climbGoalStep, createFloatStick, installTouchControls, isPhoneDevice, touchPrompt, touchTapPlan } from './js/touch-controls.js?v=b10f17bb';
 import { installPinchZoom } from './js/touch-pinch.js?v=5bdb5971';
 import { FAILED_LINE, inVerbReach, movingLine, verbRange, walkOverEnd, walkOverGoals } from './js/walk-over.js?v=277ab977';
-import { hellBuffDesc, isInHell } from './js/hell.js?v=e77adbf2';
+import { hellBuffDesc, isInHell } from './js/hell.js?v=d77f15ef';
 import { climbBobY, ladderAnimState, ladderSwap } from './js/ladder-anim.js?v=a8b327a0';
 import { VECTOR_AVATAR } from './js/avatar-vector-sheets.js?v=ad801376';
 import { PLACEHOLDER_SHEETS, isPlaceholderPack, ownPackFor, washPlaceholderPixels, whenOwnLookReady } from './js/avatar-placeholder.js?v=ae5c39e4';
@@ -904,7 +904,7 @@ import {
   APPEARANCE_PRESETS,
   PRESET_GROUPS,
   appearanceCacheKey,
-} from './js/character-builder.js?v=d2f33c8e';
+} from './js/character-builder.js?v=03768e2e';
 import { clearPresetActive, leavingDialogOpen, renderEmoteTests, renderFaceDims, renderPresetGroups, renderStarterPicker, showLeavingDialog } from './js/avatar-builder-ui.js?v=e9e684cf';
 import { NONE_TYPES, createTileArt, focusIn, pickPart, refocus, renderPartSwitch, renderPartTiles, tileJob } from './js/avatar-tiles.js?v=7aeef276';
 import {
@@ -924,7 +924,7 @@ import {
   musicblockPlaySeconds,
   playMusicblock,
   starterMusicblocks,
-} from './js/musicblocks.js?v=97129d87';
+} from './js/musicblocks.js?v=fd84b634';
 import {
   VENDOR_PROFILES,
   selectVendorProfile,
@@ -941,7 +941,7 @@ import {
   createAnimalState,
   resetAnimalDay,
   animalStatusLabel,
-} from './js/animals.js?v=c463bef9';
+} from './js/animals.js?v=354bc506';
 import {
   ensureWoodTreeState,
   pickWoodTool,
@@ -983,7 +983,7 @@ import {
   formatSpeedUpTime,
   learnFasterOpen,
   learnFasterSummary,
-} from './js/shrines.js?v=de74a29b';
+} from './js/shrines.js?v=d5d7a471';
 import { shrineSheet, shrineVariantFor } from './js/shrine-variants.js?v=7f11c97d';
 import { giantDisplayName } from './js/giant-names.js?v=0e295891';
 import { shrinePowderOptions, shrinePowderAchievementCounters } from './js/powders.js?v=316a1f66';
@@ -998,7 +998,7 @@ import {
   spinMeResponse,
   spinningWheelPhase,
   startSpinningWheel,
-} from './js/spinning-wheel.js?v=1ce3f385';
+} from './js/spinning-wheel.js?v=45deb007';
 import {
   CUBIMAL_PACKAGE_IDS,
   cubimalCollectionProgress,
@@ -1084,11 +1084,11 @@ import {
   gardenPlacementRequest,
   ROCK_SHAPE_WIDTHS,
 } from './js/street-ecology.js?v=ff90efe4';
-import { CHICKEN_PAUSE, chickenPauseRoll, easeToward, flightFloorAt, flightFloorFor, flyerLift } from './js/street-creatures.js?v=e9979e31';
+import { CHICKEN_PAUSE, chickenPauseRoll, easeToward, flightFloorAt, flightFloorFor, flyerLift } from './js/street-creatures.js?v=4f249d87';
 import { chickenPose, chickenIdleSheetsAsked } from './js/chicken-idle-art.js?v=ead8cdf8';
 import { chickenWaitPose } from './js/chicken-idles.js?v=eef0279b';
 import { itemOverlayStats } from './js/item-overlay.js?v=c498066d';
-import { isCrowdSad } from './js/animal-crowding.js?v=1966bc21';
+import { isCrowdSad } from './js/animal-crowding.js?v=64dee3e0';
 import { createSoundBoard, DEFAULT_SFX_VOLUME, watchButtonClicks, watchPanelSounds } from './js/sound-board.js?v=f41980b8';
 import {
   actionLoopFor,
@@ -1146,7 +1146,7 @@ import { HOME_SCREEN_TIP_CACHE, mountHomeScreenTip } from './js/home-screen-tip.
 import { EAT_PICK_TEXT, bestFoodIndex, eatChoices, eatTip } from './js/eat-pick.js?v=8fb763d0';
 import { heldDirection, installHeldKeyGuard, isMacPlatform } from './js/held-keys.js?v=a28eb293';
 import { isOneClickDoor, oneClickChoice, signpostArmRows, worldContextAction } from './js/world-context-menu.js?v=e4c99c05';
-import { blockedPlayerVerbs, listPlayerTarget, opensPlayerMenu, playerMenuRows } from './js/ui/player-menu.js?v=b6ee7b17';
+import { blockedPlayerVerbs, listPlayerTarget, opensPlayerMenu, playerMenuRows } from './js/ui/player-menu.js?v=c5712bde';
 import { forgetTexture, frameTexture, isFailed, isLoaded, onFailed, onLoaded, textureFromUrl, whenLoaded } from './js/textures.js?v=729b29ea';
 import { FALLBACK_MAX as WORLD_ART_FALLBACK_MAX, worldArtFor } from './js/world-art.js?v=2b3cf8d5';
 import { sceneAnim, syncAnim } from './js/deco-anim.js?v=5e2bfba2';
@@ -1155,10 +1155,10 @@ import { cancelAllOverlays, displayTopOf, itemstackOverlayPoint, playPoofIn, set
 import * as textureUrls from './js/textures.js?v=729b29ea';
 import { configureReadback, probeRenderTexture, readbackCanvas, readbackExtract, renderProbeLine } from './js/render-probe.js?v=ac5e3810';
 import { guardDestroyedSources, guardTickerRender, installPixiFixes, redrawCachedTextures } from './js/pixi-fixes.js?v=0f42b75e';
-import { hidesChatBubble } from './js/hi-signs.js?v=49b991c2';
+import { hidesChatBubble } from './js/hi-signs.js?v=7f3cab9c';
 // Multiplayer phase 1: the mode flag and the save interface every save read/write goes through.
 import { GAME_MODE, isSolo } from './js/game-mode.js?v=1ecf2899';
-import { freezeSoloSaves, keepUnreadableSave, saveStore } from './js/save-store.js?v=cd053443';
+import { freezeSoloSaves, keepUnreadableSave, saveStore } from './js/save-store.js?v=4e720735';
 import { pickReadOnly, qaHandlesAllowed } from './js/qa-gate.js?v=f4e2cd82';
 import { buildRefuses, pageBuild, saveStampOf } from './js/save-build.js?v=588eae75';
 import { createSaveHealth, mountSaveTrouble } from './js/save-trouble.js?v=bbec104f';
