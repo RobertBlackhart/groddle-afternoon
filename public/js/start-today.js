@@ -11,10 +11,13 @@
  *   skillTile(study, available)     the skill tile: what you are learning and the time left, or how many
  *                                   skills are ready
  *   featTile(summary, now)          the Feat tile from solo-feats-feature's featSummary
+ *   projectTile(memo)               the featured street project tile, as this browser last saw it
  *   pickTip(rng, { touch, android }) one tip for this visit
  *   tipText(tip, { touch })         the tip as shown: "Click" reads "Tap" on a phone
  *   studyLeft(seconds)              "2h 04m", "12m", "45s"
  */
+
+import { FEATURED_TEXT, featuredWhere } from './featured-project.js?v=5b2ee7c1';
 
 /** Tips about things players miss (report #568 asked for a tip that changes each visit). */
 export const START_TIPS = Object.freeze([
@@ -182,6 +185,22 @@ export function featTile(summary, now = Date.now()) {
     sub: [summary.what, goal ? `${value.toLocaleString()} of ${goal.toLocaleString()}.` : ''].filter(Boolean).join(' '),
     progress: goal ? Math.min(1, value / goal) : null,
     action: 'See Feats',
+  };
+}
+
+/**
+ * G1206: the street project tile, from the featured project as this browser last saw it
+ * (js/featured-project.js readFeaturedMemo; the realtime session starts only after Start, so the
+ * card cannot ask). null hides the tile: solo, or no featured project seen this week.
+ */
+export function projectTile(memo) {
+  if (!memo?.jobId) return null;
+  const percent = Math.min(100, whole(memo.percent));
+  return {
+    title: `${FEATURED_TEXT.heading}: ${memo.label}`,
+    sub: `${featuredWhere(memo)}. ${percent}% built when you last played.`,
+    progress: percent / 100,
+    action: FEATURED_TEXT.open,
   };
 }
 

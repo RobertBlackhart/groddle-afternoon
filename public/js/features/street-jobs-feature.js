@@ -152,7 +152,7 @@ import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { createMinnAccount } from '../minn-account.js?v=edf182bb';
 import { normalizeGroups } from '../groups.js?v=2e9a714e';
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=729b29ea';
-import { createJobIndicator, jobIndicatorTip, jobIndicatorView, jobPerc } from '../job-indicator.js?v=a7d840f2';
+import { createJobIndicator, jobIndicatorTip, jobIndicatorView, jobPerc } from '../job-indicator.js?v=8bea518d';
 import { LOT_ART, LOT_CLASS, LOT_PLACEMENT, LOT_SIGN_BLOCKERS, LOT_SIGN_X, LOT_TEXT, floorYAt, lotFit, lotHeadline, lotVerb } from '../group-hall-lot.js?v=23e8fbd9';
 import { JOB_WORK_BUBBLE, JOB_WORK_OVERLAY, JOB_WORK_REMOTE_BUBBLE_DY, avatarDrawnHeight, jobWorkBubbleY, jobWorkFloatPoint, jobWorkSoundKey, jobWorkToolScale, jobWorkToolSheet } from '../job-work-fx.js?v=2c489570';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
@@ -160,11 +160,11 @@ import { SIGN_ARMS } from '../map-routes.js?v=426e16ea';
 import { TELEPORTERS } from '../hidden-floors.js?v=18714dfa';
 import { WINTRY_PORTAL_TELEPORTERS } from '../wintry-portal.js?v=1437deda';
 import { PROJECTS_TEXT, aheadEntries, aheadRegions, contributedJobs, mineTotal, projectEntry, projectList } from '../projects-tracker.js?v=28ac735e';
-import { PROJECTS_PANEL_ID, buildProjectsPanel, renderAhead, renderProjects } from '../ui/projects-sheet.js?v=4489f372';
+import { PROJECTS_PANEL_ID, buildProjectsPanel, renderAhead, renderProjects } from '../ui/projects-sheet.js?v=3cef54c9';
 import { SIDE_SHEET_IDS } from '../ui/panel-shell.js?v=06a0d3fe';
 import { trophyGotText } from '../home-trophies.js?v=4eb640c3';
-import { FEATURED_TEXT, featuredChanged, featuredFromServer, featuredNeedsLine, featuredToast, featuredWaitMins } from '../featured-project.js?v=514e3e82';
-import { renderFeaturedLine, renderFeaturedRow } from '../ui/featured-project.js?v=c632bca0';
+import { FEATURED_TEXT, featuredChanged, featuredFromServer, featuredNeedsLine, featuredToast, featuredWaitMins, readFeaturedMemo, writeFeaturedMemo } from '../featured-project.js?v=5b2ee7c1';
+import { renderFeaturedLine, renderFeaturedRow } from '../ui/featured-project.js?v=cbb4d6d5';
 import { GEM_HINTS, isGem } from '../gem-hints.js?v=4b65f7ac';
 import { JOB_ASK_TEXT, itemAskSubject, itemGetHref, showAskRule, workSkillMissing, workSkillNote } from '../street-job-asks.js?v=5b3e6bd0';
 import { applySoloScale, hopsFromStart, soloAmountsLine } from '../street-jobs-solo.js?v=3bcf5d1c';
@@ -2343,9 +2343,16 @@ function createMp(engine, client) {
       engine.toast(text, 4200);
       engine.pushActivity(text);
     }
+    // G1206: the start card's tile shows it next time, before the realtime session starts.
+    writeFeaturedMemo(localStore(), featured);
     drawFeatured(engine);
     drawPlate(engine);
     projectsChanged(engine);
+    // G1206: the start card's "See the project" asked before the server had said which it is.
+    if (featuredOpenAsked && Date.now() - featuredOpenAsked < FEATURED_OPEN_WAIT_MS) {
+      featuredOpenAsked = 0;
+      if (featured) openFeatured(engine);
+    }
   });
   client.on('msg:project_given', (msg) => applyGiven(msg));
   client.on('msg:project_worked', (msg) => mpWorked(engine, msg));
@@ -2865,6 +2872,18 @@ const mineRows = new Map();
 /** G656: the featured street project (js/featured-project.js featuredFromServer), online only; null in solo. */
 let featured = null;
 let featuredTick = 0;
+/** G1206: when the start card's "See the project" asked for it before project_featured came (ms), else 0. */
+let featuredOpenAsked = 0;
+const FEATURED_OPEN_WAIT_MS = 30_000;
+
+/** This browser's localStorage, or null where it is refused. */
+function localStore() {
+  try {
+    return globalThis.localStorage || null;
+  } catch {
+    return null;
+  }
+}
 const pj = { panel: null, btn: null, dot: null, open: false, sessionSeen: 0, sig: '', badge: -1, asked: 0, answered: false, openNeeds: new Set(), last: '', pack: '', packAt: 0, aheadOpen: false, aheadTo: '', aheadSig: '', aheadRetry: 0 };
 
 /** The rows the panel reads: the save's in solo; online the server's list, then this page's live board rows. */
@@ -3435,6 +3454,18 @@ export const streetJobsFeature = {
       migrateToShared(state, catalog);
       mp.sync();
     }
+  },
+
+  /** G1206 (features/start-today-feature.js): the featured project as this browser last saw it, online only. */
+  startCardProject() {
+    return mpMode ? readFeaturedMemo(localStore()) : null;
+  },
+
+  /** G1206: the start card's "See the project": open it now, or when the server first names it. */
+  openFeaturedProject(engine) {
+    if (featured) openFeatured(engine);
+    else featuredOpenAsked = Date.now();
+    return true;
   },
 
   ecologyOverride(street) {

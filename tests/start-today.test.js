@@ -11,7 +11,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { androidBrowser, badgeCandidates, featTile, pickNudge, pickTip, skillTile, START_TIPS, studyLeft, tipText } from '../public/js/start-today.js?v=1f6916fd';
+import { androidBrowser, badgeCandidates, featTile, pickNudge, pickTip, projectTile, skillTile, START_TIPS, studyLeft, tipText } from '../public/js/start-today.js?v=e73894d1';
+import { FEATURED_MEMO_KEY, FEATURED_MEMO_MAX_MS, featuredFromServer, readFeaturedMemo, writeFeaturedMemo } from '../public/js/featured-project.js?v=5b2ee7c1';
 import { runAt } from '../public/js/feats-mp.js?v=49ed2393';
 import { FEAT_BY_ID } from '../public/js/solo-feats.js?v=0ec0bd95';
 
@@ -83,6 +84,30 @@ describe('the tiles', () => {
     assert.deepEqual(solo, { title: 'Feat: Ramble', sub: 'Walk. 1 of 3.', progress: 1 / 3, action: 'See Feats' });
     assert.equal(featTile({ mode: 'solo', allDone: true }).action, 'See Feats');
     assert.equal(featTile(null), null);
+  });
+
+  it('G1206: the street project tile, from the featured project this browser last saw (online only)', () => {
+    const store = { m: new Map(), getItem(k) { return this.m.get(k) ?? null; }, setItem(k, v) { this.m.set(k, String(v)); }, removeItem(k) { this.m.delete(k); } };
+    const now = 1_800_000_000_000;
+    const f = featuredFromServer({ job: '62', kind: 'street', label: 'Lowland Slough', hub: 'Groddle Meadow', boardLabel: 'Hechey Track', phases: 2, percent: 40, row: { big: 1 } });
+    writeFeaturedMemo(store, f, now);
+    assert.ok(store.getItem(FEATURED_MEMO_KEY).length < 300, 'only what the card shows, not the row');
+    const memo = readFeaturedMemo(store, now + 60_000);
+    assert.deepEqual(memo, { jobId: '62', label: 'Lowland Slough', kind: 'street', hub: 'Groddle Meadow', boardLabel: 'Hechey Track', subway: false, percent: 40, at: now });
+    assert.deepEqual(projectTile(memo), {
+      title: 'Featured street project: Lowland Slough',
+      sub: 'A new street in Groddle Meadow, from Hechey Track. 40% built when you last played.',
+      progress: 0.4,
+      action: 'See the project',
+    });
+    assert.equal(readFeaturedMemo(store, now + FEATURED_MEMO_MAX_MS), null, 'a week old is not shown');
+    assert.equal(projectTile(null), null, 'nothing seen: no tile');
+    writeFeaturedMemo(store, null, now);
+    assert.equal(readFeaturedMemo(store, now), null, 'nothing featured any more: forgotten');
+    store.setItem(FEATURED_MEMO_KEY, '{not json');
+    assert.equal(readFeaturedMemo(store, now), null);
+    assert.equal(readFeaturedMemo({ getItem() { throw new Error('denied'); } }, now), null);
+    assert.doesNotThrow(() => writeFeaturedMemo({ setItem() { throw new Error('full'); } }, f, now));
   });
 
   it('G1150 (#618): the install, currants, favor and skill-time tips; Android only where it applies', () => {
@@ -161,6 +186,17 @@ describe('the feature', () => {
     const due = runAt(Date.now());
     assert.ok(FEAT_BY_ID[due.feat], 'the schedule names a Feat the card can describe');
     assert.ok(due.end > Date.now());
+  });
+
+  it('G1206: online the card shows the featured project; See the project opens it once the server names it', () => {
+    const jobs = read('public/js/features/street-jobs-feature.js');
+    assert.match(feature, /const memo = engine\.query\?\.\('startCardProject', engine\) \|\| null;\s*const project = projectTile\(memo\);/);
+    assert.match(feature, /startThen\(engine, \(\) => engine\.query\?\.\('openFeaturedProject', engine\)\)/);
+    assert.doesNotMatch(feature, /Not on it yet/);
+    assert.match(jobs, /startCardProject\(\) \{\s*return mpMode \? readFeaturedMemo\(localStore\(\)\) : null;/, 'solo has no featured project');
+    assert.match(jobs, /writeFeaturedMemo\(localStore\(\), featured\);/, 'kept on every project_featured');
+    assert.match(jobs, /if \(featured\) openFeatured\(engine\);\s*else featuredOpenAsked = Date\.now\(\);/);
+    assert.match(jobs, /if \(featuredOpenAsked && Date\.now\(\) - featuredOpenAsked < FEATURED_OPEN_WAIT_MS\) \{\s*featuredOpenAsked = 0;\s*if \(featured\) openFeatured\(engine\);/);
   });
 
   it('draws with textContent, never player or badge text as HTML', () => {

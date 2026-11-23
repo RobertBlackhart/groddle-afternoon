@@ -11,18 +11,20 @@
  *  - A brand-new save (newxp's tutorial choice on the card, or a new multiplayer character) keeps the
  *    first-steps goal and the full key list, as before.
  *
- * Not on it yet: the street project tile. The Featured project can name a street nobody can reach
- * (check 2026-11-20, root R11), so it waits for that fix.
+ *  - G1206: online, the featured street project (js/start-today.js projectTile) as this browser last
+ *    saw it: the realtime session starts only after Start, so the card cannot ask the server. See the
+ *    project starts the game and opens the Projects panel on it once the server names it (R11 made the
+ *    featured project always one you can reach, v0.54.1).
  *
  * The words are pure (js/start-today.js); this file reads the game and draws them while the card is up,
  * the tiles once a second on its own timer (features do not tick before Start): the skill's time, a
  * Feat the server names after the card showed.
  * Canvas: startToday (today|new), startNudge (badge:<id>|quest:<id>|none), startSkillTile
- * (learning|idle), startFeatTile (world|waiting|solo|done|none), startTip.
+ * (learning|idle), startFeatTile (world|waiting|solo|done|none), startProjectTile (<job id>|none), startTip.
  * QA: &todaytip=<n> picks the tip.
  */
 
-import { androidBrowser, badgeCandidates, featTile, pickNudge, pickTip, skillTile, START_TIPS, tipText } from '../start-today.js?v=1f6916fd';
+import { androidBrowser, badgeCandidates, featTile, pickNudge, pickTip, projectTile, skillTile, START_TIPS, tipText } from '../start-today.js?v=e73894d1';
 import { listQuestTracker } from '../quests.js?v=90a2ee3d';
 import { skillArtFor } from '../familiar.js?v=b9597cd3';
 import { CARD_ART_LAYERS } from '../imagination-data.js?v=4a85e7fe';
@@ -31,6 +33,7 @@ export const START_TODAY_ID = 'start-today';
 
 const FEAT_ICON = 'assets/sprites/feat_badge_small.webp';
 const IDLE_SKILL_ICON = 'assets/imagination/cards/art_brain.svg';
+const PROJECT_ICON = 'assets/sprites/icons/construction_tool.webp';
 
 let mode = '';
 let tip = '';
@@ -106,6 +109,13 @@ function paintTiles(engine, doc) {
   featEl.hidden = !feat;
   if (feat) paintTile(featEl, { ...feat, icon: FEAT_ICON });
   engine.setData?.('startFeatTile', !summary ? 'none' : summary.waiting ? 'waiting' : summary.allDone ? 'done' : summary.mode);
+  // G1206: the featured street project, online, as this browser last saw it.
+  const memo = engine.query?.('startCardProject', engine) || null;
+  const project = projectTile(memo);
+  const projectEl = tileEl(doc, list, 'project', () => startThen(engine, () => engine.query?.('openFeaturedProject', engine)));
+  projectEl.hidden = !project;
+  if (project) paintTile(projectEl, { ...project, icon: PROJECT_ICON });
+  engine.setData?.('startProjectTile', project ? memo.jobId : 'none');
 }
 
 function paintNudge(engine, doc) {

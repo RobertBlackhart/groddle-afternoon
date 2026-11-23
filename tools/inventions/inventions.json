@@ -5409,6 +5409,34 @@
    "rows": [
     "G1196"
    ]
+  },
+  {
+   "id": "start-card-featured-project-tile",
+   "title": "Online, the start card's Today panel shows the featured street project as this browser last saw it, with See the project (G1206).",
+   "kind": "UI",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/start-today.js",
+     "symbol": "projectTile"
+    },
+    {
+     "file": "public/js/featured-project.js",
+     "symbol": "featuredMemo writeFeaturedMemo readFeaturedMemo"
+    },
+    {
+     "file": "public/js/features/start-today-feature.js",
+     "symbol": "paintTiles"
+    },
+    {
+     "file": "public/js/features/street-jobs-feature.js",
+     "symbol": "startCardProject openFeaturedProject"
+    }
+   ],
+   "why": "The start card and the featured project are both the remake's (G1081, G656); #568 asked for the project on the card, and the #576 reply promised it once the featured project was always reachable (R11, v0.54.1). The realtime session starts only after Start, so the card shows the last one seen, with its percent then.",
+   "rows": [
+    "G1206"
+   ]
   }
 ]
 }

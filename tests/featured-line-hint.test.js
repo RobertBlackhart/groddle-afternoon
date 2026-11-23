@@ -11,8 +11,8 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { FEATURED_TEXT } from '../public/js/featured-project.js?v=514e3e82';
-import { FEATURED_HINT_ID, FEATURED_HINT_KEY, featuredHint, featuredHintSeen } from '../public/js/ui/featured-project.js?v=c632bca0';
+import { FEATURED_TEXT } from '../public/js/featured-project.js?v=5b2ee7c1';
+import { FEATURED_HINT_ID, FEATURED_HINT_KEY, featuredHint, featuredHintSeen } from '../public/js/ui/featured-project.js?v=cbb4d6d5';
 
 const root = join(import.meta.dirname, '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

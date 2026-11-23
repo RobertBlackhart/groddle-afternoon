@@ -8,7 +8,7 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { featuredNeedsLine, featuredSkillsLine } from '../public/js/featured-project.js?v=514e3e82';
+import { featuredNeedsLine, featuredSkillsLine } from '../public/js/featured-project.js?v=5b2ee7c1';
 import { needEntry } from '../public/js/projects-tracker.js?v=28ac735e';
 
 const root = join(import.meta.dirname, '..');

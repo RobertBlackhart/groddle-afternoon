@@ -181,3 +181,52 @@ export function featuredSkillsLine(entry) {
   return seen.size ? `${FEATURED_TEXT.skills}: ${[...seen.values()].join(', ')}` : '';
 }
 
+
+/**
+ * G1206: the start card's street project tile. The realtime session starts only after Start, so the
+ * card shows the featured project as this browser last saw it ({ jobId, label, kind, hub, boardLabel,
+ * subway, percent, at }), kept on every project_featured, cleared when nothing is featured. One a
+ * week old or more is not shown (FEATURED_MEMO_MAX_MS).
+ */
+export const FEATURED_MEMO_KEY = 'groddle.featured.last';
+export const FEATURED_MEMO_MAX_MS = 7 * 24 * 3600 * 1000;
+
+/** The featured project, cut to what the card shows. null for nothing featured. */
+export function featuredMemo(f, now = Date.now()) {
+  if (!f?.jobId) return null;
+  return { jobId: f.jobId, label: f.label, kind: f.kind, hub: f.hub, boardLabel: f.boardLabel, subway: f.subway === true, percent: f.percent, at: whole(now) };
+}
+
+/** Keep (or with null, forget) the last featured project. A browser that keeps nothing keeps nothing. */
+export function writeFeaturedMemo(storage, f, now = Date.now()) {
+  try {
+    const memo = featuredMemo(f, now);
+    if (memo) storage?.setItem(FEATURED_MEMO_KEY, JSON.stringify(memo));
+    else storage?.removeItem(FEATURED_MEMO_KEY);
+  } catch {
+    /* storage refused */
+  }
+}
+
+/** The last featured project this browser saw, cleaned, or null (none, unreadable or a week old). */
+export function readFeaturedMemo(storage, now = Date.now()) {
+  let raw = null;
+  try {
+    raw = JSON.parse(storage?.getItem(FEATURED_MEMO_KEY) || 'null');
+  } catch {
+    return null;
+  }
+  const jobId = clean(raw?.jobId, 16);
+  const at = whole(raw?.at);
+  if (!jobId || !at || now - at >= FEATURED_MEMO_MAX_MS) return null;
+  return {
+    jobId,
+    label: words(raw.label) || jobId,
+    kind: raw.kind === 'upgrade' ? 'upgrade' : 'street',
+    hub: words(raw.hub),
+    boardLabel: words(raw.boardLabel),
+    subway: raw.subway === true,
+    percent: Math.min(100, whole(raw.percent)),
+    at,
+  };
+}
