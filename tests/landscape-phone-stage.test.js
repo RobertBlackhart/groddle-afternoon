@@ -19,7 +19,7 @@ import {
   phoneZoomSpan,
   stageFor,
   zoomMovesStage,
-} from '../public/js/location-view.js?v=3dead0c5';
+} from '../public/js/location-view.js?v=e5b8e4e2';
 import { phoneZoomResolution } from '../public/js/render-density.js?v=74c6f5f9';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

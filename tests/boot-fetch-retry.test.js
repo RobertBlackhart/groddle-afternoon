@@ -15,7 +15,7 @@ import { join } from 'node:path';
 
 import { loadDecoManifest } from '../public/js/street-render.js?v=b744f8fc';
 import { NEW_DECOS } from '../public/js/deco-hires.js?v=77cab890';
-import { streetJobsFeature, projectApi } from '../public/js/features/street-jobs-feature.js?v=daaacbbc';
+import { streetJobsFeature, projectApi } from '../public/js/features/street-jobs-feature.js?v=ff9ba50a';
 import { createToolConditionState } from '../public/js/tools.js?v=4156bba8';
 import { STREET_GRAPH_URL } from '../public/js/street-graph.js?v=dcc5cae4';
 import { Display, FakeEl, fakePixi } from './fake-scene.js';

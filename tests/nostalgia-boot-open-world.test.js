@@ -22,13 +22,13 @@ import { join } from 'node:path';
 
 import { streetGraph } from '../public/js/street-graph.js?v=dcc5cae4';
 import { closedForEveryone, freeWays, openWorld } from '../public/js/open-roads.js?v=597feeb5';
-import { TELEPORTERS } from '../public/js/hidden-floors.js?v=e1a92661';
+import { TELEPORTERS } from '../public/js/hidden-floors.js?v=e9288189';
 import { WINTRY_PORTAL_TELEPORTERS } from '../public/js/wintry-portal.js?v=1437deda';
 import { applyStreetIndex } from '../public/js/street-loader.js?v=10376267';
-import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=daaacbbc';
+import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=ff9ba50a';
 import { STARTER_LANDING, openBootTarget } from '../public/js/ancestral-nostalgia.js?v=7c972d9f';
 import { NOSTALGIA_BOOT_STREETS } from '../public/js/ancestral-nostalgia-data.js?v=0adb9184';
-import { FEATURES } from '../public/js/features/index.js?v=7e99ac78';
+import { FEATURES } from '../public/js/features/index.js?v=78d15b68';
 import { createBuffState, applyBuff, hasBuff, removeBuff } from '../public/js/buffs.js?v=2ed95a93';
 
 const root = join(import.meta.dirname, '..');

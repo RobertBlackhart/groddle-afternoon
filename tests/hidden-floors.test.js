@@ -30,8 +30,9 @@ import {
   LOST_FLOOR_TSID,
   LOST_FLOOR_Y,
   MISSING_BAYS,
-  MISSING_COLUMN_X,
+  MISSING_COLUMNS,
   MISSING_EXIT_ARROW,
+  MISSING_EXIT_SIGN,
   MISSING_FLOOR,
   MISSING_FLOOR_TSID,
   MISSING_FLOOR_Y,
@@ -48,9 +49,9 @@ import {
   inTeleporter,
   jumpApex,
   teleportersOn,
-} from '../public/js/hidden-floors.js?v=e1a92661';
-import { hiddenFloorsFeature } from '../public/js/features/hidden-floors-feature.js?v=9a8baa9e';
-import { FEATURES } from '../public/js/features/index.js?v=7e99ac78';
+} from '../public/js/hidden-floors.js?v=e9288189';
+import { hiddenFloorsFeature } from '../public/js/features/hidden-floors-feature.js?v=5679908c';
+import { FEATURES } from '../public/js/features/index.js?v=78d15b68';
 import { rawTripleJumpMultiplier, scaledTripleJumpMultiplier } from '../public/js/movement.js?v=f4be1a05';
 import { GRAVITY, JUMP_SPEED, WALK_MAX } from '../public/js/avatar-step.js?v=39d7b1af';
 import { buffPhysics } from '../public/js/buffs.js?v=2ed95a93';
@@ -279,37 +280,63 @@ describe('The missing floor street', () => {
     assert.match(maps, /"LDO5720PH6J2T8P"\t: "The lost floor",\s*"LDO49MOHI8J221M"\t: "The forgotten floor",\s*"LDOKP2FHL8J25AQ"\t: "The missing floor"/);
   });
 
-  it('dresses the Snaps\' stretch: TV, drain pipe, Discover Ix, cabinet, table and stools, lattice behind crossed planks, broken drip over a ripped decal, column, rug', () => {
+  it('is laid out as the 2012 full-street template: windows, columns, cabinets, arrow and bulbs in the template\'s order and places', () => {
+    const all = missing.layers.flatMap((l) => l.decos.map((d) => ({ ...d, layer: l.id })));
     const mg = missing.layers.find((l) => l.id === 'middleground').decos;
     const fg = missing.layers.find((l) => l.id === 'T_missingfloor_front').decos;
     const at = (sprite, id) => mg.find((d) => d.sprite === sprite && (!id || d.id === id));
-    const D = MISSING_BAYS.find((b) => b.id === 'D');
-    const window = at('apartment_hall_wall_piece_window', 'bay_D');
-    assert.equal(window.x, D.x);
+    // Template x to world: the template is the street at 1:1 (2000 x 750).
+    const tx = (x) => x + missing.bounds.l;
+    assert.deepEqual([missing.bounds.r - missing.bounds.l, missing.bounds.b - missing.bounds.t], [2000, 750]);
+    // The bays left to right: plain, lattice window, plain, three night windows, plain, night window.
+    assert.deepEqual(MISSING_BAYS.map((b) => b.kind[0]).join(''), 'pwpwwwpw');
+    assert.deepEqual(MISSING_BAYS.filter((b) => b.night).map((b) => b.id), ['D', 'E', 'F', 'H']);
+    for (const b of MISSING_BAYS) {
+      const piece = at(b.kind === 'window' ? 'apartment_hall_wall_piece_window' : 'apartment_hall_wall_piece_2', `bay_${b.id}`);
+      assert.ok(piece && piece.x === b.x, b.id);
+    }
+    // The night shows through the arches: stars behind every night window, the moon behind the middle one.
+    for (const b of MISSING_BAYS.filter((r) => r.night)) {
+      const stars = mg.find((d) => d.id === `stars_${b.id}`);
+      assert.ok(stars && stars.z < at('apartment_hall_wall_piece_window', `bay_${b.id}`).z, `stars behind ${b.id}`);
+    }
+    const moon = at('moon', 'moon');
+    assert.ok(Math.abs(moon.x - MISSING_BAYS.find((b) => b.id === 'E').x) < 10 && moon.z < at('apartment_hall_wall_piece_window', 'bay_E').z);
+    const lum = (hex) => [0, 2, 4].reduce((n, i) => n + parseInt(hex.slice(i, i + 2), 16), 0) / 3;
+    assert.ok(lum(missing.gradient.top) < 60 && lum(missing.gradient.bottom) < 60, 'a night sky, not daylight');
     const lattice = at('ladder_trellis_1', 'lattice');
-    assert.ok(lattice.x === D.x && lattice.z < window.z, 'the lattice shows through the arch');
-    assert.ok(Math.abs(at('door_barricade_wood_1', 'window_planks').x - D.x) < 5, 'crossed planks over it');
-    // Left of the window: TV over the drain pipe, then the poster, ripped; cabinet, table, vase, stools.
+    assert.ok(lattice.x === MISSING_BAYS.find((b) => b.id === 'B').x && lattice.z < at('apartment_hall_wall_piece_window', 'bay_B').z);
+    assert.ok(Math.abs(at('door_barricade_wood_1', 'window_planks').x - lattice.x) < 5, 'crossed planks over it');
+    // Four stone columns in the wall between the night windows (template x 935-1445), none in front of the avatar.
+    assert.deepEqual(MISSING_COLUMNS, [tx(935), tx(1117), tx(1270), tx(1445)]);
+    assert.equal(mg.filter((d) => d.sprite === 'column_1').length, 4);
+    assert.ok(!fg.some((d) => d.sprite === 'column_1'));
+    // Left to right: TV over the drain pipe, the poster ripped across, the lying cabinet, vase, table and two stools.
+    const tv = at('bureaucratic_hall_tv_1', 'tv');
     const poster = at('apartment_poster_discover_ix', 'poster_discover_ix');
-    const tv = at('bureaucratic_hall_tv_1');
-    assert.ok(tv.x < poster.x && poster.x < D.x);
-    assert.ok(Math.abs(at('shredded_poster_1', 'poster_ripped_C').x - poster.x) < 60, 'ripped across');
-    for (const s of ['k04_counter_far', 'deco_table_wooden_ghtest', 'vase_1']) assert.ok(at(s).x < D.x && at(s).x > tv.x - 60, s);
+    assert.ok(tv.x < poster.x && poster.x < lattice.x);
+    assert.ok(Math.abs(at('shredded_poster_1', 'poster_ripped_A').x - poster.x) < 30, 'ripped across');
+    assert.ok(at('cubicle_cabinet_stack', 'cabinet_lying_A').r === 90 && at('cubicle_cabinet_stack', 'cabinet_lying_A').x < lattice.x);
     assert.equal(mg.filter((d) => d.sprite === 'deco_stool_wooden_ghtest').length, 2);
-    // Right of it: the broken drip over the ripped decal, the crack, then the column.
-    const drip = at('wallpipe_1', 'drip_pipe_E');
-    const decal = at('torn_poster_1', 'poster_ripped_E');
-    assert.ok(drip.x > D.x && Math.abs(drip.x - decal.x) < 40 && drip.y < decal.y - decal.h + 40, 'the drip hangs over the decal');
-    assert.ok(mg.some((d) => d.sprite === 'cave_drip_03' && Math.abs(d.x - drip.x) < 10));
-    const column = fg.find((d) => d.id === 'column');
-    assert.ok(column.x + missing.bounds.l > decal.x && column.x + missing.bounds.l - MISSING_COLUMN_X < 60);
-    assert.ok(mg.filter((d) => d.sprite === 'hanging_lightbulb').length >= 12, 'the bulbs along the ceiling pipe');
-    assert.ok(mg.some((d) => d.sprite === 'apartment_hall_lightbulb'));
-    assert.ok(mg.some((d) => d.sprite === 'apartment_rug_red' && d.x > D.x));
-    // The guide: ripped posters, dripping faucets, a climbable vine.
-    assert.ok(mg.filter((d) => /poster_ripped/.test(d.id || '')).length >= 4);
-    assert.ok(at('k04_sink_01', 'sink') && mg.filter((d) => d.sprite === 'cave_drip_03').length >= 3);
-    assert.ok(at('ladder_vine_1', 'vine'));
+    // The broken duct drips over the ripped poster, right of the lattice window.
+    const duct = at('wallpipe_1', 'drip_duct');
+    assert.ok(duct.x > lattice.x && Math.abs(duct.x - at('torn_poster_1', 'poster_ripped_C').x) < 30);
+    // Bay G: the standing filing cabinet behind a crate, another on its side, the painted EXIT arrow over them, then the vine.
+    const standing = at('cubicle_cabinet_stack', 'cabinet_standing');
+    const lying = at('cubicle_cabinet_stack', 'cabinet_lying_G');
+    assert.ok(standing.x > MISSING_COLUMNS[3] && lying.x > standing.x && at('crate_1', 'crate_G').z > standing.z);
+    const arrow = at('crown_game_play_line_arrow1', 'exit_arrow');
+    assert.deepEqual([arrow.x, arrow.y, arrow.r], [MISSING_EXIT_ARROW.x, MISSING_EXIT_ARROW.y, -90]);
+    assert.ok(arrow.x - 162 > standing.x && at('ladder_vine_1', 'vine').x > arrow.x);
+    // Bulbs on two ropes meeting off the top: 28, as the template has.
+    assert.equal(mg.filter((d) => d.sprite === 'hanging_lightbulb').length, 28);
+    assert.equal(mg.filter((d) => d.sprite === 'hanging_clothes_line').length, 2);
+    // The rug runs from the stones to the cabinets; the floor breaks into stone at the right end.
+    const rug = at('apartment_rug_red', 'rug');
+    assert.ok(rug.x - rug.w / 2 < tx(700) && rug.x + rug.w / 2 > tx(1690));
+    assert.ok(at('debris_wall_1', 'broken_floor').x > tx(1700));
+    // Gone: the kitchen counters, the sink and the boarded daylight window that were guesses.
+    for (const s of ['k04_counter_far', 'k04_sink_01', 'abandoned_apt_windowboard_2', 'wall_shelf1']) assert.ok(!all.some((d) => d.sprite === s), s);
   });
 
   it('uses only decos on disk', () => {
@@ -317,25 +344,30 @@ describe('The missing floor street', () => {
     for (const layer of missing.layers) for (const d of layer.decos) assert.ok(manifest.has(d.sprite), `${layer.id}: ${d.sprite}`);
   });
 
-  it('has one walk line from wall to wall, and the vine climbs to its shelf', () => {
+  it('has one walk line from wall to wall, and the vine climbs to the wall\'s top trim', () => {
     const floor = plat(missing, 'plat_missing_floor');
     assert.deepEqual([floor.x1, floor.x2, floor.y1, floor.y2], [missing.bounds.l, missing.bounds.r, MISSING_FLOOR_Y, MISSING_FLOOR_Y]);
     const [vine] = missing.ladders;
     const shelf = plat(missing, 'plat_missing_shelf');
     assert.equal(vine.x, MISSING_VINE.x);
     assert.equal(vine.y, MISSING_FLOOR_Y, 'from the floor');
-    assert.ok(vine.y - vine.h <= shelf.y1 && vine.y - vine.h > shelf.y1 - 20, 'to the shelf');
+    assert.ok(vine.y - vine.h <= shelf.y1 && vine.y - vine.h > shelf.y1 - 20, 'to the trim');
     assert.ok(shelf.x1 <= vine.x && shelf.x2 > vine.x);
+    assert.ok(shelf.y1 > plat(missing, 'plat_missing_ceiling').y1, 'under the ceiling');
     assert.ok(jumpApex(1) < MISSING_FLOOR_Y - shelf.y1, 'only the vine gets you up there');
   });
 
-  it('lets you out at the right end, past the painted arrow', () => {
+  it('lets you out at the right end, past the painted arrow and its EXIT', () => {
     const row = tp('missing_to_ilmenskie');
     const W = missing.bounds.r - missing.bounds.l;
     assert.equal(inTeleporter(row, W - 24, MISSING_FLOOR_Y - missing.bounds.t), true, 'walking into the right end');
     assert.ok(MISSING_EXIT_ARROW.x - missing.bounds.l < row.box.x - row.box.w / 2, 'past the arrow');
-    assert.ok(MISSING_EXIT_ARROW.x > MISSING_BAYS.find((b) => b.id === 'G').x);
-    assert.equal(exitSignOn(MISSING_FLOOR_TSID), null, 'no word on record');
+    const sign = exitSignOn(MISSING_FLOOR_TSID);
+    assert.equal(sign.text, 'EXIT');
+    assert.deepEqual([sign.x, sign.y], [MISSING_EXIT_SIGN.x, MISSING_EXIT_SIGN.y]);
+    // On the arrow (its tip is registered and it points right, 162 px long).
+    assert.ok(sign.x + missing.bounds.l < MISSING_EXIT_ARROW.x && sign.x + missing.bounds.l > MISSING_EXIT_ARROW.x - 162);
+    assert.ok(Math.abs(sign.y + missing.bounds.t - MISSING_EXIT_ARROW.y) < 20);
   });
 });
 

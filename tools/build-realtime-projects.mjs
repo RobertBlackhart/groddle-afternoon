@@ -58,7 +58,7 @@ import { TOWER_JOBS, towerFloorClass } from '../public/js/home-tower.js?v=18889f
 import { SOLO_DIVISOR, STREET_JOB_COOLDOWN_MS, WORK_UNIT_MS, jobDivisor, soloNeed } from '../public/js/street-jobs.js?v=692d65c4';
 import { exemptForEveryone, freeWays } from '../public/js/open-roads.js?v=597feeb5';
 import { routeGraph } from '../public/js/street-graph.js?v=dcc5cae4';
-import { TELEPORTERS } from '../public/js/hidden-floors.js?v=e1a92661';
+import { TELEPORTERS } from '../public/js/hidden-floors.js?v=e9288189';
 import { WINTRY_PORTAL_TELEPORTERS } from '../public/js/wintry-portal.js?v=1437deda';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

@@ -62,7 +62,7 @@ import {
   isLostFloorTsid,
   isMissingFloorTsid,
   teleportersOn,
-} from '../hidden-floors.js?v=e1a92661';
+} from '../hidden-floors.js?v=e9288189';
 import { narakaTeleportersOn } from '../hell.js?v=e77adbf2';
 import { wintryPortalTeleportersOn } from '../wintry-portal.js?v=1437deda';
 import { cavePitTeleportersOn } from '../cave-pit.js?v=81e62950';
@@ -127,7 +127,7 @@ function drawSign(engine, row) {
     text: row.text,
     style: {
       fontFamily: WORLD_FONT_FAMILY,
-      fontSize: 30,
+      fontSize: row.fontSize ?? 30,
       fontWeight: '700',
       fill: 0xf4ead6,
       letterSpacing: 2,

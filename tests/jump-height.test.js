@@ -16,7 +16,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { AIR_FRICTION, GRAVITY, JUMP_SPEED, MAX_TICK_FRAMES, NORMAL_BUFF, REMAKE_ROOM_PHYSICS, TERMINAL_VY, flatJump, frameSteps, jumpApex, stepAvatar, avatarGround } from '../public/js/avatar-step.js?v=39d7b1af';
-import { questInstancesFeature } from '../public/js/features/quest-instances-feature.js?v=0f43b9b8';
+import { questInstancesFeature } from '../public/js/features/quest-instances-feature.js?v=04c1492c';
 import { buffPhysics } from '../public/js/buffs.js?v=2ed95a93';
 import { physicsMultipliers } from '../public/js/location-events.js?v=44ee645e';
 import { NEWXP_DEFAULT_PHYSICS, NEWXP_UPGRADES, reachFor } from '../public/js/newxp.js?v=5aa81665';
@@ -25,7 +25,7 @@ import { rawTripleJumpMultiplier, scaledTripleJumpMultiplier, TRIPLE_JUMP_UPGRAD
 import { reachStreet } from '../public/js/builder/reach-graph.js?v=467ca20f';
 import { plainApex, LEDGE_RISE } from '../public/js/builder/validate.js?v=bc04e3d1';
 import { SOURCE_PHYSICS } from '../public/js/puzzle-triggers.js?v=221b67a9';
-import { CANOPY_PHYSICS } from '../public/js/hidden-floors.js?v=e1a92661';
+import { CANOPY_PHYSICS } from '../public/js/hidden-floors.js?v=e9288189';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const PUBLIC = join(ROOT, 'public');
