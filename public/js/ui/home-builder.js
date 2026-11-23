@@ -228,6 +228,22 @@ export function edgePan(x, y, rect, edge = 48) {
 export const EDGE_DELAY_MS = 500;
 /** Css px a press must move before it is a drag. */
 export const DRAG_DIST = 4;
+/** A finger held still this long on a tile lifts it (the pack's touchLift, drop-targets.js). */
+export const TOUCH_HOLD_MS = 350;
+
+/**
+ * #628: what a finger's move on a tray tile means. The tray is a sideways row the finger swipes
+ * (touch-action: pan-x), so a mostly sideways move is a scroll and lets the tile go; a pull up out
+ * of the row, or any move after the tile was held still (`lifted`), is a drag. Under DRAG_DIST it
+ * waits. A mouse drags in any direction (onWindowMove).
+ * @param {{ dx: number, dy: number, lifted?: boolean }} move
+ * @returns {'wait'|'drag'|'scroll'}
+ */
+export function touchTileMove({ dx, dy, lifted = false }) {
+  if (Math.hypot(dx, dy) < DRAG_DIST) return 'wait';
+  if (lifted) return 'drag';
+  return Math.abs(dy) > Math.abs(dx) ? 'drag' : 'scroll';
+}
 
 // ---------------------------------------------------------------------------
 // The DOM
@@ -329,7 +345,14 @@ export function createHomeBuilder({ root, doc = root?.ownerDocument }) {
   const onWindowMove = (e) => {
     if (!press || e.pointerId !== press.pointerId) return;
     if (!press.dragging) {
-      if (Math.hypot(e.clientX - press.x, e.clientY - press.y) < DRAG_DIST) return;
+      const dx = e.clientX - press.x;
+      const dy = e.clientY - press.y;
+      if (press.touch) {
+        const step = touchTileMove({ dx, dy, lifted: press.lifted });
+        if (step === 'wait') return;
+        // A swipe along the row: the browser scrolls it, the tile is let go.
+        if (step === 'scroll') return endPress(e, true);
+      } else if (Math.hypot(dx, dy) < DRAG_DIST) return;
       press.dragging = true;
       press.node.classList.add('is-dragging');
       bar.classList.add('is-dragging');
@@ -342,6 +365,8 @@ export function createHomeBuilder({ root, doc = root?.ownerDocument }) {
     if (!press || (e && e.pointerId !== press.pointerId)) return;
     const was = press;
     press = null;
+    clearTimeout(was.hold);
+    was.node.classList.remove('is-lifted');
     doc.defaultView?.removeEventListener('pointermove', onWindowMove, true);
     doc.defaultView?.removeEventListener('pointerup', onWindowUp, true);
     doc.defaultView?.removeEventListener('pointercancel', onWindowCancel, true);
@@ -539,12 +564,26 @@ export function createHomeBuilder({ root, doc = root?.ownerDocument }) {
     if (t.onDragStart && !t.disabled) {
       node.addEventListener('pointerdown', (e) => {
         if (e.button !== 0 || press) return;
-        press = { tile: t, node, x: e.clientX, y: e.clientY, pointerId: e.pointerId, dragging: false };
+        const touch = e.pointerType === 'touch';
+        const p = { tile: t, node, x: e.clientX, y: e.clientY, pointerId: e.pointerId, dragging: false, touch, lifted: false, hold: 0 };
+        // #628: a finger held still lifts the tile, as the pack's slots do (touchLift).
+        if (touch) {
+          p.hold = setTimeout(() => {
+            if (press !== p || p.dragging) return;
+            p.lifted = true;
+            node.classList.add('is-lifted');
+          }, TOUCH_HOLD_MS);
+        }
+        press = p;
         doc.defaultView?.addEventListener('pointermove', onWindowMove, true);
         doc.defaultView?.addEventListener('pointerup', onWindowUp, true);
         doc.defaultView?.addEventListener('pointercancel', onWindowCancel, true);
       });
       node.addEventListener('dragstart', (e) => e.preventDefault());
+      // Lifted or dragging, the finger carries the piece: the row must not scroll under it.
+      node.addEventListener('touchmove', (e) => {
+        if (press?.node === node && (press.lifted || press.dragging)) e.preventDefault();
+      }, { passive: false });
     }
     return node;
   }

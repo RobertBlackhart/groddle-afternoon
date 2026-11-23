@@ -13900,6 +13900,8 @@ body:has(#quest-dialogue:not([hidden])) .prompt-stack { z-index: calc(var(--z-mo
 #game-root .hb-tile { position: relative; flex: 0 0 auto; display: flex; flex-direction: column; align-items: center; justify-content: center; scroll-snap-align: start; touch-action: pan-x; cursor: grab; font: inherit; }
 #game-root .hb-tile[disabled] { cursor: not-allowed; }
 #game-root .hb-tile.is-dragging { cursor: grabbing; opacity: 0.5; }
+/* #628: a finger held on a tile lifts it (home-builder TOUCH_HOLD_MS): it grows a little, ready to drag. */
+#game-root .hb-tile.is-lifted { transform: scale(1.06); transition: transform 0.12s ease-out; }
 #game-root .hb-tile img { object-fit: contain; pointer-events: none; -webkit-user-drag: none; user-select: none; }
 #game-root .hb-tile .hb-tile-name { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 #game-root .hb-tile .hb-swatch { display: block; background-size: cover; background-position: center; }

@@ -7,7 +7,7 @@
  * that keeps every drop on the existing rules.
  */
 import assert from 'node:assert/strict';
-import { describe, it } from 'node:test';
+import { describe, it, mock } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import {
@@ -15,6 +15,7 @@ import {
   BUILDER_TEXT,
   DRAG_DIST,
   FURNITURE_PANES,
+  TOUCH_HOLD_MS,
   clampRoomX,
   createHomeBuilder,
   cultChooseText,
@@ -25,8 +26,9 @@ import {
   panDirection,
   panKey,
   placeCostText,
+  touchTileMove,
   trayFilters,
-} from '../public/js/ui/home-builder.js?v=378178ac';
+} from '../public/js/ui/home-builder.js?v=d73e840b';
 import {
   INTERIOR,
   createHomeDecorState,
@@ -467,6 +469,57 @@ describe('the builder DOM', () => {
     fire(win, 'pointermove', { clientX: 300, clientY: 400, pointerId: 2 });
     fire(win, 'pointerup', { clientX: 300, clientY: 700, pointerId: 2 });
     assert.deepEqual(calls, ['dragstart', 'dragmove', 'dragend:true']);
+  });
+
+  // #628: on a phone a sideways swipe on the Furniture (or Cultivate) row started a drag after
+  // 4 px, so the row never scrolled. A finger now drags on a pull up out of the row or after a hold.
+  it('a finger swiping along the row scrolls it; a pull up or a hold drags the tile (#628)', () => {
+    assert.equal(touchTileMove({ dx: 2, dy: 1 }), 'wait');
+    assert.equal(touchTileMove({ dx: 30, dy: 6 }), 'scroll');
+    assert.equal(touchTileMove({ dx: -30, dy: -6 }), 'scroll');
+    assert.equal(touchTileMove({ dx: 6, dy: -30 }), 'drag');
+    assert.equal(touchTileMove({ dx: 30, dy: 6, lifted: true }), 'drag');
+    const calls = [];
+    const { b, fire, win } = setup();
+    b.render(model(calls));
+    const tile = () => b.tray.querySelector('[data-furniture="furniture_chair"]');
+    // A swipe along the row: no drag, the press let go, the browser scrolls.
+    fire(tile(), 'pointerdown', { button: 0, pointerType: 'touch', clientX: 100, clientY: 700, pointerId: 1 });
+    fire(win, 'pointermove', { pointerType: 'touch', clientX: 140, clientY: 704, pointerId: 1 });
+    fire(win, 'pointermove', { pointerType: 'touch', clientX: 60, clientY: 300, pointerId: 1 });
+    fire(win, 'pointerup', { pointerType: 'touch', clientX: 60, clientY: 300, pointerId: 1 });
+    assert.deepEqual(calls, [], 'a sideways swipe is a scroll, never a drag');
+    assert.equal(b.dragging, false);
+    // A pull up out of the row drags at once.
+    fire(tile(), 'pointerdown', { button: 0, pointerType: 'touch', clientX: 100, clientY: 700, pointerId: 2 });
+    fire(win, 'pointermove', { pointerType: 'touch', clientX: 104, clientY: 680, pointerId: 2 });
+    assert.equal(b.dragging, true);
+    fire(win, 'pointerup', { pointerType: 'touch', clientX: 104, clientY: 300, pointerId: 2 });
+    assert.deepEqual(calls, ['dragstart', 'dragmove', 'dragend:false']);
+    // Held still, the tile lifts; then a sideways move drags it and the row does not scroll.
+    calls.length = 0;
+    mock.timers.enable({ apis: ['setTimeout'] });
+    try {
+      const t = tile();
+      fire(t, 'pointerdown', { button: 0, pointerType: 'touch', clientX: 100, clientY: 700, pointerId: 3 });
+      mock.timers.tick(TOUCH_HOLD_MS);
+      assert.ok(t.classList.contains('is-lifted'));
+      const tm = fire(t, 'touchmove', {});
+      assert.equal(tm.defaultPrevented, true, 'a lifted tile keeps the row still');
+      fire(win, 'pointermove', { pointerType: 'touch', clientX: 160, clientY: 702, pointerId: 3 });
+      assert.equal(b.dragging, true);
+      fire(win, 'pointerup', { pointerType: 'touch', clientX: 400, clientY: 300, pointerId: 3 });
+      assert.deepEqual(calls, ['dragstart', 'dragmove', 'dragend:false']);
+      assert.equal(t.classList.contains('is-lifted'), false);
+    } finally {
+      mock.timers.reset();
+    }
+    // The mouse is unchanged: sideways drags.
+    calls.length = 0;
+    fire(tile(), 'pointerdown', { button: 0, pointerType: 'mouse', clientX: 100, clientY: 700, pointerId: 4 });
+    fire(win, 'pointermove', { pointerType: 'mouse', clientX: 140, clientY: 700, pointerId: 4 });
+    assert.equal(b.dragging, true);
+    fire(win, 'pointerup', { pointerType: 'mouse', clientX: 400, clientY: 300, pointerId: 4 });
   });
 
   it('the Pack tab lays the pack\'s own row over its panel, the size of the other tabs\' strips (DECOPACK)', () => {

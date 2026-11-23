@@ -42,10 +42,10 @@ import {
 } from '../public/js/neighbours-mp.js?v=4b7fca89';
 import { createButlerState, giveGiftTo, newestVisit, nextHandover, normalizeButlerState, packagesAndMessagesForOwner, recordVisitor, setGift, visitorsReport } from '../public/js/butler.js?v=52b4f74d';
 import { GARDEN_SPEEDUP, SEED_CATALOG as GARDEN_SEEDS, createGarden, tickGarden } from '../public/js/garden.js?v=6391f097';
-import { butlerApi } from '../public/js/features/butler-feature.js?v=327c4b6b';
+import { butlerApi } from '../public/js/features/butler-feature.js?v=3926efc1';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
 import { acceptOffer, routeQuestEvent } from '../public/js/quest-offers.js?v=32d4127e';
-import { neighboursMpFeature } from '../public/js/features/neighbours-mp-feature.js?v=e558bc69';
+import { neighboursMpFeature } from '../public/js/features/neighbours-mp-feature.js?v=72106762';
 import { createMinnAccount } from '../public/js/minn-account.js?v=edf182bb';
 import { HAS_SERVER, HAS_SITE, SITE_DIR, serverPath, sitePath } from '../tools/repos.mjs';
 
