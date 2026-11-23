@@ -2814,9 +2814,39 @@
   "deployed": "2026-11-23"
  },
  "git": {
-  "commits": 3266,
+  "commits": 3274,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "Mining a Metal Rock no longer shows its line as a notice under the rock's bubble (#640 follow-up)"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "A mined-out rock is gone until it reforms, instead of a faint ghost of itself"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "new",
+    "text": "Tower and street project parts say what making them takes, such as Furnituremaking II for Wall Segments"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "Mining a Metal Rock shows only the rock's bubble, not a second notice at the top"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "A long chat line in Global, Help, Trade, groups and IMs shows in full instead of cut short"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "The Encyclopedia shows one page per rock, peat bog and tree, with every street that has one"
+   },
    {
     "date": "2026-11-23",
     "kind": "fix",
@@ -2906,39 +2936,9 @@
     "date": "2026-11-23",
     "kind": "improve",
     "text": "Character names can be two letters long"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "improve",
-    "text": "A pack stack dragged onto the street drops at your feet, and in your own house lands where you let go"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "improve",
-    "text": "Decoration Mode's Set down moves what a display box holds onto the floor beside it, without the pack"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "Take out from a display box in Decoration Mode takes only what fits the pack"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "The start card's project tile keeps its browser data through the featured project's store and adds no request wait"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "improve",
-    "text": "A full bag gets a dark backdrop in the pack row, behind its accent bar"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "new",
-    "text": "The Projects panel can sort by region"
    }
   ]
  },
- "tests": 1306,
+ "tests": 1309,
  "generatedAt": "2026-11-23"
 }
