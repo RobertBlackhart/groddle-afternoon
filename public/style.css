@@ -15494,6 +15494,14 @@ body.is-booting .touch-controls { display: none; }
   display: inline-flex; align-items: center; gap: var(--sp-1); flex: none; height: auto; margin-left: var(--space-2); padding: 0 var(--sp-1);
   border: 0; border-radius: var(--radius-pill); background: none; box-shadow: none; color: inherit; font: inherit; cursor: pointer;
 }
+/* The caption lets taps through to the street (pointer-events: none on the plate); favor and the street
+   map's button take theirs, each with a hit area 44 px tall (the thumb's least target). */
+:root.phone-layout[data-ui="modern"] #game-root #street-nameplate > :is(#favor-stat, .smm-phone-btn) { position: relative; pointer-events: auto; touch-action: manipulation; }
+/* The plate's overflow is visible so the hit areas reach past its 26 px (a clipped box clips its taps too);
+   the street's name keeps its own ellipsis. */
+:root.phone-layout[data-ui="modern"] #game-root #street-nameplate { overflow: visible; }
+:root.phone-layout[data-ui="modern"] #game-root #street-nameplate > #favor-stat::before { content: ""; position: absolute; top: 50%; left: 0; right: 0; height: 44px; margin-top: -22px; }
+:root.phone-layout[data-ui="modern"] #game-root #street-nameplate > .smm-phone-btn::before { top: -11px; bottom: -11px; }
 :root.phone-layout[data-ui="modern"] #game-root #street-nameplate > #favor-stat[aria-expanded="true"] { background: color-mix(in srgb, var(--c-black) 30%, transparent); }
 :root.phone-layout[data-ui="modern"] #game-root #street-nameplate > #favor-stat[data-neutral] strong { display: none; }
 /* The tutorial's hidden stats (newxp nx-hide-meta) take favor with them, as when it sat in the stats. */

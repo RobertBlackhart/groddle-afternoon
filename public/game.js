@@ -1128,7 +1128,7 @@ import { contextNeedsResume, createAudioResumer } from './js/audio-resume.js?v=7
 import { bubbleMs } from './js/read-time.js?v=3151fb1a';
 import { mountNotifyView } from './js/notify-view.js?v=0fbfad68';
 import { mountSocialDrawer } from './js/ui/social-drawer.js?v=a41889ed';
-import { installPhonePill, mountPhoneLayout } from './js/ui/phone-layout.js?v=d5780ebf';
+import { installPhonePill, mountPhoneLayout } from './js/ui/phone-layout.js?v=540b665a';
 import { bindChatLinks } from './js/chat-links.js?v=b717fac7';
 import { SIDE_SHEET_IDS, bindTabs, inSideSheet, mountPanelShell, sheetKeyToWorld } from './js/ui/panel-shell.js?v=06a0d3fe';
 import { createQuestSheet, failedQuestPin, questLogNeedsSwap, questStep, visibleRowCount } from './js/ui/quest-sheet.js?v=b612c898';
@@ -9629,8 +9629,11 @@ function placeMenuAtTarget(menu, target, dataKey) {
     const v = parseFloat(cs.getPropertyValue(name));
     return Number.isFinite(v) ? v : fallback;
   };
-  const sideL = Math.max(8, px('--inset-l', 0));
-  const sideR = Math.max(8, px('--inset-r', 0));
+  // PHONE LAYOUT (G1194, #5): on a phone the menu keeps off the stick, Act and Jump (above them upright,
+  // between the stick and Act sideways), so the next tap on Act reaches Act and chooses (ACTPRESS).
+  const phoneRoom = phoneLayout?.menuRoom?.() || null;
+  const sideL = Math.max(8, px('--inset-l', 0), phoneRoom?.left || 0);
+  const sideR = Math.max(8, px('--inset-r', 0), phoneRoom?.right || 0);
   // #630: a picture level wider than the room (33 choices in Glitch's 9 columns on a phone) takes
   // fewer columns; the desktop stage keeps Glitch's.
   fitPickGrid(menu, rr.width - sideL - sideR);
@@ -9650,8 +9653,8 @@ function placeMenuAtTarget(menu, target, dataKey) {
   }
   const avatar = anchor && player && !player.destroyed ? targetPageRect({ sprite: player }, rr) : null;
   const pack = document.getElementById('pack-row')?.getBoundingClientRect();
-  const roomTop = px('--hud-h', 44) + 8;
-  const roomFloor = Math.min(rr.height, pack && pack.height ? pack.top - rr.top : rr.height);
+  const roomTop = Math.max(px('--hud-h', 44) + 8, phoneRoom?.top || 0);
+  const roomFloor = Math.min(rr.height, pack && pack.height ? pack.top - rr.top : rr.height, phoneRoom?.floor ?? Infinity);
   // Ticket 87: a menu taller than the room between the top band and the pack scrolls its rows
   // (placeVerbMenu keeps it under the band; a taller card ran off the top of the screen).
   // Ticket 134: the Feed what? grid is the picker's rows box.

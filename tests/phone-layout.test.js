@@ -11,6 +11,8 @@
  * - notices keep to their region (js/notify-view.js `region`);
  * - #595: nothing in the top row or the caption is cut (an ellipsis, or text wider than its box)
  *   with big counts at 360 to 402 px wide, and in the tutorial the pill is only as wide as its icons;
+ * - #5: the verb menu and the chooser keep off the stick, Act and Jump, Act taps open and choose
+ *   every time, and favor on the caption takes a real touch tap (a 44 px tall hit area);
  * - the pinned quest never covers the stick (the tutorial too), and the action chip ("Tap · choose
  *   from 4", drawn on the canvas) keeps off Act, Jump, the stick and the card (R1 audit #5).
  * Run: node --test tests/phone-layout.test.js
@@ -21,8 +23,8 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
-  GAP, PILL_IDS, STICK, boxesOverlap, fullScreenWay, layoutProblems, phoneRegions, pillBadge,
-} from '../public/js/ui/phone-layout.js?v=d5780ebf';
+  GAP, PILL_IDS, STICK, boxesOverlap, fullScreenWay, layoutProblems, menuRoomOf, phoneRegions, pillBadge,
+} from '../public/js/ui/phone-layout.js?v=540b665a';
 import { phonePins } from '../public/js/ui/quest-pin-button.js?v=ec4d53fa';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -79,6 +81,19 @@ describe('phone layout: the regions (pure)', () => {
     // A stick so high there is no room above it under the caption: the card waits.
     const high = phoneRegions({ width: 390, height: 844, pin: { w: 200, h: 50 }, controls: { stick: { left: 8, top: 80, right: 140, bottom: 212 } } });
     assert.equal(high.pin, null);
+  });
+
+  it('#5: a menu\'s room is above the controls upright and between the stick and Act sideways, none under a sheet', () => {
+    const up = phoneRegions({ width: 390, height: 844, caption: { w: 200, h: 26 } });
+    const r = menuRoomOf(up, { width: 390 });
+    assert.equal(r.floor, Math.min(up.stick.top, up.act.top, up.jump.top) - GAP);
+    assert.equal(r.top, up.notices.top);
+    const side = phoneRegions({ width: 812, height: 402 });
+    const s2 = menuRoomOf(side, { width: 812 });
+    assert.equal(s2.left, side.stick.right + GAP);
+    assert.equal(812 - s2.right, side.act.left - GAP);
+    assert.equal(s2.floor, side.pack.top - GAP);
+    assert.equal(menuRoomOf(phoneRegions({ width: 390, height: 844, sheet: 'half' }), { width: 390 }), null);
   });
 
   it('the Map takes the whole height (sideways the whole screen) and leaves the notices no room', () => {
@@ -333,6 +348,100 @@ describe('phone layout: no overlaps on the real game (Chrome)', { skip: !chromiu
       const got = await tab.evaluate(look);
       if (!got.boxes.stick) bad.push(`${w}x${h} tutorial: no stick to measure`);
       check(`${w}x${h} tutorial`, got, w, h);
+    }
+    await ctx.close();
+    assert.deepEqual(bad, []);
+    assert.deepEqual(errors, []);
+  });
+
+  it('#5 (Austin\'s iPhone): menus keep off the stick, Act and Jump, Act taps open and choose every time, and the caption\'s favor takes a real tap', { timeout: 240_000 }, async () => {
+    const base = `http://127.0.0.1:${server.address().port}`;
+    const ctx = await chrome.browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 1, userAgent: UA });
+    await ctx.addInitScript(() => { try { localStorage.setItem('groddle-play-device', 'qa-game'); } catch { /* none */ } });
+    const tab = await ctx.newPage();
+    const errors = [];
+    tab.on('pageerror', (e) => errors.push(e.message));
+    await tab.goto(`${base}/play/?autostart=1&questoffer=off&hstip=0`);
+    await tab.waitForFunction(() => !document.body.classList.contains('is-booting') && document.getElementById('overlay')?.classList.contains('hidden') && document.documentElement.classList.contains('phone-layout'), null, { timeout: 60_000 });
+    await tab.evaluate(() => {
+      for (const b of document.querySelectorAll('button')) if (b.textContent.trim() === 'Got it' && b.offsetParent) b.click();
+      window.groddleQA.hudStats({ favor: 52 });
+    });
+    const centre = (sel) => tab.evaluate((q) => {
+      const el = document.querySelector(q);
+      if (!el || !el.getClientRects().length) return null;
+      const r = el.getBoundingClientRect();
+      return { x: r.left + r.width / 2, y: r.top + r.height / 2, h: r.height };
+    }, sel);
+    /** What is open now, and every menu card against the controls. */
+    const menus = () => tab.evaluate(() => {
+      const seen = (el) => el && !el.hidden && el.checkVisibility({ visibilityProperty: true }) && el.getBoundingClientRect().width > 0;
+      const rect = (el) => {
+        const r = el.getBoundingClientRect();
+        return { left: r.left, top: r.top, right: r.right, bottom: r.bottom };
+      };
+      const verb = document.getElementById('verb-menu');
+      const chooser = document.getElementById('enter-chooser');
+      const boxes = {};
+      if (seen(verb)) boxes.verbMenu = rect(verb.querySelector('.verb-menu-card') || verb);
+      if (seen(chooser)) boxes.chooser = rect(chooser.querySelector('.feed-picker-card, .verb-menu-card') || chooser);
+      for (const k of ['stick', 'act', 'jump']) {
+        const el = document.querySelector(`.touch-${k}`);
+        if (seen(el)) boxes[k] = rect(el);
+      }
+      return { verb: seen(verb), chooser: seen(chooser), boxes };
+    });
+    const bad = [];
+    const tapAct = async () => {
+      const a = await centre('.touch-act');
+      await tab.touchscreen.tap(a.x, a.y);
+      await tab.waitForTimeout(450);
+    };
+    for (const [w, h] of [[360, 780], [390, 844], [402, 812], [812, 402]]) {
+      await tab.setViewportSize({ width: w, height: h });
+      await tab.waitForTimeout(700);
+      const where = `${w}x${h}`;
+      // The caption's favor: a finger on it opens the Giants' panel; its hit area is a thumb tall.
+      const fav = await centre('#street-nameplate > #favor-stat');
+      if (!fav) bad.push(`${where}: no favor on the caption`);
+      else {
+        const hit = await tab.evaluate(({ x, y }) => {
+          const el = document.getElementById('favor-stat');
+          const r = el.getBoundingClientRect();
+          // The hit area, top to bottom: the element under each point.
+          const top = [...Array(60).keys()].map((i) => y - 30 + i).filter((py) => el.contains(document.elementFromPoint(x, py)));
+          return { tall: top.length ? top.at(-1) - top[0] + 1 : 0, w: r.width };
+        }, fav);
+        if (hit.tall < 44) bad.push(`${where}: favor's hit area is ${hit.tall} px tall`);
+        await tab.touchscreen.tap(fav.x, fav.y);
+        await tab.waitForTimeout(300);
+        if (!(await tab.evaluate(() => !document.getElementById('favor-pop')?.hidden))) bad.push(`${where}: a tap on favor did not open the Giants' panel`);
+        await tab.keyboard.press('Escape');
+        await tab.waitForTimeout(200);
+      }
+      // Tap 1 opens (the chooser of several things, or the verb menu); each tap on Act then chooses, until
+      // an action runs; once it is over a tap opens again. Every menu keeps off the controls.
+      let opened = 0;
+      for (let round = 0; round < 2; round++) {
+        await tapAct();
+        let m = await menus();
+        if (!m.verb && !m.chooser) {
+          bad.push(`${where} round ${round + 1}: Act opened nothing`);
+          break;
+        }
+        opened += 1;
+        for (let step = 0; step < 4 && (m.verb || m.chooser); step++) {
+          for (const p of layoutProblems(m.boxes, { width: w, height: h })) bad.push(`${where} round ${round + 1} ${m.chooser ? 'chooser' : 'verb menu'}: ${p}`);
+          await tapAct();
+          m = await menus();
+        }
+        if (m.verb || m.chooser) bad.push(`${where} round ${round + 1}: taps on Act did not choose`);
+        await tab.keyboard.press('Escape');
+        // Let the chosen action finish (Pet, Talk to...) before the next round.
+        await tab.waitForFunction(() => !document.getElementById('action-progress') || document.getElementById('action-progress').hidden, null, { timeout: 15_000 }).catch(() => {});
+        await tab.waitForTimeout(900);
+      }
+      if (opened < 2) bad.push(`${where}: Act opened a menu ${opened} of 2 times`);
     }
     await ctx.close();
     assert.deepEqual(bad, []);

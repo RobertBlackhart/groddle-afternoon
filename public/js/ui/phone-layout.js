@@ -168,6 +168,23 @@ export function phoneRegions({ width, height, safe = {}, sheet = '', pack = null
   return { upright, strip: stripBox, caption: captionBox, notices, pin: pinBox, stick, act, jump, pack: packBox, sheet: sheetBox, dock };
 }
 
+/**
+ * PURE (#5, Austin's iPhone 2026-11-23: the Piggy's menu covered Act, so the next tap on Act landed on
+ * the menu): the room an interaction menu (the verb menu, a picker) may take on a phone, in the root's
+ * px as js/ui/verb-menu.js placeVerbMenu reads it ({ top, floor, left, right }: right is the inset from
+ * the right edge). Upright it stands above the controls, under the caption; sideways between the
+ * stick and Act, over the pack row. null when the controls are covered (a sheet is open).
+ */
+export function menuRoomOf(regions, { width } = {}) {
+  if (!regions?.stick || !regions.act || !regions.jump) return null;
+  const top = regions.notices.top;
+  const floorAbove = regions.pack ? regions.pack.top : Math.max(regions.stick.bottom, regions.jump.bottom);
+  if (regions.upright) {
+    return { top, floor: Math.min(regions.stick.top, regions.act.top, regions.jump.top) - GAP, left: EDGE, right: EDGE };
+  }
+  return { top, floor: floorAbove - GAP, left: regions.stick.right + GAP, right: Math.max(EDGE, num(width) - regions.act.left + GAP) };
+}
+
 /** PURE: true when two boxes share any area. */
 export function boxesOverlap(a, b) {
   return Boolean(a && b && a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top);
@@ -471,6 +488,8 @@ export function mountPhoneLayout({ doc = globalThis.document, root, sheets = {},
       layout();
     },
     regions: () => current,
+    /** The room an interaction menu may take (menuRoomOf), in the root's px; null when not laid out. */
+    menuRoom: () => (on && current ? menuRoomOf(current, { width: root.getBoundingClientRect().width }) : null),
     /** The notices' region in page px (js/notify-view.js), null when not laid out. */
     noticeRegion: () => {
       if (!on || !current) return null;
