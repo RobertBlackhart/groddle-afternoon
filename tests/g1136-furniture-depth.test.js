@@ -10,7 +10,9 @@
  * the pointer (10 px over it counted). The client drew them back to front by plat: CHASSIS (the
  * Door), WALL_FURN, RUG_FURN, BOOKSHELF_FURN, CHAIR_FURN, then the avatars, then FG_FURN (front
  * and ceiling) over them (MiddleGroundRenderer.setupEndShapes, LocationRenderer.as 1440-1470).
- * Saved pieces, all on the walk line before, go to their class's first plat on load.
+ * Saved pieces, all on the walk line before (a Door on the back wall's base), go on load to the
+ * plat of their class nearest where their art stood, so a room changes least; the back plat on a tie
+ * (Austin 2026-11-22). A piece saved with a plat keeps it.
  *
  * Run: node --test tests/g1136-furniture-depth.test.js
  */
@@ -26,6 +28,7 @@ import {
   furnitureDrawsInFront,
   furnitureHolderOf,
   moveFurniture,
+  nearestStandSet,
   normalizeHomeDecorState,
   placeFurniture,
   placementSpan,
@@ -35,7 +38,7 @@ import {
   snapPlacement,
   standSetAt,
   standingSets,
-} from '../public/js/home-decor.js?v=485ce3c3';
+} from '../public/js/home-decor.js?v=b51e16a6';
 import { FURNITURE_CATALOG } from '../public/js/homes-catalog.js?v=f3fe838d';
 import { FURNITURE_UPGRADES } from '../public/js/furniture-upgrades-data.js?v=4fe80b0f';
 
@@ -84,6 +87,48 @@ const CLASSES = [
   ['furniture_largetabledeco', ['bookshelf', 'chair', 'front'], -11],
   ['furniture_rug', ['rug'], -24],
 ];
+
+/**
+ * Where a save from before plats puts each class: its art's bottom stood on the walk line (the Door
+ * 65 px behind it, a rug 18 px in front), and the plat whose rest line is nearest that wins. A
+ * sofa and the coffee table in front of it both go to the chair line, so z keeps the table in front.
+ */
+const MIGRATED = {
+  furniture_chair: 'chair',
+  furniture_armchair: 'chair',
+  furniture_bench: 'chair',
+  furniture_stool: 'chair',
+  furniture_sofa: 'chair',
+  furniture_loveseat: 'chair',
+  furniture_coffeetable: 'chair',
+  furniture_sidetable: 'chair',
+  furniture_desk: 'chair',
+  furniture_counter: 'chair',
+  bag_furniture_smallcabinet: 'chair',
+  furniture_bed: 'bookshelf',
+  furniture_bookcase: 'bookshelf',
+  furniture_cabinet: 'bookshelf',
+  furniture_fireplace: 'bookshelf',
+  bag_furniture_cabinet: 'bookshelf',
+  bag_furniture_largecabinet: 'bookshelf',
+  furniture_door: 'bookshelf',
+  furniture_table: 'chair',
+  furniture_floorlamp: 'chair',
+  furniture_roomdeco: 'chair',
+  furniture_smallbackfloordeco: 'chair',
+  furniture_largebackfloordeco: 'chair',
+  furniture_smallfrontfloordeco: 'chair',
+  furniture_largefrontfloordeco: 'chair',
+  // Art with no foot stood 20 px over the front plat's rest line and 30 over the chair's.
+  furniture_tablelamp: 'front',
+  furniture_tabledeco: 'front',
+  furniture_smalltabledeco: 'chair',
+  furniture_largetabledeco: 'chair',
+  furniture_rug: 'rug',
+};
+
+/** Where the old code stood each class's art bottom (DOOR_FOOT_Y, the rug's 18 px, the walk line). */
+const oldY = (cls) => (cls === 'furniture_door' ? INTERIOR.floorY - 65 : cls === 'furniture_rug' ? INTERIOR.floorY + 18 : INTERIOR.floorY);
 
 describe("G1136: each placement set's depth is Glitch's", () => {
   it('the four standing plats sit where homes_rebuild_floor put them', () => {
@@ -182,22 +227,42 @@ describe("G1136: each placement set's depth is Glitch's", () => {
     assert.equal(sofa.y, platLineY('chair') + 31);
   });
 
-  it('saved pieces from the walk line go to their first plat; a saved plat stays', () => {
-    const placed = CLASSES.map(([classTsid], i) => ({ id: i + 1, classTsid, slot: FURNITURE_CATALOG[classTsid].slot, x: 600, y: INTERIOR.floorY, z: i }));
-    placed.push({ id: 99, classTsid: 'furniture_sofa', slot: 'floor', x: 300, y: 1, plat: 'chair', z: 99 });
-    placed.push({ id: 100, classTsid: 'furniture_chair', slot: 'floor', x: 300, y: 1, plat: 'front', z: 100 });
+  it('saved pieces from the walk line go to the plat nearest where they stood; a saved plat stays', () => {
+    assert.deepEqual(Object.keys(MIGRATED).sort(), CLASSES.map(([cls]) => cls).sort());
+    const placed = CLASSES.map(([classTsid], i) => ({ id: i + 1, classTsid, slot: FURNITURE_CATALOG[classTsid].slot, x: 600, y: oldY(classTsid), z: i }));
+    placed.push({ id: 99, classTsid: 'furniture_sofa', slot: 'floor', x: 300, y: 1, plat: 'bookshelf', z: 99 });
+    placed.push({ id: 100, classTsid: 'furniture_chair', slot: 'floor', x: 300, y: INTERIOR.floorY, plat: 'front', z: 100 });
     for (const layout of ['house', 'tower']) {
       const state = normalizeHomeDecorState({ geo: 2, layout, wallSegments: 7, placed, nextId: 101 });
-      for (const [cls, sets, foot] of CLASSES) {
+      for (const [cls, , foot] of CLASSES) {
         const row = state.placed.find((r) => r.classTsid === cls && r.id <= CLASSES.length);
-        assert.equal(row.y, platLineY(sets[0]) - foot, `${layout} ${cls}`);
+        const set = MIGRATED[cls];
+        assert.equal(row.y, platLineY(set) - foot, `${layout} ${cls}`);
+        if (row.slot === 'floor') assert.equal(row.plat, set, `${layout} ${cls} plat`);
       }
+      // A plat saved since stays, wherever its y says.
       const sofa = state.placed.find((r) => r.id === 99);
-      assert.equal(sofa.plat, 'chair');
-      assert.equal(sofa.y, platLineY('chair') + 22);
-      // A chair cannot stand on the front plat: its first plat instead.
+      assert.equal(sofa.plat, 'bookshelf');
+      assert.equal(sofa.y, platLineY('bookshelf') + 22);
+      // A chair cannot stand on the front plat: the nearest of its own instead.
       assert.equal(state.placed.find((r) => r.id === 100).plat, 'chair');
+      // The coffee table still draws in front of the sofa it stood before.
+      const order = renderOrder(state).map((r) => r.classTsid);
+      assert.ok(order.indexOf('furniture_sofa') < order.indexOf('furniture_coffeetable'));
     }
+  });
+
+  it('the nearest plat by the art bottom, the back one on a tie', () => {
+    // A floor lamp's art bottom 15 px under the walk line: chair rest 15 px off, front 35.
+    assert.equal(nearestStandSet('furniture_floorlamp', INTERIOR.floorY), 'chair');
+    assert.equal(nearestStandSet('furniture_floorlamp', INTERIOR.floorY + 30), 'front');
+    // Halfway between the chair and front rest lines: the chair's.
+    const mid = (restY('furniture_floorlamp', 'chair') + restY('furniture_floorlamp', 'front')) / 2;
+    assert.equal(nearestStandSet('furniture_floorlamp', mid), 'chair');
+    assert.equal(nearestStandSet('furniture_floorlamp', mid + 1), 'front');
+    // Well behind the walk line: the back wall.
+    assert.equal(nearestStandSet('furniture_sofa', INTERIOR.floorY - 50), 'bookshelf');
+    assert.equal(nearestStandSet('furniture_shelf', INTERIOR.floorY), null);
   });
 });
 

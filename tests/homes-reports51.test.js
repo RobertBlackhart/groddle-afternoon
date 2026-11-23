@@ -10,7 +10,7 @@ import { END_SEAM, roomPieces } from '../public/js/home-wallpaper.js?v=99228166'
 import { WALLPAPER_MAPS } from '../public/js/home-wallpaper-art.js?v=129c514f';
 import { DOCK_GAP, DOCK_W, dockedPickerSpot } from '../public/js/furniture-upgrade-picker.js?v=8cfd5db7';
 import { filterSwatches, swatchFilters } from '../public/js/ui/home-builder.js?v=378178ac';
-import { listTextures } from '../public/js/home-decor.js?v=485ce3c3';
+import { listTextures } from '../public/js/home-decor.js?v=b51e16a6';
 import { salePlacementKey } from '../public/js/home-street-mp.js?v=e46fa2fd';
 import { beginHomeVisit, createHomeState, imagineHome } from '../public/js/homes.js?v=10f6604f';
 

@@ -150,6 +150,21 @@ export function standSetAt(classTsid, y, upgradeId = '') {
   return nearest(under.length ? under : ordered);
 }
 
+/**
+ * The plat nearest where a piece's art stood at `y` (G1136 follow-up, Austin 2026-11-22): for a
+ * save from before plats, when every floor piece stood its art's bottom on the walk line (and a
+ * Door on the back wall's base), so a room changes least. Of the class's plats, the one whose rest
+ * line is nearest `y`; the back one on a tie, as a piece drew behind the avatars before.
+ */
+export function nearestStandSet(classTsid, y, upgradeId = '') {
+  const sets = standingSets(classTsid);
+  if (!sets.length) return null;
+  if (sets.length === 1 || y == null || !Number.isFinite(Number(y))) return sets[0];
+  const ordered = STANDING_ORDER.filter((set) => sets.includes(set));
+  const off = (set) => Math.abs(restY(classTsid, set, upgradeId) - Number(y));
+  return ordered.reduce((best, set) => (off(set) < off(best) ? set : best));
+}
+
 /** Where a floor-standing class's foot rests with no pointer to choose by: its first plat (a Door, the back wall's base). */
 export function floorRestY(classTsid, upgradeId = '') {
   const set = standingSets(classTsid)[0];
@@ -310,7 +325,7 @@ function normalizePlaced(row) {
     z: Math.round(finite(row?.z, 0)),
     on: Number.isFinite(Number(row?.on)) && Number(row.on) > 0 ? Math.floor(Number(row.on)) : null,
   };
-  // G1136: the plat a floor piece stands on (fitPlacements puts it there, or on its first plat).
+  // G1136: the plat a floor piece stands on (fitPlacements puts it there, or on the nearest plat).
   if (out.slot === 'floor' && !out.on && standingSets(classTsid).includes(row?.plat)) out.plat = row.plat;
   copyStyle(row, out);
   if (classTsid === 'bag_furniture_sdb' && row?.display?.classTsid) {
@@ -448,10 +463,10 @@ function fitPlacements(state, legacy) {
   const moved = new Map();
   for (const row of hosts) {
     const before = { x: row.x, y: row.y };
-    // G1136: a floor or rug piece stands on its plat; a save from before plats (every piece on the
-    // walk line) puts it on its class's first plat.
+    // G1136: a floor or rug piece stands on its plat; a save from before plats (every piece's art on
+    // the walk line) puts it on the plat nearest where it stood.
     const sets = standingSets(row.classTsid);
-    const set = sets.length ? (sets.includes(row.plat) ? row.plat : sets[0]) : null;
+    const set = sets.length ? (sets.includes(row.plat) ? row.plat : nearestStandSet(row.classTsid, row.y, row.upgradeId)) : null;
     if (row.slot === 'floor' && row.on && !byId.has(row.on)) row.on = null;
     if (row.slot === 'floor' && set) row.plat = set;
     else delete row.plat;
