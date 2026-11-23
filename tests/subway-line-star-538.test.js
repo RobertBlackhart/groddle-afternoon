@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { STATIONS, createRide, curvePoint, lineStarPoint, linePoint, lineView, nextStation, rideProgress, rideTiming, stationById, stepRide } from '../public/js/subway.js?v=c21aef93';
+import { STATIONS, createRide, curvePoint, lineStarPoint, linePoint, lineView, nextStation, rideProgress, rideTiming, stationById, stepRide } from '../public/js/subway.js?v=0a87a908';
 import { applyTrain } from '../public/js/subway-mp.js?v=ffd57d82';
 
 const root = join(import.meta.dirname, '..');

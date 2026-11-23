@@ -41,7 +41,7 @@ import { FIREFLY_LAB_FILES } from '../public/js/quest-rooms/firefly-lab-art.js?v
 import * as kit from '../public/js/quest-rooms/kit.js?v=facd397b';
 import { BUILT_ROOMS, OFFER_OVERRIDES, QUEST_ROOMS, questGiver } from '../public/js/quest-rooms/catalog.js?v=10c8100d';
 import { REMAKE_QUEST_NPCS } from '../public/js/quest-offers.js?v=69e064ff';
-import { FIREFLY_OFFER_LINES, FIREFLY_WHISTLE_QUEST, fireflyTouches } from '../public/js/features/resource-nodes-feature.js?v=c000b875';
+import { FIREFLY_OFFER_LINES, FIREFLY_WHISTLE_QUEST, fireflyTouches } from '../public/js/features/resource-nodes-feature.js?v=bf27eceb';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const GS = join(homedir(), 'Documents/glitch-audit/glitch-GameServerJS');

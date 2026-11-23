@@ -50,11 +50,11 @@ import {
   stepHogtie,
   stickPlaceState,
   takePlop,
-} from '../public/js/animal-husbandry.js?v=4efd5020';
-import { animalStatusLabel, piggyFeedTip, pickerEmptyLine, pickerMaxCount, pickerOptionsFor, pickerTakesCount, listAnimalFeedOptions, createAnimalState } from '../public/js/animals.js?v=3cdf78f5';
-import { getVerbsFor, runVerb } from '../public/content.js?v=a2152a93';
+} from '../public/js/animal-husbandry.js?v=04dfaf01';
+import { animalStatusLabel, piggyFeedTip, pickerEmptyLine, pickerMaxCount, pickerOptionsFor, pickerTakesCount, listAnimalFeedOptions, createAnimalState } from '../public/js/animals.js?v=9dee363e';
+import { getVerbsFor, runVerb } from '../public/content.js?v=9ba46f36';
 import { setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=1401a97c';
-import { animalHusbandryFeature, batterflyPlacementGroups, normalizeHusbandrySlot } from '../public/js/features/animal-husbandry-feature.js?v=9e7a6113';
+import { animalHusbandryFeature, batterflyPlacementGroups, normalizeHusbandrySlot } from '../public/js/features/animal-husbandry-feature.js?v=9f2253bc';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const publicDir = join(here, '../public');
@@ -596,7 +596,7 @@ describe('the incubating Chicken\'s halfway line (npc_chicken.js onIncubationHal
 
 describe('#336 (G753): no piggy capture limit anywhere the player owns', () => {
   it('ownsPlace: the house, both yards and the Tower (home instance, owned); not a visit, not a street', async () => {
-    const { ownsPlace } = await import('../public/js/features/animal-mood-feature.js?v=c6bc7d71');
+    const { ownsPlace } = await import('../public/js/features/animal-mood-feature.js?v=f0423e59');
     const at = (streetTsid, home) => ({ streetTsid, ...(home ? { homeContext: () => home } : {}) });
     assert.equal(ownsPlace(at('RH_HOME_INT', { inHome: true, owned: true, room: 'house' })), true, 'house and back yard');
     assert.equal(ownsPlace(at('RH_HOME_INT', { inHome: true, owned: true, room: 'tower' })), true, 'Tower');

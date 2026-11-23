@@ -549,6 +549,15 @@ export function stationFloorY(x) {
 // `train` is the nose's left edge; `sign` and `map` are GFJ's (STATION_SPOTS has each station's).
 // #509: A Red Button's centre at x 433 (snap x 1183 in every 2012 station snap), 27 x 47 px.
 export const STATION_X = Object.freeze({ stairs: -684, crack: -627, sign: -447, column: -212, map: 0, arrive: 0, crack2: 24, train: 155, post: 377, gate: 478, button: 433, floorCrack: -544 });
+/**
+ * G1149 (#619): the gate closes the platform. The ticket post's striped arm reaches across to the green
+ * gate box at the platform's front edge (the 2012 snaps), so nobody walks on past it; the floor ran to
+ * the right end and you walked past the gate, the button then on the box's far face from you. A wall
+ * at the box's left face, ceiling to floor, solid to a walker coming from the left only (pc_perm -1,
+ * Wall.as pc_solid_from_left), so anyone already past it (an old saved spot) can walk back. You stop
+ * facing A Red Button, on the box's left face as in every snap. All 12 stations share it.
+ */
+export const STATION_GATE_WALL = Object.freeze({ id: 'wall_subway_gate', x: 395, y: STATION_FLOOR - 410, h: 410, pc_perm: -1 });
 
 /**
  * Each station's sign (centre x, centre y) and Subway Map post (centre x, foot y), world px, read off
@@ -825,13 +834,14 @@ export function stationStreet(station, { surfaceDoor = null } = {}) {
     physics: { setting: { y_cam_offset: STATION_Y_CAM_OFFSET }, delta: {} },
     bounds: { ...STATION_BOUNDS },
     platforms,
+    barriers: [{ ...STATION_GATE_WALL }],
     layers: [
       { id: 'middleground', name: 'middleground', z: 0, w: r - l, h: b - t, decos: stationDecos(station) },
       { id: 'T_subway_station_front', name: 'middleplus', z: 1, w: 0, h: 0, decos: stationFrontDecos(station) },
     ],
     signposts: [],
     doors: [door],
-    stats: { platformCount: platforms.length, layerCount: 2, decoCount: stationDecos(station).length + stationFrontDecos(station).length, signpostCount: 0, doorCount: 1, ladderCount: 0, barrierCount: 0 },
+    stats: { platformCount: platforms.length, layerCount: 2, decoCount: stationDecos(station).length + stationFrontDecos(station).length, signpostCount: 0, doorCount: 1, ladderCount: 0, barrierCount: 1 },
     gradient: { top: '3A3B36', bottom: '55564F' },
     ladders: [],
     subway: { station: station.id },

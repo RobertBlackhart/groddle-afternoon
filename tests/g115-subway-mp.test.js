@@ -12,7 +12,7 @@ import { join } from 'node:path';
 import { execFileSync } from 'node:child_process';
 
 import { BOARD_ANSWER_MS, SUBWAY_MP_TEXT, applyTrain, riderChanges, trainOf } from '../public/js/subway-mp.js?v=ffd57d82';
-import { SUBWAY_LINE, STATIONS, createRide, rideTiming, stepRide } from '../public/js/subway.js?v=c21aef93';
+import { SUBWAY_LINE, STATIONS, createRide, rideTiming, stepRide } from '../public/js/subway.js?v=0a87a908';
 import { subwayData } from '../tools/build-realtime-subway.mjs';
 import { HAS_SERVER, serverPath, skipWithoutServer } from '../tools/repos.mjs';
 

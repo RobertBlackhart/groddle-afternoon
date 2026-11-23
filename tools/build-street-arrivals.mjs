@@ -19,7 +19,7 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { stationArrival, stationByTsid } from '../public/js/subway.js?v=c21aef93';
+import { stationArrival, stationByTsid } from '../public/js/subway.js?v=0a87a908';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pub = join(root, 'public');

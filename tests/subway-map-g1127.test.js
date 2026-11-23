@@ -8,8 +8,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { LINE_COLOURS, LINE_TOKENS, STATIONS, createRide, cubicAt, curvePoint, lineStarPoint, lineView, nextStation, rideTiming, stationById, stepRide, subwayPoints, subwaySegments } from '../public/js/subway.js?v=c21aef93';
-import { renderSubwayMapSvg } from '../public/js/map-views.js?v=0c615d92';
+import { LINE_COLOURS, LINE_TOKENS, STATIONS, createRide, cubicAt, curvePoint, lineStarPoint, lineView, nextStation, rideTiming, stationById, stepRide, subwayPoints, subwaySegments } from '../public/js/subway.js?v=0a87a908';
+import { renderSubwayMapSvg } from '../public/js/map-views.js?v=e46f6a41';
 import { readTokens } from '../tools/tokens/css-sources.mjs';
 
 const root = join(import.meta.dirname, '..');
