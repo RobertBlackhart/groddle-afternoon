@@ -26,6 +26,8 @@ Default state: a static render shows every child on the deco's stage, but some d
 from their code. HIDDEN_BY_DEFAULT names those (the POL houses' For Sale `sign`): they are taken
 off the root timeline before rendering (swfinfo.drop_root_places), the row records `hidden`, and
 the decos' source PNGs are door-signs.py's sign-free copies (assets-src/decos/door-signs).
+OVERLAY_AS_NORMAL names decos whose root overlay glows blended with the street behind them in
+Flash: they render normal at part of their alpha (row `overlay`), not as FFDec's black halo.
 
 Seams (G1162, #624): FFDec draws each Flash colour region as its own anti-aliased path, so where two
 regions share an edge the background shows through in a light hairline; Flash drew the edge once and
@@ -108,6 +110,44 @@ SWF_WINS = {
     'archway_x_middleplus': 'the old PNG lost the stone bitmap fill (flat tan)',
     'door_asset_gray': 'the old PNG lost the stone bitmap fill (flat grey)',
     'bottletree_body3': 'the old PNG is yellow with spots; the SWF and the 2012 templates draw brown wood grain',
+    # G1172: background decos the streets draw 4-35x their PNG's pixel size, where the PNG is a
+    # small low-resolution export of the same art (blocky edges, lost detail), so it differs from
+    # the SWF render by more than same_colour / same_alpha although nothing but resolution and
+    # a px or two of framing changed. FFDec's SVG export drops the hills' multiply shading, so
+    # --svgcheck never agreed. The 2012 street templates (Onto Parada, Tuntsa Coze) draw the hills
+    # as the SWF does, darker shading down both sides included.
+    'backhill1_green': "a low-resolution export of the SWF's hill, without the dark shading down its sides",
+    'backhill2_green': "a low-resolution export of the SWF's hill, without the dark shading down its sides",
+    'backhill3_green': "a low-resolution export of the SWF's hill, without the dark shading down its sides",
+    'plant_fern_3': "a low-resolution export of the SWF's fern (blocky at 12x)",
+    'plant_fern_5': "a low-resolution export of the SWF's fern (blocky at 8x)",
+    'plant_grass_3': "a low-resolution export of the SWF's grass blades (blocky at 7x)",
+    'puzzletube_off_tube_starter': "a low-resolution export of the SWF's tube (6 px tall, drawn 35x)",
+    'miniparty_miner': "a 42 x 40 px export of the SWF's miner (blocky at 15x)",
+    'mountain_flora_01d_al1': "a low-resolution export of the SWF's bush",
+    'bling_mushroom_beech_1': "a low-resolution export of the SWF's mushrooms",
+    'window_stick': "a low-resolution export of the SWF's stick, its rounded end cut off",
+    'graffiti_hell': "a low-resolution export of the SWF's graffiti",
+    'ground_rootpipe1': "a low-resolution export of the SWF's root pipe",
+    'tree_9_part1': "a low-resolution export of the SWF's log",
+    'snow_patch_1': "a low-resolution export of the SWF's snow patch, its left tip cut off",
+    'crate_1': "a low-resolution export of the SWF's crate",
+    # The bog willows' lights: the 2012 Tuntsa Coze template draws them yellow and orange, as the
+    # SWF does; the old PNGs are green. Their glows are OVERLAY_AS_NORMAL.
+    'underground_bogwillow_2': 'the old PNG draws the yellow and orange lights green',
+    'underground_bogwillow_3': 'the old PNG draws the yellow and orange lights green',
+}
+
+# Decos whose root timeline places glows with the overlay blend (13): in Flash they blended with
+# the street behind the deco, brightening it yellow round each light; FFDec draws overlay on its
+# transparent canvas as black, a dark halo. These render them with the normal blend at the given
+# share of their alpha (swfinfo.root_blend_normal), which brightens a dark street about as much as
+# the overlay did (G1172: 2012 Tuntsa Coze template, the halo's 95th/99th percentile red step over
+# the ground within a few levels of the render's at 0.5).
+OVERLAY_AS_NORMAL = {
+    'underground_bogwillow_1': 0.5,
+    'underground_bogwillow_2': 0.5,
+    'underground_bogwillow_3': 0.5,
 }
 
 SETTINGS = {
@@ -144,13 +184,20 @@ def src_png(n):
 
 def default_state(swf, work):
     """(SWF to render, hidden names): the deco in the state the client drew it in by default, with
-    the root-timeline children named in HIDDEN_BY_DEFAULT taken off the stage."""
+    the root-timeline children named in HIDDEN_BY_DEFAULT taken off the stage, and its overlay
+    glows drawn normal where it is in OVERLAY_AS_NORMAL."""
     hide = sorted({n for n in swfinfo.root_names(swf) if n in HIDDEN_BY_DEFAULT})
-    if not hide:
+    soft = OVERLAY_AS_NORMAL.get(os.path.basename(swf)[:-len('.swf')])
+    if not hide and not soft:
         return swf, []
     out = os.path.join(work, 'default-state', os.path.basename(os.path.dirname(swf)), os.path.basename(swf))
     os.makedirs(os.path.dirname(out), exist_ok=True)
-    swfinfo.drop_root_places(swf, out, set(hide))
+    src = swf
+    if hide:
+        swfinfo.drop_root_places(src, out, set(hide))
+        src = out
+    if soft:
+        swfinfo.root_blend_normal(src, out, 13, soft)
     return out, hide
 
 
@@ -513,6 +560,7 @@ def expect_swf(row):
 def inputs_key(name, mode, swf_sha, src_sha, svg_ok=None, hidden=None):
     keep = {k: SETTINGS[k] for k in SETTINGS if k not in DECISION}
     parts = [name, mode, swf_sha, src_sha, svg_ok, keep] + ([hidden] if hidden else [])
+    parts += [['overlay', OVERLAY_AS_NORMAL[name]]] if name in OVERLAY_AS_NORMAL else []
     return hashlib.sha256(json.dumps(parts, sort_keys=True).encode()).hexdigest()[:20]
 
 
@@ -651,6 +699,8 @@ def cmd_build(args):
             d['_swf_path'], hidden = default_state(swf, work)
             if hidden:
                 d['hidden'] = hidden
+            if n in OVERLAY_AS_NORMAL:
+                d['overlay'] = OVERLAY_AS_NORMAL[n]
         old = plan['decos'].get(n) or {}
         d['src_sha'] = src_sha[:16]
         d['src_bytes'] = os.path.getsize(src_png(n))

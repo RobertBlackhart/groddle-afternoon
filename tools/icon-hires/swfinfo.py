@@ -153,6 +153,80 @@ def drop_root_places(path, out, names):
     return dropped
 
 
+def _cxform_bits(add, mult):
+    """CXFORMWITHALPHA bytes for add / mult terms (4 ints each, or None)."""
+    vals = (mult or []) + (add or [])
+    n = max([v.bit_length() + 1 for v in vals] + [1])
+    bits, nb = (1 if add else 0), 1
+    bits = (bits << 1) | (1 if mult else 0)
+    bits = (bits << 4) | n
+    nb = 6
+    for v in vals:
+        bits = (bits << n) | (v & ((1 << n) - 1)); nb += n
+    pad = (8 - nb % 8) % 8
+    return (bits << pad).to_bytes((nb + pad) // 8, 'big')
+
+
+def root_blend_normal(path, out, blend, alpha):
+    """Write an uncompressed copy of the SWF in which every root-timeline PlaceObject3 with blend
+    mode `blend` (13: overlay) draws with the normal blend at `alpha` of its own alpha (its colour
+    transform's alpha multiplier scaled, one added where it has none). For a deco whose overlay
+    children blended with the street behind it in Flash: a texture has no street behind it, and
+    FFDec draws overlay on a transparent canvas as black. Returns how many placements changed."""
+    body, ver = swf_body(path)
+    parts, n = [], 0
+    p = rect_len(body) + 4
+    parts.append(body[:p])
+    while p < len(body):
+        start = p
+        h = struct.unpack_from('<H', body, p)[0]; p += 2
+        code, ln = h >> 6, h & 0x3f
+        if ln == 0x3f: ln = struct.unpack_from('<I', body, p)[0]; p += 4
+        q, end = p, p + ln
+        p = end
+        tag = None
+        if code == 70 and body[q + 1] & 0x02 and not body[q + 1] & 0x01:
+            f1, f2 = body[q], body[q + 1]
+            at = q + 4
+            if f2 & 0x08 or (f2 & 0x10 and f1 & 0x02): at = body.index(0, at) + 1
+            if f1 & 0x02: at += 2
+            if f1 & 0x04:
+                r = _Bits(body, at)
+                if r.u(1): k = r.u(5); r.u(2 * k)
+                if r.u(1): k = r.u(5); r.u(2 * k)
+                k = r.u(5); r.u(2 * k)
+                at = r.end()
+            cx_at, add, mult = at, None, [256, 256, 256, 256]
+            if f1 & 0x08:
+                r = _Bits(body, at)
+                ha, hm, k = r.u(1), r.u(1), r.u(4)
+                sg = lambda v: v - (1 << k) if k and v >> (k - 1) else v
+                mult = [sg(r.u(k)) for _ in range(4)] if hm else mult
+                add = [sg(r.u(k)) for _ in range(4)] if ha else None
+                at = r.end()
+            rest = at
+            if f1 & 0x10: rest += 2
+            if f1 & 0x20: rest = body.index(0, rest) + 1
+            if f1 & 0x40: rest += 2
+            if body[rest] == blend:
+                mult = mult[:3] + [round(mult[3] * alpha)]
+                data = bytearray(body[q:cx_at]) + _cxform_bits(add, mult) + bytearray(body[at:end])
+                data[0] |= 0x08
+                data[len(data) - (end - rest)] = 1
+                tag = bytes(data)
+                n += 1
+        if tag is None:
+            parts.append(body[start:end])
+        else:
+            parts.append(struct.pack('<HI', (70 << 6) | 0x3f, len(tag)) + tag)
+        if code == 0:
+            parts.append(body[end:])
+            break
+    new = b''.join(parts)
+    open(out, 'wb').write(b'FWS' + bytes([ver]) + struct.pack('<I', len(new) + 8) + new)
+    return n
+
+
 def read(path):
     body = swf_body(path)[0]
     nbits = body[0] >> 3
