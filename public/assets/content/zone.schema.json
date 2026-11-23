@@ -238,6 +238,18 @@
         "y": { "type": "number" },
         "w": { "type": "number" },
         "h": { "type": "number" },
+        "deco": {
+          "description": "Draw the signpost as this deco instead of the wooden post and arms (Glitch's signpost `deco`: sprite_class, w, h; SignpostView.as render). The tower lobbies' lifts are signposts drawn as signpost_asset_elevator; a click on one offers its connects as a menu.",
+          "type": "object",
+          "required": ["sprite", "w", "h"],
+          "additionalProperties": false,
+          "properties": {
+            "sprite": { "type": "string", "description": "Deco art name (the XML's sprite_class)." },
+            "w": { "type": "number", "exclusiveMinimum": 0 },
+            "h": { "type": "number", "exclusiveMinimum": 0 }
+          }
+        },
+        "plate": { "type": "string", "maxLength": 3, "description": "Words on a deco signpost's plate (a lift's floor: L for the lobby, as the client's showNumber wrote it)." },
         "connects": { "type": "array", "maxItems": 8, "items": { "$ref": "#/$defs/connect" } }
       }
     },
