@@ -2814,9 +2814,34 @@
   "deployed": "2026-11-23"
  },
  "git": {
-  "commits": 3180,
+  "commits": 3189,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "Customize your house docks on a phone and the street zooms out to show the house"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "The installed iPhone app keeps the top pills clear of the status bar haze"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "The Decorate and Cultivate rows scroll with a sideways swipe on a phone"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "Big picture menus (Lay what?, Feed what?) fit on a phone screen"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "Ilmenskie and Oktyabrya's far hills fit their texture budget again"
+   },
    {
     "date": "2026-11-23",
     "kind": "fix",
@@ -2911,31 +2936,6 @@
     "date": "2026-11-22",
     "kind": "fix",
     "text": "The missing floor looks as it did in 2012: night windows with the moon, bulbs on two ropes, filing cabinets and a painted EXIT arrow"
-   },
-   {
-    "date": "2026-11-22",
-    "kind": "improve",
-    "text": "Cloud Rings' rings are tall lavender cloud hoops that turn gold"
-   },
-   {
-    "date": "2026-11-22",
-    "kind": "improve",
-    "text": "Each Ticket to Paradise course has its own sky from its snaps"
-   },
-   {
-    "date": "2026-11-22",
-    "kind": "fix",
-    "text": "Winter Walk's front snow uses patches Tiny Speck laid on front layers"
-   },
-   {
-    "date": "2026-11-22",
-    "kind": "improve",
-    "text": "Winter Walk's ground is warm tan mottled with snow right to the bottom of the view"
-   },
-   {
-    "date": "2026-11-22",
-    "kind": "improve",
-    "text": "The Eastern Grotto has its far lavender cliff wall, distant mountains and chasm mist"
    }
   ]
  },
