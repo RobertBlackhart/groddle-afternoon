@@ -215,6 +215,6 @@ describe('#577/#578 (R30): a render that throws does not stop the game', () => {
   it('game.js puts the render in the frame stages, after the game\'s own frame', () => {
     const at = game.indexOf("guardTickerRender(PIXI, app, (fn) => run('render', fn));");
     assert.ok(at > game.indexOf("frameFailed('game loop', err);"), 'installed once the frame listener is on the ticker');
-    assert.match(game, /import \{ guardDestroyedSources, guardTickerRender, installPixiFixes \} from '\.\/js\/pixi-fixes\.js/);
+    assert.match(game, /import \{ guardDestroyedSources, guardTickerRender, installPixiFixes(, [\w, ]+)? \} from '\.\/js\/pixi-fixes\.js/);
   });
 });
