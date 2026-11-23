@@ -375,7 +375,9 @@ describe('phone layout: no overlaps on the real game (Chrome)', { skip: !chromiu
       return { x: r.left + r.width / 2, y: r.top + r.height / 2, h: r.height };
     }, sel);
     /** What is open now, and every menu card against the controls. */
-    const menus = () => tab.evaluate(() => {
+    // Measured after two frames: the layout pass places a menu on the next frame, and a busy machine can be slow to run it.
+    const menus = () => tab.evaluate(async () => {
+      await new Promise((done) => requestAnimationFrame(() => requestAnimationFrame(done)));
       const seen = (el) => el && !el.hidden && el.checkVisibility({ visibilityProperty: true }) && el.getBoundingClientRect().width > 0;
       const rect = (el) => {
         const r = el.getBoundingClientRect();
