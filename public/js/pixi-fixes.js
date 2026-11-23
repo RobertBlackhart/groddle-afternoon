@@ -113,6 +113,29 @@ export function guardDestroyedSources(PIXI, renderer, { onDestroyed = null } = {
 }
 
 /**
+ * G1166 (#621): a container drawn through cacheAsTexture (a signpost's number keys, a job
+ * indicator's spirit) keeps its picture in a render texture, and Pixi draws that picture again only
+ * when told the container changed. A lost and restored WebGL context gives every render texture back
+ * empty, so after two restores in Chrome the keys 1, 2, 3 on a signpost's arms were gone. Marks every
+ * cached container under `root` to be drawn again on the next render. Returns how many.
+ * @param {any} root a Pixi container (the stage)
+ * @returns {number}
+ */
+export function redrawCachedTextures(root) {
+  let marked = 0;
+  const walk = (node) => {
+    if (!node || node.destroyed) return;
+    if (node.renderGroup?.isCachedAsTexture && typeof node.updateCacheTexture === 'function') {
+      node.updateCacheTexture();
+      marked += 1;
+    }
+    for (const child of node.children || []) walk(child);
+  };
+  walk(root);
+  return marked;
+}
+
+/**
  * #577/#578 (R30): Pixi's render is a ticker listener (TickerPlugin adds Application.render at
  * UPDATE_PRIORITY.LOW), and the Ticker asks for the next frame only after its listeners return
  * (Ticker._tick), so one throw in a render stopped the whole game for good, movement and all, while

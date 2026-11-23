@@ -1152,7 +1152,7 @@ import { revealStartCard, whenSceneDrawn } from './js/start-backdrop.js?v=8510d5
 import { cancelAllOverlays, displayTopOf, itemstackOverlayPoint, playPoofIn, setOverlayResolution } from './js/overlay-art.js?v=95f23414';
 import * as textureUrls from './js/textures.js?v=729b29ea';
 import { configureReadback, probeRenderTexture, readbackCanvas, readbackExtract, renderProbeLine } from './js/render-probe.js?v=476b7fdf';
-import { guardDestroyedSources, guardTickerRender, installPixiFixes } from './js/pixi-fixes.js?v=4dcac864';
+import { guardDestroyedSources, guardTickerRender, installPixiFixes, redrawCachedTextures } from './js/pixi-fixes.js?v=4dcac864';
 import { hidesChatBubble } from './js/hi-signs.js?v=49b991c2';
 // Multiplayer phase 1: the mode flag and the save interface every save read/write goes through.
 import { GAME_MODE, isSolo } from './js/game-mode.js?v=1ecf2899';
@@ -33328,7 +33328,8 @@ async function main() {
   textureUrls.setTextureSideLimit(maxTextureSizeOf(app.renderer));
   // #312 (G708): on a phone an image upload that fails (the GPU's memory spent) is sent again, not left
   // an opaque black box (js/textures.js guardImageUploads). G714: after WebKit loses and restores the
-  // WebGL context, the street's colour bakes and blur tiles are baked again (street-render.js dropBakes).
+  // WebGL context, the street's colour bakes and blur tiles are baked again, and (G1166) its edge
+  // mirrors and ground skirt drawn again (street-render.js dropBakes).
   // QA: &uploadguard=1 turns it on off a phone, &uploadguard=0 off on one.
   const uploadGuardParam = new URLSearchParams(location.search).get('uploadguard');
   uploadGuard = uploadGuardParam === '1' || (TOUCH_PHONE && uploadGuardParam !== '0') ? textureUrls.guardImageUploads(app.renderer) : null;
@@ -33339,6 +33340,8 @@ async function main() {
     requestAnimationFrame(() => {
       const dropped = bgLayer?.dropBakes?.() ?? 0;
       app.canvas.dataset.contextBakesDropped = String(dropped);
+      // G1166 (#621): cached containers (a signpost's number keys) draw their pictures again.
+      app.canvas.dataset.contextCachesRedrawn = String(redrawCachedTextures(app.stage));
       runRenderProbe();
     });
   });
