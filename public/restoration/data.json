@@ -2814,9 +2814,14 @@
   "deployed": "2026-11-23"
  },
  "git": {
-  "commits": 3167,
+  "commits": 3169,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "Clouds, mist and fog on brightened layers stay see-through, as in 2012"
+   },
    {
     "date": "2026-11-23",
     "kind": "fix",
@@ -2931,14 +2936,9 @@
     "date": "2026-11-22",
     "kind": "fix",
     "text": "Lift plates read L or the floor on the plate, and the lift hint says Choose a floor"
-   },
-   {
-    "date": "2026-11-22",
-    "kind": "fix",
-    "text": "Sabudana Drama Towers hangs its Notice Board on the wall right of the lift"
    }
   ]
  },
- "tests": 1291,
+ "tests": 1292,
  "generatedAt": "2026-11-23"
 }
