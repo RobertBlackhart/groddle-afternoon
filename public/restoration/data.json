@@ -2814,9 +2814,14 @@
   "deployed": "2026-11-23"
  },
  "git": {
-  "commits": 3263,
+  "commits": 3266,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "An open bag on a narrow phone keeps every slot inside its window"
+   },
    {
     "date": "2026-11-23",
     "kind": "fix",
@@ -2931,11 +2936,6 @@
     "date": "2026-11-23",
     "kind": "new",
     "text": "The Projects panel can sort by region"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "new",
-    "text": "The start card shows the featured street project online, with See the project"
    }
   ]
  },
