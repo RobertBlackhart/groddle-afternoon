@@ -176,7 +176,7 @@ describe('world-verb counters count an offer-system quest once', () => {
 
 describe('timer buffs lead the buff strip (BuffViewManager.as 57)', () => {
   it('renderBuffStrip sorts isTimer first', () => {
-    assert.match(read('game.js'), /listPendingBuffs\(buffState, now\)\]\n\s+\.sort\(\(a, b\) => Number\(Boolean\(b\.def\?\.isTimer\)\) - Number\(Boolean\(a\.def\?\.isTimer\)\)\)/);
+    assert.match(read('game.js'), /listPendingBuffs\(buffState, now\)(?:, \.\.\.features\.collect\('buffStripRows', engine, now\))?\]\n\s+\.sort\(\(a, b\) => Number\(Boolean\(b\.def\?\.isTimer\)\) - Number\(Boolean\(a\.def\?\.isTimer\)\)\)/);
   });
 
   it('the client adds a running timer buff at the front', { skip: !existsSync(CLIENT) && 'glitch-client not beside the spike' }, () => {
