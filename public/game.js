@@ -1128,7 +1128,7 @@ import { contextNeedsResume, createAudioResumer } from './js/audio-resume.js?v=7
 import { bubbleMs } from './js/read-time.js?v=3151fb1a';
 import { mountNotifyView } from './js/notify-view.js?v=0fbfad68';
 import { mountSocialDrawer } from './js/ui/social-drawer.js?v=a41889ed';
-import { installPhonePill, mountPhoneLayout } from './js/ui/phone-layout.js?v=fd03bfa9';
+import { installPhonePill, mountPhoneLayout } from './js/ui/phone-layout.js?v=3c2af581';
 import { bindChatLinks } from './js/chat-links.js?v=b717fac7';
 import { SIDE_SHEET_IDS, bindTabs, inSideSheet, mountPanelShell, sheetKeyToWorld } from './js/ui/panel-shell.js?v=06a0d3fe';
 import { createQuestSheet, failedQuestPin, questLogNeedsSwap, questStep, visibleRowCount } from './js/ui/quest-sheet.js?v=b612c898';
@@ -35876,6 +35876,18 @@ async function main() {
       return out;
     },
     /** NOTIFY QA: raise a notice, read the notices and the Activity log, earn a badge (its screen and log line). */
+    /**
+     * PHONE LAYOUT QA (G1194, #595): big counts on the top bar, as a long-time player has them:
+     * { currants, imagination, favor } (favor with the street's Giant). Returns what was set.
+     */
+    hudStats({ currants, imagination, favor } = {}) {
+      if (Number.isFinite(Number(currants))) pc.currants = Math.max(0, Math.floor(Number(currants)));
+      if (Number.isFinite(Number(imagination))) pc.imagination = Math.max(0, Math.floor(Number(imagination)));
+      const giant = currentStreet ? giantForStreet(currentStreet) : null;
+      if (giant && Number.isFinite(Number(favor))) shrineState.favor = { ...(shrineState.favor || {}), [giant.id]: Math.max(0, Math.floor(Number(favor))) };
+      updateHud();
+      return { currants: pc.currants, imagination: pc.imagination, favor: giant ? shrineState.favor[giant.id] : null };
+    },
     notify: {
       notice: (text, ms) => toast(String(text || ''), ms),
       notices: () => notify.notices.map((n) => ({ text: n.text, count: n.count })),

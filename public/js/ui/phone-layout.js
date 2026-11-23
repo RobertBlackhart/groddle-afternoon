@@ -11,7 +11,8 @@
  *   Full screen, Report a problem, Social (with its badge) and the Menu (installPhonePill). The pill
  *   never grows: Quests, Sound, Make and the rest are rows of the Menu, and so is anything new;
  * - caption: the street's name as a plain caption under the stats (between the pills sideways),
- *   with the street map's button on it, instead of a second row of pill;
+ *   with the street map's button on it, instead of a second row of pill, and favor with the
+ *   street's Giant at its end, so the stats keep room for whole counts (#595);
  * - notices: the top-centre stack under the caption, down to the controls, the pinned quest or the
  *   open sheet; notices, tips and toasts go here and never land on the strip (js/notify-view.js
  *   `region`);
@@ -353,9 +354,25 @@ export function mountPhoneLayout({ doc = globalThis.document, root, sheets = {},
     return { kind: '' };
   }
 
+  // Favor with the street's Giant stands at the caption's end on the phone layout, its home in the
+  // stats elsewhere (#595: the stats keep room for whole counts).
+  let favorHome = null;
+  function seatFavor(inCaption) {
+    const favor = doc.getElementById('favor-stat');
+    const plate = doc.getElementById('street-nameplate');
+    if (!favor || !plate) return;
+    if (inCaption && favor.parentElement !== plate) {
+      favorHome = { parent: favor.parentElement, next: favor.nextSibling };
+      plate.append(favor);
+    } else if (!inCaption && favorHome && favor.parentElement === plate) {
+      favorHome.parent.insertBefore(favor, favorHome.next?.parentElement === favorHome.parent ? favorHome.next : null);
+    }
+  }
+
   function off() {
     if (!on) return;
     on = false;
+    seatFavor(false);
     html.classList.remove('phone-layout');
     delete html.dataset.phoneSheet;
     engine?.setStageDock?.(null, 'phone');
@@ -371,6 +388,7 @@ export function mountPhoneLayout({ doc = globalThis.document, root, sheets = {},
     if (!on) {
       on = true;
       html.classList.add('phone-layout');
+      seatFavor(true);
     }
     keepOne();
     const s = sheetNow();

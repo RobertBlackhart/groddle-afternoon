@@ -8,7 +8,9 @@
  *   a button added to it does not show, Quests is a Menu row;
  * - the pinned quest stands over the stick upright and beside it sideways, clear of its ring;
  * - a sheet, the Social drawer and an open bag dock the stage (engine.setStageDock, owners);
- * - notices keep to their region (js/notify-view.js `region`).
+ * - notices keep to their region (js/notify-view.js `region`);
+ * - #595: nothing in the top row or the caption is cut (an ellipsis, or text wider than its box)
+ *   with big counts at 360 to 402 px wide, and in the tutorial the pill is only as wide as its icons.
  * Run: node --test tests/phone-layout.test.js
  */
 import { describe, it, before, after } from 'node:test';
@@ -18,7 +20,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
   GAP, PILL_IDS, STICK, boxesOverlap, fullScreenWay, layoutProblems, phoneRegions, pillBadge,
-} from '../public/js/ui/phone-layout.js?v=fd03bfa9';
+} from '../public/js/ui/phone-layout.js?v=3c2af581';
 import { phonePins } from '../public/js/ui/quest-pin-button.js?v=ec4d53fa';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -235,6 +237,71 @@ describe('phone layout: no overlaps on the real game (Chrome)', { skip: !chromiu
         if (shut[state]) await tab.evaluate(`(${shut[state]})()`);
         await tab.waitForTimeout(300);
       }
+    }
+    await ctx.close();
+    assert.deepEqual(bad, []);
+    assert.deepEqual(errors, []);
+  });
+
+  it('#595: the top row and the caption never cut a count or a name, with big counts at 360 to 402 wide, and in the tutorial', { timeout: 180_000 }, async () => {
+    const base = `http://127.0.0.1:${server.address().port}`;
+    const ctx = await chrome.browser.newContext({ viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, deviceScaleFactor: 1, userAgent: UA });
+    await ctx.addInitScript(() => { try { localStorage.setItem('groddle-play-device', 'qa-game'); } catch { /* none */ } });
+    const tab = await ctx.newPage();
+    const errors = [];
+    tab.on('pageerror', (e) => errors.push(e.message));
+    const ready = () => !document.body.classList.contains('is-booting') && document.getElementById('overlay')?.classList.contains('hidden') && document.documentElement.classList.contains('phone-layout');
+    /** Text cut short (an ellipsis, or content wider than its box), and the top row's pieces overlapping or empty. */
+    const look = () => {
+      const seen = (el) => el && el.checkVisibility({ visibilityProperty: true }) && el.getBoundingClientRect().width > 0;
+      const rect = (el) => {
+        const r = el.getBoundingClientRect();
+        return { left: r.left, top: r.top, right: r.right, bottom: r.bottom };
+      };
+      const cut = [];
+      const sel = '#hud-stats, #hud-stats .hud-cur strong, #hud-stats .ring-num, .top-bar .top-actions, #street-nameplate, #street-name, #street-name > *, #dametime-clock, #favor-stat strong, #newxp-pill, #newxp-pill [data-nx-label], #newxp-pill button';
+      for (const el of document.querySelectorAll(sel)) {
+        if (!seen(el)) continue;
+        const name = el.id || el.className || el.tagName;
+        if (/…|\.\.\./.test(el.textContent)) cut.push(`${name} "${el.textContent.trim().slice(0, 30)}"`);
+        else if (el.clientWidth > 0 && el.scrollWidth > el.clientWidth + 1) cut.push(`${name} ${el.scrollWidth}>${el.clientWidth}`);
+        else if (getComputedStyle(el).textOverflow === 'ellipsis' && el.clientWidth > 0 && el.scrollWidth > el.clientWidth) cut.push(`${name} ellipsis`);
+      }
+      const boxes = {};
+      for (const [k, el] of Object.entries({ stats: document.getElementById('hud-stats'), tutorial: document.getElementById('newxp-pill'), pill: document.querySelector('.top-bar .top-actions'), caption: document.getElementById('street-nameplate') })) if (seen(el)) boxes[k] = rect(el);
+      // The pill is as wide as what it shows (the tutorial left it four icons wide holding only Sound).
+      const pill = document.querySelector('.top-bar .top-actions');
+      const shown = [...pill.querySelectorAll('button, a')].filter((b) => seen(b) && b.closest('.more-list') == null);
+      const used = shown.reduce((n, b) => n + b.getBoundingClientRect().width, 0);
+      return { cut, boxes, pillW: pill.getBoundingClientRect().width, used, shown: shown.length, counts: [document.getElementById('stat-img')?.textContent, document.getElementById('stat-currants')?.textContent, document.querySelector('#favor-stat strong')?.textContent] };
+    };
+    const bad = [];
+    const check = (where, got, w, h) => {
+      for (const c of got.cut) bad.push(`${where}: cut ${c}`);
+      for (const p of layoutProblems(got.boxes, { width: w, height: h })) bad.push(`${where}: ${p}`);
+      if (got.pillW - got.used > 24) bad.push(`${where}: the pill is ${Math.round(got.pillW)} px wide for ${Math.round(got.used)} px of ${got.shown} icons`);
+      // Pills that do not touch: at least a few px apart.
+      const left = got.boxes.stats || got.boxes.tutorial;
+      if (left && got.boxes.pill && got.boxes.pill.left - left.right < 4) bad.push(`${where}: the pills touch (${Math.round(got.boxes.pill.left - left.right)} px apart)`);
+    };
+    await tab.goto(`${base}/play/?autostart=1&questoffer=off&hstip=0`);
+    await tab.waitForFunction(ready, null, { timeout: 60_000 });
+    const set = await tab.evaluate(() => window.groddleQA.hudStats({ currants: 123456, imagination: 61234, favor: 1302 }));
+    assert.equal(set.currants, 123456);
+    for (const [w, h] of [[360, 780], [375, 667], [390, 844], [402, 812]]) {
+      await tab.setViewportSize({ width: w, height: h });
+      await tab.waitForTimeout(700);
+      const got = await tab.evaluate(look);
+      if (!got.boxes.stats || !got.boxes.caption || !got.boxes.pill) bad.push(`${w}x${h}: the top row is missing a piece`);
+      if (got.counts[2] == null) bad.push(`${w}x${h}: no favor shown`);
+      check(`${w}x${h} play ${got.counts.join(' ')}`, got, w, h);
+    }
+    await tab.goto(`${base}/play/?autostart=1&questoffer=off&hstip=0&newxp=clouds`);
+    await tab.waitForFunction(() => document.getElementById('newxp-pill') && !document.getElementById('newxp-pill').hidden, null, { timeout: 60_000 });
+    for (const [w, h] of [[360, 780], [390, 844]]) {
+      await tab.setViewportSize({ width: w, height: h });
+      await tab.waitForTimeout(700);
+      check(`${w}x${h} tutorial`, await tab.evaluate(look), w, h);
     }
     await ctx.close();
     assert.deepEqual(bad, []);

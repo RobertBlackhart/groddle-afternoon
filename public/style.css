@@ -15462,8 +15462,10 @@ body.is-booting .touch-controls { display: none; }
 :root.phone-layout[data-ui="modern"] .top-bar .top-actions #bug-btn { order: 2 !important; }
 :root.phone-layout[data-ui="modern"] .top-bar .top-actions #social-btn { order: 3 !important; }
 :root.phone-layout[data-ui="modern"] .top-bar .top-actions :is(.more-menu, #more-btn) { order: 4 !important; }
-:root.phone-layout[data-ui="modern"] .top-bar .top-actions :is(#fullscreen-btn, #bug-btn, #social-btn, #more-btn) {
-  display: inline-grid !important; place-items: center; flex: none !important; width: var(--hit) !important; min-width: 0 !important; height: var(--slot); padding: 0; position: relative;
+/* 32 px wide (44 tall, the thumb's height): the stats beside them keep their whole counts (#595). Not in the
+   tutorial, whose own rules leave Sound alone there: the pill then is just as wide as Sound. */
+:root.phone-layout[data-ui="modern"] body:not(.nx-hide-actions) .top-bar .top-actions :is(#fullscreen-btn, #bug-btn, #social-btn, #more-btn) {
+  display: inline-grid !important; place-items: center; flex: none !important; width: 32px !important; min-width: 0 !important; height: var(--slot); padding: 0; position: relative;
 }
 .phone-pill-btn { display: none; }
 :root.phone-layout[data-ui="modern"] .top-bar .phone-pill-btn svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
@@ -15486,6 +15488,18 @@ body.is-booting .touch-controls { display: none; }
 :root.phone-layout[data-ui="modern"] #game-root #street-nameplate :is(#street-name, .street-name-street, #dametime-clock, .street-time-divider) { color: inherit; font-size: inherit; }
 :root.phone-layout[data-ui="modern"] #game-root #street-nameplate #street-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 :root.phone-layout[data-ui="modern"] #game-root #street-nameplate :is(.season-chip, .street-name-hub) { display: none; }
+/* Favor with the street's Giant moves from the stats to the caption's end (js/ui/phone-layout.js), so
+   the stats keep room for whole counts (#595); a tap still opens the Giants' panel. */
+:root.phone-layout[data-ui="modern"] #game-root #street-nameplate > #favor-stat:not([hidden]) {
+  display: inline-flex; align-items: center; gap: var(--sp-1); flex: none; height: auto; margin-left: var(--space-2); padding: 0 var(--sp-1);
+  border: 0; border-radius: var(--radius-pill); background: none; box-shadow: none; color: inherit; font: inherit; cursor: pointer;
+}
+:root.phone-layout[data-ui="modern"] #game-root #street-nameplate > #favor-stat[aria-expanded="true"] { background: color-mix(in srgb, var(--c-black) 30%, transparent); }
+:root.phone-layout[data-ui="modern"] #game-root #street-nameplate > #favor-stat[data-neutral] strong { display: none; }
+/* The tutorial's hidden stats (newxp nx-hide-meta) take favor with them, as when it sat in the stats. */
+:root.phone-layout[data-ui="modern"] body.nx-hide-meta #game-root #street-nameplate > #favor-stat { display: none; }
+:root.phone-layout[data-ui="modern"] #game-root #street-nameplate > #favor-stat img { width: 16px; height: 16px; filter: drop-shadow(0 1px 2px color-mix(in srgb, var(--c-black) 60%, transparent)); }
+:root.phone-layout[data-ui="modern"] #game-root #street-nameplate > #favor-stat strong { font-size: inherit; color: inherit; }
 :root.phone-layout[data-ui="modern"] #game-root #street-nameplate > .smm-phone-btn:not([hidden]) { color: inherit; background: none; box-shadow: none; filter: drop-shadow(0 1px 2px color-mix(in srgb, var(--c-black) 60%, transparent)); }
 @media (orientation: landscape) {
   :root.phone-layout[data-ui="modern"] #game-root #street-nameplate.is-placed:not(.is-under) {
