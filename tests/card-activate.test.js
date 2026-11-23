@@ -15,7 +15,7 @@ import { loadContentCatalogsFromDir, resetContentCatalogs } from '../public/js/c
 import { assignQuest, createQuestState } from '../public/js/quests.js?v=90a2ee3d';
 import { createAchievementState } from '../public/js/achievements.js?v=054773be';
 import { addItem, countItem, createInventory } from '../public/js/inventory.js?v=6414dbdc';
-import { buyDocument } from '../public/js/bureaucracy.js?v=62eded48';
+import { buyDocument } from '../public/js/bureaucracy.js?v=46df051e';
 import {
   LEGALIZE_ALREADY_HAVE,
   LEGALIZE_CARD_ID,

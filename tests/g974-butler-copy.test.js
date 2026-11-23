@@ -16,7 +16,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { giftOffer, giveGiftTo, nextHandover, normalizeButlerState, normalizeParcelBox, setGift, stackCopy } from '../public/js/butler.js?v=52b4f74d';
-import { applyButlerStock, mergeParcels, normalizeButlerStock, normalizeGiftAnswer, normalizeParcels } from '../public/js/neighbours-mp.js?v=4b7fca89';
+import { applyButlerStock, mergeParcels, normalizeButlerStock, normalizeGiftAnswer, normalizeParcels } from '../public/js/neighbours-mp.js?v=a9888115';
 import { leavingWire, receiveWire } from '../public/js/copy-picks.js?v=01de4c58';
 import { bindToolInventory, copyTags, createToolConditionState, setCopyTag, setToolRemaining, toolCopies } from '../public/js/tools.js?v=4156bba8';
 import { addItem, createInventory } from '../public/js/inventory.js?v=6414dbdc';

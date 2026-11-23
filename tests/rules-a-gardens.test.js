@@ -23,8 +23,8 @@ import {
   seedFitsGarden,
   waterPlot,
   wetPlot,
-} from '../public/js/garden.js?v=6391f097';
-import { canPour, mgDetails, plotsFor } from '../public/js/master-garden.js?v=bb17f492';
+} from '../public/js/garden.js?v=9caea9c6';
+import { canPour, mgDetails, plotsFor } from '../public/js/master-garden.js?v=1a4e9de3';
 import { gardenPlotEvents } from '../public/js/quest-offers.js?v=32d4127e';
 
 const MG = ['croppery_1', 'mastergardener_1'];

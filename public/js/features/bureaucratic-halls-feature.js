@@ -75,8 +75,8 @@ import { acceptOffer, ensureQuestOfferState, markOffered, questMoveNote, questSt
 import { getQuestCatalog } from '../content-catalogs.js?v=10b118dd';
 import { parseQuestConversation } from '../quests.js?v=90a2ee3d';
 import { CUP_CLASS, CUP_OF_WATER, WATER_COOLER, WATER_COOLER_CLASS, drinkCup, getWater, getWaterState } from '../water-cooler.js?v=1cf1b040';
-import { BUREAUCRAT_CLASS, HALL, HALL_LAYOUT, HALL_TEXT, PLEASE_WAIT_BUFF, TALK_VERB, createHallFlow } from '../bureaucratic-hall.js?v=a8eaa334';
-import { closeQuestRoomConverse, questRoomConverse } from './quest-instances-feature.js?v=f68d6d2c';
+import { BUREAUCRAT_CLASS, HALL, HALL_LAYOUT, HALL_TEXT, PLEASE_WAIT_BUFF, TALK_VERB, createHallFlow } from '../bureaucratic-hall.js?v=db500184';
+import { closeQuestRoomConverse, questRoomConverse } from './quest-instances-feature.js?v=e68fb825';
 import { HALL_MP_TEXT, HALL_POSE_MS, clerkAt, clerkRow, poseChanged } from '../halls-mp.js?v=044b5c5a';
 import { standOnFeet } from '../sprite-feet.js?v=6ffaec43';
 

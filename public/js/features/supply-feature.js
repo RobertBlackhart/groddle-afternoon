@@ -97,7 +97,7 @@ import {
   clerkOffers,
   completePapers,
   completePapersCheck,
-} from '../bureaucracy.js?v=62eded48';
+} from '../bureaucracy.js?v=46df051e';
 import { frameTexture, sourceFromUrl } from '../textures.js?v=729b29ea';
 import { setMetalMakingMusic } from '../sound-moments.js?v=3e66996f';
 import { itemZ } from '../item-bands.js?v=e98b10bc';

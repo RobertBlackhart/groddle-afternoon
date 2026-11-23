@@ -22,14 +22,14 @@
  */
 
 import { ITEM_CATALOG } from '../inventory.js?v=6414dbdc';
-import { parseSeasonDate } from '../seasons.js?v=9588a3f5';
+import { parseSeasonDate } from '../seasons.js?v=64c72251';
 import { landingY, nearestSurfaceY } from '../walk-surface.js?v=3c919d5b';
 import { isLoaded, onLoaded, textureFromUrl } from '../textures.js?v=729b29ea';
 import { standOnFeet } from '../sprite-feet.js?v=6ffaec43';
 import { FALLBACK_MAX, worldArtFor } from '../world-art.js?v=2b3cf8d5';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import { energyMax, forceMetabolic } from '../metabolics.js?v=48f784bf';
-import { TABLE_AT, TABLE_STREET } from '../pot-luck-feast.js?v=4e3b1e03';
+import { TABLE_AT, TABLE_STREET } from '../pot-luck-feast.js?v=971888be';
 import {
   FEAST_DAY_LINES,
   FEAST_DAY_RULES,
@@ -41,7 +41,7 @@ import {
   refillDue,
   servingsLeft,
   settleFeastDay,
-} from '../feast-day.js?v=985e7a20';
+} from '../feast-day.js?v=38906717';
 
 export const FEAST_DAY_FEATURE_ID = 'feast-day';
 

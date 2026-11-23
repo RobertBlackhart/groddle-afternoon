@@ -3,7 +3,7 @@
  * carry two pack verbs with the Hoe Down card, one at a time (hoe.js 70-126, high_class_hoe.js
  * 48-126). The setting is pc.aggressiveOff in the save; js/garden.js and js/patches.js read it.
  */
-import { GARDEN_HOEING_UPGRADE, aggressiveHoeingVerb, gardenActionProfile, runAggressiveHoeingVerb } from '../garden.js?v=6391f097';
+import { GARDEN_HOEING_UPGRADE, aggressiveHoeingVerb, gardenActionProfile, runAggressiveHoeingVerb } from '../garden.js?v=9caea9c6';
 import { HOE_TOOLS } from '../tools.js?v=4156bba8';
 
 /**

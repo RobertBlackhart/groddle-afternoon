@@ -28,10 +28,10 @@ import {
   urHolidaysOn,
   urMidnight,
   urYear,
-} from '../public/js/calendar.js?v=3c4ef4cc';
+} from '../public/js/calendar.js?v=fb8d81af';
 import { GAME_DAY_MS, dametimeParts } from '../public/js/game-day.js?v=50c112eb';
 import { RUN_MS, runAt } from '../public/js/feats-mp.js?v=809b0452';
-import { calendarSeasons, isDametimeZilloween } from '../public/js/seasons.js?v=9588a3f5';
+import { calendarSeasons, isDametimeZilloween } from '../public/js/seasons.js?v=64c72251';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const client = join(root, '..', 'glitch-client');
