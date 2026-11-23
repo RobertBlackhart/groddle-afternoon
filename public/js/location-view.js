@@ -464,9 +464,12 @@ export const PHONE_GROUND_MIN_CLEARANCE = 12;
 /**
  * PURE (G1146, report #617, Austin's pick 2026-11-22): the ground line of a street layer (world px
  * from its top; tools/ground-line/build.mjs, js/street-ground-lines.js), or NaN when the scene has
- * none (rooms, homes, a street whose art runs on well past its bottom).
+ * none (homes, a street whose art runs on well past its bottom). A room may name its own on its
+ * scene (`groundLine`, G1148: Top of Tree).
  */
 export function sceneGroundLine(layer, lines = STREET_GROUND_LINES) {
+  const own = finite(layer?.groundLine);
+  if (own > 0) return own;
   const line = finite(lines?.[layer?.street?.tsid]);
   return line > 0 ? line : NaN;
 }

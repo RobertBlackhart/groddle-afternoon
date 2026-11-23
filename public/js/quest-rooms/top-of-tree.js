@@ -33,6 +33,20 @@ export const GROUND = 2160;
 export const TRUNK_X = 700;
 export const CROWN_Y = 380;
 /**
+ * G1148: how far under the ground the memory-place ends for a phone's camera (js/location-view.js
+ * sceneGroundLine). quests/high_jump.js 74 sets the player down at y -53, a floor 53 px over the
+ * location's bottom, which Glitch's camera never went past (CameraMan.as 451-453); the Snap shows
+ * about that much white under the feet. The room runs on 160 px under the ground, and an upright
+ * phone showed all of it and the pack reserve too: the player stood in an empty white field.
+ */
+export const GROUND_BELOW = 53;
+/**
+ * G1148: the player arrives just right of the trunk, as the Snap shows a player at its foot, so the
+ * tree is in view at once on an upright phone (from x 420 its foot sat behind the touch buttons at
+ * the screen's right edge, and the player stood alone in white).
+ */
+export const SPAWN_X = TRUNK_X + 190;
+/**
  * source: quests/high_jump.js onStarted 74, instances_create_delayed exit_delay 2*60. That exit
  * delay is the "Are you stuck?" prompt (players/inc_instances.js 317-357), not a clock.
  */
@@ -174,6 +188,8 @@ export const room = {
   build(ctx) {
     const { PIXI, kit } = ctx;
     const root = kit.sceneRoot(PIXI, TREE_W, TREE_H);
+    // G1148: a phone's camera stops this far down (location-view.js phoneGroundWorldHeight).
+    root.groundLine = GROUND + GROUND_BELOW;
     const sky = root.layer(0, 0);
     // Pure white, as in the Snap: no clouds, no floor band.
     sky.addChild(kit.gradient(PIXI, [[0, '#ffffff'], [1, '#ffffff']], 960, 640));
@@ -207,7 +223,7 @@ export const room = {
       height: TREE_H,
       background: root,
       platforms: treePlatforms(kit),
-      spawn: { x: 420, y: GROUND },
+      spawn: { x: SPAWN_X, y: GROUND },
     };
   },
 

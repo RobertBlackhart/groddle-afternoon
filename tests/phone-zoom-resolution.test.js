@@ -12,7 +12,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PHONE_RENDER_RESOLUTION, PHONE_ZOOM_RESOLUTION_CAP, RESOLUTION_STEP, phoneZoomResolution, renderResolution, resolutionCap } from '../public/js/render-density.js?v=74c6f5f9';
-import { MIN_PACK_HEIGHT, stageFor } from '../public/js/location-view.js?v=417e067d';
+import { MIN_PACK_HEIGHT, stageFor } from '../public/js/location-view.js?v=476fd6f0';
 import { recolourBakeResolution, streetBakeResolution } from '../public/js/street-render.js?v=b18a200b';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
