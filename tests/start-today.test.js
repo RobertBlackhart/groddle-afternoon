@@ -11,7 +11,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { badgeCandidates, featTile, pickNudge, pickTip, skillTile, START_TIPS, studyLeft } from '../public/js/start-today.js?v=28c1e3c4';
+import { androidBrowser, badgeCandidates, featTile, pickNudge, pickTip, skillTile, START_TIPS, studyLeft, tipText } from '../public/js/start-today.js?v=476bbcd3';
 import { runAt } from '../public/js/feats-mp.js?v=d5cb2199';
 import { FEAT_BY_ID } from '../public/js/solo-feats.js?v=3bc9b43c';
 
@@ -83,6 +83,25 @@ describe('the tiles', () => {
     assert.deepEqual(solo, { title: 'Feat: Ramble', sub: 'Walk. 1 of 3.', progress: 1 / 3, action: 'See Feats' });
     assert.equal(featTile({ mode: 'solo', allDone: true }).action, 'See Feats');
     assert.equal(featTile(null), null);
+  });
+
+  it('G1150 (#618): the install, currants, favor and skill-time tips; Android only where it applies', () => {
+    for (const t of [
+      'On Android, pick Install app or Add to Home screen in your browser menu to play full screen.',
+      'Click your currants to find the nearest vendor.',
+      'Click your favor to find the nearest shrine.',
+      'Each skill takes a little longer to learn than the last.',
+    ]) assert.ok(START_TIPS.includes(t), t);
+    assert.ok(!START_TIPS.some((t) => /Upgrade|Rook/.test(t)), 'Upgrades and Rooks are left for players to teach');
+    const seen = (o) => new Set(Array.from({ length: 400 }, (_, i) => pickTip(() => i / 400, o)));
+    assert.ok(![...seen({})].some((t) => /^On Android/.test(t)), 'not on a desktop');
+    assert.ok(![...seen({ touch: true })].some((t) => /^On Android/.test(t)), 'not on an iPhone');
+    assert.ok([...seen({ touch: true, android: true })].some((t) => /^On Android/.test(t)), 'on an Android phone');
+    assert.equal(tipText('Click your currants to find the nearest vendor.', { touch: true }), 'Tap your currants to find the nearest vendor.');
+    assert.equal(tipText('Click your favor to find the nearest shrine.'), 'Click your favor to find the nearest shrine.');
+    assert.equal(androidBrowser('Mozilla/5.0 (Linux; Android 14; Pixel 8) Chrome/131.0 Mobile Safari/537.36'), true);
+    assert.equal(androidBrowser('Mozilla/5.0 (Linux; Android 14; Pixel 8) Chrome/131.0 Mobile Safari/537.36', true), false, 'already installed');
+    assert.equal(androidBrowser('Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) Safari/604.1'), false);
   });
 
   it('a tip each visit; a phone gets only the ones that name no key', () => {

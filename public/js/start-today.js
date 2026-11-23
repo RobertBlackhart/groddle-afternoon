@@ -11,7 +11,8 @@
  *   skillTile(study, available)     the skill tile: what you are learning and the time left, or how many
  *                                   skills are ready
  *   featTile(summary, now)          the Feat tile from solo-feats-feature's featSummary
- *   pickTip(rng)                    one tip for this visit
+ *   pickTip(rng, { touch, android }) one tip for this visit
+ *   tipText(tip, { touch })         the tip as shown: "Click" reads "Tap" on a phone
  *   studyLeft(seconds)              "2h 04m", "12m", "45s"
  */
 
@@ -27,7 +28,17 @@ export const START_TIPS = Object.freeze([
   'Press H to see how the Feats are going.',
   'Press Enter by anything to see what you can do with it.',
   'Press / to chat with the street.',
+  // G1150 (#618, Austin 2026-11-23): four more from a player's list. Upgrades and Rooks are left for
+  // players to teach each other. The Android tip shows only in an Android browser (not the installed
+  // app): the play pages' manifest.webmanifest (display standalone) makes the install full screen.
+  'On Android, pick Install app or Add to Home screen in your browser menu to play full screen.',
+  'Click your currants to find the nearest vendor.',
+  'Click your favor to find the nearest shrine.',
+  'Each skill takes a little longer to learn than the last.',
 ]);
+
+/** The tips that only make sense in an Android browser. */
+const ANDROID_TIP = /^On Android\b/;
 
 const whole = (n) => Math.max(0, Math.floor(Number(n) || 0));
 
@@ -165,9 +176,23 @@ export function featTile(summary, now = Date.now()) {
   };
 }
 
-/** One tip for this visit; on a phone (no keyboard) only the tips that name no key. */
-export function pickTip(rng = Math.random, { touch = false } = {}) {
-  const pool = touch ? START_TIPS.filter((t) => !/^(Press|Hold)\b/.test(t)) : START_TIPS;
+/**
+ * One tip for this visit; on a phone (no keyboard) only the tips that name no key, and the Android
+ * install tip only where `android` (an Android browser, not already the installed app).
+ */
+export function pickTip(rng = Math.random, { touch = false, android = false } = {}) {
+  const pool = START_TIPS.filter((t) => (!touch || !/^(Press|Hold)\b/.test(t)) && (android || !ANDROID_TIP.test(t)));
   const i = Math.min(pool.length - 1, Math.floor(Math.max(0, Number(rng()) || 0) * pool.length));
   return pool[i];
+}
+
+/** The tip as shown: on a phone you tap your currants, you do not click them. */
+export function tipText(tip, { touch = false } = {}) {
+  const text = String(tip || '');
+  return touch ? text.replace(/^Click\b/, 'Tap') : text;
+}
+
+/** PURE: an Android browser, not the game already installed as an app (display-mode standalone). */
+export function androidBrowser(ua = '', standalone = false) {
+  return /Android/.test(String(ua)) && !standalone;
 }

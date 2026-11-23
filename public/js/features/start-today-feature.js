@@ -22,7 +22,7 @@
  * QA: &todaytip=<n> picks the tip.
  */
 
-import { badgeCandidates, featTile, pickNudge, pickTip, skillTile, START_TIPS } from '../start-today.js?v=28c1e3c4';
+import { androidBrowser, badgeCandidates, featTile, pickNudge, pickTip, skillTile, START_TIPS, tipText } from '../start-today.js?v=476bbcd3';
 import { listQuestTracker } from '../quests.js?v=90a2ee3d';
 import { skillArtFor } from '../familiar.js?v=b9597cd3';
 import { CARD_ART_LAYERS } from '../imagination-data.js?v=4a85e7fe';
@@ -159,9 +159,14 @@ function paint(engine) {
     }
     if (mode === 'today') {
       const pick = Number(engine.param?.('todaytip'));
-      tip = Number.isInteger(pick) && START_TIPS[pick] ? START_TIPS[pick] : pickTip(Math.random, { touch: doc.documentElement.classList.contains('touch-phone') });
+      const touch = doc.documentElement.classList.contains('touch-phone');
+      // G1150: the Android install tip in an Android browser only, never in the installed app.
+      let standalone = false;
+      try { standalone = Boolean(globalThis.matchMedia?.('(display-mode: standalone)')?.matches); } catch { /* no media queries */ }
+      const android = androidBrowser(globalThis.navigator?.userAgent, standalone);
+      tip = Number.isInteger(pick) && START_TIPS[pick] ? START_TIPS[pick] : pickTip(Math.random, { touch, android });
       const tipEl = doc.getElementById('start-tip-text');
-      if (tipEl) tipEl.textContent = tip;
+      if (tipEl) tipEl.textContent = tipText(tip, { touch });
       engine.setData?.('startTip', String(START_TIPS.indexOf(tip)));
     }
   }
