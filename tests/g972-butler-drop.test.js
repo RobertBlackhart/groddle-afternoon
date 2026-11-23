@@ -17,9 +17,9 @@
 import assert from 'node:assert/strict';
 import { after, before, beforeEach, describe, it } from 'node:test';
 
-import { neighboursMpFeature } from '../public/js/features/neighbours-mp-feature.js?v=a122e81a';
+import { neighboursMpFeature } from '../public/js/features/neighbours-mp-feature.js?v=ab88a24e';
 import { createInventory, ensureItem } from '../public/js/inventory.js?v=6414dbdc';
-import { BUTLER_DROP_TIP, BUTLER_GIVE_TIP, butlerCarries, butlerDropAnswer } from '../public/js/butler-drop.js?v=b01d8c66';
+import { BUTLER_DROP_TIP, BUTLER_GIVE_TIP, butlerCarries, butlerDropAnswer } from '../public/js/butler-drop.js?v=7abfa739';
 import { dropTargetIds, currentDrag } from '../public/js/drop-targets.js?v=59e6edb4';
 import { dropPage, fakeSlot, mouseDrop, touchDrop } from './drop-fake.js';
 import { FakeEl, Display, fakePixi } from './fake-scene.js';
