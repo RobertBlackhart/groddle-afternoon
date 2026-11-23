@@ -32,6 +32,8 @@
  * skirt below them). `viewh` (QA) pins the window's share.
  */
 
+import { STREET_GROUND_LINES } from './street-ground-lines.js?v=a6a6fa28';
+
 export const MIN_VP_H = 400;
 export const MAX_VP_H = 600;
 export const MIN_PACK_HEIGHT = 132;
@@ -229,6 +231,11 @@ export function phoneZoomSpan(args = {}) {
  *   h_needed, though only while the house was being changed (ChassisManager.as scaleVP 189-247).
  *   An upright phone already shows the scene's whole height and keeps its own rule.
  *
+ * - GROUND LINE (G1146, report #617): `groundLine` (world px from the scene's top, sceneGroundLine)
+ *   is how far down the street's ground art covers its whole width. An upright phone fits the scene
+ *   down to there instead of the scene's bottom (phoneStage); the camera keeps every phone above it
+ *   (phoneGroundWorldHeight). Computers ignore it.
+ *
  * width/height: the CSS room for the canvas (the game area under the top bar).
  * pinnedHeight: `viewh` (QA): the old layout, a LOCATION_VIEW_W view scaled to
  * the page width with that location height (the canvas may then outgrow the
@@ -246,12 +253,13 @@ export function stageFor({
   closeup = 0,
   sceneBorders = false,
   fitViewH,
+  groundLine,
 } = {}) {
   const W = finite(width);
   const H = finite(height);
   const pack = finite(packReserve, MIN_PACK_HEIGHT);
   const pinned = finite(pinnedHeight);
-  if (phone && !(pinned > 0) && W > 0 && H > W) return phoneStage({ width: W, height: H, packReserve: pack, sceneWidth, sceneHeight, closeup });
+  if (phone && !(pinned > 0) && W > 0 && H > W) return phoneStage({ width: W, height: H, packReserve: pack, sceneWidth, sceneHeight, closeup, groundLine });
   if (phone && !(pinned > 0) && W > 0 && H > 0) return landscapePhoneStage({ width: W, height: H, packReserve: pack, sceneWidth, sceneHeight, zoom, closeup, fitViewH });
   return computerStage({ width: W, height: H, packReserve: pack, sceneWidth, sceneHeight, pinnedHeight: pinned, zoom, borders: sceneBorders, fitViewH });
 }
@@ -356,13 +364,22 @@ export function shortSceneBand(skyTop) {
  * the art soft: the phone draws 1 backing px per world px, js/render-density.js); the camera then
  * scrolls the street up and down as a computer's does. Fewer world px are drawn, never bigger
  * textures.
+ *
+ * GROUND LINE (G1146, report #617): with `groundLine`, the scene's height counts only down to it.
+ * The canvas runs the pack reserve (132 world px) past the view, which the phone's short pack row
+ * leaves mostly open, so fitting the scene's bottom showed 130 px or more of the bare fill under
+ * the street's ground (Briarset Croft); fitting the line magnifies about 1.1 times there.
  */
-export function phoneStage({ width, height, packReserve = MIN_PACK_HEIGHT, sceneWidth, sceneHeight, closeup = 0 } = {}) {
+export function phoneStage({ width, height, packReserve = MIN_PACK_HEIGHT, sceneWidth, sceneHeight, closeup = 0, groundLine } = {}) {
   const W = finite(width);
   const H = finite(height);
   const pack = finite(packReserve, MIN_PACK_HEIGHT);
   const sh = finite(sceneHeight);
-  const fitH = Math.min(VIEW_HOLD_H, Math.max(VIEW_FLOOR_H, sh > 0 ? Math.floor(sh) : VIEW_HOLD_H));
+  let fitH = Math.min(VIEW_HOLD_H, Math.max(VIEW_FLOOR_H, sh > 0 ? Math.floor(sh) : VIEW_HOLD_H));
+  // GROUND LINE (G1146): the canvas (the view and the pack reserve under it) ends at the street's
+  // ground line, not past its bottom, so the scene magnifies a little to fill the screen.
+  const line = finite(groundLine);
+  if (line > 0) fitH = Math.min(fitH, Math.max(VIEW_FLOOR_H, Math.floor(line) - pack));
   let scale = Math.min(H / (fitH + pack), W / PHONE_PORTRAIT_MIN_VIEW_W);
   const sw = finite(sceneWidth);
   if (sw > 0) scale = Math.max(scale, W / sw);
@@ -436,4 +453,52 @@ export function phoneCameraAnchor({ anchor = 0.75, viewH, packReserve = MIN_PACK
   const room = view + finite(packReserve, MIN_PACK_HEIGHT) - cover / s;
   const feet = Math.min(base * room, room - finite(clearance, 40));
   return Math.min(0.95, Math.max(base, feet / view));
+}
+
+/**
+ * The least ground (world px) a phone's camera keeps under the feet, over the pack row or the
+ * canvas's bottom, where the street's ground art ends sooner than MIN_GROUND_CLEARANCE under them.
+ */
+export const PHONE_GROUND_MIN_CLEARANCE = 12;
+
+/**
+ * PURE (G1146, report #617, Austin's pick 2026-11-22): the ground line of a street layer (world px
+ * from its top; tools/ground-line/build.mjs, js/street-ground-lines.js), or NaN when the scene has
+ * none (rooms, homes, a street whose art runs on well past its bottom).
+ */
+export function sceneGroundLine(layer, lines = STREET_GROUND_LINES) {
+  const line = finite(lines?.[layer?.street?.tsid]);
+  return line > 0 ? line : NaN;
+}
+
+/**
+ * PURE (G1146, report #617): the camera's world height on a phone (movement.js cameraTargetY's
+ * worldHeight), so the canvas's bottom (the camera's view plus the pack reserve under it) stops at
+ * the street's ground line: how far down its ground art covers the whole width. Glitch's camera
+ * never went past a street's bottom (CameraMan.as 451-453) and its 600 px view seldom reached it;
+ * a phone shows the whole height upright, and scrolled to the bottom sideways, with the pack
+ * reserve open under the short pack row, so it showed the bare strip under the ground's last
+ * pieces (Briarset Croft, Grimssea Bottom).
+ *
+ * The feet still keep their room over the real pack row (packCoverCss, as phoneCameraAnchor; none
+ * when the row is not shown): `clearance` (MIN_GROUND_CLEARANCE), or only as much ground as the art
+ * has under the deepest floor (`floorY`) when that is less, never under PHONE_GROUND_MIN_CLEARANCE.
+ * So where the art ends close under the floor the camera stops as low as the pack row needs.
+ * Never lower than `worldHeight` (the camera's usual height). No line: `worldHeight` as given.
+ */
+export function phoneGroundWorldHeight({ worldHeight, groundLine, floorY, packReserve = MIN_PACK_HEIGHT, packCoverCss, scale, clearance = 40 } = {}) {
+  const world = finite(worldHeight);
+  const line = finite(groundLine);
+  if (!(world > 0) || !(line > 0)) return world;
+  const pack = finite(packReserve, MIN_PACK_HEIGHT);
+  const floor = finite(floorY);
+  const s = finite(scale);
+  const coverCss = finite(packCoverCss);
+  const cover = coverCss > 0 && s > 0 ? coverCss / s : 0;
+  let bottom = line;
+  if (Number.isFinite(floor)) {
+    const room = Math.min(finite(clearance, 40), Math.max(PHONE_GROUND_MIN_CLEARANCE, line - floor));
+    bottom = Math.max(bottom, floor + room + cover);
+  }
+  return Math.min(world, bottom - pack);
 }

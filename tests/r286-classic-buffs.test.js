@@ -9,7 +9,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { buffsLeftPx } from '../public/js/classic/classic-topbar.js?v=b1c24d90';
+import { buffsLeftPx } from '../public/js/classic/classic-topbar.js?v=372f7950';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');
