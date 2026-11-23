@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.58.0",
+  "release": "v0.58.1",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -40,9 +40,9 @@
   },
   "counts": {
     "fixing": 3,
-    "known": 13,
+    "known": 14,
     "unreleased": 0,
-    "fixed": 451,
+    "fixed": 472,
     "lost": 5,
     "purpose": 16,
     "idea": 10
@@ -171,6 +171,30 @@
           "text": "Top of Tree on an upright phone opened with the tree hidden behind the buttons and empty space under the ground.",
           "state": "fixed",
           "version": "v0.58.0"
+        },
+        {
+          "id": "G1158",
+          "text": "The Hall of Rejected Concepts was missing its deep dark floor and the light on its exhibits.",
+          "state": "fixed",
+          "version": "v0.58.1"
+        },
+        {
+          "id": "G1159",
+          "text": "An Autumn Day showed a light blue band under its ground.",
+          "state": "fixed",
+          "version": "v0.58.1"
+        },
+        {
+          "id": "G1161",
+          "text": "The Eastern Grotto, Winter Walk and the Mazza'la Gala floor trim did not look as they did in 2012.",
+          "state": "fixed",
+          "version": "v0.58.1"
+        },
+        {
+          "id": "G1163",
+          "text": "The exit at the end of the Greedy Street Spirit story did nothing; only Leave got you out.",
+          "state": "fixed",
+          "version": "v0.58.1"
         }
       ]
     },
@@ -350,6 +374,12 @@
           "text": "Carry That Weight could not go on after leaving the Juju hideout.",
           "state": "fixed",
           "version": "v0.56.0"
+        },
+        {
+          "id": "G1165",
+          "text": "Multiply Your Meditation did not say clearly that it needs ten other players.",
+          "state": "fixed",
+          "version": "v0.58.1"
         }
       ]
     },
@@ -566,6 +596,42 @@
           "text": "A strip of dirt floated at the top of Mart's Way 1 and Dust Path 1C, and Hechey Track's herb garden sat sunk into the dirt.",
           "state": "fixed",
           "version": "v0.56.0"
+        },
+        {
+          "id": "G1153",
+          "text": "In the tower lobbies a wooden signpost stood in front of the lift, where the lift itself was the way between floors in the original.",
+          "state": "fixed",
+          "version": "v0.58.1"
+        },
+        {
+          "id": "G1154",
+          "text": "Signposts kept their full colour on dark and hazy streets instead of taking the street's colour.",
+          "state": "fixed",
+          "version": "v0.58.1"
+        },
+        {
+          "id": "G1155",
+          "text": "The missing floor in Uralia did not look as it did in 2012: no night windows, no lights on ropes.",
+          "state": "fixed",
+          "version": "v0.58.1"
+        },
+        {
+          "id": "G1156",
+          "text": "Symphonious Maximus was built too big, with its islands and craters in the wrong places.",
+          "state": "fixed",
+          "version": "v0.58.1"
+        },
+        {
+          "id": "G1167",
+          "text": "Street skies showed their top colour at the top of the screen, so from the ground the sky was the wrong colour.",
+          "state": "fixed",
+          "version": "v0.58.1"
+        },
+        {
+          "id": "G1171",
+          "text": "Clouds and mist on some streets were drawn too white and solid.",
+          "state": "fixed",
+          "version": "v0.58.1"
         }
       ]
     },
@@ -698,6 +764,12 @@
           "text": "The Map at home no longer offered Return to Ur.",
           "state": "fixed",
           "version": "v0.55.1"
+        },
+        {
+          "id": "G1151",
+          "text": "An open Map kept showing a finished road as under construction until it was opened again.",
+          "state": "fixed",
+          "version": "v0.58.1"
         }
       ]
     },
@@ -2825,6 +2897,12 @@
           "text": "On a phone, the bottom of many streets showed a bare strip under the ground art.",
           "state": "fixed",
           "version": "v0.58.0"
+        },
+        {
+          "id": "G1157",
+          "text": "On a computer the camera could show a dark band below the bottom of a street or room.",
+          "state": "fixed",
+          "version": "v0.58.1"
         }
       ]
     },
@@ -3079,6 +3157,12 @@
           "text": "Getting off the Subway could leave you stuck in a still car if the station did not load.",
           "state": "fixed",
           "version": "v0.58.0"
+        },
+        {
+          "id": "G1149",
+          "text": "You could walk past the gate at the end of a subway platform.",
+          "state": "fixed",
+          "version": "v0.58.1"
         }
       ]
     },
@@ -3236,6 +3320,12 @@
           "text": "An upright iPhone showed a light band above the game in the status bar.",
           "state": "fixed",
           "version": "v0.58.0"
+        },
+        {
+          "id": "G1164",
+          "text": "Players standing in front of a dirt pile or rock blocked clicking it.",
+          "state": "fixed",
+          "version": "v0.58.1"
         }
       ]
     },
@@ -3333,6 +3423,12 @@
           "text": "The Harvest Table on Pot Luck Day did not say whether a dish counted toward Pot's Empty Table.",
           "state": "fixed",
           "version": "v0.58.0"
+        },
+        {
+          "id": "G1152",
+          "text": "The Fancy Feather from Pot Luck Day did not say what it was for.",
+          "state": "fixed",
+          "version": "v0.58.1"
         }
       ]
     },
@@ -3344,6 +3440,56 @@
           "text": "Some clothing colour chips looked alike, hiding colourways such as the black Rook headpiece.",
           "state": "fixed",
           "version": "v0.58.0"
+        }
+      ]
+    },
+    {
+      "name": "Ticket to Paradise",
+      "items": [
+        {
+          "id": "G1160",
+          "text": "Every Ticket to Paradise course had the same dark sky, and Cloud Rings had coloured ovals instead of cloud hoops.",
+          "state": "fixed",
+          "version": "v0.58.1"
+        }
+      ]
+    },
+    {
+      "name": "Art",
+      "items": [
+        {
+          "id": "G1172",
+          "text": "Some large background pictures, such as the hills in Jethimadh, look soft and blocky.",
+          "state": "known"
+        },
+        {
+          "id": "G1162",
+          "text": "Thin light lines showed inside many pictures where two colours met, on rocks, trees and walls.",
+          "state": "fixed",
+          "version": "v0.58.1"
+        },
+        {
+          "id": "G1169",
+          "text": "Some bottletree huts and columns were flat colour with no wood grain.",
+          "state": "fixed",
+          "version": "v0.58.1"
+        },
+        {
+          "id": "G1170",
+          "text": "A big bottletree leg on Peatland Moors was blurry and the wrong colour.",
+          "state": "fixed",
+          "version": "v0.58.1"
+        }
+      ]
+    },
+    {
+      "name": "Graphics",
+      "items": [
+        {
+          "id": "G1166",
+          "text": "After a device briefly lost its graphics, some rocks or a Glitch's skin could look wrong until a reload. Partly fixed; still looking.",
+          "state": "fixed",
+          "version": "v0.58.1"
         }
       ]
     }

@@ -4570,6 +4570,214 @@
       "commits": [
         "game:3fdaa828c79"
       ]
+    },
+    {
+      "id": "G1149",
+      "area": "Subway",
+      "text": "You could walk past the gate at the end of a subway platform.",
+      "show": "fixing",
+      "commits": [
+        "game:9bd7d4e2e2d"
+      ]
+    },
+    {
+      "id": "G1151",
+      "area": "Map",
+      "text": "An open Map kept showing a finished road as under construction until it was opened again.",
+      "show": "fixing",
+      "commits": [
+        "game:ea8ad0b7517"
+      ]
+    },
+    {
+      "id": "G1152",
+      "area": "Seasons",
+      "text": "The Fancy Feather from Pot Luck Day did not say what it was for.",
+      "show": "fixing",
+      "commits": [
+        "game:beaf270d786"
+      ]
+    },
+    {
+      "id": "G1153",
+      "area": "Streets",
+      "text": "In the tower lobbies a wooden signpost stood in front of the lift, where the lift itself was the way between floors in the original.",
+      "show": "fixing",
+      "commits": [
+        "game:3ae54e5ef81",
+        "game:6dcc5cc6423",
+        "game:9d519c8ef2c",
+        "server:92bfde1"
+      ]
+    },
+    {
+      "id": "G1154",
+      "area": "Streets",
+      "text": "Signposts kept their full colour on dark and hazy streets instead of taking the street's colour.",
+      "show": "fixing",
+      "commits": [
+        "game:d03cb18674c"
+      ]
+    },
+    {
+      "id": "G1155",
+      "area": "Streets",
+      "text": "The missing floor in Uralia did not look as it did in 2012: no night windows, no lights on ropes.",
+      "show": "fixing",
+      "commits": [
+        "game:44e8e42f449",
+        "game:1174bc98766"
+      ]
+    },
+    {
+      "id": "G1156",
+      "area": "Streets",
+      "text": "Symphonious Maximus was built too big, with its islands and craters in the wrong places.",
+      "show": "fixing",
+      "commits": [
+        "game:abf94d5756b",
+        "game:1174bc98766",
+        "server:5639614"
+      ]
+    },
+    {
+      "id": "G1157",
+      "area": "Camera",
+      "text": "On a computer the camera could show a dark band below the bottom of a street or room.",
+      "show": "fixing",
+      "commits": [
+        "game:f4b8f7e90a6"
+      ]
+    },
+    {
+      "id": "G1158",
+      "area": "Quest rooms",
+      "text": "The Hall of Rejected Concepts was missing its deep dark floor and the light on its exhibits.",
+      "show": "fixing",
+      "commits": [
+        "game:3f652cf848a"
+      ]
+    },
+    {
+      "id": "G1159",
+      "area": "Quest rooms",
+      "text": "An Autumn Day showed a light blue band under its ground.",
+      "show": "fixing",
+      "commits": [
+        "game:f3dfea3a33a"
+      ]
+    },
+    {
+      "id": "G1160",
+      "area": "Ticket to Paradise",
+      "text": "Every Ticket to Paradise course had the same dark sky, and Cloud Rings had coloured ovals instead of cloud hoops.",
+      "show": "fixing",
+      "commits": [
+        "game:79a4a76d009",
+        "game:aca38a35ba8"
+      ]
+    },
+    {
+      "id": "G1161",
+      "area": "Quest rooms",
+      "text": "The Eastern Grotto, Winter Walk and the Mazza'la Gala floor trim did not look as they did in 2012.",
+      "show": "fixing",
+      "commits": [
+        "game:75194d28e66",
+        "game:34c23392bf0",
+        "game:f01b2e2b5b7",
+        "game:571a7544593"
+      ]
+    },
+    {
+      "id": "G1162",
+      "area": "Art",
+      "text": "Thin light lines showed inside many pictures where two colours met, on rocks, trees and walls.",
+      "show": "fixing",
+      "commits": [
+        "game:e60a26b8efc",
+        "game:188190c96c7"
+      ]
+    },
+    {
+      "id": "G1163",
+      "area": "Quest rooms",
+      "text": "The exit at the end of the Greedy Street Spirit story did nothing; only Leave got you out.",
+      "show": "fixing",
+      "commits": [
+        "game:0a1a3fd5806"
+      ]
+    },
+    {
+      "id": "G1164",
+      "area": "Interface",
+      "text": "Players standing in front of a dirt pile or rock blocked clicking it.",
+      "show": "fixing",
+      "commits": [
+        "game:46e8af0d947"
+      ]
+    },
+    {
+      "id": "G1165",
+      "area": "Quests",
+      "text": "Multiply Your Meditation did not say clearly that it needs ten other players.",
+      "show": "fixing",
+      "commits": [
+        "game:8a6e070625d"
+      ]
+    },
+    {
+      "id": "G1167",
+      "area": "Streets",
+      "text": "Street skies showed their top colour at the top of the screen, so from the ground the sky was the wrong colour.",
+      "show": "fixing",
+      "commits": [
+        "game:7b36d8ab48c",
+        "game:2ff21b049a4"
+      ]
+    },
+    {
+      "id": "G1169",
+      "area": "Art",
+      "text": "Some bottletree huts and columns were flat colour with no wood grain.",
+      "show": "fixing",
+      "commits": [
+        "game:571a7544593"
+      ]
+    },
+    {
+      "id": "G1170",
+      "area": "Art",
+      "text": "A big bottletree leg on Peatland Moors was blurry and the wrong colour.",
+      "show": "fixing",
+      "commits": [
+        "game:571a7544593"
+      ]
+    },
+    {
+      "id": "G1171",
+      "area": "Streets",
+      "text": "Clouds and mist on some streets were drawn too white and solid.",
+      "show": "fixing",
+      "commits": [
+        "game:a009614ac26"
+      ]
+    },
+    {
+      "id": "G1166",
+      "area": "Graphics",
+      "text": "After a device briefly lost its graphics, some rocks or a Glitch's skin could look wrong until a reload. Partly fixed; still looking.",
+      "show": "fixing",
+      "commits": [
+        "game:d18d399f780",
+        "game:5c3db2cd31e",
+        "game:d6910200c2b"
+      ]
+    },
+    {
+      "id": "G1172",
+      "area": "Art",
+      "text": "Some large background pictures, such as the hills in Jethimadh, look soft and blocky."
     }
   ]
 }
