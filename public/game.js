@@ -1602,6 +1602,18 @@ let imagesReleased = 0;
 let uploadGuard = null;
 /** G714: how many times the WebGL context came back (canvas data contextRestores). */
 let contextRestores = 0;
+/**
+ * G1166 (#621/#622): draws of a destroyed texture (drawn as nothing, js/pixi-fixes.js
+ * guardDestroyedSources), the count when the context last came back, and how many street bakes
+ * that restore dropped: a report's context line carries the draws since the restore and the drops.
+ */
+let destroyedDraws = 0;
+let destroyedDrawsAtRestore = 0;
+let contextBakesDropped = 0;
+/** G1166: the report line's restore figures (js/render-probe.js renderProbeLine). */
+function contextLossCounts() {
+  return { restores: contextRestores, dropped: contextBakesDropped, dead: destroyedDraws - destroyedDrawsAtRestore };
+}
 /** G844 (#393): the boot probe of drawing into a render texture (js/render-probe.js), for a report's context. */
 let renderProbe = null;
 /** G844 / R29: pictures copied from the screen because a render texture could not be read (canvas data snapshotScreenCopies, readbackCopies by reader). */
@@ -8363,7 +8375,7 @@ function runRenderProbe() {
       app.canvas.dataset.readbackCopies = Object.entries(readbackCopies).map(([k, n]) => `${k} ${n}`).join(', ');
     },
   });
-  if (app?.canvas) app.canvas.dataset.renderProbe = renderProbeLine(renderProbe, { resolution: app.renderer?.resolution, restores: contextRestores, motion: motionPreference() });
+  if (app?.canvas) app.canvas.dataset.renderProbe = renderProbeLine(renderProbe, { resolution: app.renderer?.resolution, ...contextLossCounts(), motion: motionPreference() });
 }
 
 /**
@@ -14197,7 +14209,7 @@ const engine = {
     return app?.renderer || null;
   },
   /** G844 (#393): the boot render-texture probe as one line for a report's context ('' before boot). */
-  renderProbeLine: () => renderProbeLine(renderProbe, { resolution: app?.renderer?.resolution, restores: contextRestores, motion: motionPreference() }),
+  renderProbeLine: () => renderProbeLine(renderProbe, { resolution: app?.renderer?.resolution, ...contextLossCounts(), motion: motionPreference() }),
   /** G844: the boot probe's result (js/render-probe.js probeRenderTexture), or null. */
   get renderProbe() {
     return renderProbe;
@@ -33316,7 +33328,6 @@ async function main() {
   // texture, instead of throwing in the render every frame (js/pixi-fixes.js guardDestroyedSources).
   // Canvas data destroyedDraws counts them (QA).
   const destroyedDrawn = createErrorOnce();
-  let destroyedDraws = 0;
   guardDestroyedSources(PIXI, app.renderer, {
     onDestroyed: (source) => {
       destroyedDraws += 1;
@@ -33336,9 +33347,11 @@ async function main() {
   app.canvas.addEventListener('webglcontextrestored', () => {
     contextRestores += 1;
     app.canvas.dataset.contextRestores = String(contextRestores);
+    destroyedDrawsAtRestore = destroyedDraws;
     // Pixi has its new context once this event is through (GlContextSystem handleContextRestored).
     requestAnimationFrame(() => {
       const dropped = bgLayer?.dropBakes?.() ?? 0;
+      contextBakesDropped = dropped;
       app.canvas.dataset.contextBakesDropped = String(dropped);
       // G1166 (#621): cached containers (a signpost's number keys) draw their pictures again.
       app.canvas.dataset.contextCachesRedrawn = String(redrawCachedTextures(app.stage));

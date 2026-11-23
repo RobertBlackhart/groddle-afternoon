@@ -123,17 +123,26 @@ export function probeRenderTexture(PIXI, renderer) {
  * "rt ok (plain ok) · res 3 · tex 16384 · rb 16384 · restores 0 · motion reduce · webgl2 · ANGLE (NVIDIA ...)".
  * `motion` is 'reduce' when the device asks for less motion (#529: a phone's "Remove animations"
  * stops the Make panel's flourishes, so the digest says so); otherwise it is left out.
+ * G1166 (#621, #622: "restores 2", a skin that lightened and rocks that went invisible): after a
+ * restore, or whenever one has been drawn, the line also says how many street bakes the last
+ * restore dropped (`dropped`, "bakes dropped N") and how many draws of a destroyed texture there
+ * have been since it (`dead`, since boot when there was none: "dead draws N", each drawn as nothing
+ * by js/pixi-fixes.js guardDestroyedSources), e.g. "restores 2 · bakes dropped 25 · dead draws 0".
  */
-export function renderProbeLine(probe, { resolution, restores = 0, motion = '' } = {}) {
+export function renderProbeLine(probe, { resolution, restores = 0, motion = '', dropped = 0, dead = 0 } = {}) {
   if (!probe) return '';
   const word = (v) => (v === true ? 'ok' : v === false ? 'failed' : 'untried');
   const res = Number(resolution ?? probe.resolution) || 0;
+  const restored = Number(restores) || 0;
+  const deadDraws = Math.max(0, Number(dead) || 0);
   return [
     `rt ${word(probe.ok)} (plain ${word(probe.plain)})`,
     `res ${Math.round(res * 100) / 100}`,
     probe.maxTexture ? `tex ${probe.maxTexture}` : '',
     probe.maxRenderbuffer ? `rb ${probe.maxRenderbuffer}` : '',
-    `restores ${Number(restores) || 0}`,
+    `restores ${restored}`,
+    restored > 0 ? `bakes dropped ${Math.max(0, Number(dropped) || 0)}` : '',
+    restored > 0 || deadDraws > 0 ? `dead draws ${deadDraws}` : '',
     motion ? `motion ${String(motion).slice(0, 12)}` : '',
     probe.api || '',
     probe.gl || '',

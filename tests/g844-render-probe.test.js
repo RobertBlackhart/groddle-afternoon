@@ -88,7 +88,8 @@ describe('G844 the boot probe', () => {
     assert.equal(p.maxRenderbuffer, 16384);
     assert.equal(p.resolution, 3);
     assert.deepEqual(r.calls, ['render', 'stencil', 'render'], 'plain first, then with its depth and stencil made before the draw');
-    assert.equal(renderProbeLine(p, { resolution: 3, restores: 1 }), 'rt failed (plain failed) · res 3 · tex 16384 · rb 16384 · restores 1 · webgl · ANGLE (NVIDIA GeForce RTX 3080 Direct3D11)');
+    // G1166: a restore adds the bakes it dropped and the destroyed-texture draws since.
+    assert.equal(renderProbeLine(p, { resolution: 3, restores: 1 }), 'rt failed (plain failed) · res 3 · tex 16384 · rb 16384 · restores 1 · bakes dropped 0 · dead draws 0 · webgl · ANGLE (NVIDIA GeForce RTX 3080 Direct3D11)');
   });
 
   it('a square that comes back drawn passes; Firefox keeps its own RENDERER', () => {
@@ -105,7 +106,7 @@ describe('G844 the boot probe', () => {
     assert.match(game, /runRenderProbe\(\);\n    \}\);\n  \}\);\n  runRenderProbe\(\);/);
     assert.match(game, /renderProbe = probeRenderTexture\(PIXI, app\?\.renderer\);/);
     assert.match(game, /app\.canvas\.dataset\.renderProbe = renderProbeLine\(/);
-    assert.match(game, /renderProbeLine: \(\) => renderProbeLine\(renderProbe, \{ resolution: app\?\.renderer\?\.resolution, restores: contextRestores, motion: motionPreference\(\) \}\),/);
+    assert.match(game, /renderProbeLine: \(\) => renderProbeLine\(renderProbe, \{ resolution: app\?\.renderer\?\.resolution, \.\.\.contextLossCounts\(\), motion: motionPreference\(\) \}\),/);
   });
 });
 
