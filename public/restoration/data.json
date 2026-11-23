@@ -2814,9 +2814,24 @@
   "deployed": "2026-11-23"
  },
  "git": {
-  "commits": 3222,
+  "commits": 3227,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-23",
+    "kind": "improve",
+    "text": "A pack stack dragged onto the street drops at your feet, and in your own house lands where you let go"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "improve",
+    "text": "Decoration Mode's Set down moves what a display box holds onto the floor beside it, without the pack"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "Take out from a display box in Decoration Mode takes only what fits the pack"
+   },
    {
     "date": "2026-11-23",
     "kind": "fix",
@@ -2921,24 +2936,9 @@
     "date": "2026-11-23",
     "kind": "fix",
     "text": "The Decorate and Cultivate rows scroll with a sideways swipe on a phone"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "Big picture menus (Lay what?, Feed what?) fit on a phone screen"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "Ilmenskie and Oktyabrya's far hills fit their texture budget again"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "Rock walls, hills and wallpapers drawn far over their size are sharp again"
    }
   ]
  },
- "tests": 1299,
+ "tests": 1300,
  "generatedAt": "2026-11-23"
 }
