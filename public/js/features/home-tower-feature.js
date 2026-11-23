@@ -115,7 +115,7 @@ import {
 import { textureFromUrl } from '../textures.js?v=729b29ea';
 import { denseSprite } from '../sprite-dense.js?v=67101472';
 import { pieceUrl } from '../home-wallpaper.js?v=99228166';
-import { wantsHiresDecos } from '../deco-hires.js?v=77cab890';
+import { wantsHiresDecos } from '../deco-hires.js?v=6908b4fe';
 import { WOTD_TEXT } from '../wine-pour.js?v=6daa23a7';
 import { bindCountField, countFromField, countKeyValue, countStepMarkup, syncCountStep } from '../ui/count-chooser.js?v=c268eefe';
 import { topUpMetabolic } from '../metabolics.js?v=48f784bf';

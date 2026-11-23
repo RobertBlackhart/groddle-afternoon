@@ -24,14 +24,14 @@ import { fileURLToPath } from 'node:url';
 
 import { loadContentCatalogsFromDir, resetContentCatalogs } from '../public/js/content-catalogs.js?v=10b118dd';
 import { worldVerbAchievementCounters } from '../public/js/achievements.js?v=054773be';
-import { createAnimalState, resetAnimalDay } from '../public/js/animals.js?v=f2380ee6';
+import { createAnimalState, resetAnimalDay } from '../public/js/animals.js?v=b8f2ba79';
 import { createQuestState } from '../public/js/quests.js?v=90a2ee3d';
 import { acceptOffer, routeQuestEvent } from '../public/js/quest-offers.js?v=69e064ff';
 import { applyBuff, createBuffState } from '../public/js/buffs.js?v=2ed95a93';
 import { BUFF_ICONS, QUEST_TIMER_BUFFS } from '../public/js/buff-triggers.js?v=9fd877c4';
 import { EMERGENCY_RETRY_MS } from '../public/js/features/quest-offers-feature.js?v=561c16e3';
 import { QUOIN_CLASSES, quoinClassAmount, quoinRespawnMs } from '../public/js/quoins.js?v=5abad2c7';
-import { COIN_BACK_MS, COIN_CLASS, COIN_TYPE, room as rainbowRoom } from '../public/js/quest-rooms/rainbow-run.js?v=9b867fef';
+import { COIN_BACK_MS, COIN_CLASS, COIN_TYPE, room as rainbowRoom } from '../public/js/quest-rooms/rainbow-run.js?v=7af85c47';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const PUBLIC = join(ROOT, 'public');

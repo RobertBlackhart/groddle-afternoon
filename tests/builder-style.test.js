@@ -67,7 +67,8 @@ describe('the style profile (tools/builder/style-profile.mjs, assets/content/sty
     // The Interrogation room (G352) puts only its sign, bulb and door on its middleground: 86.7 before.
     // G682: the two practice streets (big lane planes on a wide middleground) move the median: 28 before.
     assert.deepEqual(world.roles.middleground.density, [0.4, 27.8, 86.5]);
-    assert.deepEqual(world.roles.middleground.decoW, [87, 249, 703]); // R5 rooms (Room 15, the Ventilation Room, Room 23): 86 before
+    // R5 rooms (Room 15, the Ventilation Room, Room 23): 86 before, 87 after; the missing floor's bulbs and Symphonious Maximus' eyes and spiral ferns (laid from their full-street templates, 2026-11-23): 86 again.
+    assert.deepEqual(world.roles.middleground.decoW, [86, 249, 703]);
     assert.ok(world.roles.sky.filters.saturation.band[1] < world.roles.middleground.filters.saturation.band[1], 'further back is greyer');
     for (const role of Object.values(world.roles)) {
       assert.equal(role.palette.hue.length, 12);

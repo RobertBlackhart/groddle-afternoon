@@ -461,15 +461,26 @@ function along(sprite, a, b, h, z, extra = {}) {
   return deco(sprite, tx(bx), ty(by), len, h, z, { r: Math.round((ang * 180) / Math.PI * 10) / 10, ...extra });
 }
 
-/** Through the arches: the night, its stars and the moon, and the lattice; all behind the wall pieces, which frame them. */
+/** Through the arches: the night's stars and the moon (their own sky layer, screen space, behind everything; the wall pieces frame them). */
+function missingNightDecos() {
+  const out = [];
+  let z = 1;
+  for (const [i, b] of MISSING_BAYS.filter((r) => r.night).entries()) {
+    const at = mScreen(b.x, ty(470));
+    out.push(deco(i % 2 ? 'sky_stars_2' : 'sky_stars_1', at.x, at.y, 230, 230, z++, { id: `stars_${b.id}`, ...(i > 1 ? { flip: true } : {}) }));
+    if (b.moon) {
+      const m = mScreen(b.x - 2, ty(377));
+      out.push(deco('moon', m.x, m.y, 64, 68, z++, { flip: true, id: 'moon' }));
+    }
+  }
+  return out;
+}
+
+/** Behind the wall pieces: the light through the night windows, and the lattice. */
 function missingSkyDecos() {
   const out = [];
   let z = 4;
-  for (const [i, b] of MISSING_BAYS.filter((r) => r.night).entries()) {
-    out.push(deco(i % 2 ? 'sky_stars_2' : 'sky_stars_1', b.x, ty(470), 230, 230, z++, { id: `stars_${b.id}`, ...(i > 1 ? { flip: true } : {}) }));
-    out.push(deco('light_shafts_blue', b.x + 6, ty(450), 110, 190, z++, { id: `shaft_${b.id}` }));
-    if (b.moon) out.push(deco('moon', b.x - 2, ty(377), 64, 68, z++, { flip: true, id: 'moon' }));
-  }
+  for (const b of MISSING_BAYS.filter((r) => r.night)) out.push(deco('light_shafts_blue', b.x + 6, ty(450), 110, 190, z++, { id: `shaft_${b.id}` }));
   out.push(deco('ladder_trellis_1', bay('B').x, ty(452), 104, 200, z++, { id: 'lattice' }));
   return out;
 }
@@ -499,7 +510,7 @@ function missingShellDecos() {
 /** The beam over the walls with its trim (its own darker layer, screen space). */
 function missingCeilingShellDecos() {
   const out = [];
-  for (const x of [-561, 484]) out.push(deco('ceiling_tan_ghtest', mScreen(x, 0).x, 188, 1304, 76, 3));
+  for (const x of [-561, 484]) out.push(deco('apartment_hall_ceiling_piece_2', mScreen(x, 0).x, 188, 1304, 76, 3));
   out.push(deco('apartment_xsection_top_1', MW / 2, 120, MW + 80, 20, 4));
   return out;
 }
@@ -566,7 +577,7 @@ function missingFloorBackDecos() {
   let z = 120;
   // The long red rug (x 655-1710) and the stone the floor breaks into at the right end (x 1640-2000).
   out.push(deco('apartment_rug_red', tx(1182), ty(607), 1060, 70, z++, { id: 'rug' }));
-  out.push(deco('debris_wall_1', tx(1830), ty(702), 390, 170, z++, { id: 'broken_floor' }));
+  out.push(deco('debris_wall_2', tx(1830), ty(700), 390, 160, z++, { id: 'broken_floor' }));
   // Bay A: the filing cabinet on its side with the vase, the table between two stools, moss.
   out.push(deco('cubicle_cabinet_stack', tx(170), ty(510), 90, 158, z++, { r: 90, id: 'cabinet_lying_A' }));
   out.push(deco('vase_1', tx(276), ty(530), 32, 64, z++, { id: 'vase' }));
@@ -595,16 +606,17 @@ function missingFloorBackDecos() {
   out.push(deco('vase_broken_2', tx(1730), ty(574), 64, 54, z++));
   // Bay H: the sapling.
   out.push(deco('groddle_plant_1', tx(1962), ty(549), 36, 62, z++));
+  // The steaming broken pipe end at the front, under the walk line (so nothing stands in front of it).
+  out.push(deco('steam_stream', tx(213), ty(690), 44, 150, z++, { id: 'steam' }));
+  out.push(deco('ladder_pipe_1', tx(215), ty(806), 60, 136, z++, { id: 'pipe_end' }));
   return out;
 }
 
-/** In front of the avatar (screen space, the near plane): the crate, the steaming pipe end, moss over the front edge, framing shadows. */
+/** In front of the avatar (screen space, the near plane): the crate and the framing shadows. */
 function missingForegroundDecos() {
   const out = [];
   let z = 300;
   out.push(deco('crate_1', 933, 684, 136, 114, z++, { id: 'crate_front' }));
-  out.push(deco('steam_stream', 213, 690, 44, 150, z++, { id: 'steam' }));
-  out.push(deco('ladder_pipe_1', 215, 806, 60, 136, z++, { id: 'pipe_end' }));
   out.push(deco('box_blur_1', MW / 2, 886, MW + 1200, 187, z++));
   // The template's left end and its corner of the floor sit in shadow.
   out.push(deco('tree_int_vertical_shadow', 200, 435, 988, 254, z++, { r: -90 }));
@@ -615,6 +627,7 @@ function missingLayers() {
   // The template's room is a cold green-grey under the night (walls ~0x616D68, floor ~0x595E46, the beam ~0x303633).
   const tint = { tintColor: 0x3a7068, tintAmount: 48 };
   return [
+    { id: 'T_missingfloor_sky', name: 'sky', z: -3, w: MW, h: MH, decos: missingNightDecos(), filters: { ...tint, contrast: -4, brightness: -46, saturation: -36 } },
     { id: 'T_missingfloor_ceiling', name: 'ceiling', z: -2, w: MW, h: MH, decos: missingCeilingShellDecos(), filters: { ...tint, contrast: -4, brightness: -80, saturation: -40 } },
     { id: 'T_missingfloor_floor', name: 'floor', z: -1, w: MW, h: MH, decos: missingFloorShellDecos(), filters: { ...tint, contrast: -4, brightness: -10, saturation: -30 } },
     { id: 'middleground', name: 'middleground', z: 0, w: MW, h: MH, decos: [...missingShellDecos(), ...missingSkyDecos(), ...missingWallDecos(), ...missingCeilingDecos(), ...missingWallPropDecos(), ...missingFloorBackDecos()], filters: { ...tint, contrast: -4, brightness: -46, saturation: -36 } },

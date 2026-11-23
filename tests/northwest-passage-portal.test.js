@@ -25,8 +25,8 @@ import { barriersScreen, platformsScreen, worldToScreen, streetWidth } from '../
 import { avatarGround, stepAvatar, JUMP_SPEED } from '../public/js/avatar-step.js?v=39d7b1af';
 import { rawTripleJumpMultiplier, scaledTripleJumpMultiplier, TRIPLE_JUMP_UPGRADES } from '../public/js/movement.js?v=f4be1a05';
 import { arrivalInTarget } from '../public/js/location-navigation.js?v=e9221d85';
-import { inTeleporter, teleportersOn, PLAIN_JUMP_APEX } from '../public/js/hidden-floors.js?v=e9288189';
-import { hiddenFloorsFeature } from '../public/js/features/hidden-floors-feature.js?v=5679908c';
+import { inTeleporter, teleportersOn, PLAIN_JUMP_APEX } from '../public/js/hidden-floors.js?v=18714dfa';
+import { hiddenFloorsFeature } from '../public/js/features/hidden-floors-feature.js?v=ee4c868f';
 import {
   NORTHWEST_PASSAGE_TSID,
   WINTRY_CAGE,

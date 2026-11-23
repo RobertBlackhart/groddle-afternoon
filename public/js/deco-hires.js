@@ -30,7 +30,7 @@ import { NEW_DECOS, NEW_DECOS_HIRES } from './deco-new-list.js?v=e9cba68f';
 
 /** A published zone's new art (gz_ decos, js/deco-new-list.js): drawn like library decos. */
 export { NEW_DECOS };
-import { SHARP_DECOS } from './deco-sharp-list.js?v=4c191ef5';
+import { SHARP_DECOS } from './deco-sharp-list.js?v=43877f84';
 import { SMALL_GPU_DECOS } from './deco-small-list.js?v=5d29e2f1';
 
 const DECO_PNG = /^(.*?(?:^|\/)assets\/decos\/groddle\/)([^/?#]+)\.png([?#].*)?$/;

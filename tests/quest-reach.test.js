@@ -24,11 +24,11 @@ import { acceptOffer, pendingQuestOffers, setQuestHeldCheck } from '../public/js
 import { SUBWAY_STREETS, closedStreets, initializeStreetJobs, normalizeStreetJobState } from '../public/js/street-jobs.js?v=692d65c4';
 import { applyWorld } from '../public/js/street-jobs-mp.js?v=2b2eb76f';
 import { routeGraph } from '../public/js/map-routes.js?v=426e16ea';
-import { TELEPORTERS } from '../public/js/hidden-floors.js?v=e9288189';
+import { TELEPORTERS } from '../public/js/hidden-floors.js?v=18714dfa';
 import { WINTRY_PORTAL_TELEPORTERS } from '../public/js/wintry-portal.js?v=1437deda';
 import { holdNote, placeIndex, questHold, questPlaceNeeds } from '../public/js/quest-reach.js?v=22b0540a';
 import { fewestClosures, reachableStreets, streetGraph } from '../public/js/street-graph.js?v=dcc5cae4';
-import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=ff9ba50a';
+import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=7cdc360e';
 
 const root = join(import.meta.dirname, '..');
 const PUB = join(root, 'public');

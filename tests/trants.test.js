@@ -24,7 +24,7 @@ import {
   TRANT_META,
   trantHarvestResponse,
 } from '../public/js/trants.js?v=864ea9ff';
-import { getVerbsFor, runVerb } from '../public/content.js?v=dbdf2f57';
+import { getVerbsFor, runVerb } from '../public/content.js?v=04e9ef77';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '../public');
 

@@ -49,9 +49,9 @@ import {
   inTeleporter,
   jumpApex,
   teleportersOn,
-} from '../public/js/hidden-floors.js?v=e9288189';
-import { hiddenFloorsFeature } from '../public/js/features/hidden-floors-feature.js?v=5679908c';
-import { FEATURES } from '../public/js/features/index.js?v=0e683495';
+} from '../public/js/hidden-floors.js?v=18714dfa';
+import { hiddenFloorsFeature } from '../public/js/features/hidden-floors-feature.js?v=ee4c868f';
+import { FEATURES } from '../public/js/features/index.js?v=3ff72aab';
 import { rawTripleJumpMultiplier, scaledTripleJumpMultiplier } from '../public/js/movement.js?v=f4be1a05';
 import { GRAVITY, JUMP_SPEED, WALK_MAX } from '../public/js/avatar-step.js?v=39d7b1af';
 import { buffPhysics } from '../public/js/buffs.js?v=2ed95a93';
@@ -296,12 +296,14 @@ describe('The missing floor street', () => {
       assert.ok(piece && piece.x === b.x, b.id);
     }
     // The night shows through the arches: stars behind every night window, the moon behind the middle one.
+    const sky = missing.layers.find((l) => l.id === 'T_missingfloor_sky');
+    assert.equal(sky.z, Math.min(...missing.layers.map((l) => l.z)), 'the sky layer is the deepest, behind the wall pieces');
     for (const b of MISSING_BAYS.filter((r) => r.night)) {
-      const stars = mg.find((d) => d.id === `stars_${b.id}`);
-      assert.ok(stars && stars.z < at('apartment_hall_wall_piece_window', `bay_${b.id}`).z, `stars behind ${b.id}`);
+      const stars = sky.decos.find((d) => d.id === `stars_${b.id}`);
+      assert.ok(stars && stars.x + missing.bounds.l === b.x, `stars behind ${b.id}`);
     }
-    const moon = at('moon', 'moon');
-    assert.ok(Math.abs(moon.x - MISSING_BAYS.find((b) => b.id === 'E').x) < 10 && moon.z < at('apartment_hall_wall_piece_window', 'bay_E').z);
+    const moon = sky.decos.find((d) => d.id === 'moon');
+    assert.ok(Math.abs(moon.x + missing.bounds.l - MISSING_BAYS.find((b) => b.id === 'E').x) < 10);
     const lum = (hex) => [0, 2, 4].reduce((n, i) => n + parseInt(hex.slice(i, i + 2), 16), 0) / 3;
     assert.ok(lum(missing.gradient.top) < 60 && lum(missing.gradient.bottom) < 60, 'a night sky, not daylight');
     const lattice = at('ladder_trellis_1', 'lattice');
@@ -334,7 +336,7 @@ describe('The missing floor street', () => {
     // The rug runs from the stones to the cabinets; the floor breaks into stone at the right end.
     const rug = at('apartment_rug_red', 'rug');
     assert.ok(rug.x - rug.w / 2 < tx(700) && rug.x + rug.w / 2 > tx(1690));
-    assert.ok(at('debris_wall_1', 'broken_floor').x > tx(1700));
+    assert.ok(at('debris_wall_2', 'broken_floor').x > tx(1700));
     // Gone: the kitchen counters, the sink and the boarded daylight window that were guesses.
     for (const s of ['k04_counter_far', 'k04_sink_01', 'abandoned_apt_windowboard_2', 'wall_shelf1']) assert.ok(!all.some((d) => d.sprite === s), s);
   });

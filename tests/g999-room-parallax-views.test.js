@@ -20,7 +20,7 @@
 import assert from 'node:assert/strict';
 import { after, before, describe, it } from 'node:test';
 
-import * as kit from '../public/js/quest-rooms/kit.js?v=02c6f185';
+import * as kit from '../public/js/quest-rooms/kit.js?v=2ccf327e';
 import { stageFor } from '../public/js/location-view.js?v=19fdf569';
 import { cameraTargetY, cameraWorldHeightForGround } from '../public/js/movement.js?v=f4be1a05';
 import { FakeEl, fakePixi } from './fake-scene.js';
@@ -129,7 +129,7 @@ describe('room parallax layers stand on the floor in every view (G999, #495)', (
   });
 
   it("a layer that is the sky keeps to the view's top (the Purple Journey's gradient at 0.05)", async () => {
-    const { buildVoyageScene } = await import('../public/js/purple-journey-scene.js?v=780c05d7');
+    const { buildVoyageScene } = await import('../public/js/purple-journey-scene.js?v=269c7551');
     const built = buildVoyageScene(fakePixi);
     const root = built.background || built;
     const sky = root.children.find((c) => c.factor === 0.05);
@@ -141,7 +141,7 @@ describe('room parallax layers stand on the floor in every view (G999, #495)', (
   });
 
   it('the clubhouse on the floor: its far hills and mid pines stand with their feet behind the field', async () => {
-    const club = await import('../public/js/quest-rooms/clubhouse.js?v=07468293');
+    const club = await import('../public/js/quest-rooms/clubhouse.js?v=07c90bbc');
     const { scene } = built.find((b) => b.key === 'clubhouse/clubhouse');
     const root = scene.background;
     const fieldTop = club.FLOOR - 130; // buildClub's dusk field

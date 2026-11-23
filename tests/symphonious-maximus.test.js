@@ -34,10 +34,10 @@ import {
   islandYAt,
   ladderGeometry,
   touchesStar,
-} from '../public/js/symphonious-maximus.js?v=e3e9a0ae';
-import { symphoniousMaximusFeature, isSymphonious } from '../public/js/features/symphonious-maximus-feature.js?v=992c0d30';
-import { FEATURES } from '../public/js/features/index.js?v=0e683495';
-import { parallaxLayerOffset } from '../public/js/street-render.js?v=b744f8fc';
+} from '../public/js/symphonious-maximus.js?v=91af7672';
+import { symphoniousMaximusFeature, isSymphonious } from '../public/js/features/symphonious-maximus-feature.js?v=1db03dea';
+import { FEATURES } from '../public/js/features/index.js?v=3ff72aab';
+import { parallaxLayerOffset } from '../public/js/street-render.js?v=073c8455';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pub = join(spike, 'public');

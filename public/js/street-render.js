@@ -12,9 +12,9 @@ import {
 } from './street-model.js?v=a9a05f9d';
 import { availableStreetTsids } from './street-loader.js?v=10376267';
 import { frameTexture, isLoaded, onFailed, onLoaded, textureFromUrl } from './textures.js?v=729b29ea';
-import { admitSharp, decoUrl, FAR_SLACKS, isSharpDeco, maxTextureSizeOf, sharpDeco, NEW_DECOS } from './deco-hires.js?v=77cab890';
+import { admitSharp, decoUrl, FAR_SLACKS, isSharpDeco, maxTextureSizeOf, sharpDeco, NEW_DECOS } from './deco-hires.js?v=6908b4fe';
 import { LADDER_TILE_Z, ladderTilePieces } from './ladder-tiling.js?v=4f9e07fa';
-import { attachAnim, isAnimatedDeco, setAnimSource, setDecoTexture, syncAnim } from './deco-anim.js?v=275ca611';
+import { attachAnim, isAnimatedDeco, setAnimSource, setDecoTexture, syncAnim } from './deco-anim.js?v=0bc8f80d';
 import { drawnLayerOffset, layerScreenDir } from './camera-feel.js?v=e668afc5';
 import { ensureDepthStencil, readbackPixels } from './render-probe.js?v=476b7fdf';
 import { QUAD_SPAN, quadSpans, wideRect } from './wide-quads.js?v=f34556e6';

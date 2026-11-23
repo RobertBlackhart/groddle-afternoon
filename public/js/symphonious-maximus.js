@@ -370,6 +370,16 @@ const VINES = [
   ['liana_2', 3278, 634, 46, 8, true],
 ];
 
+/**
+ * The eyes and spiral ferns on the lower tier's chunks: middleground decos
+ * (Tiny Speck never put them on a background layer); they stand under the
+ * floor's front edge, where nothing walks in front of them.
+ */
+const LOWER_FRONT = [
+  ['ground_guys', 175, 1422, 72, 2], ['plant_giant_fern_1', 1610, 1402, 30, 2], ['ground_guys', 1730, 1446, 64, 2, true],
+  ['plant_giant_fern_1', 2890, 1400, 34, 2],
+];
+
 /** A prop row to a deco (template to world; height from the art's aspect unless given). */
 function propDeco([sprite, cx, bottom, w, z, flip, h]) {
   const [lw, lh] = PROP_SIZE[sprite];
@@ -378,7 +388,7 @@ function propDeco([sprite, cx, bottom, w, z, flip, h]) {
 
 function middlegroundDecos() {
   const out = [];
-  for (const row of [...PROPS, ...VINES]) out.push(propDeco(row));
+  for (const row of [...PROPS, ...VINES, ...LOWER_FRONT]) out.push(propDeco(row));
   for (const isl of ISLANDS) {
     const [lw, lh] = DECO_SIZE[isl.sprite];
     out.push(deco(isl.sprite, isl.x, isl.top + lh * isl.s, lw * isl.s, lh * isl.s, 60, { id: `island_${isl.id}`, ...(isl.flip ? { flip: true } : {}) }));
@@ -525,8 +535,8 @@ function soilDecos() {
  * past the street's bottom.
  */
 const LOWER_CHUNKS = [
-  ['ground_14', 155, 1408, 250], ['ground_13', 292, 1354, 154, true], ['ground_8', 812, 1430, 120], ['ground_9', 930, 1374, 140, true],
-  ['ground_7', 1070, 1354, 140], ['ground_13', 1335, 1368, 120, true], ['ground_10', 1628, 1364, 145], ['ground_6', 1595, 1440, 130],
+  ['ground_14', 155, 1408, 250], ['ground_13', 292, 1354, 154, true], ['ground_13', 812, 1430, 120], ['ground_9', 930, 1374, 140, true],
+  ['ground_7', 1070, 1354, 140], ['ground_13', 1335, 1368, 120, true], ['ground_9', 1628, 1364, 145], ['ground_6', 1595, 1440, 130],
   ['ground_9', 1835, 1374, 130, true], ['ground_15', 1945, 1440, 110], ['ground_5', 2215, 1300, 150], ['ground_15', 2285, 1434, 110, true],
   ['ground_11', 2435, 1384, 250], ['ground_13', 2910, 1394, 140], ['ground_14', 3140, 1330, 280, true], ['ground_7', 3110, 1400, 100],
   ['ground_11', 3610, 1340, 380], ['ground_15', 3485, 1410, 110, true],
@@ -536,12 +546,12 @@ const LOWER_SNOW = [
   ['snow_plat_01a_al1', 92, 1262, 190, 80], ['snow_plat_01b_al1', 724, 1350, 270, 120], ['snow_plat_01a_al1', 2590, 1428, 180, 70],
   ['snow_plat_01a_al1', 2665, 1355, 140, 60], ['snow_plat_01b_al1', 3770, 1388, 230, 92], ['snow_plat_01b_al1', 3905, 1324, 200, 100],
 ];
-/** Plants and the eyes on the lower tier: [sprite, centre x, bottom y, width, flip]. */
+/** Plants on the lower tier: [sprite, centre x, bottom y, width, flip] (the eyes and spiral ferns are LOWER_FRONT). */
 const LOWER_PLANTS = [
-  ['ground_guys', 175, 1422, 72], ['plant_fern_1', 48, 1402, 36], ['plant_fern_4', 300, 1372, 36], ['platform_4', 438, 1556, 210],
-  ['plant_fern_2', 920, 1372, 40], ['plant_giant_fern_1', 1610, 1402, 30], ['ground_guys', 1730, 1446, 64, true],
+  ['plant_fern_1', 48, 1402, 36], ['plant_fern_4', 300, 1372, 36], ['platform_4', 438, 1556, 210],
+  ['plant_fern_2', 920, 1372, 40],
   ['plant_fern_1', 1860, 1382, 32], ['plant_fern_4', 2330, 1390, 36], ['purple_mushroom_3', 2445, 1392, 70],
-  ['plant_giant_fern_1', 2890, 1400, 34], ['plant_fern_2', 3480, 1408, 36],
+  ['plant_fern_2', 3480, 1408, 36],
 ];
 
 function lowerDecos() {
@@ -569,7 +579,7 @@ function lowerSnowDecos() {
 }
 
 /** The rock ledges behind the floor that trees stand on (template: mint tops at y 1030-1040), as [sprite, centre x, top y, width]. */
-const BACK_LEDGES = [['ground_9', 605, 1032, 292], ['ground_10', 1705, 1002, 196], ['ground_9', 2710, 1038, 220], ['ground_14', 3815, 1040, 180]];
+const BACK_LEDGES = [['ground_9', 605, 1032, 292], ['ground_9', 1705, 1002, 196], ['ground_9', 2710, 1038, 220], ['ground_14', 3815, 1040, 180]];
 function backLedgeDecos() {
   return BACK_LEDGES.map(([sprite, cx, top, w], i) => {
     const [lw, lh] = PROP_SIZE[sprite];

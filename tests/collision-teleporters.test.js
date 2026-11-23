@@ -8,7 +8,7 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { SHIM_SHIRI_TSID, TELEPORTER_CENSUS, WIRED_TELEPORTERS, YELLOW_YAWNING_TSID, collisionTeleportersOn } from '../public/js/collision-teleporters.js?v=b1214a65';
-import { inTeleporter } from '../public/js/hidden-floors.js?v=e9288189';
+import { inTeleporter } from '../public/js/hidden-floors.js?v=18714dfa';
 import { STREET_TRAPS } from '../public/js/street-traps-data.js?v=f6eb19ad';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');

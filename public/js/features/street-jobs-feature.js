@@ -54,7 +54,7 @@ import { ITEM_CATALOG, addItem, countItem, ensureItem, itemIcon, packStamp, remo
 import { canUseTool, useToolCondition, workStepCost } from '../tools.js?v=4156bba8';
 import { ecologyForStreet } from '../street-ecology.js?v=9ca2d04e';
 import { worldToScreen } from '../street-model.js?v=a9a05f9d';
-import { signArmWidth } from '../street-render.js?v=b744f8fc';
+import { signArmWidth } from '../street-render.js?v=073c8455';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 import { getSkillCatalog } from '../content-catalogs.js?v=10b118dd';
 import { GIANTS } from '../shrines.js?v=de74a29b';
@@ -157,7 +157,7 @@ import { LOT_ART, LOT_CLASS, LOT_PLACEMENT, LOT_SIGN_BLOCKERS, LOT_SIGN_X, LOT_T
 import { JOB_WORK_BUBBLE, JOB_WORK_OVERLAY, JOB_WORK_REMOTE_BUBBLE_DY, avatarDrawnHeight, jobWorkBubbleY, jobWorkFloatPoint, jobWorkSoundKey, jobWorkToolScale, jobWorkToolSheet } from '../job-work-fx.js?v=2c489570';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { SIGN_ARMS } from '../map-routes.js?v=426e16ea';
-import { TELEPORTERS } from '../hidden-floors.js?v=e9288189';
+import { TELEPORTERS } from '../hidden-floors.js?v=18714dfa';
 import { WINTRY_PORTAL_TELEPORTERS } from '../wintry-portal.js?v=1437deda';
 import { PROJECTS_TEXT, aheadEntries, aheadRegions, contributedJobs, mineTotal, projectEntry, projectList } from '../projects-tracker.js?v=efa005a7';
 import { PROJECTS_PANEL_ID, buildProjectsPanel, renderAhead, renderProjects } from '../ui/projects-sheet.js?v=cd6b23a3';
