@@ -173,7 +173,7 @@ describe('report 121: an action the plot will refuse never plays', () => {
 
   it('the game shows the worn tool\'s line beside the talkback', () => {
     const game = readFileSync(join(root, 'public/game.js'), 'utf8');
-    assert.match(game, /const showLine = \(!spoke \|\| result\.toastWithSpeech\) && toastLine !== reactionText;/);
+    assert.match(game, /shown: \(!spoke \|\| result\.toastWithSpeech\) && toastLine !== reactionText, \/\/ report 121/);
   });
 });
 

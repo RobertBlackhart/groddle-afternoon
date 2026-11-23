@@ -1538,7 +1538,12 @@ function applyResult(engine, entity, result) {
   const p = engine.player;
   const anchorX = p ? p.x : entity.view?.sprite?.x ?? entity.x;
   const anchorY = p ? (p.y || 0) - 130 : (entity.view?.sprite?.y ?? entity.y) - 60;
-  for (const line of result.msgs || []) engine.pushActivity(line);
+  // #640: a node that answers in its bubble (talkbackFor) has said it: its lines go to the log only.
+  const answers = Boolean(entity.target && talkbackFor(result));
+  for (const line of result.msgs || []) {
+    if (answers && engine.notify?.gain) engine.notify.gain(line);
+    else engine.pushActivity(line);
+  }
   let lift = 0;
   const merged = new Map();
   // A Sloth's Snails float as each round reaches the pack (paySlothSnails), not here.

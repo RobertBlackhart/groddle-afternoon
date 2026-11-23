@@ -505,7 +505,9 @@ describe('one module: no direct notice DOM writes outside it', () => {
 
   it('a successful verb that changed something is a gain (float + log), not a notice', () => {
     const game = read('public/game.js');
-    assert.match(game, /if \(result\.ok && verbChangedSomething\(result\.effects\)[^\n]*\{\n\s+if \(showLine\) floatText\(target\.sprite\.x, resultFloatY\(target, spoke \|\| Boolean\(reactionText\)\), toastLine, 0xfff4d6, \{ life: 110 \}\);\n\s+logGain\(feedLine\);/);
+    assert.match(game, /changed: verbChangedSomething\(result\.effects\),/);
+    assert.match(game, /if \(route\.float\) floatText\(target\.sprite\.x, resultFloatY\(target, spoke \|\| Boolean\(reactionText\)\), toastLine, 0xfff4d6, \{ life: 110 \}\);/);
+    assert.match(game, /if \(route\.log === 'gain'\) logGain\(feedLine\);/);
   });
 
   it('reduced motion: floats do not rise, cards do not slide', () => {

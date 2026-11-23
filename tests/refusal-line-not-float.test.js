@@ -16,6 +16,7 @@ import { runVerb } from '../public/content.js?v=2a4e3b9f';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const game = readFileSync(join(root, 'public/game.js'), 'utf8');
+const read = (p) => readFileSync(join(root, p), 'utf8');
 const NO_WARMUP = 'What? No warmup? No preamble? You just walk up to a butterfly with your clammy hands and try to milk it? You have a lot to learn about charming butterflies.';
 
 describe('a refused care verb says why in the activity line, not a float', () => {
@@ -42,8 +43,10 @@ describe('a refused care verb says why in the activity line, not a float', () =>
 
 describe('game.js floats only short result lines', () => {
   it('a long first line is a notice and an activity line; a long later line a notice', () => {
-    assert.match(game, /const RESULT_FLOAT_MAX_CHARS = 72;/);
-    assert.match(game, /const longLine = String\(toastLine\)\.length > RESULT_FLOAT_MAX_CHARS;\n\s+if \(result\.ok && verbChangedSomething\(result\.effects\) && !longLine/);
+    // js/verb-result-route.js decides it (tests/verb-result-route-640.test.js).
+    assert.match(read('public/js/verb-result-route.js'), /export const RESULT_FLOAT_MAX_CHARS = 72;/);
+    assert.match(game, /if \(route\.float\) floatText\(/);
+    assert.match(game, /if \(route\.notice\) toast\(toastLine, String\(toastLine\)\.length > RESULT_FLOAT_MAX_CHARS \? 6400 : 3200\);/);
     assert.match(game, /if \(String\(m\)\.length > RESULT_FLOAT_MAX_CHARS\) \{\n\s+toast\(m, 5200\);\n\s+return;/);
   });
 });

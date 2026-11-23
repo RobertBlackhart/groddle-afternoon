@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=2a4e3b9f';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=62ed0779';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=ab946ebf';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE, playerClickBox } from './js/reach.js?v=456da8a8';
@@ -1166,6 +1166,7 @@ import { createSaveHealth, mountSaveTrouble } from './js/save-trouble.js?v=bbec1
 import { grantSoloStarterItems, isNewMultiplayerPlayer, newPlayerInventory, newPlayerStats } from './js/new-player.js?v=f76dcbaf';
 import { SPEECH_HOLD_MARGIN, clearSpeechOfBox, deepestSpeechTip, giveArtHeight, holdSpeechSide, hudColumnBox, limitSpeechShift, limitSpeechTip, placeSpeechTail, placeSpeechTip, settleSpeechMove, slideOffAvatars, speechBubbleOutline, speechOffsetFor, speechPushLimit, speechTipOnSide, standingFeet } from './js/speech-placement.js?v=0371ea0c';
 import { shrineDonationResponseKey, verbResponse } from './js/verb-responses.js?v=97df8351';
+import { RESULT_FLOAT_MAX_CHARS, resultLineRoute } from './js/verb-result-route.js?v=5516b73f';
 import { itemZ } from './js/item-bands.js?v=e98b10bc';
 import { outlinePoints } from './js/outline-points.js?v=c9edb089';
 import { STAT_PAINTS } from './js/stat-icons.js?v=b89600eb';
@@ -9235,12 +9236,6 @@ function quoinGotOverNotices() {
 const RESULT_FLOAT_RISE = 50;
 const RESULT_FLOAT_UNDER_SPEECH = 12;
 /**
- * Austin 2026-11-13: a float is one line that never wraps, so a verb result's sentence longer than
- * this went across the whole screen and off both edges. Such a line is a notice instead (it wraps);
- * a first line also goes to the activity log, where the source sent its verb messages (pc.sendActivity).
- */
-const RESULT_FLOAT_MAX_CHARS = 72;
-/**
  * Where a verb's result words start over its target (a garden plot, a tree): 50 px up, or, while
  * the target's own speech balloon is up, at its feet (ticket 245), since a short target's balloon
  * tail hangs about 50 px up, so the words began right under it. They rise from there over it.
@@ -10693,17 +10688,21 @@ function runVerbFinish(target, verbId) {
   const feedLine = result.effects?.activityLine || result.msgs?.[0];
   if (feedLine) {
     const toastLine = result.msgs?.[0] || feedLine;
-    // Report 121: a worn tool's plain reason shows beside the plot's talkback.
-    const showLine = (!spoke || result.toastWithSpeech) && toastLine !== reactionText;
-    // RESULT_FLOAT_MAX_CHARS: a sentence too long to float is a notice, read at its length.
-    const longLine = String(toastLine).length > RESULT_FLOAT_MAX_CHARS;
-    if (result.ok && verbChangedSomething(result.effects) && !longLine && target.sprite && !target.sprite.destroyed) {
-      if (showLine) floatText(target.sprite.x, resultFloatY(target, spoke || Boolean(reactionText)), toastLine, 0xfff4d6, { life: 110 });
-      logGain(feedLine);
-    } else {
-      if (showLine) toast(toastLine, longLine ? 6400 : 3200);
-      pushActivity(feedLine);
-    }
+    // js/verb-result-route.js: float, notice or the log alone. Report 121: a worn tool's plain
+    // reason shows beside the plot's talkback (toastWithSpeech). #640: a line the bubble answered
+    // goes to the log only, however long (a Metal Rock's raised a second notice).
+    const route = resultLineRoute({
+      ok: result.ok,
+      changed: verbChangedSomething(result.effects),
+      shown: (!spoke || result.toastWithSpeech) && toastLine !== reactionText, // report 121
+      line: toastLine,
+      canFloat: Boolean(target.sprite && !target.sprite.destroyed),
+    });
+    if (route.float) floatText(target.sprite.x, resultFloatY(target, spoke || Boolean(reactionText)), toastLine, 0xfff4d6, { life: 110 });
+    if (route.notice) toast(toastLine, String(toastLine).length > RESULT_FLOAT_MAX_CHARS ? 6400 : 3200);
+    if (route.log === 'gain') logGain(feedLine);
+    else if (route.log === 'log') notify.log(wholeStatAmounts(feedLine));
+    else pushActivity(feedLine);
   }
   // A feed that did not fill a hungry Piggy says so (content.js runVerb's `snack`, Austin's call 2026-11-13).
   if (result.ok && result.snack) {
