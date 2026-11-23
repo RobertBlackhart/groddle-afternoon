@@ -82,6 +82,7 @@
   },
   "public/js/animal-husbandry.js": {
     "guess: * guess; they now come from the live street pages": "guessed-street-animals",
+    "invented: * G1207 (Austin 2026-11-23, an invention: Glitch kept only a-z, 0-9 and spaces,": "animal-names-apostrophe-hyphen-period",
     "remake-own: // The word filter (the remake's own addition, js/word-filter.js): a bad word is kept": "word-filter"
   },
   "public/js/auctions.js": {

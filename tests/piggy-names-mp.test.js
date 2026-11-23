@@ -53,9 +53,10 @@ describe('a street Piggy\'s name from the server', () => {
     assert.equal(stateFor(copy, 'pig:1', 6000).named, 6000);
   });
 
-  it('a name goes to the server cut and cleaned as the source does (onInputBoxResponse 41)', () => {
+  it('a name goes to the server cut and cleaned (onInputBoxResponse 41, with G1207\'s apostrophe, hyphen and period)', () => {
     assert.deepEqual(actMessage({ req: 3, id: 'pig:1', verb: 'name', perks: ['ak5'], name: 'Wil-bur! the 2nd, of the Grand Mile' }),
-      { req: 3, id: 'pig:1', verb: 'name', perks: ['ak5'], name: 'Wilbur the 2nd of the Grand M' });
+      { req: 3, id: 'pig:1', verb: 'name', perks: ['ak5'], name: 'Wil-bur the 2nd of the Grand M' });
+    assert.equal(actMessage({ req: 3, id: 'pig:1', verb: 'name', name: 'Dr. O\u2019Oink #1' }).name, "Dr. O'Oink 1");
     assert.equal(actMessage({ req: 1, id: 'pig:1', verb: 'pet', name: 'x' }).name, undefined);
   });
 });

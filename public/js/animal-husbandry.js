@@ -700,11 +700,22 @@ export const NAMEABLE_ANIMALS = Object.freeze({
   npc_batterfly: 'Batterfly',
 });
 
+/**
+ * G1207 (Austin 2026-11-23, an invention: Glitch kept only a-z, 0-9 and spaces, animal_naming.js
+ * onInputBoxResponse 41): an animal's name may also hold an apostrophe, a hyphen and a period
+ * ("Dr. Oink", "Mr O'Hare", "Wil-bur"). A phone's curly apostrophe counts as the straight one. The
+ * 32 characters stay Glitch's, and a name still needs a letter or a number (ANIMAL_NAME_NEEDS).
+ * The realtime server cleans a street animal's name by the same rule (objects_pigs.go
+ * sanitizeAnimalName).
+ */
+export const ANIMAL_NAME_DROP = /[^a-z0-9 '.-]/gi;
+export const ANIMAL_NAME_NEEDS = /[a-z0-9]/i;
+
 export function sanitizeAnimalName(value) {
-  return String(value ?? '').substr(0, NAMING.maxLength).replace(/[^a-z0-9 ]/gi, '');
+  return String(value ?? '').substr(0, NAMING.maxLength).replace(/[\u2018\u2019]/g, "'").replace(ANIMAL_NAME_DROP, '');
 }
 
-/** A name as it is saved: the source's rule (32 characters, then letters, numbers and spaces), then the word filter. */
+/** A name as it is saved: 32 characters, then letters, numbers, spaces and ' - . (G1207), then the word filter. */
 export function animalNameAsSaved(value) {
   return filterText(sanitizeAnimalName(value));
 }
@@ -713,20 +724,20 @@ export function animalNameAsSaved(value) {
 export const NAMING_KIND_PLURALS = Object.freeze({ npc_piggy: 'Piggies', npc_chicken: 'Chickens', npc_butterfly: 'Butterflies', npc_batterfly: 'Batterflies' });
 
 /**
- * PURE (#604): the naming box's live hint while you type. The rule stays the source's
- * (animal_naming.js onInputBoxResponse: 32 characters, then only a-z, 0-9 and spaces), so a name
+ * PURE (#604): the naming box's live hint while you type. The rule is 32 characters, then only
+ * a-z, 0-9, spaces and ' - . (animal_naming.js onInputBoxResponse, widened by G1207), so a name
  * with other characters says so and shows what will be saved. { saved, ok, rule, savedLine }:
- * `ok` false when nothing would be left (OK is then off); `rule` the line about the characters
- * (only when some will be dropped); `savedLine` the name as it will be saved (only when it differs
- * from what was typed), or that nothing would be left.
+ * `ok` false when no letter or number would be left (OK is then off); `rule` the line about the
+ * characters (only when some will be dropped); `savedLine` the name as it will be saved (only when
+ * it differs from what was typed), or that nothing would be left.
  */
 export function animalNameHint(classId, typed) {
   const raw = String(typed ?? '').substr(0, NAMING.maxLength);
   const saved = animalNameAsSaved(raw);
-  const dropped = sanitizeAnimalName(raw) !== raw;
-  const ok = Boolean(saved);
+  const dropped = sanitizeAnimalName(raw) !== raw.replace(/[\u2018\u2019]/g, "'");
+  const ok = ANIMAL_NAME_NEEDS.test(saved);
   const who = NAMING_KIND_PLURALS[classId] || 'Animals';
-  const rule = dropped ? `${who} only spell letters, numbers and spaces.` : '';
+  const rule = dropped ? `${who} only spell letters, numbers, spaces, apostrophes, hyphens and periods.` : '';
   let savedLine = '';
   if (!ok && raw) savedLine = 'Nothing would be left to save.';
   else if (ok && saved !== raw) savedLine = `Saved as: ${saved}`;
@@ -757,7 +768,7 @@ export function nameAnimal(classId, state, value, ctx = {}) {
   if (!canNameAnimal(state, ctx)) return { ok: false, reason: "You can't name this animal right now." };
   // The word filter (the remake's own addition, js/word-filter.js): a bad word is kept as a grawlix.
   const name = animalNameAsSaved(value);
-  if (!name) return { ok: false, reason: 'Names need at least one letter or number.' };
+  if (!ANIMAL_NAME_NEEDS.test(name)) return { ok: false, reason: 'Names need at least one letter or number.' };
   if (name === state.userName) return { ok: false, reason: 'unchanged' };
   const previous = state.userName || '';
   state.userName = name;

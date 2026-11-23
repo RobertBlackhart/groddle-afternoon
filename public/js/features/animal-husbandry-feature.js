@@ -62,7 +62,7 @@ import { nearestSurfaceY } from '../walk-surface.js?v=3c919d5b';
 import { displayTopOf, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=95f23414';
 import { SET_FREE, applySetFree, canSetFree, setFreeGoneLine, setFreePrompt } from '../animal-set-free.js?v=6fcd8355';
 import { getGameDayKey } from '../game-day.js?v=a532775d';
-import { createAnimalState, resetAnimalDay, animalStatusLabel, listAnimalFeedOptions } from '../animals.js?v=354bc506';
+import { createAnimalState, resetAnimalDay, animalStatusLabel, listAnimalFeedOptions } from '../animals.js?v=ce235be2';
 import { standOnFeet } from '../sprite-feet.js?v=6ffaec43';
 import {
   BABY_ANIMALS,
@@ -111,15 +111,15 @@ import {
   resetIncubation,
   stepHogtie,
   stickPlaceState,
-} from '../animal-husbandry.js?v=53debb87';
-import { batterflyBaseY, batterflyResponseFor, flightFloorFor } from '../street-creatures.js?v=4f249d87';
+} from '../animal-husbandry.js?v=d2a40989';
+import { batterflyBaseY, batterflyResponseFor, flightFloorFor } from '../street-creatures.js?v=59f5718e';
 import { loseEnergy, shiftMetabolic, topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import { textureFromUrl } from '../textures.js?v=729b29ea';
 import { PIGGY_DEATH_DROPS, PIGGY_DEATH_PUFF, SAD_BABY, forcedRoll, isSadIn } from '../animal-mood.js?v=a49495fc';
-import { animalCrowdChanged, animalCrowdSad, animalPlaceIsDepressing, crowdLimit, ownsPlace, smokePuff as sharedSmokePuff } from './animal-mood-feature.js?v=236baf6c';
+import { animalCrowdChanged, animalCrowdSad, animalPlaceIsDepressing, crowdLimit, ownsPlace, smokePuff as sharedSmokePuff } from './animal-mood-feature.js?v=58613d22';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { followYardPath, freeYardSpot, holdYardWalk } from '../yard-wander.js?v=25a46bda';
+import { followYardPath, freeYardSpot, holdYardWalk } from '../yard-wander.js?v=d3e33e02';
 import { showsChickenIdle, yardChickenPose } from '../chicken-idle-art.js?v=ead8cdf8';
 import { chickenWaitPose } from '../chicken-idles.js?v=eef0279b';
 import { PACKED_SHEETS } from '../packed-sheets-data.js?v=192c6f15';
@@ -1152,8 +1152,8 @@ function openNameModal(engine, target, title) {
   const input = wrap.querySelector('input');
   input.value = target.state?.userName || '';
   // #604: while you type, the characters a name drops are named and the name as it will be saved
-  // shows (the source's rule, animal_naming.js: letters, numbers and spaces); OK is off when
-  // nothing would be left.
+  // shows (animal_naming.js: letters, numbers and spaces, and G1207's apostrophe, hyphen and
+  // period); OK is off when no letter or number would be left.
   const hint = wrap.querySelector('.animal-name-hint');
   const okBtn = wrap.querySelector('[data-ok]');
   const showHint = () => {

@@ -133,7 +133,7 @@ describe('the game shows the site\'s pool (home-pool-mp)', () => {
   });
 
   it('the rock hands over the site\'s amount in multiplayer, after the site marked the day', async () => {
-    const { homesFeature } = await import('../public/js/features/homes-feature.js?v=5e63114b');
+    const { homesFeature } = await import('../public/js/features/homes-feature.js?v=7eb769d1');
     homesFeature.restore({ decor: {}, cult: {}, magicRock: { cultivate: 'cultivate_complete', changestyle: 'howto_shown', expand: 'howto_shown' } });
     const beats = [];
     const data = {};

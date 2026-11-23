@@ -54,7 +54,7 @@
 
 import { isCostume } from './pot-luck.js?v=9e001de9';
 import { GAME_EPOCH_MS } from './game-day.js?v=a532775d';
-import { INCUBATION } from './animal-husbandry.js?v=53debb87';
+import { INCUBATION } from './animal-husbandry.js?v=d2a40989';
 import { isStandable } from './street-model.js?v=a9a05f9d';
 import { ANIMAL_BODY, TREE_FOOTPRINT } from './street-ecology.js?v=ff90efe4';
 import { KITTY_MOTION, KITTY_PAUSE_CHOICES } from './heli-kitties.js?v=e4af4096';

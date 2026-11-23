@@ -5533,6 +5533,31 @@
    "rows": [
     "G1203"
    ]
+  },
+  {
+   "id": "animal-names-apostrophe-hyphen-period",
+   "title": "Animal names may hold an apostrophe, a hyphen and a period, beside Glitch's letters, numbers and spaces",
+   "kind": "behaviour",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/animal-husbandry.js",
+     "symbol": "sanitizeAnimalName"
+    },
+    {
+     "file": "public/js/animal-husbandry.js",
+     "symbol": "animalNameHint"
+    },
+    {
+     "file": "public/js/street-objects.js",
+     "symbol": "actMessage"
+    }
+   ],
+   "why": "Glitch kept 32 characters of a-z, 0-9 and spaces (items/include/animal_naming.js onInputBoxResponse 41), so 'Dr. Oink' was saved as 'Dr Oink' (#604). Naming a Piggy, Chicken, Butterfly or Batterfly now also keeps ' - and . (a phone's curly apostrophe counts as the straight one), solo and online, and the live hint says so; the 32 characters stay Glitch's, a name still needs a letter or a number, and emoji and other scripts are still dropped. The realtime server's own clean-up (objects_pigs.go sanitizeAnimalName) must widen the same way for online names to keep them.",
+   "ruling": "Austin 2026-11-23 (G1207): allow apostrophe, hyphen and period in animal names, a small departure from Glitch; 32 characters max stays",
+   "rows": [
+    "G1207"
+   ]
   }
  ]
 }

@@ -39,7 +39,7 @@ import { TRANT_META, canHarvestTrant, fruitCapacityAt, resolveArborologyPackage 
 import { highestLightGreenThumbRank, quoteTrantCare } from './trant-care.js?v=cb7f539b';
 import { RESOURCE_NODE_ALIASES, RESOURCE_NODE_CATALOG, resolveResourceSkillPackage } from './resource-nodes.js?v=30b69928';
 import { highestAnimalKinshipRank } from './animal-kinship.js?v=75d3cb34';
-import { applyAnimalName, applyCreatureState, clockOffset, pathFrom } from './street-creatures.js?v=4f249d87';
+import { applyAnimalName, applyCreatureState, clockOffset, pathFrom } from './street-creatures.js?v=59f5718e';
 
 /** The resource-node classes whose stock is shared (the "N uses left, then regrows" nodes). */
 /**
@@ -602,8 +602,9 @@ export function actMessage({ req, id, verb, perks = [], skill = '', on = '', c =
     msg.n = Math.max(1, Math.min(9999, Math.floor(Number(n) || 1)));
   }
   // A wait: the path's clock (server ms minus lag) where this player's screen stopped the animal.
-  // A name for a street Piggy (objects_pigs.go namePig): at most 32 of a-z, 0-9 and spaces, the server checks again.
-  if (verb === 'name') msg.name = String(name || '').slice(0, 32).replace(/[^a-z0-9 ]/gi, '');
+  // A name for a street Piggy (objects_pigs.go namePig): at most 32 of a-z, 0-9, spaces and ' - .
+  // (G1207, js/animal-husbandry.js sanitizeAnimalName), the server checks again.
+  if (verb === 'name') msg.name = String(name || '').slice(0, 32).replace(/[\u2018\u2019]/g, "'").replace(/[^a-z0-9 '.-]/gi, '');
   // G605: the Potion of Animal Youth poured, its place among the player's bottles (objects_uses.go copyOf).
   if (verb === 'youth' && Number.isInteger(k) && k >= 0 && k <= 255) msg.k = k;
   if (verb === 'wait' && Number.isSafeInteger(Math.round(Number(at))) && Number(at) > 0) msg.at = Math.round(Number(at));

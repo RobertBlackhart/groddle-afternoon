@@ -50,11 +50,11 @@ import {
   stepHogtie,
   stickPlaceState,
   takePlop,
-} from '../public/js/animal-husbandry.js?v=53debb87';
-import { animalStatusLabel, piggyFeedTip, pickerEmptyLine, pickerMaxCount, pickerOptionsFor, pickerTakesCount, listAnimalFeedOptions, createAnimalState } from '../public/js/animals.js?v=354bc506';
-import { getVerbsFor, runVerb } from '../public/content.js?v=e517a49b';
+} from '../public/js/animal-husbandry.js?v=d2a40989';
+import { animalStatusLabel, piggyFeedTip, pickerEmptyLine, pickerMaxCount, pickerOptionsFor, pickerTakesCount, listAnimalFeedOptions, createAnimalState } from '../public/js/animals.js?v=ce235be2';
+import { getVerbsFor, runVerb } from '../public/content.js?v=77614819';
 import { setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=ff90efe4';
-import { animalHusbandryFeature, batterflyPlacementGroups, normalizeHusbandrySlot } from '../public/js/features/animal-husbandry-feature.js?v=0dc4f6ec';
+import { animalHusbandryFeature, batterflyPlacementGroups, normalizeHusbandrySlot } from '../public/js/features/animal-husbandry-feature.js?v=faf2361c';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const publicDir = join(here, '../public');
@@ -339,26 +339,32 @@ describe('Incubation and baby animals (npc_chicken.js, chick/piglet/caterpillar.
 });
 
 describe('#604: the naming box says what a name drops, live', () => {
-  it('keeps the source rule: 32 characters, then letters, numbers and spaces', () => {
-    assert.equal(animalNameAsSaved('Dr. Oink!'), 'Dr Oink');
+  it('32 characters, then letters, numbers, spaces and (G1207, an invention) apostrophes, hyphens and periods', () => {
+    assert.equal(animalNameAsSaved('Dr. Oink!'), 'Dr. Oink');
+    assert.equal(animalNameAsSaved("Mr O'Hare-Smythe"), "Mr O'Hare-Smythe");
+    assert.equal(animalNameAsSaved('Mr O\u2019Hare'), "Mr O'Hare", 'a phone\'s curly apostrophe is the straight one');
     assert.equal(animalNameAsSaved('x'.repeat(40)).length, 32);
-    assert.equal(animalNameAsSaved('Café'), 'Caf', 'no widening of the character set');
+    assert.equal(animalNameAsSaved('Café'), 'Caf', 'no other scripts');
+    assert.equal(animalNameAsSaved('Oink \u{1F437}'), 'Oink ', 'no emoji');
   });
   it('a clean name has no hint and OK is on', () => {
     assert.deepEqual(animalNameHint('npc_piggy', 'Wilbur'), { saved: 'Wilbur', ok: true, rule: '', savedLine: '' });
   });
   it('dropped characters are named and the saved name shows', () => {
-    const h = animalNameHint('npc_piggy', 'Dr. Oink');
+    assert.deepEqual(animalNameHint('npc_piggy', 'Dr. Oink'), { saved: 'Dr. Oink', ok: true, rule: '', savedLine: '' });
+    const h = animalNameHint('npc_piggy', 'Dr. Oink!');
     assert.equal(h.ok, true);
-    assert.equal(h.rule, 'Piggies only spell letters, numbers and spaces.');
-    assert.equal(h.savedLine, 'Saved as: Dr Oink');
-    assert.equal(animalNameHint('npc_chicken', 'Dr Clucksalot!').rule, 'Chickens only spell letters, numbers and spaces.');
+    assert.equal(h.rule, 'Piggies only spell letters, numbers, spaces, apostrophes, hyphens and periods.');
+    assert.equal(h.savedLine, 'Saved as: Dr. Oink');
+    assert.equal(animalNameHint('npc_chicken', 'Dr Clucksalot!').rule, 'Chickens only spell letters, numbers, spaces, apostrophes, hyphens and periods.');
+    const curly = animalNameHint('npc_piggy', 'O\u2019Hare');
+    assert.deepEqual([curly.rule, curly.savedLine], ['', "Saved as: O'Hare"], 'a curly apostrophe is not dropped');
   });
   it('nothing left: OK is off, and the box says so', () => {
     const h = animalNameHint('npc_piggy', '+×÷=/_<>[])(*&^%$#@!-\'":;,?.');
-    assert.equal(h.ok, false);
-    assert.equal(h.saved, '');
-    assert.equal(h.rule, 'Piggies only spell letters, numbers and spaces.');
+    assert.equal(h.ok, false, 'no letter or number left');
+    assert.equal(h.saved, "-'.");
+    assert.equal(h.rule, 'Piggies only spell letters, numbers, spaces, apostrophes, hyphens and periods.');
     assert.equal(h.savedLine, 'Nothing would be left to save.');
     assert.deepEqual(animalNameHint('npc_piggy', ''), { saved: '', ok: false, rule: '', savedLine: '' });
   });
@@ -378,7 +384,8 @@ describe('Naming (animal_naming.js)', () => {
     const ctx = { learned: ['animalkinship_5'], playerId: 'player', nowS: 1000 };
     assert.equal(canNameAnimal({}, { ...ctx, learned: [] }), false);
     assert.equal(sanitizeAnimalName('Wil-bur! The 3rd ' + 'x'.repeat(40)).length <= 32, true);
-    assert.equal(sanitizeAnimalName('Wil-bur!'), 'Wilbur');
+    assert.equal(sanitizeAnimalName('Wil-bur!'), 'Wil-bur');
+    assert.equal(nameAnimal('npc_piggy', {}, "-'.", ctx).ok, false, 'a name needs a letter or a number');
     const state = {};
     const res = nameAnimal('npc_piggy', state, 'Wilbur', ctx);
     assert.equal(res.ok, true);
@@ -596,7 +603,7 @@ describe('the incubating Chicken\'s halfway line (npc_chicken.js onIncubationHal
 
 describe('#336 (G753): no piggy capture limit anywhere the player owns', () => {
   it('ownsPlace: the house, both yards and the Tower (home instance, owned); not a visit, not a street', async () => {
-    const { ownsPlace } = await import('../public/js/features/animal-mood-feature.js?v=236baf6c');
+    const { ownsPlace } = await import('../public/js/features/animal-mood-feature.js?v=58613d22');
     const at = (streetTsid, home) => ({ streetTsid, ...(home ? { homeContext: () => home } : {}) });
     assert.equal(ownsPlace(at('RH_HOME_INT', { inHome: true, owned: true, room: 'house' })), true, 'house and back yard');
     assert.equal(ownsPlace(at('RH_HOME_INT', { inHome: true, owned: true, room: 'tower' })), true, 'Tower');
