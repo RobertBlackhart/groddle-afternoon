@@ -5045,6 +5045,35 @@
         "server:001f410",
         "site:14d27c3"
       ]
+    },
+    {
+      "id": "G1211",
+      "area": "Accounts",
+      "text": "From November 21 to 23 a spam filter on the site turned away new characters and sign-ups.",
+      "show": "fixing",
+      "commits": [
+        "site:5270894"
+      ]
+    },
+    {
+      "id": "G1213",
+      "area": "Characters",
+      "text": "A character's name could not be changed.",
+      "show": "fixing",
+      "commits": [
+        "game:ec5a1a07808",
+        "site:09445d0",
+        "server:aa1256a"
+      ]
+    },
+    {
+      "id": "G1214",
+      "area": "Pack",
+      "text": "The full-bag backdrop in the pack row was a jarring jet black.",
+      "show": "fixing",
+      "commits": [
+        "game:dd658319b8d"
+      ]
     }
   ]
 }

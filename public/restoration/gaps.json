@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.59.0",
+  "release": "v0.60.0",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -42,7 +42,7 @@
     "fixing": 3,
     "known": 15,
     "unreleased": 0,
-    "fixed": 500,
+    "fixed": 503,
     "lost": 5,
     "purpose": 16,
     "idea": 10
@@ -2558,6 +2558,12 @@
           "text": "Dragging a stack from the pack onto the street did nothing.",
           "state": "fixed",
           "version": "v0.59.0"
+        },
+        {
+          "id": "G1214",
+          "text": "The full-bag backdrop in the pack row was a jarring jet black.",
+          "state": "fixed",
+          "version": "v0.60.0"
         }
       ]
     },
@@ -2905,6 +2911,12 @@
           "text": "Password managers such as Proton Pass did not offer to fill the online sign-in in desktop Chrome.",
           "state": "fixed",
           "version": "v0.42.1"
+        },
+        {
+          "id": "G1211",
+          "text": "From November 21 to 23 a spam filter on the site turned away new characters and sign-ups.",
+          "state": "fixed",
+          "version": "v0.60.0"
         }
       ]
     },
@@ -3644,6 +3656,12 @@
           "text": "Character names had to be at least three letters long.",
           "state": "fixed",
           "version": "v0.59.0"
+        },
+        {
+          "id": "G1213",
+          "text": "A character's name could not be changed.",
+          "state": "fixed",
+          "version": "v0.60.0"
         }
       ]
     },
