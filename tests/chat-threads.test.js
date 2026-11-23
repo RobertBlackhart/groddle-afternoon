@@ -20,11 +20,11 @@ import {
   summaryText,
   threadTarget,
 } from '../public/js/chat-threads.js?v=2ba621c8';
-import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=a41889ed';
+import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=84248d73';
 import { createNotifier } from '../public/js/notify.js?v=4226f585';
-import { chatThreadsFeature, replyLine } from '../public/js/features/chat-threads-feature.js?v=4b9f029f';
+import { chatThreadsFeature, replyLine } from '../public/js/features/chat-threads-feature.js?v=b34e85e6';
 import { ACTIVE_EVERY_MS, activeDue, presenceMpFeature } from '../public/js/features/presence-mp-feature.js?v=21272297';
-import { channelOpts, normalLine } from '../public/js/player-im.js?v=da51888c';
+import { channelOpts, normalLine } from '../public/js/player-im.js?v=87bdb8ec';
 import { SETTINGS_COPY, mountPresenceSetting } from '../public/js/account-forms.js?v=683e1475';
 import { memoryStore, page } from './social-fake-dom.js';
 

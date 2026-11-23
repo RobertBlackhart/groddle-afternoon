@@ -12,6 +12,7 @@
 
 import { hasBadWord, NAME_REFUSED } from './word-filter.js?v=9a7a7ebb';
 import { UNNAMED_PLAYER } from './player-names.js?v=f9b78094';
+import { CHAT_MAX_CHARS } from './ui/chat-input.js?v=8f2479a3';
 
 /** config_prod.js:39 max_groups. */
 export const GROUPS_MAX = 20;
@@ -203,10 +204,14 @@ export function drawerChat(showing, open) {
   return s !== 'street' && knownChat(s) && has ? s : 'street';
 }
 
-/** A chat line from the server (channel_said or a history entry), or null. */
+/**
+ * A chat line from the server (channel_said or a history entry), or null. #639: the whole line, as
+ * long as the box lets you type and the server keeps (CHAT_MAX_CHARS, hub.go maxChat); it was cut
+ * at 200 here, so a longer line went out whole and came back short.
+ */
 export function chatLine(m) {
   const id = n0(m?.id);
-  const text = String(m?.text ?? '').slice(0, 200);
+  const text = String(m?.text ?? '').slice(0, CHAT_MAX_CHARS);
   if (!id || !text) return null;
   // lid: the line's id for reactions (the server's reactions.go), 0 without one.
   // web: said on the website's /chat/ (groddle-afternoon-server webchat.go); shown as "(web)" after the name.

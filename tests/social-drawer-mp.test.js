@@ -10,10 +10,10 @@
 import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { FakeEl, memoryStore, page } from './social-fake-dom.js';
-import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=a41889ed';
+import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=84248d73';
 import { createNotifier } from '../public/js/notify.js?v=4226f585';
 import { partyFeature } from '../public/js/features/party-feature.js?v=e218803f';
-import { groupsFeature } from '../public/js/features/groups-feature.js?v=de1edfc0';
+import { groupsFeature } from '../public/js/features/groups-feature.js?v=3a8fc602';
 
 const ANSWER = {
   max: 20,

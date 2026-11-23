@@ -24,6 +24,7 @@
  */
 
 import { imKey } from './chat-reactions.js?v=38460172';
+import { CHAT_MAX_CHARS } from './ui/chat-input.js?v=8f2479a3';
 
 /** A conversation's id in the Social drawer: im:<player id>. */
 export const IM_PREFIX = 'im:';
@@ -92,11 +93,11 @@ export function cleanName(v) {
   return String(v ?? '').replace(/\s+/g, ' ').trim().slice(0, 40);
 }
 
-/** PURE: a line the server sent, or null: { id, from, text, at }. */
+/** PURE: a line the server sent, or null: { id, from, text, at }. #639: the whole line (CHAT_MAX_CHARS, im.go cleanChat), never cut at 400. */
 export function normalLine(l) {
   const id = Math.floor(Number(l?.id));
   const from = Math.floor(Number(l?.from));
-  const text = String(l?.text ?? '').slice(0, 400);
+  const text = String(l?.text ?? '').slice(0, CHAT_MAX_CHARS);
   if (!(id > 0) || !(from > 0) || !text) return null;
   // r: the line's reactions as the server keeps them (features/chat-reactions-feature.js reads them).
   // parent: the line whose thread this replies in (threads; the conversation's own log leaves it out); th: the site's count of a line's replies.

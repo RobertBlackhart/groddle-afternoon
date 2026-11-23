@@ -44,9 +44,9 @@ import {
   oldestAt,
   normalState,
   refusalText,
-} from '../player-im.js?v=da51888c';
+} from '../player-im.js?v=87bdb8ec';
 import { purgeOf, withoutPurged } from '../chat-purge.js?v=6c41f62d';
-import { EARLIER_TEXT } from '../groups.js?v=2e9a714e';
+import { EARLIER_TEXT } from '../groups.js?v=d5a70dca';
 import { imKey } from '../chat-reactions.js?v=38460172';
 import { createMinnAccount } from '../minn-account.js?v=ab7fbd48';
 

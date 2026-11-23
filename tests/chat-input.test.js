@@ -246,6 +246,24 @@ describe('the chat box: wired', () => {
     assert.match(rt, /\(engine\.hearLocal \|\| engine\.chatLine\)\?\.\(name, text, \{/, 'Local gets the whole line');
   });
 
+  it('#639: a line comes back as long as it went out, in every chat: channels, IM, party, Local', async () => {
+    const { chatLine } = await import('../public/js/groups.js?v=d5a70dca');
+    const { normalLine } = await import('../public/js/player-im.js?v=87bdb8ec');
+    const long = 'a'.repeat(CHAT_MAX_CHARS);
+    assert.equal(chatLine({ id: 1, name: 'n', text: long }).text, long, 'Global, Help, Trade and group channels');
+    assert.equal(normalLine({ id: 1, from: 2, text: long }).text, long, 'IM');
+    assert.equal(chatLine({ id: 1, name: 'n', text: `${long}b` }).text, long, 'no longer than the server keeps');
+    // No chat line reader cuts a line shorter than the box lets you type (groups.js cut at 200, player-im.js at 400).
+    for (const f of ['public/js/groups.js', 'public/js/player-im.js', 'public/js/party.js', 'public/js/chat-threads.js', 'public/js/features/party-feature.js', 'public/js/features/groups-feature.js', 'public/js/features/realtime-feature.js', 'public/js/features/player-im-feature.js', 'public/js/ui/social-drawer.js']) {
+      let src = '';
+      try { src = read(f); } catch { continue; }
+      for (const m of src.matchAll(/\btext\b[^;\n]{0,40}\.slice\(0, ?(\d+)\)/g)) {
+        if (/note: true/.test(src.slice(Math.max(0, m.index - 40), m.index))) continue; // the game's own notes, not a player's line
+        assert.ok(Number(m[1]) >= CHAT_MAX_CHARS, `${f}: ${m[0]}`);
+      }
+    }
+  });
+
   it('the server cuts a line at the same length', { skip: skipWithoutServer }, () => {
     const hub = readFileSync(join(SERVER_DIR, 'hub.go'), 'utf8');
     assert.equal(Number(hub.match(/\tmaxChat\s+= (\d+)/)?.[1]), CHAT_MAX_CHARS);

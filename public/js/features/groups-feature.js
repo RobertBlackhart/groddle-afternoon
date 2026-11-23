@@ -87,7 +87,7 @@ import {
   shownName,
   tabOrder,
   writeMemory,
-} from '../groups.js?v=2e9a714e';
+} from '../groups.js?v=d5a70dca';
 import { appendLinkedText } from '../chat-links.js?v=b717fac7';
 import { lineKey as reactKey } from '../chat-reactions.js?v=38460172';
 import { DELETE_TEXT, deletableChannel, lineLidOf, mayDelete } from '../chat-delete.js?v=c55a1043';
