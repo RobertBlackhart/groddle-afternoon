@@ -34,8 +34,8 @@ export const NEW_UR_SEASON = 'new_ur';
 /** Unnu Slight (Bortola), the street with the stone dragon's head: Glitch's 2011 party street. */
 export const PARTY_STREET = 'GIFUNGIBHQ1243A';
 export const PARTY_STREET_LABEL = 'Unnu Slight';
-/** The dragon's head (heights_face_1 rocks at the street's left end), in street x, for the glow. */
-export const DRAGON_AT = Object.freeze({ x: -1260, y: -300 });
+/** The stone dragon's head (the heights_face_1 rock pile at the street's left end), in world px, for the glow. */
+export const DRAGON_AT = Object.freeze({ x: 240, y: 600 });
 /** New Year's Eve on Ur's clock. */
 export const EVE = Object.freeze({ m: 12, d: 31 });
 /** Austin's pick: the Groddle midnight nearest 1 PM on Ur's clock on December 31 is the big one. */

@@ -52,7 +52,7 @@ import {
   qaClockOffset,
   recordMidnight,
   takeTrip,
-} from '../new-ur.js?v=f47ca80b';
+} from '../new-ur.js?v=3f97edd7';
 
 export const NEW_UR_FEATURE_ID = 'new-ur';
 
@@ -250,7 +250,8 @@ function dressParty(engine) {
   layer.eventMode = 'none';
   // A warm glow on the stone dragon's head (ours: a light on the existing deco, nothing redrawn).
   const glow = new PIXI.Graphics();
-  for (const [r, a] of [[260, 0.07], [190, 0.09], [120, 0.12], [70, 0.14]]) glow.circle(0, 0, r).fill({ color: 0xffb347, alpha: a });
+  // Twenty faint rings, outermost first: a soft falloff with no hard edge.
+  for (let i = 0; i < 20; i += 1) glow.circle(0, 0, 220 - i * 10).fill({ color: 0xffb347, alpha: 0.022 });
   glow.x = DRAGON_AT.x;
   glow.y = DRAGON_AT.y;
   glow.blendMode = 'add';
@@ -367,7 +368,10 @@ export const newUrFeature = {
   init(engine) {
     engineRef = engine;
     exposeQA('groddleNewUr', {
-      state: () => ({ ...createNewUrState(state), moment: moment(engine), clock: clock(), clockKind, party: Boolean(party) }),
+      state: () => {
+        const g = party?.glow && !party.glow.destroyed ? party.glow.getGlobalPosition() : null;
+        return { ...createNewUrState(state), moment: moment(engine), clock: clock(), clockKind, party: Boolean(party), glow: g ? { x: Math.round(g.x), y: Math.round(g.y) } : null, player: engine.player ? { x: Math.round(engine.player.x), y: Math.round(engine.player.y) } : null };
+      },
       goParty: () => goParty(engine),
       /** Move the show's clock so midnight k (1-6) of this eve is leadS seconds away. */
       midnight: (k, leadS = 20) => {

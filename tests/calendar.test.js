@@ -28,7 +28,7 @@ import {
   urHolidaysOn,
   urMidnight,
   urYear,
-} from '../public/js/calendar.js?v=4ea8f051';
+} from '../public/js/calendar.js?v=37ae7009';
 import { GAME_DAY_MS, dametimeParts } from '../public/js/game-day.js?v=a532775d';
 import { RUN_MS, runAt } from '../public/js/feats-mp.js?v=49ed2393';
 import { calendarSeasons, isDametimeZilloween } from '../public/js/seasons.js?v=a46a90d3';

@@ -31,10 +31,10 @@ import {
   qaClockOffset,
   recordMidnight,
   takeTrip,
-} from '../public/js/new-ur.js?v=f47ca80b';
+} from '../public/js/new-ur.js?v=3f97edd7';
 import { GAME_DAY_MS, dametimeParts, getGameDayStartMs } from '../public/js/game-day.js?v=a532775d';
 import { SEASONS, SEASONAL_STOCK, activeSeasons, daysLeft, seasonYearKey } from '../public/js/seasons.js?v=a46a90d3';
-import { calendarEvents, midnightsLine, newUrEve } from '../public/js/calendar.js?v=4ea8f051';
+import { calendarEvents, midnightsLine, newUrEve } from '../public/js/calendar.js?v=37ae7009';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (rel) => readFileSync(join(ROOT, rel), 'utf8');
