@@ -4777,7 +4777,97 @@
     {
       "id": "G1172",
       "area": "Art",
-      "text": "Some large background pictures, such as the hills in Jethimadh, look soft and blocky."
+      "text": "Some large background pictures, such as the hills in Jethimadh, looked soft and blocky.",
+      "show": "fixing",
+      "commits": [
+        "game:3594f91eb2f",
+        "game:5433362d86a",
+        "game:86c31a3be51"
+      ]
+    },
+    {
+      "id": "G1175",
+      "area": "Phones",
+      "text": "On a phone, big picture menus such as the Harvest Table's \"Lay what?\" ran off the side of the screen.",
+      "show": "fixing",
+      "commits": [
+        "game:fe3a74ebe13"
+      ]
+    },
+    {
+      "id": "G1176",
+      "area": "Phones",
+      "text": "On a phone, the furniture row in Decorate would not scroll sideways with a swipe.",
+      "show": "fixing",
+      "commits": [
+        "game:7cef9443586"
+      ]
+    },
+    {
+      "id": "G1177",
+      "area": "Phones",
+      "text": "In the installed iPhone app, a haze from the status bar showed over the top of the game.",
+      "show": "fixing",
+      "commits": [
+        "game:022603dd60f"
+      ]
+    },
+    {
+      "id": "G1178",
+      "area": "Homes",
+      "text": "On a phone, Customize your house covered the whole screen, so you could not see the house while changing it.",
+      "show": "fixing",
+      "commits": [
+        "game:187fca7f563"
+      ]
+    },
+    {
+      "id": "G1179",
+      "area": "Map",
+      "text": "On the Map, streets still being built looked like streets you had not visited yet.",
+      "show": "fixing",
+      "commits": [
+        "game:b8b8bcdf883"
+      ]
+    },
+    {
+      "id": "G1180",
+      "area": "Street projects",
+      "text": "Some street projects asked for Card-Carrying Qualifications that players who already had the badge could not buy.",
+      "show": "fixing",
+      "commits": [
+        "game:9768b2bca8e"
+      ]
+    },
+    {
+      "id": "G1181",
+      "area": "Seasons",
+      "text": "On Pot Luck Day a dressed Chicken could not be dressed again, so a few players could use up a whole region's Chickens.",
+      "show": "fixing",
+      "commits": [
+        "game:79e0059ad4a",
+        "server:f879996"
+      ]
+    },
+    {
+      "id": "G1182",
+      "area": "Streets",
+      "text": "Bonelington Hole's Dirt Pile was far from the cave where it stood, and two streets showed one Peat Bog too few.",
+      "show": "fixing",
+      "commits": [
+        "game:a22e7cb9c23",
+        "server:4e71db5"
+      ]
+    },
+    {
+      "id": "G1173",
+      "area": "Streets",
+      "text": "On Groddle Ladder the crack in the sky shows white instead of the starry night behind it."
+    },
+    {
+      "id": "G1174",
+      "area": "Streets",
+      "text": "In the Egret Taun Towers basement a hard black band shows under the ceiling where a soft shadow belongs."
     }
   ]
 }
