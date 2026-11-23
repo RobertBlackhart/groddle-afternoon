@@ -1114,7 +1114,7 @@ import { installHiresDecos, maxTextureSizeOf } from './js/deco-hires.js?v=34f36d
 import { loadAudioLevels, loadMutedPreference, loadOtherMusic, saveAudioLevel, saveMutedPreference, saveOtherMusic } from './js/audio-pref.js?v=80d433c3';
 import { createAudioBuses, fadeGain } from './js/audio-buses.js?v=af167b54';
 import { applyAudioSession, streetMusicWanted } from './js/other-music.js?v=f58af5e6';
-import { drawHudCount, installTopBar, renderTopBar } from './js/ui/topbar.js?v=11479bf3';
+import { drawHudCount, installTopBar, renderTopBar } from './js/ui/topbar.js?v=62e09ee6';
 import { focusBack, installFocusReturn, lastInput } from './js/ui/focus-return.js?v=da190597';
 import { installContextGuard } from './js/ui/context-guard.js?v=0f71ac17';
 import { QUOIN_FRAME_BOB, advanceQuoinClock, quoinBobBetweenFrames } from './js/quoin-motion.js?v=ea0bd408';
@@ -1126,13 +1126,14 @@ import { flyItemToPack, noteFlown, unflownItems } from './js/pack-flight.js?v=8d
 import { createMusicVoice } from './js/music-voice.js?v=75c8cf57';
 import { contextNeedsResume, createAudioResumer } from './js/audio-resume.js?v=7e1b9661';
 import { bubbleMs } from './js/read-time.js?v=3151fb1a';
-import { mountNotifyView } from './js/notify-view.js?v=04a5ceeb';
-import { mountSocialDrawer } from './js/ui/social-drawer.js?v=d5309803';
+import { mountNotifyView } from './js/notify-view.js?v=0fbfad68';
+import { mountSocialDrawer } from './js/ui/social-drawer.js?v=a41889ed';
+import { installPhonePill, mountPhoneLayout } from './js/ui/phone-layout.js?v=fd03bfa9';
 import { bindChatLinks } from './js/chat-links.js?v=b717fac7';
 import { SIDE_SHEET_IDS, bindTabs, inSideSheet, mountPanelShell, sheetKeyToWorld } from './js/ui/panel-shell.js?v=06a0d3fe';
 import { createQuestSheet, failedQuestPin, questLogNeedsSwap, questStep, visibleRowCount } from './js/ui/quest-sheet.js?v=b612c898';
 import { resolveQuestPins } from './js/features/quest-pins-feature.js?v=0e07d9a1';
-import { createQuestTracker } from './js/ui/quest-tracker.js?v=50410a7c';
+import { createQuestTracker } from './js/ui/quest-tracker.js?v=8ccc1b54';
 import { bindContextTrigger, createContextMenu, isContextMenuKey as isMenuKey, MORE_KEYS_LABEL } from './js/ui/context-menu.js?v=dee0ecde';
 import { bindCountField, countKeyValue, countStepMarkup, createCountChooser, heldPress, typedCount } from './js/ui/count-chooser.js?v=c268eefe';
 import { createScrollKeep } from './js/ui/scroll-keep.js?v=2898b5b1';
@@ -1142,7 +1143,7 @@ import { clientKeyAction, createHotkeysSheet, emoteKeyAction, isHotkeySheetRelea
 import { ENCYCLOPEDIA_MENU_LABEL, createEncyclopedia, isEncyclopediaKey } from './js/encyclopedia-links.js?v=eebc2a5d';
 import { createEncyclopediaSheet, isHomeScreenApp } from './js/ui/encyclopedia-sheet.js?v=987bd24f';
 import { bootStep } from './js/boot-progress.js?v=d84b898d';
-import { HOME_SCREEN_TIP_CACHE, mountHomeScreenTip } from './js/home-screen-tip.js?v=6b9d56e1';
+import { HOME_SCREEN_TIP_CACHE, mountHomeScreenTip, runsStandalone } from './js/home-screen-tip.js?v=f2287991';
 import { EAT_PICK_TEXT, bestFoodIndex, eatChoices, eatTip } from './js/eat-pick.js?v=8fb763d0';
 import { heldDirection, installHeldKeyGuard, isMacPlatform } from './js/held-keys.js?v=a28eb293';
 import { isOneClickDoor, oneClickChoice, signpostArmRows, worldContextAction } from './js/world-context-menu.js?v=e4c99c05';
@@ -1659,6 +1660,58 @@ function syncStreetFront() {
   streetFrontLayer.alpha = bgLayer.alpha;
 }
 
+/**
+ * PHONE LAYOUT (G1194, root R1; Austin 2026-11-23: direction C, Glitch-like compact): on a phone
+ * (Modern) today's layout in fixed regions: the stats and a pill of four fixed icons (Full screen,
+ * Report a problem, Social, the Menu) in one top row, the street's name a caption under the stats,
+ * the pinned quest over the stick, one sheet at a time with the street fitted beside it (an open bag
+ * too), and the notices in their own region (js/ui/phone-layout.js). The sheets keep their own
+ * buttons and closers.
+ */
+function installPhoneLayout() {
+  if (!TOUCH_PHONE || phoneLayout) return;
+  const root = document.getElementById('game-root');
+  const moreList = document.getElementById('more-list');
+  const click = (id) => document.getElementById(id)?.click();
+  const countIn = (el) => (el && !el.hidden ? Number.parseInt(el.textContent, 10) || 0 : 0);
+  // FULL SCREEN (G1194 call 3): the browser's full screen; on an iPhone, the Add to Home Screen tip.
+  const pill = installPhonePill(document, {
+    standalone: runsStandalone(window),
+    showTip: () => mountHomeScreenTip(document, { host: document.body, floating: true, force: true, store: { get: () => readUiCache(HOME_SCREEN_TIP_CACHE), set: (v) => writeUiCache(HOME_SCREEN_TIP_CACHE, v) } }),
+    onSocial: () => socialDrawer?.toggle(),
+  });
+  phoneLayout = mountPhoneLayout({
+    doc: document,
+    root,
+    engine,
+    sheets: {
+      map: { kind: 'map', isOpen: () => isMapOpen(), close: () => closeMap() },
+      quests: { kind: 'half', isOpen: () => Boolean(isQuestOpen()), close: () => closeQuestPanel() },
+      social: { kind: 'half', isOpen: () => Boolean(socialDrawer?.isOpen()), close: () => socialDrawer?.close() },
+      menu: { kind: 'half', isOpen: () => Boolean(moreList && !moreList.hidden), close: () => { if (moreList && !moreList.hidden) click('more-btn'); } },
+    },
+    // A side sheet opened from the Menu (Skills, Make, Badges...) takes the same room.
+    others: () => {
+      const id = panelShell?.open() || '';
+      return id && id !== 'quest-panel' && document.getElementById(id)?.classList.contains('side-panel') ? [{ id, close: () => panelShell.closeOpen() }] : [];
+    },
+    setData: setCanvasData,
+    active: () => modernUi(),
+    onFrame: () => {
+      pill?.setBadge(socialDrawer ? socialDrawer.tabs.reduce((n, id) => n + (socialDrawer.unread(id) || 0), 0) : 0);
+      // C4: the Menu's Quests row carries the new quests' count, as the bar's Quests button did.
+      const n = countIn(document.querySelector('#quest-btn .quest-btn-count'));
+      const row = document.getElementById('menu-quest-btn');
+      if (row && (row.dataset.count || '') !== (n ? String(n) : '')) {
+        if (n) row.dataset.count = String(n);
+        else delete row.dataset.count;
+      }
+    },
+  });
+  // Leaving Modern (Classic keeps its own phone look) gives the street its whole room back.
+  onUiModeChange(() => phoneLayout?.layout());
+}
+
 /** The top bar's Menu: the less-used panels, closed by a pick, Esc or a click away. */
 function installMoreMenu() {
   const btn = document.getElementById('more-btn');
@@ -2129,6 +2182,20 @@ let dockCanvasSize = null;
  * its viewport beside the house's Customize window (ChassisManager.as scaleVP).
  */
 let stageDock = null;
+/**
+ * PHONE LAYOUT (G1194, R1): who asked for a dock (engine.setStageDock's `owner`): the house picker
+ * ('window', G1178) and the phone's sheets, Social drawer and open bag ('phone', js/ui/phone-layout.js).
+ * The street fits beside the one that takes the most room (stageDockOf).
+ */
+const stageDocks = new Map();
+/** PHONE LAYOUT (G1194, R1): the phone's regions and their layout pass (js/ui/phone-layout.js), mounted with the HUD; null elsewhere. */
+let phoneLayout = null;
+/** The dock that wins: the largest; a dock with `zoom` keeps the phone's pinch level (a sheet, an open bag). */
+function stageDockOf(docks) {
+  let best = null;
+  for (const d of docks.values()) if (d && (!best || d.css > best.css)) best = d;
+  return best;
+}
 function activeStageDock() {
   return TOUCH_PHONE && PINNED_VIEW_H <= 0 && stageDock ? stageDock : null;
 }
@@ -2176,7 +2243,7 @@ function stageArgs() {
     // TOUCH PORTRAIT: an upright phone fits the scene's height to the screen (location-view phoneStage).
     phone: TOUCH_PHONE,
     // PHONE ZOOM: its own close-up level on top (a pinch; Modern only: Classic's frame keeps its own rule).
-    closeup: dock ? 0 : phoneCloseup(),
+    closeup: dock && !dock.zoom ? 0 : phoneCloseup(),
     // HOUSE FIT (G796): a home street asks for a view that holds its whole house (features/homes-feature.js).
     fitViewH: bgLayer?.fitViewH,
     // GROUND LINE (G1146): an upright phone fits the street down to its ground art's end, not past its bottom.
@@ -3405,6 +3472,8 @@ const notifyView = mountNotifyView(notify, {
   sideInsetLeft: () => panelShell?.insetLeft() || 0,
   // LANDSCAPE: on a short screen the notices step beside the avatar instead of over it.
   avatarBox: () => (state.started ? avatarOnRoot()?.box || null : null),
+  // PHONE LAYOUT (G1194, R1): on a phone the notices keep to their region (js/ui/phone-layout.js).
+  region: () => phoneLayout?.noticeRegion() || null,
 });
 /**
  * SOCIAL (phase 2, js/ui/social-drawer.js): the right-hand drawer is #local-chat-dock in the modern
@@ -3482,6 +3551,7 @@ function tickNotices() {
   keepOfferCardClear();
   socialDrawer?.frame();
   oneSheetOrDrawer();
+  phoneLayout?.frame();
   followDrawerInset();
 }
 
@@ -14327,12 +14397,17 @@ const engine = {
   /**
    * G1178 (#625): dock a window on a phone ({ side: 'bottom' | 'left', css }) so the street fits the
    * room it leaves, or null to give the street the whole screen back. Computers ignore it.
+   * PHONE LAYOUT (G1194, R1): `owner` names who docks ('window' the house picker, 'phone' the sheets,
+   * the Social drawer and an open bag); the largest dock wins (stageDockOf). `zoom: true` keeps the pinch level.
    */
-  setStageDock(dock = null) {
-    const next = dock && (dock.side === 'bottom' || dock.side === 'left') && Number(dock.css) > 0
-      ? { side: dock.side, css: Math.round(Number(dock.css)) }
+  setStageDock(dock = null, owner = 'window') {
+    const ask = dock && (dock.side === 'bottom' || dock.side === 'left') && Number(dock.css) > 0
+      ? { side: dock.side, css: Math.round(Number(dock.css)), ...(dock.zoom ? { zoom: true } : {}) }
       : null;
-    if ((next?.side || '') === (stageDock?.side || '') && (next?.css || 0) === (stageDock?.css || 0)) return false;
+    if (ask) stageDocks.set(String(owner), ask);
+    else stageDocks.delete(String(owner));
+    const next = stageDockOf(stageDocks);
+    if ((next?.side || '') === (stageDock?.side || '') && (next?.css || 0) === (stageDock?.css || 0) && Boolean(next?.zoom) === Boolean(stageDock?.zoom)) return false;
     stageDock = next;
     if (!TOUCH_PHONE) return false;
     window.dispatchEvent(new Event('resize'));
@@ -36289,6 +36364,7 @@ async function main() {
     onPlayerCard: () => document.getElementById('player-menu-btn')?.click(),
   });
   packRow.install();
+  installPhoneLayout();
   installInterfaceSettings({ engine, avatarPortrait: ownerPortraitUrl });
   document.querySelector('.top-actions')?.addEventListener('click', () => {
     if (currentAction) cancelCurrentAction({ quiet: true });

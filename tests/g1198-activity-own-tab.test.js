@@ -6,7 +6,7 @@
  */
 import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
-import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=d5309803';
+import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=a41889ed';
 import { createNotifier } from '../public/js/notify.js?v=4226f585';
 import { memoryStore, page } from './social-fake-dom.js';
 

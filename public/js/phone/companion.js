@@ -97,7 +97,7 @@ function mountPlay(host) {
   host.append(play);
   // G807: the Add to Home Screen tip, loaded only on an iPhone or iPad (the page's size budget).
   if (mayShowHomeScreenTip()) {
-    import('../home-screen-tip.js?v=6b9d56e1').then(({ HOME_SCREEN_TIP_KEY, mountHomeScreenTip }) => {
+    import('../home-screen-tip.js?v=f2287991').then(({ HOME_SCREEN_TIP_KEY, mountHomeScreenTip }) => {
       const store = { get: () => localStorage.getItem(HOME_SCREEN_TIP_KEY), set: (v) => localStorage.setItem(HOME_SCREEN_TIP_KEY, v) };
       mountHomeScreenTip(doc, { host: play, store });
     }).catch(() => {});

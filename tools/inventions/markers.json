@@ -1266,6 +1266,9 @@
   "public/js/ui/name-prompt.js": {
     "ours: * optional small line under the input (ours; the bag Rename's blank rule,": "ours-name-prompt"
   },
+  "public/js/ui/phone-layout.js": {
+    "glitch-had-none: only watches them. A new idea, not Glitch's: Glitch had no": "phone-compact-layout"
+  },
   "public/js/ui/picture-marks.js": {
     "glitch-had-none: * mark the problem on a report's picture. Glitch had nothing like it: its bug form": "report-picture-rings",
     "invented: * registered in tools/inventions/inventions.json": "report-picture-rings",

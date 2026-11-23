@@ -371,7 +371,7 @@ function safeSides(el) {
   }
 }
 
-export function mountNotifyView(notifier, { root, setData = () => {}, logButtonHost = null, activityLog = true, sideInset = () => null, sideInsetLeft = () => 0, avatarBox = () => null } = {}) {
+export function mountNotifyView(notifier, { root, setData = () => {}, logButtonHost = null, activityLog = true, sideInset = () => null, sideInsetLeft = () => 0, avatarBox = () => null, region = () => null } = {}) {
   if (typeof document === 'undefined' || !root) return null;
   const stack = document.createElement('div');
   stack.id = STACK_ID;
@@ -509,6 +509,25 @@ export function mountNotifyView(notifier, { root, setData = () => {}, logButtonH
       insetL: Math.max(0, Number(side?.left) || 0, Number((() => { try { return sideInsetLeft(); } catch { return 0; } })()) || 0),
       insetR: Math.max(0, Number(side?.right) || 0),
     };
+    // PHONE LAYOUT (G1194, R1; js/ui/phone-layout.js): the phone's notice region, under the caption and over
+    // the controls or the open sheet. The stack keeps inside it and waits when it has no room there.
+    let r = null;
+    try {
+      r = region();
+    } catch {
+      r = null;
+    }
+    if (r) {
+      const bottom = Math.round(r.bottom - rr.top);
+      Object.assign(zones, {
+        top: Math.round(r.top - rr.top),
+        maxBottom: bottom,
+        floorBottom: bottom,
+        insetL: Math.max(0, Math.round(r.left - rr.left - 8)),
+        insetR: Math.max(0, Math.round(rr.right - r.right - 8)),
+        region: true,
+      });
+    }
   }
 
   /**
@@ -612,6 +631,8 @@ export function mountNotifyView(notifier, { root, setData = () => {}, logButtonH
         }
       }
     }
+    // PHONE LAYOUT: a stack that runs past the bottom of its region waits (placeBelow only waits after a move).
+    if (zones.region && !place.wait && zones.top + place.dy + (rect === centred ? ch : rect.bottom - rect.top) > zones.maxBottom) place = { dy: 0, wait: true };
     setBeside(band || (rect === centred ? null : side));
     besideHold = rect === centred || band ? null : side;
     const top = Math.round(zones.top + place.dy);

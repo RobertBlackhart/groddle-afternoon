@@ -8,7 +8,7 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { HOME_SCREEN_TEXT, HOME_SCREEN_TIP_CACHE, HOME_SCREEN_TIP_KEY, dismissTip, homeScreenTipDue, iosSafari, mountHomeScreenTip, runsStandalone, tipDismissed } from '../public/js/home-screen-tip.js?v=6b9d56e1';
+import { HOME_SCREEN_TEXT, HOME_SCREEN_TIP_CACHE, HOME_SCREEN_TIP_KEY, dismissTip, homeScreenTipDue, iosSafari, mountHomeScreenTip, runsStandalone, tipDismissed } from '../public/js/home-screen-tip.js?v=f2287991';
 import { FakeEl } from './fake-scene.js';
 
 const root = join(import.meta.dirname, '..');

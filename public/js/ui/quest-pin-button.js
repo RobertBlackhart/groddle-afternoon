@@ -33,6 +33,8 @@ const clamp01 = (n) => Math.max(0, Math.min(1, Number(n) || 0));
 /** PURE: the phone bar test (js/ui/topbar.js phoneBar). */
 export function phonePins(doc) {
   const root = doc?.documentElement;
+  // PHONE LAYOUT (G1194, direction C): the card itself sits over the stick (js/ui/phone-layout.js), no button.
+  if (root?.classList?.contains?.('phone-layout')) return false;
   return Boolean(root?.classList?.contains?.('touch-phone') && root.dataset?.ui === 'modern');
 }
 

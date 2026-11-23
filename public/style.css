@@ -15446,3 +15446,103 @@ body.is-booting .touch-controls { display: none; }
 :root.touch-phone #save-trouble { grid-template-columns: 1fr; top: calc(2 * var(--hud-h) + var(--space-2)); }
 :root.touch-phone #save-trouble .save-trouble-btn { grid-column: 1; grid-row: auto; justify-self: start; }
 /* end SAVES */
+
+/* === PHONE LAYOUT (G1194, root R1; Austin 2026-11-23: direction C, Glitch-like compact) === */
+/* js/ui/phone-layout.js lays the phone's HUD out in named regions (html.phone-layout, Modern, phones
+   only): one top row (the stats, and a pill of four fixed icons), the street's name as a caption
+   under the stats, the notices in their own region, the pinned quest over the stick, and one sheet
+   at a time in the room the layout pass gives it (--pr-sheet-*), the street fitted beside it.
+   Classic, computers and tablets never get the class. */
+/* The pill: Full screen, Report a problem, Social and the Menu, always these four and nothing else
+   (anything new goes into the Menu). The tutorial's own pill (nx-hide-actions: Sound alone) stays. */
+:root.phone-layout[data-ui="modern"] body:not(.nx-hide-actions) .top-bar .top-actions > :not(#fullscreen-btn, #bug-btn, #social-btn, .more-menu) { display: none !important; }
+:root.phone-layout[data-ui="modern"] .top-bar .top-actions { flex: none; gap: 0; padding: 0 var(--space-1); }
+/* !important: the phone's pill rules order Report a problem and the Menu by id (G919); the Menu's box is display: contents. */
+:root.phone-layout[data-ui="modern"] .top-bar .top-actions #fullscreen-btn { order: 1 !important; }
+:root.phone-layout[data-ui="modern"] .top-bar .top-actions #bug-btn { order: 2 !important; }
+:root.phone-layout[data-ui="modern"] .top-bar .top-actions #social-btn { order: 3 !important; }
+:root.phone-layout[data-ui="modern"] .top-bar .top-actions :is(.more-menu, #more-btn) { order: 4 !important; }
+:root.phone-layout[data-ui="modern"] .top-bar .top-actions :is(#fullscreen-btn, #bug-btn, #social-btn, #more-btn) {
+  display: inline-grid !important; place-items: center; flex: none !important; width: var(--hit) !important; min-width: 0 !important; height: var(--slot); padding: 0; position: relative;
+}
+.phone-pill-btn { display: none; }
+:root.phone-layout[data-ui="modern"] .top-bar .phone-pill-btn svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+:root.phone-layout[data-ui="modern"] .top-bar #fullscreen-btn:disabled { opacity: 0.4; }
+:root.phone-layout[data-ui="modern"] .top-bar #social-btn .phone-pill-badge { top: 0; right: -4px; }
+:root.phone-layout[data-ui="modern"] .top-bar #social-btn .phone-pill-badge[hidden] { display: none; }
+/* The Menu's Quests row (Quests left the pill) carries the new quests' count. */
+:root.phone-layout[data-ui="modern"] #menu-quest-btn[data-count]::after { content: "· " attr(data-count); margin-left: var(--space-1); color: var(--accent); }
+/* The Social rail goes; the drawer opens from the pill. */
+:root.phone-layout[data-ui="modern"] #local-chat-dock.social-drawer:not(.is-open) { display: none !important; }
+
+/* The caption: the street's name and the clock in plain words under the stats (between the pills
+   sideways, where topbar.js finds room; under them when it has none), the street map's button on it. */
+:root.phone-layout[data-ui="modern"] #game-root #street-nameplate {
+  top: calc(var(--safe-t) + var(--space-1) + var(--hud-h) + var(--sp-1)); left: calc(var(--safe-l) + var(--hud-inset)); transform: none;
+  height: 26px; max-width: calc(100% - 2 * var(--hud-inset) - var(--safe-l) - var(--safe-r));
+  padding: 0 var(--space-1); gap: var(--space-1); background: none; border: 0; box-shadow: none;
+  color: var(--c-white); font-size: var(--fs-s); text-shadow: 0 1px 3px color-mix(in srgb, var(--c-black) 75%, transparent);
+}
+:root.phone-layout[data-ui="modern"] #game-root #street-nameplate :is(#street-name, .street-name-street, #dametime-clock, .street-time-divider) { color: inherit; font-size: inherit; }
+:root.phone-layout[data-ui="modern"] #game-root #street-nameplate #street-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+:root.phone-layout[data-ui="modern"] #game-root #street-nameplate :is(.season-chip, .street-name-hub) { display: none; }
+:root.phone-layout[data-ui="modern"] #game-root #street-nameplate > .smm-phone-btn:not([hidden]) { color: inherit; background: none; box-shadow: none; filter: drop-shadow(0 1px 2px color-mix(in srgb, var(--c-black) 60%, transparent)); }
+@media (orientation: landscape) {
+  :root.phone-layout[data-ui="modern"] #game-root #street-nameplate.is-placed:not(.is-under) {
+    top: calc(var(--safe-t) + var(--space-1) + (var(--hud-h) - 26px) / 2); left: var(--plate-x); max-width: var(--plate-room);
+  }
+}
+
+/* The notices' region (js/notify-view.js keeps the stack in it); the Add to Home Screen tip starts there too. */
+:root.phone-layout .hs-tip.is-floating { top: var(--pr-notice-t, calc(env(safe-area-inset-top, 0px) + 64px)); }
+
+/* The pinned quest: the first one, small, over the stick (beside it sideways); a tap opens it in Quests. */
+:root.phone-layout[data-ui="modern"] #game-root #quest-pins:not([hidden]) {
+  top: auto; left: var(--pr-pin-l, var(--hud-inset)); bottom: var(--pr-pin-b, 220px);
+  width: auto; max-width: 200px; padding: var(--space-1);
+}
+:root.phone-layout[data-ui="modern"] #game-root #quest-pins:not(.collapsed) .quest-pins-head,
+:root.phone-layout[data-ui="modern"] #game-root #quest-pins .quest-pins-toggle,
+:root.phone-layout[data-ui="modern"] #game-root #quest-pins .tq:not(:first-child),
+:root.phone-layout[data-ui="modern"] #game-root #quest-pins .tq-req:not(:first-child),
+:root.phone-layout[data-ui="modern"] #game-root #quest-pins :is(.tq-foot, .tq-bar, .tq-req-bar) { display: none; }
+:root.phone-layout[data-ui="modern"] #game-root #quest-pins .tq { min-height: 0; padding: var(--space-1) var(--space-2); }
+:root.phone-layout[data-ui="modern"] #game-root #quest-pins .tq-step { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+/* Docked beside a sheet or a bag (engine.setStageDock), the room the canvas leaves is the dark band (G880). */
+:root.phone-layout[data-ui="modern"] #game-root[data-stage-docked] { background-color: var(--c-grey-29); }
+/* A sheet or an open bag covers the street's floor: the controls and the pinned quest wait. */
+:root.phone-layout[data-ui="modern"]:is([data-phone-sheet="map"], [data-phone-sheet="half"], [data-phone-sheet="bag"]) #game-root :is(.touch-controls, #quest-pins) { visibility: hidden; }
+
+/* The sheets: Quests, the side sheets from the Menu, Social and the Menu itself, in the room the
+   layout pass gives them (above the pack row upright, a column at the left sideways). */
+:root.phone-layout[data-ui="modern"][data-phone-sheet="half"] #game-root :is(.side-panel, #local-chat-dock.is-open):not([hidden]),
+:root.phone-layout[data-ui="modern"][data-phone-sheet="half"] .top-bar #more-list:not([hidden]) {
+  position: fixed !important; top: var(--pr-sheet-t) !important; left: var(--pr-sheet-l) !important; right: auto !important; bottom: auto !important;
+  width: var(--pr-sheet-w) !important; height: var(--pr-sheet-h) !important; max-width: none !important; max-height: none !important;
+  margin: 0 !important; transform: none !important; box-sizing: border-box;
+}
+:root.phone-layout[data-ui="modern"][data-phone-sheet="half"] #game-root .side-panel:not([hidden]) > .side-card { height: 100%; max-height: none; box-sizing: border-box; }
+:root.phone-layout[data-ui="modern"][data-phone-sheet="half"] .top-bar #more-list:not([hidden]) { overflow-y: auto; }
+
+/* The Map: the whole height under the top row upright; sideways the whole screen, its head floating over the map. */
+:root.phone-layout[data-ui="modern"] #map-panel:not([hidden]) { position: fixed; inset: 0; bottom: 0; padding: 0; z-index: calc(var(--z-panel) + 11); }
+:root.phone-layout[data-ui="modern"] #map-panel .map-card.map-hub {
+  position: absolute; top: var(--pr-sheet-t); left: calc(var(--sp-2) + var(--safe-l)); right: calc(var(--sp-2) + var(--safe-r)); bottom: calc(var(--sp-2) + var(--safe-b));
+  width: auto !important; max-width: none !important; max-height: none !important; margin: 0;
+  display: flex; flex-direction: column; overflow: hidden;
+}
+:root.phone-layout[data-ui="modern"] #map-panel .map-card.map-hub > .map-canvas { flex: 1 1 auto !important; width: auto !important; height: auto !important; min-height: 0; align-self: stretch !important; }
+:root.phone-layout[data-ui="modern"] #map-panel .map-card.map-hub > :is(.map-sub, .map-hint) { display: none; }
+@media (orientation: landscape) {
+  :root.phone-layout[data-ui="modern"] #map-panel .map-card.map-hub { top: calc(var(--sp-2) + var(--safe-t)); padding: var(--sp-2); }
+  :root.phone-layout[data-ui="modern"] #map-panel .map-card.map-hub > .map-head {
+    position: absolute; top: var(--sp-4); left: var(--sp-4); right: var(--sp-4); z-index: var(--z-raised);
+    padding: var(--sp-2) var(--sp-4); border-radius: var(--radius-xl); background: color-mix(in srgb, var(--surface-card) 92%, transparent); box-shadow: var(--shadow-2);
+  }
+  /* The Shortcuts and route row floats under the head, over the map's top. */
+  :root.phone-layout[data-ui="modern"] #map-panel .map-card.map-hub > .map-bar {
+    position: absolute; top: calc(var(--sp-4) + var(--slot) + var(--sp-6)); left: var(--sp-4); right: var(--sp-4); z-index: var(--z-raised); margin: 0;
+  }
+}
+/* === end PHONE LAYOUT === */

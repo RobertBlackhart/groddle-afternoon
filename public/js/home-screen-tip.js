@@ -75,9 +75,9 @@ export function dismissTip(store) {
  * The tip, made and placed when it is due; null otherwise. `floating` puts it over the game, under
  * the top bar; without it, it goes at the end of `host` (the phone page's Play card).
  * @param {Document} doc
- * @param {{ host?: Element, floating?: boolean, win?: Window, store?: { get: () => any, set: (v: string) => void } }} o
+ * @param {{ host?: Element, floating?: boolean, win?: Window, store?: { get: () => any, set: (v: string) => void }, force?: boolean }} o
  */
-export function mountHomeScreenTip(doc, { host = doc?.body, floating = false, win = globalThis.window, store = null } = {}) {
+export function mountHomeScreenTip(doc, { host = doc?.body, floating = false, win = globalThis.window, store = null, force = false } = {}) {
   if (!doc || !host) return null;
   const storage = store;
   let qa = '';
@@ -86,7 +86,9 @@ export function mountHomeScreenTip(doc, { host = doc?.body, floating = false, wi
   } catch {
     qa = '';
   }
-  if (!homeScreenTipDue({ nav: win?.navigator || {}, standalone: runsStandalone(win), dismissed: tipDismissed(storage), qa })) return null;
+  // PHONE LAYOUT (G1194): `force` shows it when asked for (the pill's Full screen on an iPhone, where
+  // Safari has no full screen for a page), even after it was closed.
+  if (!force && !homeScreenTipDue({ nav: win?.navigator || {}, standalone: runsStandalone(win), dismissed: tipDismissed(storage), qa })) return null;
   if (doc.getElementById?.('home-screen-tip')) return doc.getElementById('home-screen-tip');
   const tip = doc.createElement('aside');
   tip.id = 'home-screen-tip';

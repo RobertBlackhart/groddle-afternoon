@@ -5617,6 +5617,28 @@
    "rows": [
     "G1213"
    ]
+  },
+  {
+   "id": "phone-compact-layout",
+   "title": "The phone HUD in fixed regions: one top row with a four-icon pill (Full screen, Report a problem, Social, Menu), the street name as a caption, the pinned quest over the stick, one sheet at a time with the street fitted beside it (Glitch had no phone layout)",
+   "kind": "UI",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/ui/phone-layout.js"
+    },
+    {
+     "file": "public/style.css"
+    },
+    {
+     "file": "public/game.js"
+    }
+   ],
+   "why": "R1: every phone HUD piece placed itself against a few neighbours and they overlapped; Glitch only ran on computers.",
+   "ruling": "Austin 2026-11-23 (G1194, root R1): direction C, Glitch-like compact, on the shared region model",
+   "rows": [
+    "G1194"
+   ]
   }
  ]
 }

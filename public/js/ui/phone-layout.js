@@ -1,0 +1,456 @@
+/**
+ * PHONE LAYOUT (G1194, root R1; Austin 2026-11-23: direction C, Glitch-like compact): the phone's
+ * HUD as named screen regions, and one layout pass that puts every piece in its region, instead of
+ * each piece placing itself against a few neighbours (the cause behind R1's overlaps: notices on the
+ * street pill, the actions pill growing into the stats, sheets over the HUD and the controls, an
+ * open bag over the avatar).
+ *
+ * Today's layout stays (Glitch's: stats top left, the pack row along the bottom, the stick, Act and
+ * Jump), in fixed regions (phoneRegions, pure):
+ * - strip: one top row: the stats pill at the left, and at the right a pill of four fixed icons:
+ *   Full screen, Report a problem, Social (with its badge) and the Menu (installPhonePill). The pill
+ *   never grows: Quests, Sound, Make and the rest are rows of the Menu, and so is anything new;
+ * - caption: the street's name as a plain caption under the stats (between the pills sideways),
+ *   with the street map's button on it, instead of a second row of pill;
+ * - notices: the top-centre stack under the caption, down to the controls, the pinned quest or the
+ *   open sheet; notices, tips and toasts go here and never land on the strip (js/notify-view.js
+ *   `region`);
+ * - pin: the first pinned quest, a small card bottom left over the stick (#595, Friendly's idea),
+ *   beside the stick sideways, clear of its ring;
+ * - stick, act, jump: the touch controls, on the pack row;
+ * - pack: the pack row (measured where js/ui/pack-row.js centres it);
+ * - sheet: the room one open sheet takes. The Map takes the whole height (sideways the whole
+ *   screen, its header floating over it); Quests, Social, the Menu and the other side sheets dock
+ *   above the pack row upright and in a column at the left sideways; an open bag's tray is a sheet
+ *   too. Only one is open at a time: one that opens closes the others.
+ *
+ * While a sheet or an open bag covers the bottom of the street, the street fits the room it leaves
+ * (engine.setStageDock, generalised from the house picker, G1178), so the avatar stays in view.
+ *
+ * Phones only (html.touch-phone), Modern only: the Classic interface keeps its own phone look, and
+ * computers and tablets never mount this. The sheets keep their own buttons, closers and ids (every
+ * QA hook keeps working); this module only watches them. A new idea, not Glitch's: Glitch had no
+ * phone layout.
+ *
+ * QA: html.phone-layout, data-phone-sheet (map | half | bag | ""), canvas data phoneRegions (the
+ * regions as JSON) and phoneDock.
+ */
+
+/** Region sizes in CSS px: the strip's height (the HUD pills'), the caption's. */
+export const STRIP_H = 44;
+export const CAPTION_H = 26;
+/** The gap between regions, and the edge inset. */
+export const GAP = 6;
+export const EDGE = 8;
+/** An upright half sheet takes this share of the room between the caption and the pack row. */
+export const HALF_SHARE = 0.6;
+/** A sideways column's width, leaving the street at least STREET_MIN_W beside it. */
+export const COLUMN_W = 360;
+export const STREET_MIN_W = 240;
+/** The touch controls (style.css TOUCH): the stick's box, Jump and Act, and their insets. */
+export const STICK = 132;
+export const JUMP = 76;
+export const ACT = 60;
+/** The pack row's band when it cannot be measured, and the pinned quest card's widest. */
+export const PACK_H = 72;
+export const PIN_W = 200;
+
+/** The four icons of the pill, in order (installPhonePill); nothing else shows on it. */
+export const PILL_IDS = Object.freeze(['fullscreen-btn', 'bug-btn', 'social-btn', 'more-btn']);
+
+const box = (left, top, right, bottom) => ({ left: Math.round(left), top: Math.round(top), right: Math.round(right), bottom: Math.round(bottom) });
+const num = (v, d = 0) => (Number.isFinite(Number(v)) ? Number(v) : d);
+
+/**
+ * PURE: the phone's regions for a window `width` x `height` (CSS px). `safe` the safe-area insets;
+ * `sheet` the open sheet ('' | 'map' | 'half' | 'bag'); `pack` the pack row's box (null: the
+ * fallback band, centred; `packShown: false` none, the tutorial's); `bagTop` the open bag tray's
+ * top; `caption` and `pin` the measured { w, h } of the street's caption and the pinned quest card
+ * (pin null when nothing is pinned); `captionUnder` whether the caption sits under the strip (upright,
+ * and sideways when the pills leave it no room: topbar.js .is-under). Returns { upright, strip, caption, notices, pin, stick, act,
+ * jump, pack, sheet, dock } (boxes { left, top, right, bottom }, null where a piece has no room or
+ * is covered; dock is what engine.setStageDock takes).
+ */
+export function phoneRegions({ width, height, safe = {}, sheet = '', pack = null, packShown = true, bagTop = NaN, caption = null, captionUnder = null, pin = null } = {}) {
+  const W = Math.max(0, num(width));
+  const H = Math.max(0, num(height));
+  const st = Math.max(0, num(safe.t));
+  const sr = Math.max(0, num(safe.r));
+  const sb = Math.max(0, num(safe.b));
+  const sl = Math.max(0, num(safe.l));
+  const upright = H > W;
+  const kind = ['map', 'half', 'bag'].includes(sheet) ? sheet : '';
+  const strip = box(sl + EDGE, st + 4, W - sr - EDGE, st + 4 + STRIP_H);
+  let packBox = null;
+  if (packShown) {
+    packBox = pack && pack.bottom > pack.top
+      ? box(pack.left, pack.top, pack.right, pack.bottom)
+      : box(Math.max(sl + EDGE, W / 2 - 180), H - sb - PACK_H, Math.min(W - sr - EDGE, W / 2 + 180), H - sb);
+  }
+  const floor = packBox ? packBox.top : H - sb;
+  // The caption: under the stats upright, centred between the pills sideways (in the strip's row).
+  const capW = Math.min(Math.max(0, num(caption?.w, 160)), W - sl - sr - 2 * EDGE);
+  const capH = Math.max(0, num(caption?.h, CAPTION_H)) || CAPTION_H;
+  const capUnder = captionUnder == null ? upright : Boolean(captionUnder);
+  let captionBox = capUnder
+    ? box(strip.left, strip.bottom + 2, strip.left + capW, strip.bottom + 2 + capH)
+    : box(W / 2 - capW / 2, strip.top + (STRIP_H - capH) / 2, W / 2 + capW / 2, strip.top + (STRIP_H + capH) / 2);
+  const under = capUnder ? captionBox.bottom : strip.bottom;
+
+  // The controls stand on the pack row; Act a little higher, beside Jump (style.css TOUCH, #327).
+  const base = floor - 4;
+  let stick = box(sl + EDGE, base - STICK, sl + EDGE + STICK, base);
+  let jump = box(W - sr - 12 - JUMP, base - 12 - JUMP, W - sr - 12, base - 12);
+  let act = box(jump.left - 10 - ACT, base - 12 - 44 - ACT, jump.left - 10, base - 12 - 44);
+
+  // The pinned quest: over the stick upright; beside it sideways, clear of its ring.
+  let pinBox = null;
+  if (pin && num(pin.h) > 0) {
+    const pw = Math.min(PIN_W, Math.max(0, num(pin.w, PIN_W)));
+    const ph = num(pin.h);
+    pinBox = upright
+      ? box(stick.left, stick.top - GAP - ph, stick.left + pw, stick.top - GAP)
+      : box(stick.right + GAP, base - ph, stick.right + GAP + pw, base);
+    if (!upright && pinBox.right > act.left - GAP) pinBox = null;
+  }
+
+  let sheetBox = null;
+  if (kind === 'map') sheetBox = upright ? box(0, strip.bottom + GAP, W, H) : box(0, 0, W, H);
+  else if (kind === 'half') {
+    if (upright) sheetBox = box(0, floor - GAP - Math.round((floor - GAP - under - GAP) * HALF_SHARE), W, floor - GAP);
+    else sheetBox = box(0, strip.bottom + GAP, sl + Math.max(0, Math.min(COLUMN_W, W - sl - STREET_MIN_W)), floor - GAP);
+  } else if (kind === 'bag' && Number.isFinite(Number(bagTop))) sheetBox = box(0, Number(bagTop), W, floor);
+  const covered = kind !== '';
+  if (covered) {
+    stick = null;
+    act = null;
+    jump = null;
+    pinBox = null;
+  }
+  // The Map covers the caption (and, sideways, the strip and the pack row: the whole screen).
+  let stripBox = strip;
+  if (kind === 'map') {
+    captionBox = null;
+    if (!upright) {
+      stripBox = null;
+      packBox = null;
+    } else packBox = null;
+  }
+
+  // The notices: under the caption, over whatever stands lowest above the street's floor. The Map
+  // leaves them no room (they wait, js/notify-view.js, until it closes).
+  const left = (!upright && kind === 'half' ? sheetBox.right : sl) + EDGE;
+  const top = under + GAP;
+  let bottom = floor - GAP;
+  if (kind === 'map') bottom = top;
+  else if (kind === 'half' && upright) bottom = sheetBox.top - GAP;
+  else if (kind === 'bag' && sheetBox) bottom = sheetBox.top - GAP;
+  else {
+    for (const b of [stick, act, jump, pinBox]) if (b) bottom = Math.min(bottom, b.top - GAP);
+  }
+  const notices = box(left, top, W - sr - EDGE, Math.max(top, bottom));
+
+  // The street fits the room the open sheet or bag leaves (G1178's dock), keeping the pinch level.
+  let dock = null;
+  if (sheetBox && kind !== 'map') {
+    dock = upright || kind === 'bag'
+      ? { side: 'bottom', css: H - sheetBox.top, zoom: true }
+      : { side: 'left', css: sheetBox.right, zoom: true };
+  }
+  return { upright, strip: stripBox, caption: captionBox, notices, pin: pinBox, stick, act, jump, pack: packBox, sheet: sheetBox, dock };
+}
+
+/** PURE: true when two boxes share any area. */
+export function boxesOverlap(a, b) {
+  return Boolean(a && b && a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top);
+}
+
+/** The pieces the layout keeps apart. */
+export const REGION_NAMES = Object.freeze(['strip', 'caption', 'notices', 'pin', 'stick', 'act', 'jump', 'pack', 'sheet']);
+
+/**
+ * PURE: what is wrong with a layout: every pair of named boxes that overlap and any box off the
+ * window. `boxes` maps names to boxes (phoneRegions, or rects measured in the page); `allow` lists
+ * pairs that may share room (sideways the caption stands in the strip's row, between its pills,
+ * which phoneRegions does not measure). Empty when good (tests/phone-layout.test.js, at three sizes in every sheet state).
+ */
+export function layoutProblems(boxes, { width, height, allow = [] } = {}) {
+  const allowed = (a, b) => allow.some(([x, y]) => (x === a && y === b) || (x === b && y === a));
+  const named = Object.entries(boxes || {}).filter(([, r]) => r && typeof r === 'object' && Number.isFinite(r.left) && r.right > r.left && r.bottom > r.top);
+  const out = [];
+  for (let i = 0; i < named.length; i++) {
+    const [n, r] = named[i];
+    if (r.left < -0.5 || r.top < -0.5 || r.right > width + 0.5 || r.bottom > height + 0.5) out.push(`${n} off the window`);
+    for (let j = i + 1; j < named.length; j++) if (boxesOverlap(r, named[j][1]) && !allowed(n, named[j][0])) out.push(`${n} overlaps ${named[j][0]}`);
+  }
+  return out;
+}
+
+/** PURE: a badge's words (up to 99, then 99+), '' for none. */
+export function pillBadge(n) {
+  const v = Math.floor(num(n));
+  if (!(v > 0)) return '';
+  return v > 99 ? '99+' : String(v);
+}
+
+/** The pill's words (FULL SCREEN, G1194 call 3). */
+export const PILL_TEXT = Object.freeze({ full: 'Full screen', leave: 'Leave full screen', social: 'Social' });
+
+/**
+ * PURE: how Full screen works here: 'hide' when the game already runs as a Home Screen app, 'api'
+ * where the browser has full screen for a page, 'tip' where it has none (iPhone Safari: the Add to
+ * Home Screen tip instead, js/home-screen-tip.js).
+ */
+export function fullScreenWay({ standalone = false, canRequest = false } = {}) {
+  if (standalone) return 'hide';
+  return canRequest ? 'api' : 'tip';
+}
+
+const ICONS = {
+  full: '<path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/>',
+  leave: '<path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/>',
+  social: '<path d="M4 5h16v11H9l-5 4z"/>',
+};
+
+/**
+ * The pill's own two icons (Full screen and Social), put in the actions pill before the Menu; the
+ * page's Report a problem (features/bug-report-feature.js) and Menu make the four. style.css
+ * (PHONE LAYOUT) shows only these four there. Returns { full, social, setBadge(n) }.
+ * @param {Document} doc
+ * @param {{ standalone?: boolean, showTip?: () => void, onSocial?: () => void }} o
+ */
+export function installPhonePill(doc, { standalone = false, showTip = () => {}, onSocial = () => {} } = {}) {
+  const pill = doc?.querySelector?.('header.top-bar .top-actions');
+  const menu = pill?.querySelector('.more-menu');
+  if (!pill || !menu) return null;
+  const make = (id, label, icon) => {
+    const b = doc.getElementById(id) || doc.createElement('button');
+    b.type = 'button';
+    b.id = id;
+    b.className = 'chrome-btn hud-ibtn phone-pill-btn';
+    b.setAttribute('aria-label', label);
+    b.dataset.tip = label;
+    b.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true">${icon}</svg>`;
+    pill.insertBefore(b, menu);
+    return b;
+  };
+  const el = doc.documentElement;
+  const request = el.requestFullscreen || el.webkitRequestFullscreen;
+  const way = fullScreenWay({ standalone, canRequest: typeof request === 'function' });
+  const full = make('fullscreen-btn', PILL_TEXT.full, ICONS.full);
+  // In the Home Screen app it is already full screen: the button stays, off, so the pill keeps its four.
+  full.disabled = way === 'hide';
+  const isFull = () => Boolean(doc.fullscreenElement || doc.webkitFullscreenElement);
+  const paintFull = () => {
+    const on = isFull();
+    const label = on ? PILL_TEXT.leave : PILL_TEXT.full;
+    full.setAttribute('aria-label', label);
+    full.dataset.tip = label;
+    full.setAttribute('aria-pressed', String(on));
+    full.querySelector('svg').innerHTML = on ? ICONS.leave : ICONS.full;
+  };
+  full.addEventListener('click', () => {
+    if (way === 'hide') return;
+    if (way === 'tip') {
+      showTip();
+      return;
+    }
+    if (isFull()) {
+      (doc.exitFullscreen || doc.webkitExitFullscreen)?.call(doc)?.catch?.(() => {});
+      return;
+    }
+    try {
+      const p = request.call(el, { navigationUI: 'hide' });
+      p?.catch?.(() => showTip());
+    } catch {
+      showTip();
+    }
+  });
+  doc.addEventListener('fullscreenchange', paintFull);
+  doc.addEventListener('webkitfullscreenchange', paintFull);
+  paintFull();
+  const social = make('social-btn', PILL_TEXT.social, ICONS.social);
+  const badge = doc.createElement('span');
+  badge.className = 'hud-badge phone-pill-badge';
+  badge.setAttribute('aria-hidden', 'true');
+  badge.hidden = true;
+  social.append(badge);
+  social.setAttribute('aria-controls', 'local-chat-dock');
+  social.addEventListener('click', () => onSocial());
+  return {
+    full,
+    social,
+    setBadge(n) {
+      const text = pillBadge(n);
+      if (badge.textContent !== text) badge.textContent = text;
+      if (badge.hidden !== !text) badge.hidden = !text;
+      const label = text ? `${PILL_TEXT.social}, ${text} new` : PILL_TEXT.social;
+      if (social.getAttribute('aria-label') !== label) social.setAttribute('aria-label', label);
+    },
+  };
+}
+
+/**
+ * Mount the layout pass. `sheets` maps a sheet id (map, quests, social, menu) to { isOpen(), close() }
+ * with its kind ('map' or 'half'); `others()` lists any other open side sheet (Skills, Make, Mail...)
+ * as { id, close() }. `engine` takes the dock (setStageDock(dock, 'phone')). `onBand(px)` hears the
+ * bottom band the controls stand on. Returns { frame(), layout(), regions(), noticeRegion(),
+ * isActive(), destroy() }.
+ * @param {{ doc?: Document, root: HTMLElement, sheets?: Record<string, { kind: 'map'|'half', isOpen: () => boolean, close: () => void }>,
+ *   others?: () => { id: string, close: () => void }[], engine?: any, setData?: (k: string, v: string) => void,
+ *   active?: () => boolean, onFrame?: () => void }} opts
+ */
+export function mountPhoneLayout({ doc = globalThis.document, root, sheets = {}, others = () => [], engine = null, setData = () => {}, active = () => true, onFrame = () => {} } = {}) {
+  if (!doc || !root) return null;
+  const html = doc.documentElement;
+  const win = doc.defaultView || globalThis;
+  const ids = Object.keys(sheets);
+  let last = null;
+  let lastAt = -Infinity;
+  let seenOpen = new Set();
+  let on = false;
+  let current = null;
+
+  const shown = (el) => Boolean(el && !el.hidden && el.getClientRects?.().length);
+  const rectOf = (el) => {
+    const r = el.getBoundingClientRect();
+    return { left: r.left, top: r.top, right: r.right, bottom: r.bottom };
+  };
+  function safeInsets() {
+    try {
+      const cs = win.getComputedStyle(html);
+      const px = (n) => parseFloat(cs.getPropertyValue(n)) || 0;
+      return { t: px('--safe-t'), r: px('--safe-r'), b: px('--safe-b'), l: px('--safe-l') };
+    } catch {
+      return {};
+    }
+  }
+  const openSet = () => {
+    const open = new Set(ids.filter((id) => sheets[id].isOpen()));
+    for (const o of others()) open.add(`other:${o.id}`);
+    return open;
+  };
+
+  /** One sheet at a time: one that opened since the last look closes the others. */
+  function keepOne() {
+    const open = openSet();
+    const fresh = [...open].filter((id) => !seenOpen.has(id));
+    if (open.size > 1 && fresh.length) {
+      const keep = fresh[fresh.length - 1];
+      for (const id of ids) if (id !== keep && open.has(id)) sheets[id].close();
+      for (const o of others()) if (`other:${o.id}` !== keep) o.close?.();
+    }
+    seenOpen = openSet();
+  }
+
+  function sheetNow() {
+    let kind = '';
+    for (const id of ids) if (sheets[id].isOpen()) kind = kind === 'map' ? 'map' : sheets[id].kind;
+    if (!kind && others().length) kind = 'half';
+    if (kind) return { kind };
+    const tray = doc.querySelector('#pack-bar .pack-bag-row:not([hidden])');
+    if (shown(tray)) return { kind: 'bag', top: tray.getBoundingClientRect().top };
+    return { kind: '' };
+  }
+
+  function off() {
+    if (!on) return;
+    on = false;
+    html.classList.remove('phone-layout');
+    delete html.dataset.phoneSheet;
+    engine?.setStageDock?.(null, 'phone');
+    current = null;
+    last = null;
+  }
+
+  function layout() {
+    if (!active()) {
+      off();
+      return;
+    }
+    if (!on) {
+      on = true;
+      html.classList.add('phone-layout');
+    }
+    keepOne();
+    const s = sheetNow();
+    const rr = root.getBoundingClientRect();
+    const shift = (r) => r && { left: r.left - rr.left, top: r.top - rr.top, right: r.right - rr.left, bottom: r.bottom - rr.top };
+    const packEl = doc.getElementById('pack-row');
+    const packShown = shown(packEl) && doc.defaultView?.getComputedStyle?.(doc.getElementById('pack-bar'))?.visibility !== 'hidden';
+    const plate = doc.getElementById('street-nameplate');
+    const pins = doc.getElementById('quest-pins');
+    const regions = phoneRegions({
+      width: rr.width,
+      height: rr.height,
+      safe: safeInsets(),
+      sheet: s.kind,
+      pack: packShown ? shift(rectOf(packEl)) : null,
+      packShown,
+      bagTop: Number.isFinite(s.top) ? s.top - rr.top : NaN,
+      caption: shown(plate) ? { w: plate.offsetWidth, h: plate.offsetHeight } : null,
+      captionUnder: rr.height > rr.width || Boolean(plate?.classList.contains('is-under')),
+      pin: shown(pins) ? { w: pins.offsetWidth, h: pins.offsetHeight } : null,
+    });
+    const key = JSON.stringify([s.kind, regions]);
+    if (key === last) return;
+    last = key;
+    current = regions;
+    html.dataset.phoneSheet = s.kind;
+    const set = (name, v) => {
+      const px = `${Math.round(v)}px`;
+      if (html.style.getPropertyValue(name) !== px) html.style.setProperty(name, px);
+    };
+    const sh = regions.sheet;
+    set('--pr-under', regions.notices.top - GAP);
+    set('--pr-notice-t', regions.notices.top);
+    set('--pr-sheet-t', sh ? sh.top : 0);
+    set('--pr-sheet-l', sh ? sh.left : 0);
+    set('--pr-sheet-w', sh ? sh.right - sh.left : 0);
+    set('--pr-sheet-h', sh ? sh.bottom - sh.top : 0);
+    // The pinned quest's spot (it stays where it was while covered: style.css hides it then).
+    if (regions.pin) {
+      set('--pr-pin-l', regions.pin.left);
+      set('--pr-pin-b', rr.height - regions.pin.bottom);
+    }
+    engine?.setStageDock?.(regions.dock, 'phone');
+    setData('phoneRegions', JSON.stringify(regions));
+    setData('phoneDock', regions.dock ? `${regions.dock.side}:${regions.dock.css}` : '');
+  }
+
+  const onResize = () => {
+    last = null;
+    layout();
+  };
+  win.addEventListener?.('resize', onResize);
+  win.addEventListener?.('orientationchange', onResize);
+  layout();
+
+  return {
+    /** Once a frame from game.js: a sheet or bag opened or closed elsewhere (a key, a feature), the badge. */
+    frame(now = globalThis.performance?.now?.() ?? Date.now()) {
+      if (now - lastAt < 120) return;
+      lastAt = now;
+      layout();
+      if (on) onFrame();
+    },
+    layout: () => {
+      last = null;
+      layout();
+    },
+    regions: () => current,
+    /** The notices' region in page px (js/notify-view.js), null when not laid out. */
+    noticeRegion: () => {
+      if (!on || !current) return null;
+      const rr = root.getBoundingClientRect();
+      const n = current.notices;
+      return { left: n.left + rr.left, top: n.top + rr.top, right: n.right + rr.left, bottom: n.bottom + rr.top };
+    },
+    isActive: () => on,
+    destroy() {
+      win.removeEventListener?.('resize', onResize);
+      win.removeEventListener?.('orientationchange', onResize);
+      off();
+    },
+  };
+}

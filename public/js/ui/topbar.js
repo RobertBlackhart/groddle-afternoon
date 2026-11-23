@@ -1032,7 +1032,12 @@ function fitTopActions(doc) {
     return actionsFit(doc, pill);
   };
   // A phone: Quests stays on the bar; the study, Map and Make are always in the Menu (style.css).
-  if (phoneBar(doc)) return apply(pickPhoneOverflow(fits));
+  // PHONE LAYOUT (G1194, direction C; js/ui/phone-layout.js): the pill holds four fixed icons, so
+  // Quests is always a row of the Menu there.
+  if (phoneBar(doc)) {
+    const steps = pickPhoneOverflow(fits);
+    return apply(doc.documentElement.classList.contains('phone-layout') && !steps.includes('quest') ? ['quest', ...steps] : steps);
+  }
   apply(pickTopOverflow(fits));
 }
 
@@ -1235,7 +1240,7 @@ function installTopOverflow(doc) {
       if (text !== lastChip) { lastChip = text; fit(); }
     }).observe(chip, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: ['hidden'] });
   }
-  new MutationObserver(fit).observe(doc.documentElement, { attributes: true, attributeFilter: ['data-ui'] });
+  new MutationObserver(fit).observe(doc.documentElement, { attributes: true, attributeFilter: ['data-ui', 'class'] });
   // #540: a longer count (10.1K) or the phone's quest button coming and going changes what the bar holds.
   const stats = doc.getElementById('hud-stats');
   if (stats && typeof ResizeObserver === 'function') new ResizeObserver(fit).observe(stats);

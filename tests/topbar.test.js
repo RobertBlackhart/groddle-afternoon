@@ -24,7 +24,7 @@ import {
   vitalRing,
   volumeLevel,
   soundChannelToggle,
-} from '../public/js/ui/topbar.js?v=11479bf3';
+} from '../public/js/ui/topbar.js?v=62e09ee6';
 
 import { GIANTS, canClaimEmblem, createShrineState, emblemCostFor, favorDisplayGiant, favorPanelRows, giantForStreet } from '../public/js/shrines.js?v=d5d7a471';
 
@@ -198,7 +198,7 @@ describe('#540: an upright phone keeps the Menu on its pill', () => {
     assert.deepEqual([...PHONE_OVERFLOW_STEPS], ['chip', 'map', 'make']);
     assert.deepEqual(pickPhoneOverflow(() => true), ['chip', 'map', 'make']);
     assert.deepEqual(pickPhoneOverflow(() => false), ['chip', 'map', 'make', 'counts-k', 'counts-whole', 'counts']);
-    assert.match(topbar, /if \(phoneBar\(doc\)\) return apply\(pickPhoneOverflow\(fits\)\);/);
+    assert.match(topbar, /if \(phoneBar\(doc\)\) \{\s*const steps = pickPhoneOverflow\(fits\);/);
   });
   it('counts: the buttons hold at 28 px and the counts shorten with an ellipsis', () => {
     assert.ok(css.includes(':root.touch-phone[data-ui="modern"] .top-bar[data-overflow~="counts"] #hud-stats ~ .hud-actions { flex-shrink: 0; }'));

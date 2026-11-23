@@ -9,7 +9,7 @@
 import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { FakeEl, memoryStore, page } from './social-fake-dom.js';
-import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=d5309803';
+import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=a41889ed';
 import { createNotifier } from '../public/js/notify.js?v=4226f585';
 import { drawerChat } from '../public/js/groups.js?v=2e9a714e';
 
