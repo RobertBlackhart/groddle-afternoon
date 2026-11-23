@@ -76,9 +76,10 @@ before(async () => {
 });
 
 describe('which quests wait for a road on a fresh world', () => {
-  it('a fresh world reaches 242 streets: every door counts now that Dust Traps give every key (Level 2 West into Oppidan Avenue), and Louise Pasture\'s door to its villa (G371)', () => {
+  it('a fresh world reaches 243 streets: every door counts now that Dust Traps give every key (Level 2 West into Oppidan Avenue), Louise Pasture\'s door to its villa (G371) and Marylpole Mount\'s QUARTER signpost (G1186)', () => {
     const w = world(freshJobs());
-    assert.equal(w.reach.size, 242);
+    assert.equal(w.reach.size, 243);
+    assert.equal(w.reach.has('GQRMM1100BLOCK1'), true, 'the Quarter\'s block, by the QUARTER signpost');
     assert.equal(w.reach.has('GCRDGMREPJ02ORK'), true, 'Louise Pasture Villa, by its door on Louise Pasture');
     const level2 = 'GHH1011JSO11ORS';
     const oppidan = 'GDOHDJ84BST2UI2';
