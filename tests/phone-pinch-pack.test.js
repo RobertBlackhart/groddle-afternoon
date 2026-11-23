@@ -77,7 +77,8 @@ describe('the phone zoom: from the whole street to about one and a half times as
     assert.equal(phoneZoomLabel(0.25), '25%');
   });
   it('game.js draws it in Modern on a phone and the Menu slider moves it there', () => {
-    assert.match(game, /closeup: phoneCloseup\(\)/);
+    // G1178: the docked house picker holds the close-up at 0 while it fits the house.
+    assert.match(game, /closeup: (dock \? 0 : )?phoneCloseup\(\)/);
     assert.match(game, /return TOUCH_PHONE && modernUi\(\) && PINNED_VIEW_H <= 0 \? phoneZoom\.get\(\) : 0;/);
     assert.match(game, /if \(TOUCH_PHONE\) phoneZoom\.onChange\(\(\) => applyWorldZoom\(\)\);/);
     assert.match(game, /const hudZoom = TOUCH_PHONE \? phoneZoom : \{ get: worldZoom/);
