@@ -34,12 +34,12 @@
  * photo that is sent and shown on its thumbnail ("1 mark", [data-phone-photo-marks]).
  */
 
-import { createMinnAccountCore } from '../minn-account-core.js?v=bd210eb9';
+import { createMinnAccountCore } from '../minn-account-core.js?v=3ed80184';
 import { mountAccountForms, resetLinkFrom, verifyLinkFrom } from '../account-forms.js?v=683e1475';
 import { gateFor, quietSession, suspendedNow } from '../online-session.js?v=6f1348c8';
-import { REPORT_MAX, REPORT_TEXT, STATUS_WORDS, canEditFirst, createReportsApi, messagePictures, numberedLine, pictureRefused, pictureSrc, refusalWords, reportFromHash, reportNumber, unreadCount, whenWords } from '../reports.js?v=08604732';
-import { PICTURE_TEXT, REPORT_PICTURES, convertPicture, refusalWords as pictureRefusal, roomFor, takeForRoom } from '../report-pictures.js?v=4eb43496';
-import { DEVICE_KEY, PHONE_TEXT as T, PLAY_ONCE_HASH, PLAY_ONCE_KEY, POLL_MS, createPresenceApi, friendsView, fullGameHref, itemNamesFrom, itemWords, mailRows, mailboxFromSave, mergePlayerMail, phoneContext, phoneDevice, takenMailIds, unreadLetters } from './companion-data.js?v=94d82efc';
+import { REPORT_MAX, REPORT_TEXT, STATUS_WORDS, canEditFirst, createReportsApi, messagePictures, numberedLine, pictureRefused, pictureSrc, refusalWords, reportFromHash, reportNumber, unreadCount, whenWords } from '../reports.js?v=c8204bf7';
+import { PICTURE_TEXT, REPORT_PICTURES, convertPicture, refusalWords as pictureRefusal, roomFor, takeForRoom } from '../report-pictures.js?v=80e6320d';
+import { DEVICE_KEY, PHONE_TEXT as T, PLAY_ONCE_HASH, PLAY_ONCE_KEY, POLL_MS, createPresenceApi, friendsView, fullGameHref, itemNamesFrom, itemWords, mailRows, mailboxFromSave, mergePlayerMail, phoneContext, phoneDevice, takenMailIds, unreadLetters } from './companion-data.js?v=0c533de1';
 
 const doc = globalThis.document;
 
@@ -550,10 +550,10 @@ function editFirst(t, m, li, body, edit) {
 
 /** The pictures over the page (js/ui/picture-lightbox.js, plain DOM), loaded at the first tap on a picture. */
 let lightboxModule = null;
-const loadLightbox = () => (lightboxModule ||= import('../ui/picture-lightbox.js?v=bd2ae70d').catch((err) => { lightboxModule = null; throw err; }));
+const loadLightbox = () => (lightboxModule ||= import('../ui/picture-lightbox.js?v=35d91d38').catch((err) => { lightboxModule = null; throw err; }));
 /** G808: the rings module, loaded with the lightbox at the first tap on a photo about to go. */
 let marksModule = null;
-const loadMarks = () => (marksModule ||= import('../ui/picture-marks.js?v=c53dc0fc').catch((err) => { marksModule = null; throw err; }));
+const loadMarks = () => (marksModule ||= import('../ui/picture-marks.js?v=9816f40b').catch((err) => { marksModule = null; throw err; }));
 
 /**
  * A picture link that opens `gallery` (each { src, width, height, alt }) at `index` over the page on

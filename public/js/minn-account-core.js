@@ -304,6 +304,27 @@ export function accountParts({ baseUri, fetch: fetchFn = globalThis.fetch?.bind(
       return { ok: true };
     },
 
+    /**
+     * Change name's state for the character playing (groddle/v1/characters/name, G1213):
+     * { name, cost, days, nextAt (unix or null), currants, formerly }. Throws on a refusal.
+     */
+    async nameChange() {
+      return buddyCall('Loading your name', 'characters/name');
+    },
+
+    /**
+     * A new name for the character playing, for its cost out of the ledger (G1213): { ok: true,
+     * player, was, receipt, nextAt, live } or a refusal { ok: false, code, message, fields, nextAt?,
+     * cost?, currants?, status } (422 the name, 409 name_same or name_change_currants, 429 the wait).
+     */
+    async changeName(name) {
+      const r = await post('characters/name', { name: String(name ?? '').trim().replace(/\s+/g, ' ') });
+      if (r.ok && r.data?.status === 'renamed') return { ...r.data, ok: true };
+      const out = { ...refusal(r), status: r.status };
+      for (const k of ['nextAt', 'cost', 'currants']) if (r.data?.[k] != null) out[k] = r.data[k];
+      return out;
+    },
+
     /** Retires an extra character (hidden, kept, restorable): { ok } or a refusal. */
     async retireCharacter(id) {
       const r = await post(`characters/${Number(id)}/retire`, {});

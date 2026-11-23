@@ -12,10 +12,10 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
-import { PICTURE_TEXT as P, REPORT_PICTURES, convertPicture, dragHasFiles, fileName, filesOf, mayBePicture, pictureAttempts, pictureError, refusalWords, roomFor, takeForRoom } from '../public/js/report-pictures.js?v=4eb43496';
-import { REPORT_PICTURE, REPORT_TEXT as T, createReportsApi, messagePictures, pictureSrc, picturesBody } from '../public/js/reports.js?v=08604732';
-import { mountReportsSheet } from '../public/js/ui/reports-sheet.js?v=ba9d3fc2';
-import { LIGHTBOX_TEXT, galleryStep, openLightbox } from '../public/js/ui/picture-lightbox.js?v=bd2ae70d';
+import { PICTURE_TEXT as P, REPORT_PICTURES, convertPicture, dragHasFiles, fileName, filesOf, mayBePicture, pictureAttempts, pictureError, refusalWords, roomFor, takeForRoom } from '../public/js/report-pictures.js?v=80e6320d';
+import { REPORT_PICTURE, REPORT_TEXT as T, createReportsApi, messagePictures, pictureSrc, picturesBody } from '../public/js/reports.js?v=c8204bf7';
+import { mountReportsSheet } from '../public/js/ui/reports-sheet.js?v=49109600';
+import { LIGHTBOX_TEXT, galleryStep, openLightbox } from '../public/js/ui/picture-lightbox.js?v=35d91d38';
 import { SITE_DIR, sitePath, skipWithoutSite } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');

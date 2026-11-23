@@ -12,7 +12,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { canEditFirst } from '../public/js/reports.js?v=08604732';
+import { canEditFirst } from '../public/js/reports.js?v=c8204bf7';
 
 const js = readFileSync(join(dirname(fileURLToPath(import.meta.url)), '..', 'public', 'js', 'phone', 'companion.js'), 'utf8');
 

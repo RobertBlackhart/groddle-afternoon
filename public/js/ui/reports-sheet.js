@@ -112,13 +112,13 @@
  * [data-react-add], [data-react-chip], [data-react-picker], [data-react-pick]; canvas data reportReact.
  */
 
-import { REPORT_EXTENSIONS_MAX, REPORT_FILTER_MIN, REPORT_MAX, REPORT_TABS, REPORT_TEXT as T, STATUS_WORDS, canEditFirst, inTab, matchesReport, messagePictures, numberedLine, pictureRefused, pictureSrc, readByTeamAt, readByTeamWords, refusalWords, reportNumber, showsReplied, sortReports, tabCounts, tabLabel, unreadCount, whenWords } from '../reports.js?v=08604732';
+import { REPORT_EXTENSIONS_MAX, REPORT_FILTER_MIN, REPORT_MAX, REPORT_TABS, REPORT_TEXT as T, STATUS_WORDS, canEditFirst, inTab, matchesReport, messagePictures, numberedLine, pictureRefused, pictureSrc, readByTeamAt, readByTeamWords, refusalWords, reportNumber, showsReplied, sortReports, tabCounts, tabLabel, unreadCount, whenWords } from '../reports.js?v=c8204bf7';
 import { createReactionUI } from './reaction-strip.js?v=3de815f3';
 import { parseReportReactionKey, reactorOf, reportReactionKey, reportReactions } from '../report-reactions.js?v=69462240';
-import { PICTURE_TEXT as P, REPORT_PICTURES, convertPicture, dragHasFiles, filesOf, refusalWords as pictureRefusal, roomFor, takeForRoom } from '../report-pictures.js?v=4eb43496';
+import { PICTURE_TEXT as P, REPORT_PICTURES, convertPicture, dragHasFiles, filesOf, refusalWords as pictureRefusal, roomFor, takeForRoom } from '../report-pictures.js?v=80e6320d';
 import { focusBack } from './focus-return.js?v=da190597';
-import { lightboxLink } from './picture-lightbox.js?v=bd2ae70d';
-import { MARK_TEXT, bakeMarks, createMarkBook } from './picture-marks.js?v=c53dc0fc';
+import { lightboxLink } from './picture-lightbox.js?v=35d91d38';
+import { MARK_TEXT, bakeMarks, createMarkBook } from './picture-marks.js?v=9816f40b';
 import { REPORT_MENU_TEXT, bindReportRowMenu, copyText, reportLink } from './report-row-menu.js?v=56f236a7';
 
 /** How long Send waits for a picture still drawing before it sends the world-only one (ms). */

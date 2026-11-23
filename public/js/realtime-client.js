@@ -429,6 +429,20 @@ export function createRealtimeClient({
         emit('emoted', { id: p.id, e: msg.e, player: p });
         return;
       }
+      case 'renamed': {
+        // G1213: a character changed their name (groddle-afternoon-server rename.go, to every socket).
+        const id = Number(msg.id);
+        const name = String(msg.name || '').trim();
+        if (!(id > 0) || !name) return;
+        const was = String(msg.was || '');
+        const mine = id === me?.id;
+        if (mine) me = { ...me, name };
+        const p = players.get(id);
+        if (p) p.name = name;
+        emit('renamed', { id, name, was, mine, here: Boolean(p) });
+        if (p && !awaitingStreet) emit('roster', { street, players: [...players.values()] });
+        return;
+      }
       case 'error':
         // A thread reply's refusal names its line (groddle-afternoon-server threads.go refuseReply, R5).
         emit('error', { code: String(msg.code || ''), message: String(msg.message || ''), ...(msg.parent ? { parent: Number(msg.parent), channel: String(msg.channel || ''), old: msg.old === true } : {}) });

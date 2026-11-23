@@ -40,7 +40,7 @@
  * Reactions on a report's messages (Austin 2026-11-18): api.react; the rules are js/report-reactions.js.
  */
 
-import { minnUrls } from './minn-account-core.js?v=bd210eb9';
+import { minnUrls } from './minn-account-core.js?v=3ed80184';
 
 /** The sheet's words. The form welcomes feedback, suggestions and bugs alike (the original's BootError.as 280-290 asked only for bugs). */
 /** The optional extensions line's length, as the site keeps it (BugReports.php CONTEXT 'extensions'). */

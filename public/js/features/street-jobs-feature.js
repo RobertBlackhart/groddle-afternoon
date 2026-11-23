@@ -149,7 +149,7 @@ import {
   leaderboard,
 } from '../street-jobs-mp.js?v=02f5be0a';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
-import { createMinnAccount } from '../minn-account.js?v=edf182bb';
+import { createMinnAccount } from '../minn-account.js?v=ab7fbd48';
 import { normalizeGroups } from '../groups.js?v=2e9a714e';
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=729b29ea';
 import { createJobIndicator, jobIndicatorTip, jobIndicatorView, jobPerc } from '../job-indicator.js?v=8bea518d';

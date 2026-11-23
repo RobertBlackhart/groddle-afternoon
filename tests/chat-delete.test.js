@@ -20,7 +20,7 @@ import { readFileSync } from 'node:fs';
 import { pathToFileURL } from 'node:url';
 import { HAS_SITE, serverPath, sitePath, skipWithoutServer, skipWithoutSite } from '../tools/repos.mjs';
 import { dropLid } from '../public/js/groups.js?v=2e9a714e';
-import { deletedSummary } from '../public/js/features/chat-threads-feature.js?v=362fe1fb';
+import { deletedSummary } from '../public/js/features/chat-threads-feature.js?v=4b9f029f';
 
 const src = (f) => readFileSync(sitePath(f), 'utf8');
 const game = (f) => readFileSync(new URL(`../public/js/${f}`, import.meta.url), 'utf8');

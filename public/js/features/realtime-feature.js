@@ -59,8 +59,8 @@
  */
 
 import { chatBubbleText } from '../ui/chat-input.js?v=8f2479a3';
-import { createMinnAccount } from '../minn-account.js?v=edf182bb';
-import { EMOTES, createRealtimeClient, createTrack, pushSample, sampleTrack } from '../realtime-client.js?v=1108c7c5';
+import { createMinnAccount } from '../minn-account.js?v=ab7fbd48';
+import { EMOTES, createRealtimeClient, createTrack, pushSample, sampleTrack } from '../realtime-client.js?v=5e2348b7';
 import { ANIM_FPS, EMOTION_MS, animForState, crowdScaleX } from '../avatar-anims.js?v=fb921bf4';
 import { redrawFrame } from '../avatar-pack.js?v=65324246';
 import { movedLine } from '../admin-teleport.js?v=c4d28509';
@@ -380,7 +380,14 @@ function createSession(engine) {
   function syncRoster() {
     const live = new Map(client.players.map((p) => [p.id, p]));
     for (const r of [...remotes.values()]) if (!live.has(r.id)) dropRemote(r);
-    for (const p of live.values()) if (!remotes.has(p.id)) remotes.set(p.id, makeRemote(p));
+    for (const p of live.values()) {
+      // G1213: a new name (the server's renamed) redraws their Glitch with its new nameplate.
+      const r = remotes.get(p.id);
+      if (r && r.name !== p.name) {
+        dropRemote(r);
+      }
+      if (!remotes.has(p.id)) remotes.set(p.id, makeRemote(p));
+    }
     holdPacks();
     publish();
   }
@@ -562,6 +569,8 @@ function createSession(engine) {
   client.on('roster', syncRoster);
   // Someone you block comes and goes unannounced (Glitch's chatUpdate dropped every line about an ignored player, RightSideManager.as 218-223).
   client.on('joined', (p) => { if (!engine.query?.('realtimeHidden', p.id)) addLog({ note: true, text: `${p.name} is here.` }); });
+  // G1213: someone on your street changed their name (your own change says so in the Account panel).
+  client.on('renamed', (r) => { if (r.here && !r.mine && r.was && !engine.query?.('realtimeHidden', r.id)) addLog({ note: true, text: `${r.was} is now called ${r.name}.` }); });
   client.on('left', ({ id }) => {
     const r = remotes.get(id);
     if (r && !engine.query?.('realtimeHidden', id)) addLog({ note: true, text: `${r.name} left.` });

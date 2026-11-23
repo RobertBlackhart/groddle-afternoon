@@ -16,7 +16,8 @@
  * already under way (the start card only offers the choice on a new game).
  *
  * In multiplayer the Menu gets Account (change the sign-in email or the
- * password, each with the current password; Your profile, from
+ * password, each with the current password; Change name for 1,000 currants
+ * once in 30 days, js/change-name.js, G1213; Your profile, from
  * profiles-feature) and Sign out: the save is
  * written first, then the session ends and the page goes back to the gate.
  * Beside Sign out, Switch character (alternate characters, Austin 2026-11-12):
@@ -34,13 +35,14 @@
  * QA: /play/ on groddle.localhost, Menu, Account; /play/online/, Menu, Sign out.
  */
 
-import { createMinnAccount } from '../minn-account.js?v=edf182bb';
+import { createMinnAccount } from '../minn-account.js?v=ab7fbd48';
 import { mountAccountForms, mountAccountSettings, mountPresenceSetting } from '../account-forms.js?v=683e1475';
 import { createBrowserSaveStore, freezeSoloSaves, restoreSoloSave, saveStore, savedAtOf, soloSaveSnapshot, thawSoloSaves } from '../save-store.js?v=4e720735';
 import { formatGameDayLabel } from '../game-day.js?v=a532775d';
 import { multiplayerEntryUrl } from '../game-mode.js?v=1ecf2899';
-import { markContinued, quietSession } from '../online-boot.js?v=67ed4106';
-import { installCharacterSwitcher } from '../character-switcher.js?v=70649933';
+import { markContinued, quietSession } from '../online-boot.js?v=172dc26f';
+import { installCharacterSwitcher } from '../character-switcher.js?v=9a08acd8';
+import { mountChangeName } from '../change-name.js?v=4685ccda';
 
 /** Which slot a new backup goes to: the first empty one, else the oldest (which then needs a yes). */
 export function slotForNewBackup(backups, slots) {
@@ -417,10 +419,17 @@ function createMultiplayerPanel(engine, account) {
         location.href = account.urls.online;
         return;
       }
-      panel.append(el('p', {}, `Playing as ${session.player?.name || 'you'}. Your character saves on the Groddle site.`));
+      const playing = el('p', {}, `Playing as ${session.player?.name || 'you'}. Your character saves on the Groddle site.`);
+      panel.append(playing);
       const host = el('div', { class: 'account-forms' });
       panel.append(host);
       mountAccountSettings(host, { account, email: session.account?.email || '', onChanged: ({ what }) => engine.setData?.('accountChanged', what) });
+      // Change name (G1213): 1,000 currants, once in 30 days, asked first (js/change-name.js).
+      mountChangeName(host.querySelector('[data-account-settings]') || host, {
+        account,
+        engine,
+        onRenamed: ({ name }) => { playing.textContent = `Playing as ${name}. Your character saves on the Groddle site.`; },
+      });
       // Appear offline (features/presence-mp-feature.js): under the email and the password.
       mountPresenceSetting(host.querySelector('[data-account-settings]') || host, { account, state: engine.query?.('presenceState', engine) || null });
       // Your profile (features/profiles-feature.js, G338): the description and a link to the public page.
@@ -459,7 +468,7 @@ function installSignOut(engine) {
   const list = document.getElementById('more-list');
   if (!list) return;
   const panel = createMultiplayerPanel(engine, account);
-  const acct = el('button', { id: 'account-btn', type: 'button', class: 'chrome-btn', title: 'Your email and password' }, 'Account');
+  const acct = el('button', { id: 'account-btn', type: 'button', class: 'chrome-btn', title: 'Your email, password and name' }, 'Account');
   acct.addEventListener('click', () => { panel.open(); });
   const swap = el('button', { id: 'switch-character-btn', type: 'button', class: 'chrome-btn', title: SWITCH_COPY.title }, SWITCH_COPY.button);
   swap.addEventListener('click', () => switchCharacter(engine, account, swap));

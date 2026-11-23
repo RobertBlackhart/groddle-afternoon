@@ -5600,6 +5600,23 @@
    "rows": [
     "G1207"
    ]
+  },
+  {
+   "id": "rename-formerly",
+   "title": "For 30 days after a player changes their own name, their profile page and the /chat/ people lists show \"formerly <old name>\", and their old /players/ address answers a redirect to the new one (G1213, #636).",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/change-name.js",
+     "symbol": "CHANGE_NAME_COPY.formerly"
+    }
+   ],
+   "why": "Glitch's Account page let a player change their name for 100 currants about once in two months and showed no old name anywhere. Austin's brief for the paid rename (1,000 currants, 30 days) asked for the old name to show for a while so friends can still find them. The site keeps it (groddle-afternoon-site src/CharacterName.php formerly, PlayerPages masthead, ChatPeople, community/chat-app.js formerlyNote); an administrator's rename never shows one.",
+   "ruling": "Austin's lane brief 2026-11-23 (\"our own idea: register it as an invention\")",
+   "rows": [
+    "G1213"
+   ]
   }
  ]
 }

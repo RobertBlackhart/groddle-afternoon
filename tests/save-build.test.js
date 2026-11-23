@@ -119,7 +119,7 @@ describe('the multiplayer page and the build', () => {
   });
 
   it('online-boot hands the stored build to the page and says how to carry on', async () => {
-    const { bootDataFrom, saveAlertFor } = await import('../public/js/online-boot.js?v=67ed4106');
+    const { bootDataFrom, saveAlertFor } = await import('../public/js/online-boot.js?v=172dc26f');
     const data = bootDataFrom({
       account: { urls: { api: '/wp-json/groddle/v1/', nonce: '/n' }, nonce: 'n' },
       session: { player: { id: 3 } },

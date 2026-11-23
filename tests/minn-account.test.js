@@ -15,12 +15,12 @@ import { execFileSync } from 'node:child_process';
 import { join } from 'node:path';
 import { homedir } from 'node:os';
 
-import { createMinnAccount, minnUrls } from '../public/js/minn-account.js?v=edf182bb';
-import { GATE_COPY, JUJU_BOSS_GATES, SAVE_ALERT_COPY, bootDataFrom, deliverHandoff, gateFor, saveAlertFor } from '../public/js/online-boot.js?v=67ed4106';
+import { createMinnAccount, minnUrls } from '../public/js/minn-account.js?v=ab7fbd48';
+import { GATE_COPY, JUJU_BOSS_GATES, SAVE_ALERT_COPY, bootDataFrom, deliverHandoff, gateFor, saveAlertFor } from '../public/js/online-boot.js?v=172dc26f';
 import { SAVE_STOPPED } from '../public/js/save-store.js?v=4e720735';
 import { FORM_COPY, SETTINGS_COPY, resetLinkFrom } from '../public/js/account-forms.js?v=683e1475';
-import { restoreNeedsAsking, sizeLabel, slotForNewBackup, accountBackupFeature } from '../public/js/features/account-backup-feature.js?v=5937defa';
-import { FEATURES } from '../public/js/features/index.js?v=2fdcd679';
+import { restoreNeedsAsking, sizeLabel, slotForNewBackup, accountBackupFeature } from '../public/js/features/account-backup-feature.js?v=fac53e0b';
+import { FEATURES } from '../public/js/features/index.js?v=2e3fa41a';
 import { multiplayerEntryUrl } from '../public/js/game-mode.js?v=1ecf2899';
 import { SAVE_ENTRY_NAMES, createMultiplayerSaveStore } from '../public/js/save-store.js?v=4e720735';
 import { HAS_SITE, SITE_DIR, serverPath, skipWithoutServer, skipWithoutSite } from '../tools/repos.mjs';
@@ -544,7 +544,7 @@ describe('createMinnAccount: the core and the game\'s calls', () => {
   const answer = (nonce) => ({ status: 200, ok: true, headers: { get: () => nonce }, json: async () => ({}), text: async () => '' });
 
   it('one account with every call: the core\'s and the game\'s', async () => {
-    const { createMinnAccountCore, minnUrls: coreUrls } = await import('../public/js/minn-account-core.js?v=bd210eb9');
+    const { createMinnAccountCore, minnUrls: coreUrls } = await import('../public/js/minn-account-core.js?v=3ed80184');
     const core = createMinnAccountCore(opts);
     const full = createMinnAccount(opts);
     for (const name of Object.keys(core)) assert.ok(name in full, name);
@@ -552,7 +552,7 @@ describe('createMinnAccount: the core and the game\'s calls', () => {
       assert.equal(typeof full[name], 'function', name);
       assert.equal(core[name], undefined, `${name} stays out of the phone`);
     }
-    assert.equal(Object.keys(full).length, 89, 'no call lost in the move (G567 added deleteChannelLine; alternate characters seven; confirmEmail; G872 reportPlayer)');
+    assert.equal(Object.keys(full).length, 91, 'no call lost in the move (G567 added deleteChannelLine; alternate characters seven; confirmEmail; G872 reportPlayer; G1213 nameChange and changeName)');
     assert.equal(minnUrls, coreUrls, 'one minnUrls, whichever file it is imported from');
   });
 

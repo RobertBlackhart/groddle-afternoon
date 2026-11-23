@@ -107,7 +107,7 @@
  * multiplayer.
  */
 
-import { createMinnAccount } from '../minn-account.js?v=edf182bb';
+import { createMinnAccount } from '../minn-account.js?v=ab7fbd48';
 import { runStreetTransition } from '../screen-fx.js?v=39954e0b';
 import { STREET_INDEX } from '../street-loader.js?v=10376267';
 import { ITEM_CATALOG, addItem, countItem, listPackItemSlots, removeItem } from '../inventory.js?v=6414dbdc';
@@ -116,8 +116,8 @@ import { cultivationDef, homeStreetLayout } from '../home-cultivation.js?v=9e6e2
 import { getPlot, tickGarden } from '../garden.js?v=765c6ddf';
 import { BUTLER_RIG_SCALE, ButlerPainter, butlerRigNow, loadButlerRig } from '../butler-rig.js?v=3acda854';
 import { BUTLER, BUTLER_INFO, butlerInfoText, butlerPostRx, normalizeButlerParts } from '../butler.js?v=6c66ebf5';
-import { butlerApi } from './butler-feature.js?v=5b6df6ee';
-import { homesFeature, visitorHomeScene, visitorHomeState } from './homes-feature.js?v=7eb769d1';
+import { butlerApi } from './butler-feature.js?v=bff860d5';
+import { homesFeature, visitorHomeScene, visitorHomeState } from './homes-feature.js?v=5d3c2a49';
 import { homeMusicFile } from '../homes.js?v=10f6604f';
 import { visitGardenPlots, visitSceneKey } from '../home-live.js?v=cebb24d4';
 import {
