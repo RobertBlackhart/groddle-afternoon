@@ -2814,9 +2814,14 @@
   "deployed": "2026-11-23"
  },
  "git": {
-  "commits": 3240,
+  "commits": 3243,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "Happy New Ur's countdown uses the design tokens for its colours, sizes and layer"
+   },
    {
     "date": "2026-11-23",
     "kind": "improve",
@@ -2826,6 +2831,11 @@
     "date": "2026-11-23",
     "kind": "new",
     "text": "Happy New Ur, a countdown and fireworks at the six Groddle midnights of December 31, with the party at Unnu Slight"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "A visitor sees the owner's stacks on a table or shelf where the owner set them, not on the floor"
    },
    {
     "date": "2026-11-23",
@@ -2926,16 +2936,6 @@
     "date": "2026-11-23",
     "kind": "improve",
     "text": "The chat box says who will read your line: everyone in Global Chat, your party, or the street"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "improve",
-    "text": "Encyclopedia pages for dirt piles, peat bogs, trees, rocks and animals list the streets that have them, by region"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "Bonelington Hole's Dirt Pile and Egg Plants stand in its cave, and Luiro Run and Naatamo Way show all four Peat Bogs"
    }
   ]
  },
