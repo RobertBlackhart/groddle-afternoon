@@ -10,7 +10,7 @@
  * Pure: no engine, no socket.
  */
 
-import { readHomeStreet } from './neighbours-mp.js?v=1c9924eb';
+import { readHomeStreet } from './neighbours-mp.js?v=4b7fca89';
 
 /** What has a crew on a home street (home_crew.go homeCrewIDRe). */
 export const HOME_CREW_ID = /^(rock:\d{1,2}|node:dirt_pile:\d{1,2})$/;

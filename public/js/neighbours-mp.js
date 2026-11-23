@@ -24,7 +24,7 @@
  * Solo never loads any of this: solo's neighbours are js/neighbours.js.
  */
 
-import { SEED_CATALOG, applyFertilizer, sowPlot, wetPlot } from './garden.js?v=152fa293';
+import { SEED_CATALOG, applyFertilizer, sowPlot, wetPlot } from './garden.js?v=6391f097';
 import { normalizeParcelBox, stackCopy } from './butler.js?v=52b4f74d';
 import { normalizeVisitGnomes } from './garden-gnome.js?v=d9f8e52b';
 

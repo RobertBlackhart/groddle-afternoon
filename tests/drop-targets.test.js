@@ -17,8 +17,8 @@ import { join, relative } from 'node:path';
 import { dropTargetIds, registerDropTarget, resolveDrop, currentDrag, beginDrag, dragDrop, endDrag } from '../public/js/drop-targets.js?v=59e6edb4';
 import { dropPage, fakeSlot, touchDrop, mouseDrop } from './drop-fake.js';
 import { worldDropFeature } from '../public/js/features/world-drop-feature.js?v=da3c29b8';
-import { gardenGuanoFeature } from '../public/js/features/garden-guano-feature.js?v=7050fac3';
-import { createGarden } from '../public/js/garden.js?v=152fa293';
+import { gardenGuanoFeature } from '../public/js/features/garden-guano-feature.js?v=12e5a652';
+import { createGarden } from '../public/js/garden.js?v=6391f097';
 
 const root = join(import.meta.dirname, '..', 'public');
 const read = (f) => readFileSync(join(root, f), 'utf8');

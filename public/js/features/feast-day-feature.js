@@ -22,7 +22,7 @@
  */
 
 import { ITEM_CATALOG } from '../inventory.js?v=6414dbdc';
-import { parseSeasonDate } from '../seasons.js?v=61f0a582';
+import { parseSeasonDate } from '../seasons.js?v=9588a3f5';
 import { landingY, nearestSurfaceY } from '../walk-surface.js?v=3c919d5b';
 import { isLoaded, onLoaded, textureFromUrl } from '../textures.js?v=729b29ea';
 import { standOnFeet } from '../sprite-feet.js?v=6ffaec43';
@@ -41,7 +41,7 @@ import {
   refillDue,
   servingsLeft,
   settleFeastDay,
-} from '../feast-day.js?v=637eef11';
+} from '../feast-day.js?v=985e7a20';
 
 export const FEAST_DAY_FEATURE_ID = 'feast-day';
 

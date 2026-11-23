@@ -52,9 +52,9 @@ import {
   takePlop,
 } from '../public/js/animal-husbandry.js?v=04dfaf01';
 import { animalStatusLabel, piggyFeedTip, pickerEmptyLine, pickerMaxCount, pickerOptionsFor, pickerTakesCount, listAnimalFeedOptions, createAnimalState } from '../public/js/animals.js?v=9dee363e';
-import { getVerbsFor, runVerb } from '../public/content.js?v=9ba46f36';
+import { getVerbsFor, runVerb } from '../public/content.js?v=797b5afb';
 import { setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=1401a97c';
-import { animalHusbandryFeature, batterflyPlacementGroups, normalizeHusbandrySlot } from '../public/js/features/animal-husbandry-feature.js?v=9f2253bc';
+import { animalHusbandryFeature, batterflyPlacementGroups, normalizeHusbandrySlot } from '../public/js/features/animal-husbandry-feature.js?v=f2391bb1';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const publicDir = join(here, '../public');

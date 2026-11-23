@@ -43,7 +43,7 @@ import {
   dressVerbs,
   featherDrop,
   isCostume,
-} from '../pot-luck.js?v=3a41ffe7';
+} from '../pot-luck.js?v=ccec0976';
 
 export const POT_LUCK_FEATURE_ID = 'pot-luck';
 

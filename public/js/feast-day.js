@@ -21,7 +21,7 @@
  *  - At midnight the leftovers are packed away; the table stays until Pot Luck Day ends.
  */
 
-import { potLuckWindow, urDate } from './seasons.js?v=61f0a582';
+import { potLuckWindow, urDate } from './seasons.js?v=9588a3f5';
 import { HARVEST_DISHES } from './pot-luck-feast.js?v=4e3b1e03';
 
 export const FEAST_DAY_ID = 'feast_day';

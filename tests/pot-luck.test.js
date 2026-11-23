@@ -14,7 +14,7 @@ import { imageSize } from '../tools/image-size.mjs';
 import { HIRES_SPRITES } from '../public/js/sprite-hires.js?v=ad1e46a9';
 import { HIRES_ICONS } from '../public/js/icon-hires.js?v=fb952dde';
 import { PACKED_SHEETS } from '../public/js/packed-sheets-data.js?v=192c6f15';
-import { SEASONS, SEASONAL_STOCK, SEASONAL_ITEMS, activeSeasons, calendarSeasons, daysLeft, parseSeasonDate, potLuckWindow, seasonalConversions, seasonalSources } from '../public/js/seasons.js?v=61f0a582';
+import { SEASONS, SEASONAL_STOCK, SEASONAL_ITEMS, activeSeasons, calendarSeasons, daysLeft, parseSeasonDate, potLuckWindow, seasonalConversions, seasonalSources } from '../public/js/seasons.js?v=9588a3f5';
 import {
   CHICKEN_SHEETS,
   COSTUME_CLASSES,
@@ -26,10 +26,10 @@ import {
   dressCheck,
   dressVerbs,
   featherDrop,
-} from '../public/js/pot-luck.js?v=3a41ffe7';
-import { applyCreatureState } from '../public/js/street-creatures.js?v=a5c3abb3';
+} from '../public/js/pot-luck.js?v=ccec0976';
+import { applyCreatureState } from '../public/js/street-creatures.js?v=a5de6119';
 import { dropFor } from '../public/js/world-drop.js?v=a8956ae5';
-import { potLuckFeature } from '../public/js/features/pot-luck-feature.js?v=8cae18d6';
+import { potLuckFeature } from '../public/js/features/pot-luck-feature.js?v=a878804e';
 import { problems } from '../tools/pot-luck-art/build.mjs';
 
 const pub = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
@@ -63,6 +63,14 @@ describe('Pot Luck Day window (js/seasons.js)', () => {
     assert.equal(SEASONAL_ITEMS.turkey_tailfan, 'pot_luck_day');
     assert.ok(seasonalSources().some(([id, src]) => id === 'fancy_feather' && src === 'season:pot_luck_squeeze'));
     assert.ok(seasonalConversions().some((c) => c.inputs[0] === 'fancy_feather' && c.outputs[0] === 'loam'));
+  });
+
+  it('G1152: the feather says what it is for (show, a vendor) and what it turns into', () => {
+    const { desc, baseCost } = POT_LUCK_ITEMS.fancy_feather;
+    assert.match(desc, /just for show: keep it, or sell it to any vendor\./);
+    assert.match(desc, /When Pot Luck Day ends it turns into a Lump of Loam\.$/);
+    assert.ok(baseCost > 0, 'a vendor pays for it');
+    assert.doesNotMatch(desc, /—/);
   });
 });
 

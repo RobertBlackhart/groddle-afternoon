@@ -51,7 +51,8 @@ export const POT_LUCK_ITEMS = Object.freeze({
   fancy_feather: Object.freeze({
     label: 'Fancy Feather',
     namePlural: 'Fancy Feathers',
-    desc: 'A feather that floated off a Chicken in its Pot Luck Day finery. Terribly fancy. It will not stay fancy for long.',
+    // G1152 (chat): players asked what the feathers are for. Nothing makes them into anything: say so.
+    desc: 'A feather that floated off a Chicken in its Pot Luck Day finery. Terribly fancy, and just for show: keep it, or sell it to any vendor. When Pot Luck Day ends it turns into a Lump of Loam.',
     baseCost: 12,
     stackMax: 50,
   }),

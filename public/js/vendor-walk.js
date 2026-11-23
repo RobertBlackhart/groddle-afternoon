@@ -41,7 +41,7 @@
  * place until someone stops it.
  */
 
-import { seededRandom } from './street-creatures.js?v=a5c3abb3';
+import { seededRandom } from './street-creatures.js?v=a5de6119';
 
 /** Walk rules per class (see the header for the source lines). null: it stands still. */
 export const VENDOR_WALK = Object.freeze({

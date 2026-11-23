@@ -89,7 +89,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { requireSite, sitePath } from './repos.mjs';
 import { tradeTable } from './build-realtime-trade.mjs';
-import { POT_LUCK_ITEMS } from '../public/js/pot-luck.js?v=3a41ffe7';
+import { POT_LUCK_ITEMS } from '../public/js/pot-luck.js?v=ccec0976';
 import { ITEM_BASE_COSTS } from '../public/js/store-catalog.js?v=c6ebb2bd';
 import { STUFFING, STUFFING_ITEM } from '../public/js/pot-luck-feast.js?v=4e3b1e03';
 import { obtainableItems } from './job-obtainable.mjs';
@@ -100,7 +100,7 @@ import { XP_FOR_LEVEL, currantRewardForLevel } from '../public/js/progression.js
 import { IMAGINATION_UPGRADES } from '../public/js/imagination-data.js?v=4a85e7fe';
 import { SPINDLE_TOOLS } from '../public/js/making.js?v=d28b2a24';
 import { MACHINE_IDS } from '../public/js/machines.js?v=5d749d26';
-import { GARDEN_SKILL_PACKAGES, SEED_CATALOG } from '../public/js/garden.js?v=152fa293';
+import { GARDEN_SKILL_PACKAGES, SEED_CATALOG } from '../public/js/garden.js?v=6391f097';
 import { SKILL_PACKAGES } from '../public/js/skill-packages-data.js?v=cb4e9ab3';
 import { creditedMultiplayerQuests } from '../public/js/quests-mp.js?v=1fc5ff58';
 import { FURNITURE_STARTER_KIT } from '../public/js/homes-catalog.js?v=f3fe838d';

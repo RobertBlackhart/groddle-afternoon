@@ -76,7 +76,7 @@ import {
 import { frameTexture, isLoaded, onFailed, onLoaded, textureFromUrl } from '../textures.js?v=729b29ea';
 import { HOE_TOOLS, firstWorkingTool } from '../tools.js?v=4156bba8';
 import { slugsFromEffects } from '../speech-slugs.js?v=e79cecfa';
-import { plotSignature, replayRng } from '../shared-patches.js?v=bdcb7b67';
+import { plotSignature, replayRng } from '../shared-patches.js?v=9af6943c';
 import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
 
 export const PATCHES_FEATURE_ID = 'patches';
