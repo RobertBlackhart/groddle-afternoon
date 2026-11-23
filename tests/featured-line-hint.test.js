@@ -12,7 +12,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { FEATURED_TEXT } from '../public/js/featured-project.js?v=5b2ee7c1';
-import { FEATURED_HINT_ID, FEATURED_HINT_KEY, featuredHint, featuredHintSeen } from '../public/js/ui/featured-project.js?v=cbb4d6d5';
+import { FEATURED_HINT_ID, FEATURED_HINT_KEY, featuredHint, featuredHintSeen } from '../public/js/ui/featured-project.js?v=ed9eded9';
 
 const root = join(import.meta.dirname, '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

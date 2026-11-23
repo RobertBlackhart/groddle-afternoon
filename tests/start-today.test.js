@@ -193,10 +193,10 @@ describe('the feature', () => {
     assert.match(feature, /const memo = engine\.query\?\.\('startCardProject', engine\) \|\| null;\s*const project = projectTile\(memo\);/);
     assert.match(feature, /startThen\(engine, \(\) => engine\.query\?\.\('openFeaturedProject', engine\)\)/);
     assert.doesNotMatch(feature, /Not on it yet/);
-    assert.match(jobs, /startCardProject\(\) \{\s*return mpMode \? readFeaturedMemo\(localStore\(\)\) : null;/, 'solo has no featured project');
-    assert.match(jobs, /writeFeaturedMemo\(localStore\(\), featured\);/, 'kept on every project_featured');
-    assert.match(jobs, /if \(featured\) openFeatured\(engine\);\s*else featuredOpenAsked = Date\.now\(\);/);
-    assert.match(jobs, /if \(featuredOpenAsked && Date\.now\(\) - featuredOpenAsked < FEATURED_OPEN_WAIT_MS\) \{\s*featuredOpenAsked = 0;\s*if \(featured\) openFeatured\(engine\);/);
+    assert.match(jobs, /startCardProject\(\) \{\s*return mpMode \? readFeaturedMemo\(featuredStore\(\)\) : null;/, 'solo has no featured project');
+    assert.match(jobs, /writeFeaturedMemo\(featuredStore\(\), featured\);/, 'kept on every project_featured');
+    assert.match(jobs, /if \(featured\) openFeatured\(engine\);\s*else featuredOpenAsked = true;/);
+    assert.match(jobs, /if \(featuredOpenAsked\) \{\s*featuredOpenAsked = false;\s*if \(featured\) openFeatured\(engine\);/, 'the next project_featured answers; nothing is sent, so no request wait');
   });
 
   it('draws with textContent, never player or badge text as HTML', () => {

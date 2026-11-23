@@ -181,13 +181,21 @@ export function renderFeaturedLine(doc, f, o = {}) {
   return line;
 }
 
-function hintStore(o) {
-  if (o && 'storage' in o) return o.storage;
+/**
+ * This browser's storage for the featured project's own keys (the hint, G805; the start card's last
+ * seen project, G1206: js/featured-project.js FEATURED_MEMO_KEY), or null where it is refused.
+ */
+export function featuredStore() {
   try {
     return globalThis.localStorage || null;
   } catch {
     return null;
   }
+}
+
+function hintStore(o) {
+  if (o && 'storage' in o) return o.storage;
+  return featuredStore();
 }
 
 /** G805: whether this viewer has had the hint (a browser that keeps nothing counts as not yet, and shows it once per page). */

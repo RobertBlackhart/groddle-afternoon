@@ -160,11 +160,11 @@ import { SIGN_ARMS } from '../map-routes.js?v=426e16ea';
 import { TELEPORTERS } from '../hidden-floors.js?v=18714dfa';
 import { WINTRY_PORTAL_TELEPORTERS } from '../wintry-portal.js?v=1437deda';
 import { PROJECTS_TEXT, aheadEntries, aheadRegions, contributedJobs, mineTotal, projectEntry, projectList } from '../projects-tracker.js?v=28ac735e';
-import { PROJECTS_PANEL_ID, buildProjectsPanel, renderAhead, renderProjects } from '../ui/projects-sheet.js?v=7950eca2';
+import { PROJECTS_PANEL_ID, buildProjectsPanel, renderAhead, renderProjects } from '../ui/projects-sheet.js?v=54950af7';
 import { SIDE_SHEET_IDS } from '../ui/panel-shell.js?v=06a0d3fe';
 import { trophyGotText } from '../home-trophies.js?v=4eb640c3';
 import { FEATURED_TEXT, featuredChanged, featuredFromServer, featuredNeedsLine, featuredToast, featuredWaitMins, readFeaturedMemo, writeFeaturedMemo } from '../featured-project.js?v=5b2ee7c1';
-import { renderFeaturedLine, renderFeaturedRow } from '../ui/featured-project.js?v=cbb4d6d5';
+import { featuredStore, renderFeaturedLine, renderFeaturedRow } from '../ui/featured-project.js?v=ed9eded9';
 import { GEM_HINTS, isGem } from '../gem-hints.js?v=4b65f7ac';
 import { JOB_ASK_TEXT, itemAskSubject, itemGetHref, showAskRule, workSkillMissing, workSkillNote } from '../street-job-asks.js?v=5b3e6bd0';
 import { applySoloScale, hopsFromStart, soloAmountsLine } from '../street-jobs-solo.js?v=3bcf5d1c';
@@ -2344,13 +2344,14 @@ function createMp(engine, client) {
       engine.pushActivity(text);
     }
     // G1206: the start card's tile shows it next time, before the realtime session starts.
-    writeFeaturedMemo(localStore(), featured);
+    writeFeaturedMemo(featuredStore(), featured);
     drawFeatured(engine);
     drawPlate(engine);
     projectsChanged(engine);
-    // G1206: the start card's "See the project" asked before the server had said which it is.
-    if (featuredOpenAsked && Date.now() - featuredOpenAsked < FEATURED_OPEN_WAIT_MS) {
-      featuredOpenAsked = 0;
+    // G1206: the start card's "See the project" asked before the server had said which it is. Nothing
+    // is sent for it: the first project_featured after connecting (every project_sync carries one) answers.
+    if (featuredOpenAsked) {
+      featuredOpenAsked = false;
       if (featured) openFeatured(engine);
     }
   });
@@ -2872,18 +2873,8 @@ const mineRows = new Map();
 /** G656: the featured street project (js/featured-project.js featuredFromServer), online only; null in solo. */
 let featured = null;
 let featuredTick = 0;
-/** G1206: when the start card's "See the project" asked for it before project_featured came (ms), else 0. */
-let featuredOpenAsked = 0;
-const FEATURED_OPEN_WAIT_MS = 30_000;
-
-/** This browser's localStorage, or null where it is refused. */
-function localStore() {
-  try {
-    return globalThis.localStorage || null;
-  } catch {
-    return null;
-  }
-}
+/** G1206: the start card's "See the project" came before project_featured did; the next one opens it. */
+let featuredOpenAsked = false;
 const pj = { panel: null, btn: null, dot: null, open: false, sessionSeen: 0, sig: '', badge: -1, asked: 0, answered: false, openNeeds: new Set(), last: '', pack: '', packAt: 0, aheadOpen: false, aheadTo: '', aheadSig: '', aheadRetry: 0 };
 
 /** The rows the panel reads: the save's in solo; online the server's list, then this page's live board rows. */
@@ -3458,13 +3449,13 @@ export const streetJobsFeature = {
 
   /** G1206 (features/start-today-feature.js): the featured project as this browser last saw it, online only. */
   startCardProject() {
-    return mpMode ? readFeaturedMemo(localStore()) : null;
+    return mpMode ? readFeaturedMemo(featuredStore()) : null;
   },
 
   /** G1206: the start card's "See the project": open it now, or when the server first names it. */
   openFeaturedProject(engine) {
     if (featured) openFeatured(engine);
-    else featuredOpenAsked = Date.now();
+    else featuredOpenAsked = true;
     return true;
   },
 
