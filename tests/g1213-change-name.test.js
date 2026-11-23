@@ -284,7 +284,7 @@ describe('G1213: the site keeps it and tells the realtime server', { skip: skipW
     assert.deepEqual(s.pending, [r.renamed.body.receipt.op], 'a load applies it if the game never did (Ledger::catchUp)');
     assert.deepEqual(s.row, { user_id: 10, old_name: 'Ada', old_slug: 'ada', new_name: 'Ada Two', admin_user_id: 0 });
     assert.equal(s.log.why, 'rename');
-    assert.equal(s.oldFree, true);
+    assert.equal(s.oldHeld, true, 'the old name is held, not free');
     assert.deepEqual(r.redirect, [10, 'ada-two'], 'the old /players/ address finds them');
     assert.equal(r.after.body.formerly, 'Ada');
     assert.equal(r.after.body.nextAt, r.renamed.body.nextAt);
@@ -300,6 +300,15 @@ describe('G1213: the site keeps it and tells the realtime server', { skip: skipW
     assert.equal(r.afterAdminChange.status, 200);
     assert.deepEqual(r.afterAdminFormerly, { 40: 'Eve Renamed' });
     assert.deepEqual(code(r.banned), [403, 'groddle_suspended']);
+    // The old name is held for 30 days, as a retired character's name is (Logins::NAME_HOLD): nobody can take it and pass as them.
+    const h = r.hold;
+    assert.deepEqual([h.other, h.self, h.day29, h.day31], [true, false, true, false], 'held from others, letter case aside, for 30 days; never from its owner');
+    assert.deepEqual(code(h.newCharacter), [422, 'name_taken'], 'not as a new character');
+    assert.deepEqual(code(h.otherRename), [422, 'name_taken'], 'not by another player\'s rename');
+    assert.deepEqual(code(h.backTooSoon), [429, 'name_change_wait'], 'its owner takes it back only once the wait allows a change');
+    assert.equal(h.backAfterWait.status, 200);
+    assert.equal(h.backAfterWait.body.player.name, 'Ada');
+    assert.deepEqual(r.adminHoldsNothing, { eve: false, eveRenamed: true }, 'an administrator\'s rename holds nothing; a player\'s own does');
   });
 });
 

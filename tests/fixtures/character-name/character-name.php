@@ -28,6 +28,7 @@ mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
 use Groddle\Minn\AdminConsole;
 use Groddle\Minn\CharacterName;
+use Groddle\Minn\CharacterRoutes;
 use Groddle\Minn\Characters;
 use Groddle\Minn\Ledger;
 use Groddle\Minn\Logins;
@@ -130,7 +131,7 @@ try {
         'trade' => $db->row('SELECT status, a_id, b_id, a_gave, b_gave, a_applied_at IS NULL AS waiting FROM ' . $db->table(Ledger::TRADES) . ' WHERE trade_id = ?', [$op]),
         'row' => $db->row('SELECT user_id, old_name, old_slug, new_name, admin_user_id FROM ' . $db->table(AdminConsole::RENAMES) . ' WHERE user_id = 10'),
         'log' => json_decode((string) $db->value('SELECT detail FROM ' . $db->table(Ledger::LOG) . " WHERE user_id = 10 AND kind = 'spend'"), true),
-        'oldFree' => !(new Characters($db))->taken('Ada'),
+        'oldHeld' => (new Characters($db))->taken('Ada'),
         'pending' => array_column($db->transaction(static fn () => $ledger->pending(10, null, $now)), 'trade'),
         'oldSlug' => $oldSlugs[10] ?? null,
     ];
@@ -151,10 +152,28 @@ try {
     $console = static fn (Request $r): AdminConsole => new AdminConsole(new Seams($db, $site, $r, Reader::forUser(1, $caps, '', 'token-1')));
     $adminReq = $request(Method::Post, ['name' => 'Eve Renamed']);
     $out['adminRename'] = $answer(static fn (): Response => $console($adminReq)->rename($adminReq, '40'));
+    // == The old name is held for 30 days (Logins::NAME_HOLD, as a retired character's): nobody else gets it ==
+    $chars = new Characters($db);
+    $newChar = $request(Method::Post, ['name' => 'ada']);
+    $out['hold'] = [
+        'other' => $chars->taken('ADA', $now),
+        'self' => $chars->taken('Ada', $now, 10),
+        'day29' => $chars->taken('Ada', $now + 29 * DAY),
+        'day31' => $chars->taken('Ada', $now + 31 * DAY),
+        'newCharacter' => $answer(static fn (): Response => (new CharacterRoutes(new Seams($db, $site, $newChar, Reader::forUser(20, $caps, '', 'token-20'))))->create($newChar)),
+        'otherRename' => $change(20, 'Ada'),
+    ];
+    // Taking it back: only once the 30 day wait allows a change at all.
+    $db->execute('UPDATE ' . $db->table(AdminConsole::RENAMES) . ' SET renamed_at = ? WHERE user_id = 10', [$at($now - 30 * DAY + 60)]);
+    $out['hold']['backTooSoon'] = $change(10, 'Ada');
+    $db->execute('UPDATE ' . $db->table(AdminConsole::RENAMES) . ' SET renamed_at = ? WHERE user_id = 10', [$at($now - 30 * DAY - 60)]);
+    $db->execute('UPDATE ' . $db->table(Ledger::TABLE) . ' SET currants = 1500 WHERE user_id = 10');
+    $out['hold']['backAfterWait'] = $change(10, 'Ada');
     $out['caseFormerly'] = CharacterName::formerly($db, [30], $now);
     $out['afterAdmin'] = ['formerly' => CharacterName::formerly($db, [40], $now), 'nextAt' => CharacterName::nextAt($db, 40, $now)];
     $out['afterAdminChange'] = $change(40, 'Eve Again');
     $out['afterAdminFormerly'] = CharacterName::formerly($db, [40], $now);
+    $out['adminHoldsNothing'] = ['eve' => $chars->taken('Eve', $now), 'eveRenamed' => $chars->taken('Eve Renamed', $now)];
 
     // == A suspended player can't ==
     $db->execute('INSERT INTO ' . $db->table(AdminConsole::BANS) . " (user_id, reason, admin_user_id, created_at) VALUES (11, 'x', 1, ?)", [$at($now)]);
