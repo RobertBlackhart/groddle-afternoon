@@ -79,7 +79,9 @@ describe('street layer data', () => {
     assert.ok(fades > 0 && fades < body.indexOf(copy), 'the copy goes over the fade');
     // One texture per chunk, freed with the view.
     // The edge mirror's texture views go first (their sources go with the textures they frame).
-    assert.match(body, /root\.once\('destroyed', \(\) => \{\s*(?:\/\/[^\n]*\n\s*)?for \(const v of views\) v\.destroy\(false\);\s*for \(const t of textures\) t\.destroy\(true\);/);
+    // G1166: through freeMade, which a restored context's rebuild also runs.
+    assert.match(body, /root\.once\('destroyed', \(\) => freeMade\(\)\);/);
+    assert.match(body, /for \(const v of views\) v\.destroy\(false\);\s*for \(const t of textures\) t\.destroy\(true\);/);
     assert.match(src, /buildGroundSkirt\(PIXI, opts\.renderer, root, grounds, W, sourceH, skirtDepth, /);
   });
 

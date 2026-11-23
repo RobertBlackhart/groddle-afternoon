@@ -372,6 +372,39 @@ describe('edge mirror lifecycle', () => {
     assert.equal(made.length, 0);
     assert.equal(root.edgeMirrorStats().builds, 1);
   });
+
+  it('G1166: draws the strips again after a restored WebGL context, at the same widths', async () => {
+    // A restored context gives back every render texture empty. The rebuild used to see the same
+    // plan key and keep the empty strips: the world past a street's end stayed bare (two restores
+    // in Chrome on Thornfad Layers, #621).
+    const { PIXI, made } = fakePixi();
+    const renders = [];
+    const renderer = { resolution: 2, render: (o) => renders.push(o) };
+    const root = new PIXI.Container();
+    const ground = new PIXI.Container();
+    ground.label = 'middleground';
+    const spr = new PIXI.Sprite({ orig: { width: 400, height: 200 }, source: {} });
+    spr.x = 5600;
+    spr.y = 900;
+    ground.addChild(spr);
+    root.addChild(ground);
+    attachEdgeMirrors(PIXI, renderer, root, [ground], 6000, 1200, () => 0.42);
+    root.edgeMirrorFrame(5000, 1000);
+    for (let i = 0; i < 100 && !made.length; i++) await tick();
+    assert.equal(root.edgeMirrorStats().builds, 1);
+    const first = made.slice();
+    const rendered = renders.length;
+    root.edgeMirrorRebuild();
+    for (let i = 0; i < 100 && root.edgeMirrorStats().builds < 2; i++) await tick();
+    assert.equal(root.edgeMirrorStats().builds, 2, 'built again though the view width did not change');
+    assert.ok(renders.length > rendered, 'the strips were rendered again');
+    assert.ok(first.every((t) => t.destroyed), 'the emptied textures were freed');
+    assert.ok(made.slice(first.length).length >= 1 && made.slice(first.length).every((t) => !t.destroyed));
+    // A frame at the same width after the rebuild does not build a third time.
+    root.edgeMirrorFrame(5000, 1000);
+    await new Promise((resolve) => setTimeout(resolve, 300));
+    assert.equal(root.edgeMirrorStats().builds, 2);
+  });
 });
 
 describe('edge mirror leaves out what looks usable and fades the walkable layers (#380)', () => {

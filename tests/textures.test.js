@@ -232,7 +232,15 @@ describe('#312 (G708): a failed image upload is sent again (guardImageUploads)',
     assert.match(game, /uploadGuard = uploadGuardParam === '1' \|\| \(TOUCH_PHONE && uploadGuardParam !== '0'\) \? textureUrls\.guardImageUploads\(app\.renderer\) : null;/);
     assert.match(game, /app\.canvas\.addEventListener\('webglcontextrestored', \(\) => \{[\s\S]{0,400}bgLayer\?\.dropBakes\?\.\(\)/);
     // Every colour bake and blur tile is forgotten, the next cull bakes what is near again.
-    assert.match(render, /root\.dropBakes = \(\) => \{[\s\S]{0,900}entry\.texture = null;[\s\S]{0,400}freeBlurTile\(tile, blurState\);[\s\S]{0,200}root\.edgeMirrorRebuild\?\.\(\);\s*cullAgain = true;/);
+    assert.match(render, /root\.dropBakes = \(\) => \{[\s\S]{0,900}entry\.texture = null;[\s\S]{0,400}freeBlurTile\(tile, blurState\);[\s\S]{0,200}root\.edgeMirrorRebuild\?\.\(\);[\s\S]{0,200}root\.groundSkirtRebuild\?\.\(\);\s*cullAgain = true;/);
+    // G1166 (#621): the ground skirt and the front layers' fades are render textures too: torn
+    // down and built again from the art, the colour copies the band crosses baked first.
+    const skirt = render.slice(render.indexOf('function buildGroundSkirt('), render.indexOf('function addLadderTiles('));
+    assert.match(skirt, /made = \{ strip, covers, views, textures \};/);
+    assert.match(skirt, /root\.once\('destroyed', \(\) => freeMade\(\)\);/);
+    assert.match(skirt, /root\.groundSkirtRebuild = \(\) => \{\s*if \(!made \|\| root\.destroyed\) return false;\s*freeMade\(\{ detach: true \}\);[\s\S]{0,600}ensureRecoloured\(PIXI, renderer, root\.recolourCache, b\.child\)[\s\S]{0,120}build\(\);\s*return true;/);
+    // Detaching frees the strip and every fade cover, and unhooks the covers from their layers.
+    assert.match(skirt, /if \(lc\.edgeFade === cover\) lc\.edgeFade = null;[\s\S]{0,120}cover\.destroy\(\{ children: true \}\);[\s\S]{0,120}strip\.destroy\(\{ children: true \}\);/);
     assert.match(render, /if \(cullAgain\) \{\s*cullAgain = false;\s*force = true;\s*\}/);
     // cullLayer bakes again a near deco with no bake, and a near blur tile with no texture.
     assert.match(render, /if \(!out && child\.recolour && !child\.recolour\.entry\.texture\) rebake\(child\);/);

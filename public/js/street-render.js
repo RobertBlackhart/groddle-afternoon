@@ -1973,6 +1973,9 @@ function buildGroundSkirt(PIXI, renderer, root, grounds, W, sourceH, depthPx, gr
   if (!main || depth <= 0 || W <= 0) return;
   const band = skirtBandHeight(depth, sourceH);
   const fadeStart = Math.max(0, Math.ceil(Number(floorBelow) || 0));
+  // What the last build made (G1166: a restored WebGL context empties its render textures, so the
+  // skirt is torn down and built again, groundSkirtRebuild).
+  let made = null;
   const build = () => {
     if (root.destroyed || grounds.some((lc) => lc.destroyed) || fronts.some((lc) => lc.destroyed)) return;
     const t0 = performance.now();
@@ -2202,6 +2205,7 @@ function buildGroundSkirt(PIXI, renderer, root, grounds, W, sourceH, depthPx, gr
     // street's whenever the camera is low enough to show below the edge), rendered alone, gets a
     // cover of the fade in its shape, drawn just above it and moved with it (updateParallax).
     const faded = [];
+    const covers = [];
     for (const lc of fronts) {
       const refY = lc.parallaxLayer ? lc.parallaxLayer.h : sourceH;
       const lw = Math.ceil(lc.parallaxLayer ? lc.parallaxLayer.w : W);
@@ -2243,15 +2247,12 @@ function buildGroundSkirt(PIXI, renderer, root, grounds, W, sourceH, depthPx, gr
       cover.y = lc.y;
       home.parent.addChild(cover);
       lc.edgeFade = cover;
+      covers.push(cover);
       faded.push(lc.label);
     }
     for (const child of culled) child.culled = true;
     root.addChild(strip);
-    root.once('destroyed', () => {
-      // Views first (their sources go with the textures they frame).
-      for (const v of views) v.destroy(false);
-      for (const t of textures) t.destroy(true);
-    });
+    made = { strip, covers, views, textures };
     root.groundSkirt = {
       depth,
       band,
@@ -2270,7 +2271,45 @@ function buildGroundSkirt(PIXI, renderer, root, grounds, W, sourceH, depthPx, gr
       faded,
       fadeBytes: Math.round(fadeBytes),
       ms: Math.round(performance.now() - t0),
+      builds: (root.groundSkirt?.builds || 0) + 1,
     };
+  };
+  /** Free what the last build made: views first (their sources go with the textures they frame). */
+  const freeMade = ({ detach = false } = {}) => {
+    if (!made) return;
+    const { strip, covers, views, textures } = made;
+    made = null;
+    if (detach) {
+      for (const cover of covers) {
+        for (const lc of fronts) if (lc.edgeFade === cover) lc.edgeFade = null;
+        if (!cover.destroyed) cover.destroy({ children: true });
+      }
+      if (!strip.destroyed) strip.destroy({ children: true });
+    }
+    for (const v of views) v.destroy(false);
+    for (const t of textures) t.destroy(true);
+  };
+  root.once('destroyed', () => freeMade());
+  /**
+   * G714/G1166: after a lost and restored WebGL context the skirt's band, its solid copy and the
+   * front layers' fades are render textures come back empty (two restores in Chrome left them
+   * blank). Build them again from the art: first the colour copies the band crosses, which
+   * dropBakes has just forgotten, so the band takes the layers' colours as on screen. False when
+   * there is no skirt yet (its first build is still waiting on the art).
+   */
+  root.groundSkirtRebuild = () => {
+    if (!made || root.destroyed) return false;
+    freeMade({ detach: true });
+    if (root.recolourCache) {
+      for (const lc of new Set([...grounds, ...fronts])) {
+        const edge = (fronts.includes(lc) && lc.parallaxLayer ? lc.parallaxLayer.h : sourceH) - (lc.skirtAt?.y || 0) - Math.max(band, 24);
+        for (const b of layerArtBoxes(PIXI, lc)) {
+          if (b.y1 > edge && b.child.recolour && !b.child.recolour.entry.texture) ensureRecoloured(PIXI, renderer, root.recolourCache, b.child);
+        }
+      }
+    }
+    build();
+    return true;
   };
   const sprites = [];
   for (const lc of new Set([...grounds, ...fronts])) {
@@ -2678,8 +2717,13 @@ export function attachEdgeMirrors(PIXI, renderer, root, layers, W, sourceH, inse
     if (state.timer !== null) clearTimeout(state.timer);
     state.timer = setTimeout(build, ms);
   };
-  /** G714: after a lost and restored WebGL context the strips' render textures are empty: draw them again. */
+  /**
+   * G714: after a lost and restored WebGL context the strips' render textures are empty: draw them
+   * again. G1166: the plan's key is forgotten first, or build sees the same widths and keeps the
+   * empty strips (two restores in Chrome left the world past a street's end bare).
+   */
   root.edgeMirrorRebuild = () => {
+    state.key = '';
     if (state.ready && state.vpW) schedule(0);
   };
   /** Once a frame from updateParallax: follow the layers, hide strips off screen, rebuild on a new width or resolution. */
@@ -3243,7 +3287,8 @@ export function buildStreetView(street, PIXI, opts = {}) {
    * background tab) gives back every image texture, which uploads again from its image, but a
    * render texture comes back empty: the layers' colour bakes and blur tiles, so a street's
    * decorations went and stayed gone. Forget every bake; the next cull bakes again what is near
-   * the camera (the path a deco takes coming back into view), and the edge mirrors draw again.
+   * the camera (the path a deco takes coming back into view), and the edge mirrors and the ground
+   * skirt draw again (G1166).
    * Returns how many bakes it dropped.
    */
   root.dropBakes = () => {
@@ -3264,6 +3309,8 @@ export function buildStreetView(street, PIXI, opts = {}) {
       }
     }
     root.edgeMirrorRebuild?.();
+    // G1166: the ground skirt and the front layers' fades are render textures too.
+    root.groundSkirtRebuild?.();
     cullAgain = true;
     return dropped;
   };
