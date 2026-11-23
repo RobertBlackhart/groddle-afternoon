@@ -132,11 +132,20 @@ describe('Card-Carrying Qualification from the Bureaucrat (store 17)', () => {
     assert.equal(pc.currants, 20);
   });
 
-  it('drops the card from the menu once you hold the badge', () => {
+  it('G1180 (ours, Austin 2026-11-23): still sells the card once you hold the badge, for street projects', () => {
+    // Glitch dropped it (npc_bureaucrat.js getItems 257); job_street_ph4_02c asks for 250.
     const offers = clerkOffers(['bureaucraticarts_1', 'bureaucraticarts_2'], [CARD_BADGE]);
-    assert.deepEqual(offers.map((o) => o.classTsid), ['your_papers', 'general_building_permit']);
+    assert.deepEqual(offers.map((o) => o.classTsid), ['card_carrying_qualification', 'your_papers', 'general_building_permit']);
     assert.ok(offers.every((o) => o.ok));
-    assert.equal(buyDocument({ currants: 500 }, createInventory({}), 'card_carrying_qualification', [], [CARD_BADGE]).reason, 'unknown');
+    // No Bureaucratic Arts needed either, and the price stays 50.
+    const bare = clerkOffers([], [CARD_BADGE]).find((o) => o.classTsid === 'card_carrying_qualification');
+    assert.deepEqual([bare.ok, bare.cost], [true, 50]);
+    const pc = { currants: 500 };
+    const inv = createInventory({});
+    assert.equal(buyDocument(pc, inv, 'card_carrying_qualification', [], [CARD_BADGE]).ok, true);
+    assert.equal(countItem(inv, 'card_carrying_qualification'), 1);
+    assert.equal(pc.currants, 450);
+    assert.equal(BUREAUCRACY_ITEMS.card_carrying_qualification.untilBadge, undefined, 'no badge gate left on the row');
   });
 
   it('counts as obtainable for street projects', async () => {

@@ -242,10 +242,13 @@ export const HALL_STORE = Object.freeze([
   Object.freeze({ classTsid: 'general_building_permit', label: 'General Building Permit', cost: 500 }),
 ]);
 
-/** npc_bureaucrat.js getItems: what the bureaucrats will deal in with you. */
+/**
+ * npc_bureaucrat.js getItems: what the bureaucrats will deal in with you. Glitch dropped the card
+ * once you held its badge; ours sells it to badge holders too (G1180, as js/bureaucracy.js
+ * clerkOffers), for street projects that ask for Card-Carrying Qualifications.
+ */
 export function hallItems(learned = [], achievements = []) {
   return HALL_STORE.filter((it) => {
-    if (it.classTsid === 'card_carrying_qualification' && achievements.includes('card_carrying_qualification')) return false;
     if (it.classTsid !== 'card_carrying_qualification' && !learned.includes('bureaucraticarts_1')) return false;
     if (it.classTsid === 'general_building_permit' && !learned.includes('bureaucraticarts_2')) return false;
     return true;

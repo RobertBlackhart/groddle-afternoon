@@ -26,10 +26,10 @@
  *
  * A tool counts as held only when one of those sources gives it.
  *
- * Gated sources (G1180): a source that stops for a player is not an unlimited supply. The
- * Bureaucracy clerk sells a row with `untilBadge` only to players without that badge
- * (bureaucracy.js BUREAUCRACY_ITEMS, npc_bureaucrat.js getItems 257: the Card-Carrying
- * Qualification, whose badge Legalize It grants), so a player holding the badge can get none. An
+ * Gated sources (G1180): a source that stops for a player is not an unlimited supply. A
+ * Bureaucracy clerk row with `untilBadge` would be sold only to players without that badge
+ * (Glitch's npc_bureaucrat.js getItems 257 did that to the Card-Carrying Qualification; ours sells
+ * it to everyone since Austin's 2026-11-23 ruling, so no row is gated today). An
  * item whose only sources are gated lands in `limits` ({ kind, badge, after, source }: `after`
  * is how many a player can still get once the gate has shut); any ungated source lifts it.
  * gatedShortfalls() lists the street project phases that ask for more of a gated item than that.
@@ -152,7 +152,7 @@ export async function obtainableItems() {
   }
   for (const item of foxes.FOX_RANGER_STORE.items) add(item.classTsid, 'vendor:fox_ranger');
   // Bureaucratic Hall clerks (supply feature), after the Legalize It card. A row sold only until a
-  // badge (the card itself) is gated: none once you hold the badge (G1180).
+  // badge would be gated: none once you hold the badge (G1180; the card no longer is).
   for (const [id, def] of Object.entries(bureaucracy.BUREAUCRACY_ITEMS)) {
     if (def.untilBadge) addGated(id, 'vendor:bureaucracy', { kind: 'until-badge', badge: def.untilBadge, after: 0 });
     else add(id, 'vendor:bureaucracy');
@@ -223,9 +223,8 @@ export async function obtainableItems() {
  * while Austin decides. Keyed `<phase class>:<item>`.
  */
 export const ALLOWED_SHORTFALLS = Object.freeze({
-  // #627: job_street_ph4_02c asks for 250 Card-Carrying Qualifications, as Glitch did
-  // (quests/job_street_ph4_02c.js 106-112), but the clerk sells them only before the badge.
-  'job_street_ph4_02c:card_carrying_qualification': 'G1180',
+  // G1180 (#627) is gone: the clerk sells Card-Carrying Qualifications to badge holders too, so
+  // job_street_ph4_02c's 250 can be bought (Austin 2026-11-23).
 });
 
 /**

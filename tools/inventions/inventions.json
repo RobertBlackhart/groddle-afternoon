@@ -5347,6 +5347,27 @@
    "rows": [
     "G796"
    ]
+  },
+  {
+   "id": "bureaucracy-card-for-badge-holders",
+   "title": "The Bureaucracy clerks sell Card-Carrying Qualifications to badge holders too (Glitch stopped once you held the badge)",
+   "kind": "behaviour",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/bureaucracy.js",
+     "symbol": "clerkOffers"
+    },
+    {
+     "file": "public/js/bureaucratic-hall.js",
+     "symbol": "hallItems"
+    }
+   ],
+   "why": "npc_bureaucrat.js getItems 257 skipped the card for anyone holding its badge, yet street projects (job_street_ph4_02c on Anrasan Glance, Kolan Presence and Tharon Spelunk, r553) ask for 250 of them, so veterans could never finish that phase (#627). Price (50c), the clerks' lines and the projects stay Glitch's; for a badge holder a card counts toward nothing (the card's activation says You already have this).",
+   "ruling": "Austin 2026-11-23 (G1180): the clerk sells Card-Carrying Qualifications to everyone, badge holders included; a card no longer counts toward the badge for them; projects stay as Glitch's",
+   "rows": [
+    "G1180"
+   ]
   }
 ]
 }

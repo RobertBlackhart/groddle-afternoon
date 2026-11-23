@@ -168,10 +168,15 @@
   "public/js/builder/zone.js": {
     "not-source: on the shipped street (spec 11) are that zone's, not Tiny Speck's: a fork leaves": "ours-zone"
   },
+  "public/js/bureaucracy.js": {
+    "ours: * Ours (G1180, Austin 2026-11-23): the clerk sells the": "bureaucracy-card-for-badge-holders",
+    "ours: badge (npc_bureaucrat.js getItems `continue`); ours": "bureaucracy-card-for-badge-holders"
+  },
   "public/js/bureaucratic-hall.js": {
     "ours: * 700 - 128 = 572. The two hitboxes are lost: ours are the desk room": "ours-bureaucratic-hall",
     "ours: * The room (ours, from Tiny Speck's art): the hall's location XML": "ours-bureaucratic-hall",
     "ours: * Where the signs hang is ours too (no placement": "ours-bureaucratic-hall",
+    "ours: * once you held its badge; ours sells it to badge holders too (G1180, as": "bureaucracy-card-for-badge-holders",
     "ours: /** The counter's left end (ours, just right of the helpers' limit).": "ours-bureaucratic-hall",
     "ours: /** bureaucratic_hall_entered (ours): the desk room, left of the partition at x 625.": "ours-bureaucratic-hall",
     "ours: /** waiting_area (ours): the floor in front of the chairs (backdrop x": "ours-bureaucratic-hall",
@@ -1440,6 +1445,9 @@
   },
   "tools/item-art/render.mjs": {
     "reimagined: Render reimagined item icons (tools/item-art/*.svg) to the pack": "ours-tools-item-art"
+  },
+  "tools/job-obtainable.mjs": {
+    "ours: 257 did that to the Card-Carrying Qualification; ours": "bureaucracy-card-for-badge-holders"
   },
   "tools/made-art/compose.py": {
     "ours: earch/art-briefs/ez-cookin/attach/01-measurements-ours.svg),": "made-maps",

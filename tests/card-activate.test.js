@@ -95,6 +95,10 @@ describe('Card-Carrying Qualification: activate from the pack', () => {
     assert.equal(result.reason, 'already_activated');
     assert.equal(result.msg, 'You already have this.');
     assert.equal(countItem(run.inv, LEGALIZE_CARD_ID), 1);
+    // G1180: a badge holder can buy more (for street projects); they count toward nothing.
+    assert.equal(buyDocument(run.pc, run.inv, LEGALIZE_CARD_ID, [], [LEGALIZE_CARD_ID]).ok, true);
+    assert.equal(activateCardFromPack({ ...run }).reason, 'already_activated');
+    assert.equal(countItem(run.inv, LEGALIZE_CARD_ID), 2);
   });
 
   it('activating uses one card and leaves the extras (they are tradeable)', () => {

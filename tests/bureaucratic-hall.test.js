@@ -378,8 +378,9 @@ describe('the visit', () => {
 describe('getItems and the fill rules', () => {
   it('store 17 as getItems allows it', () => {
     assert.deepEqual(hallItems([], []).map((i) => i.classTsid), ['card_carrying_qualification']);
-    assert.deepEqual(hallItems([], ['card_carrying_qualification']), []);
-    assert.deepEqual(hallItems(['bureaucraticarts_1'], ['card_carrying_qualification']).map((i) => i.classTsid), ['your_papers']);
+    // G1180 (ours): the card stays on the menu for badge holders (Glitch's getItems 257 dropped it).
+    assert.deepEqual(hallItems([], ['card_carrying_qualification']).map((i) => i.classTsid), ['card_carrying_qualification']);
+    assert.deepEqual(hallItems(['bureaucraticarts_1'], ['card_carrying_qualification']).map((i) => i.classTsid), ['card_carrying_qualification', 'your_papers']);
     assert.deepEqual(hallItems(['bureaucraticarts_1', 'bureaucraticarts_2'], []).map((i) => i.classTsid), ['card_carrying_qualification', 'your_papers', 'general_building_permit']);
   });
   it('"a" before the item except Your Papers', () => {

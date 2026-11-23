@@ -119,23 +119,17 @@ describe('street jobs catalog', () => {
     }
   });
 
-  it('G1180: a source sold only until a badge is gated, and the phases asking for more than that are named', async () => {
+  it('G1180: the clerk sells the card to badge holders too, so no project phase is short of a gated item', async () => {
     const { items, limits, sources } = await obtainableItems();
-    // The clerk sells the card only to players without its badge (bureaucracy.js untilBadge, npc_bureaucrat.js 257).
-    assert.ok(items.has('card_carrying_qualification'), 'someone can still get one');
-    assert.deepEqual({ ...limits.card_carrying_qualification }, { kind: 'until-badge', badge: 'card_carrying_qualification', after: 0, source: 'vendor:bureaucracy' });
-    // Papers and the permit have no badge gate: ordinary supplies.
-    for (const id of ['your_papers', 'general_building_permit']) {
+    // Austin 2026-11-23: no badge gate on the card any more (Glitch's npc_bureaucrat.js 257 had one).
+    assert.ok(items.has('card_carrying_qualification'));
+    for (const id of ['card_carrying_qualification', 'your_papers', 'general_building_permit']) {
       assert.equal(limits[id], undefined, id);
       assert.equal(sources[id], 'vendor:bureaucracy');
     }
-    const rows = gatedShortfalls(catalog, limits);
-    assert.deepEqual(rows.map((r) => r.label).sort(), ['Anrasan Glance', 'Kolan Presence', 'Tharon Spelunk']);
-    for (const r of rows) assert.deepEqual([r.classTsid, r.reqId, r.classId, r.num, r.after], ['job_street_ph4_02c', 'r553', 'card_carrying_qualification', 250, 0]);
-    // The check passes only because Austin is deciding G1180; anything else gated fails it.
-    assert.equal(ALLOWED_SHORTFALLS['job_street_ph4_02c:card_carrying_qualification'], 'G1180');
-    assert.deepEqual(rows.filter((r) => !r.allowed), [], 'no gated shortfall outside the allowed list');
-    assert.equal(gatedShortfalls(catalog, limits, {}).filter((r) => !r.allowed).length, 3, 'without the exception the check flags all three');
+    // job_street_ph4_02c's 250 cards (Anrasan Glance, Kolan Presence, Tharon Spelunk) pass on their own, no exception.
+    assert.deepEqual({ ...ALLOWED_SHORTFALLS }, {});
+    assert.deepEqual(gatedShortfalls(catalog, limits, {}), []);
   });
 
   it('G1180: gatedShortfalls counts only items whose every source is gated, beyond what is left after the gate', () => {
