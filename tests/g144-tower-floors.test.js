@@ -10,10 +10,10 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { assertStreetGeometry, platformYAt } from '../public/js/street-model.js?v=a9a05f9d';
-import { arrivalInTarget } from '../public/js/location-navigation.js?v=9555ce80';
+import { arrivalInTarget } from '../public/js/location-navigation.js?v=e9221d85';
 import { populationForStreet } from '../public/js/street-ecology.js?v=1401a97c';
 import { pickAwayConnection, pickConnection, planSignpostTravel, resolveLoadedTsid } from '../public/js/travel.js?v=7fd6e363';
-import { validateShippedStreet } from '../public/js/builder/validate.js?v=469c0050';
+import { validateShippedStreet } from '../public/js/builder/validate.js?v=330fdc1d';
 import {
   HAUKI_FLOOR_1,
   HAUKI_FLOOR_2,

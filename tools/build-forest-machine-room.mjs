@@ -13,7 +13,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { arrivalInTarget } from '../public/js/location-navigation.js?v=9555ce80';
+import { arrivalInTarget } from '../public/js/location-navigation.js?v=e9221d85';
 import {
   CLEARING_DOOR,
   CLEARING_TSID,

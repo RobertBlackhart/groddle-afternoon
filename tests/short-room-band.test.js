@@ -12,7 +12,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { SHORT_SCENE_BAND, shortSceneBand } from '../public/js/location-view.js?v=476fd6f0';
-import { stageSkyColour } from '../public/js/street-render.js?v=b18a200b';
+import { stageSkyColour } from '../public/js/street-render.js?v=0b167cb9';
 import { ROOM_NO_SKY, gradientTop, sceneRoot } from '../public/js/quest-rooms/kit.js?v=facd397b';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

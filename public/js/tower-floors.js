@@ -112,7 +112,7 @@ const seedOf = (tsid) => [...String(tsid)].reduce((n, c) => (Math.imul(n, 31) + 
 /* The five towers                                                     */
 /* ------------------------------------------------------------------ */
 
-const tower = ({ id, label, lobby, basement, hub, quarter, style, floors }) => Object.freeze({
+const tower = ({ id, label, lobby, basement, hub, quarter, style, liftArt = TOWER_LIFT_ART, floors }) => Object.freeze({
   id,
   label,
   lobby,
@@ -120,6 +120,7 @@ const tower = ({ id, label, lobby, basement, hub, quarter, style, floors }) => O
   hub: Object.freeze({ hubId: hub[0], hubName: hub[1] }),
   quarter,
   style,
+  liftArt,
   floors: Object.freeze(floors.map(([n, source, x, y]) => Object.freeze({
     n,
     source,
@@ -131,17 +132,31 @@ const tower = ({ id, label, lobby, basement, hub, quarter, style, floors }) => O
 });
 
 /**
+ * G1153: the lift is the signpost's own art. Each lobby XML's lift signpost carries a deco
+ * (`<object id="deco">`, 392 x 422): signpost_asset_elevator at Sabudana Drama, Egret Taun and
+ * Gregarious, signpost_asset_elevator_noBG at Hauki Seeks and Hakusan Heaps (`liftArt`). The client
+ * drew that deco and no post (SignpostView.as render 155-178), the lobby's plate reading L
+ * (showNumber, quarter row 0). Every floor's lift is the same art (liftDecos' old lift_door).
+ */
+export const TOWER_LIFT_ART = 'signpost_asset_elevator';
+/** The lobby lift's plate (LocationSelectorDialog / SignpostView.showNumber: row 0 is L). */
+export const TOWER_LOBBY_PLATE = 'L';
+
+/** A lift signpost's deco (G1153), as the location XML gives it. */
+export const towerLiftDeco = (sprite = TOWER_LIFT_ART) => ({ sprite, w: TOWER_LIFT.w, h: TOWER_LIFT.h });
+
+/**
  * Lobby, basement, hub, the lift's quarter group, the accent style, and per
  * floor [n, GSJS tsid, connect x, connect y] from the lobby XML's lift.
  */
 export const TOWERS = Object.freeze([
-  tower({ id: 'hauki', label: 'Hauki Seeks Manor', lobby: 'GA9H1V6OGRU2FSB', basement: 'GA9EBPF8M2031HB', hub: ['75', 'Bortola'], quarter: 'RHVMQ7S8TA32UQK', style: 'drips',
+  tower({ id: 'hauki', label: 'Hauki Seeks Manor', lobby: 'GA9H1V6OGRU2FSB', basement: 'GA9EBPF8M2031HB', hub: ['75', 'Bortola'], quarter: 'RHVMQ7S8TA32UQK', style: 'drips', liftArt: 'signpost_asset_elevator_noBG',
     floors: [[1, 'LDOBRJIEU2V2Q2G', 125, -108], [2, 'LDOBRKREU2V2F9B', 122, -106], [3, 'LHF9DOUO7K03OUA', 131, -107]] }),
   tower({ id: 'egret', label: 'Egret Taun Towers', lobby: 'GHVUR3UKGRU2SD2', basement: 'GHVEI9NVJ203LRO', hub: ['98', 'Besara'], quarter: 'RA9M20EOK3H2AAO', style: 'moss',
     floors: [[1, 'LUVMHFM3U2V2T72', 119, -111], [2, 'LUVMHGV3U2V2J7M', 124, -111], [3, 'LUVMHH74U2V245O', 119, -111]] }),
   tower({ id: 'sabudana', label: 'Sabudana Drama Towers', lobby: 'GIFI4FP9GRU2CC8', basement: 'GIF84CCRN203N7P', hub: ['101', 'Aranna'], quarter: 'RA5ENLT7GMB2R2H', style: 'crates',
     floors: [[1, 'LNV6EBBIS2V2JB8', 120, -118], [2, 'LNV6ECKIS2V26JU', 124, -112], [3, 'LNV6EDVIS2V2SFD', 124, -112], [4, 'LNV6EEAJS2V26B2', 120, -118]] }),
-  tower({ id: 'hakusan', label: 'Hakusan Heaps Towers', lobby: 'GHVUFJ6HGRU2V0E', basement: 'GHV6HOCAH203RMF', hub: ['97', 'Muufo'], quarter: 'RA9K2TTVD5D2S26', style: 'vines',
+  tower({ id: 'hakusan', label: 'Hakusan Heaps Towers', lobby: 'GHVUFJ6HGRU2V0E', basement: 'GHV6HOCAH203RMF', hub: ['97', 'Muufo'], quarter: 'RA9K2TTVD5D2S26', style: 'vines', liftArt: 'signpost_asset_elevator_noBG',
     floors: [[1, 'LA9TBQS1V2V2G34', 119, -100], [2, 'LA9TBR62V2V23E2', 117, -120]] }),
   tower({ id: 'gregarious', label: 'Gregarious Towers', lobby: 'GA5134UPLRU29OH', basement: 'GDONEDVHC4030KF', hub: ['58', 'Groddle Meadow'], quarter: 'RIF12A8IEUK1V1B', style: 'cracks',
     floors: [[1, 'LDOBRLULU2V24DS', 124, -107], [2, 'LDOBRNDMU2V2Q34', 115, -105], [3, 'LDOBROOMU2V2GCK', 105, -103]] }),
@@ -898,7 +913,7 @@ function liftDecos(floor) {
   const base = floor.arrive.y - L.art;
   return [
     deco('apartment_hall_elevator', L.x, base, L.tower.w, L.tower.h, 60, { id: 'lift_tower' }),
-    deco('signpost_asset_elevator', L.x, base, L.w, L.h, 61, { id: 'lift_door' }),
+    // The lift's door and plate are the signpost's deco (G1153: towerLiftDeco), drawn by the signpost.
   ];
 }
 
@@ -1089,9 +1104,11 @@ export function towerFloorStreet(floor, lobby) {
   const signposts = [{
     id: TOWER_FLOOR_SIGNPOST,
     x: TOWER_LIFT.x,
-    y,
+    // Its foot is the lift art's (liftDecos' base), as a lobby lift's is.
+    y: y - TOWER_LIFT.art,
     w: TOWER_LIFT.w,
     h: TOWER_LIFT.h,
+    deco: towerLiftDeco(),
     connects: towerLiftConnects(lobbyLift.connects),
   }];
   const doors = layout.bays.filter(([, , kind]) => kind === 'door').length;

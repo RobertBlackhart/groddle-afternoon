@@ -14,7 +14,7 @@ import {
   buildStreetNavigation,
   arrivalInTarget,
   EDGE_SLACK,
-} from '../public/js/location-navigation.js?v=9555ce80';
+} from '../public/js/location-navigation.js?v=e9221d85';
 import {
   DOOR_KEYS,
   DOOR_TEXT,

@@ -15,15 +15,17 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { arrivalInTarget } from '../public/js/location-navigation.js?v=9555ce80';
+import { arrivalInTarget } from '../public/js/location-navigation.js?v=e9221d85';
 import {
+  TOWER_LOBBY_PLATE,
   TOWERS,
   towerFloorArrive,
   towerFloorFor,
   towerFloorIndexEntry,
   towerFloorLayout,
   towerFloorStreet,
-} from '../public/js/tower-floors.js?v=3d1ad8b7';
+  towerLiftDeco,
+} from '../public/js/tower-floors.js?v=5ae5fef9';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const streetsDir = join(root, 'public/assets/streets');
@@ -69,6 +71,9 @@ for (const tower of TOWERS) {
     put(`${floor.tsid}.json`, `${JSON.stringify(street)}\n`);
     indexRow(floor.tsid, towerFloorIndexEntry(street));
   }
+  // G1153: the lobby's lift is its deco (the lobby XML's signpost deco, tower.liftArt), plate L.
+  lift.deco = towerLiftDeco(tower.liftArt);
+  lift.plate = TOWER_LOBBY_PLATE;
   // The lobby's lift: each floor row lands in front of that floor's lift.
   for (const c of lift.connects) {
     const f = towerFloorFor(c.tsid);

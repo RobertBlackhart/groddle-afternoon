@@ -725,7 +725,7 @@ import {
   ensureStreetIndex,
   resolveIndexTsid,
 } from './js/street-loader.js?v=10376267';
-import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=0de2574c';
+import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=0fec93fc';
 import {
   ladderTopDeck,
   groundBeneath,
@@ -756,7 +756,7 @@ import {
   setSignpostHover,
   setSignpostKeys,
   signpostBoardAt,
-} from './js/street-render.js?v=b18a200b';
+} from './js/street-render.js?v=0b167cb9';
 import {
   GAME_DAY_MS,
   shouldFireNewDay,
@@ -27090,7 +27090,7 @@ function openWorldMenuFor(target) {
 }
 
 /** RIGHTCLICK: a signpost's arms as a menu at the pointer, the arm clicked focused; a pick takes that road. */
-function openSignpostArmsMenu(hit, at) {
+function openSignpostArmsMenu(hit, at, { keys = false } = {}) {
   const view = hit?.view;
   if (!view) return false;
   const avail = availableStreetTsids();
@@ -27099,14 +27099,17 @@ function openSignpostArmsMenu(hit, at) {
     label: signBoardLabel,
     notInGame: ROAD_NOT_IN_GAME,
   });
-  const clicked = rows.findIndex((r) => r.board === hit.board);
+  // G1153: every board of a lift is the whole lift, so no floor is the one clicked.
+  const lift = Boolean(view.signDeco);
+  const clicked = lift ? -1 : rows.findIndex((r) => r.board === hit.board);
   clearSignpostBoardHover();
   return worldContextMenu().open({
-    title: 'Signpost',
+    title: lift ? 'Lift' : 'Signpost',
     rows,
     at,
-    owner: `signpost:${signBoardLabel(hit.board) || ''}`,
-    focusIndex: clicked < 0 ? null : clicked,
+    keys,
+    owner: `signpost:${lift ? 'lift' : signBoardLabel(hit.board) || ''}`,
+    focusIndex: clicked < 0 ? (keys ? 0 : null) : clicked,
     onPick: (id) => {
       const row = rows.find((r) => r.id === id);
       // #500: a far post's arm is taken at the post (armWhenThere).
@@ -27342,6 +27345,19 @@ function releaseSignpostFocus() {
   setCanvasData('signpostFocus', '');
 }
 
+/** G1153: the client point beside a lift's door (its top right), where Enter opens its floors. */
+function liftMenuPoint(view) {
+  const bounds = app?.canvas?.getBoundingClientRect?.();
+  if (!bounds || !bounds.width || !bounds.height) return null;
+  const hit = view.signBoards?.[0]?.hitArea || { x: 0, y: 0, width: 0, height: 0 };
+  const wx = (Number(view.x) || 0) + hit.x + hit.width;
+  const wy = (Number(view.y) || 0) + hit.y;
+  return {
+    x: bounds.left + (wx - camTarget) * (bounds.width / VIEW_W),
+    y: bounds.top + (wy - (camY || 0)) * (bounds.height / VIEW_H),
+  };
+}
+
 /** Enter (or E, or the chooser's signpost tile) at a post. */
 function enterSignpost() {
   const at = signpostAtHand();
@@ -27353,6 +27369,12 @@ function enterSignpost() {
   }
   if (boards.length === 1) {
     takeSignBoard(boards[0]);
+    return;
+  }
+  // G1153: at a lift drawn as its deco (no arms to light), Enter opens its floors as a menu beside
+  // the lift, as the client's LocationSelectorDialog listed them.
+  if (at.view?.signDeco) {
+    openSignpostArmsMenu({ view: at.view, board: boards[0].board }, liftMenuPoint(at.view), { keys: true });
     return;
   }
   signpostFocus = { boards, index: 0 };
@@ -35195,6 +35217,11 @@ async function main() {
     // FRIENDPOST: a scene post's arm (the home street's signpost) runs its own verb.
     if (signBoard?.board?.scene) {
       takeSceneArm(signBoard);
+      return;
+    }
+    // G1153: a lift drawn as its deco offers its floors (LocationSelectorDialog), never one at once.
+    if (signBoard?.view?.signDeco) {
+      openSignpostArmsMenu(signBoard, { x: e.clientX, y: e.clientY });
       return;
     }
     if (signBoard) {

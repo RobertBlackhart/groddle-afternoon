@@ -11,7 +11,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { assertStreetGeometry, platformYAt } from '../public/js/street-model.js?v=a9a05f9d';
-import { arrivalInTarget } from '../public/js/location-navigation.js?v=9555ce80';
+import { arrivalInTarget } from '../public/js/location-navigation.js?v=e9221d85';
 import {
   INTERROGATION_ARRIVE,
   INTERROGATION_ARRIVE_SCREEN,

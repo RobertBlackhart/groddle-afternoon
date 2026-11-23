@@ -14,7 +14,7 @@ import { homedir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { LADDER_TILE_Z, ladderTilePieces } from '../public/js/ladder-tiling.js?v=4f9e07fa';
-import { extractLocationNavigation } from '../public/js/location-navigation.js?v=9555ce80';
+import { extractLocationNavigation } from '../public/js/location-navigation.js?v=e9221d85';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const read = (rel) => readFileSync(join(here, '..', rel), 'utf8');
@@ -113,7 +113,7 @@ function fakePixi() {
 }
 
 before(async () => {
-  ({ DECO_TWINS } = await import('../public/js/street-render.js?v=b18a200b'));
+  ({ DECO_TWINS } = await import('../public/js/street-render.js?v=0b167cb9'));
 });
 
 describe('ladder tiling rule (SurfaceView.tile, vertical)', () => {
@@ -233,7 +233,7 @@ describe('buildStreetView draws the tiles', () => {
         setTimeout(() => this.onload?.(), 0);
       }
     };
-    const { buildStreetView } = await import('../public/js/street-render.js?v=b18a200b');
+    const { buildStreetView } = await import('../public/js/street-render.js?v=0b167cb9');
     const { worldToScreen } = await import('../public/js/street-model.js?v=a9a05f9d');
     const s = { ...street('GM4109NI2R640'), gradient: null, signposts: [] };
     const root = buildStreetView(s, globalThis.PIXI, { available: new Set(['ladder_tile_center_01_spine']) });

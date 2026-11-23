@@ -12,7 +12,7 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { arrivalInTarget } from '../public/js/location-navigation.js?v=9555ce80';
+import { arrivalInTarget } from '../public/js/location-navigation.js?v=e9221d85';
 import { ENCHANTED_FORESTS, buildEnchantedForestStreet, enchantedForestIndexEntry } from '../public/js/enchanted-forests.js?v=17ac01e4';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

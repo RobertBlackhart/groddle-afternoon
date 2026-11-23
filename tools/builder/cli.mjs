@@ -30,10 +30,10 @@ import { builderGuide } from './guide.mjs';
 import { applyOps, applyOp, nextDecoId, nextGeometryId, findGeometry, findDeco, GEOMETRY, OpError, OP_NAMES } from '../../public/js/builder/ops.js?v=27c7796f';
 import { forkStreet, forkOps, newTsid, libraryAsset, linkEdit, editsOn } from '../../public/js/builder/zone.js?v=ce289eb1';
 import { newStreet, newStreetOps, newHub, nextHubId, mapWithStreet, mapWithoutStreet, TEMPLATES, DEFAULT_MAP_COLOURS } from '../../public/js/builder/templates.js?v=881dfa69';
-import { arriveFor, newConnect, POST_W, POST_H, LADDER_W } from '../../public/js/builder/geometry-handles.js?v=b7acc278';
-import { arrivalOps, settlePostOps, followPostOps } from '../../public/js/builder/posts.js?v=41e696cb';
+import { arriveFor, newConnect, POST_W, POST_H, LADDER_W } from '../../public/js/builder/geometry-handles.js?v=25609746';
+import { arrivalOps, settlePostOps, followPostOps } from '../../public/js/builder/posts.js?v=c781e81f';
 import { platformsScreen, isStandable } from '../../public/js/street-model.js?v=a9a05f9d';
-import { DECO_TWINS } from '../../public/js/street-render.js?v=b18a200b';
+import { DECO_TWINS } from '../../public/js/street-render.js?v=0b167cb9';
 import { groundOps, floatingLines, FLOAT_REACH } from '../../public/js/builder/ground.js?v=f4254e96';
 import { EFFECT_KINDS, EFFECT_DEFAULTS, EFFECT_LIMITS, RUMBLE_DEFAULTS, effectsCost, normaliseEmitter, rumbleShare } from '../../public/js/street-effects.js?v=f8f8bd01';
 
@@ -1165,7 +1165,7 @@ export async function run(argv, { env = process.env, fetchImpl = globalThis.fetc
       let report;
       let rev;
       if (local()) {
-        const { validateZone } = await import('../../public/js/builder/validate.js?v=469c0050');
+        const { validateZone } = await import('../../public/js/builder/validate.js?v=330fdc1d');
         const { loadValidatorContext } = await import('./validator-context.mjs');
         const zone = readJson(resolve(flags.file));
         rev = zone.rev;

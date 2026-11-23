@@ -36,6 +36,9 @@ export const DECO_TWINS = Object.freeze({
   house_back_medium_05: 'house_back_medium05',
   ladder_tile_center_00_basicWood: 'groddle_ladder_tile_center_00_basicWood',
   ladder_tile_cap_1_basicWood: 'groddle_ladder_tile_cap_1_basicWood',
+  // G1153: Hauki Seeks Manor's and Hakusan Heaps Towers' lifts name the noBG cut of the lift art,
+  // which the deco pipeline never rendered; the lift art itself (door and plate) stands in.
+  signpost_asset_elevator_noBG: 'signpost_asset_elevator',
 });
 const PLACEHOLDER = 0x5a7a4a;
 /** Original engine art from TSEngineAssets (SignpostView.as). */
@@ -380,6 +383,108 @@ function buildSignpostSprite(PIXI, signpost, pos) {
   return g;
 }
 
+/**
+ * G1153: where a lift's art takes a click, from its foot in world px: the door and the plate
+ * (signpost_asset_elevator.webp's opaque box, 117-509 x 451-833 of 784 x 844, drawn 392 x 422).
+ */
+export const SIGN_DECO_HIT = Object.freeze({ x: -140, y: -200, width: 202, height: 200 });
+
+/**
+ * G1153: a signpost whose location XML names a deco is drawn as that deco, with no post or arms.
+ * The tower lobbies' lifts are signposts (signpost_asset_elevator, 392 x 422); SignpostView.as
+ * render 155-178 put the deco in deco_holder and bailed on the post, and a click on it opened the
+ * lift's floor chooser (TSFrontController.startInteractionWith 3586-3592, LocationSelectorDialog),
+ * whose apartment style wrote the floor on the plate (showNumber: the lobby is L). Here each floor
+ * is still a board (one number key each), every board the whole lift, and the game opens the
+ * floors as a menu (game.js openSignpostArmsMenu). `art` is the deco's texture, or null when the
+ * street already draws the same art at the post (Hauki Seeks Manor's lobby deco); `plate` the
+ * plate's words (the floors draw their own number: features/tower-floors-feature.js).
+ * @param {typeof PIXI} PIXI
+ * @param {object} signpost
+ * @param {{ x: number, y: number }} pos screen (the deco's foot)
+ * @param {{ art?: any, plate?: string }} [opts]
+ */
+export function buildSignDecoView(PIXI, signpost, pos, { art = null, plate = '' } = {}) {
+  const g = new PIXI.Container();
+  g.x = pos.x;
+  g.y = pos.y;
+  g.zIndex = 8000;
+  g.eventMode = 'none';
+  g.label = 'sign-deco';
+  g.signDeco = true;
+  g.signScale = 1;
+  g.signHoverParts = { arms: [], labels: [], baseLabelFills: [] };
+  g.signBoards = [];
+  const hit = SIGN_DECO_HIT;
+  // Hover: the lift glows as the client's interaction target did (tsSprite_GlowA).
+  const glow = new PIXI.Graphics();
+  glow.roundRect(hit.x, hit.y, hit.width, hit.height, 18).fill({ color: SIGN_GLOW_COLOUR, alpha: 0.55 });
+  if (PIXI.BlurFilter) glow.filters = [new PIXI.BlurFilter({ strength: 14, quality: 3 })];
+  glow.visible = false;
+  glow.label = 'sign-deco-glow';
+  g.addChild(glow);
+  g.signDecoGlow = glow;
+  if (art) {
+    const spr = new PIXI.Sprite(art);
+    anchorBottomCentre(spr, 'deco');
+    const size = () => {
+      if (spr.destroyed) return;
+      if (signpost.deco?.w > 0) spr.width = signpost.deco.w;
+      if (signpost.deco?.h > 0) spr.height = signpost.deco.h;
+    };
+    size();
+    if (!isLoaded(art)) onLoaded(art.source, size);
+    spr.label = 'sign-deco-art';
+    g.addChild(spr);
+    g.signDecoArt = spr;
+  }
+  if (plate) {
+    const t = new PIXI.Text({ text: String(plate), style: { fontFamily: WORLD_FONT_FAMILY, fontSize: 26, fontWeight: '800', fill: SIGN_DECO_PLATE_FILL } });
+    t.resolution = 3;
+    t.anchor.set(0.5, 0.5);
+    t.x = SIGN_DECO_PLATE.dx;
+    t.y = -SIGN_DECO_PLATE.dy;
+    t.label = 'sign-deco-plate';
+    g.addChild(t);
+  }
+  const connects = (signpost.connects || []).filter((c) => c && (c.label || c.tsid)).slice(0, SIGN_MAX_ARMS);
+  connects.forEach((conn, i) => {
+    g.signBoards.push({
+      index: i,
+      connection: conn,
+      arm: null,
+      glow: null,
+      label: null,
+      keyCap: null,
+      key: String(i + 1),
+      baseFill: SIGN_TEXT_FILL,
+      x: 0,
+      y: 0,
+      rotation: 0,
+      hitArea: { ...hit },
+    });
+  });
+  g.signpost = signpost;
+  return g;
+}
+
+/** The lift plate's centre from the lift's foot (tower-floors.js TOWER_LIFT_PLATE) and its paint. */
+const SIGN_DECO_PLATE = Object.freeze({ dx: -114, dy: 138 });
+const SIGN_DECO_PLATE_FILL = 0xe9cf86;
+
+/**
+ * G1153: whether the street's middleground already draws a signpost's deco art at the post (within
+ * 4 px): Hauki Seeks Manor's lobby places signpost_asset_elevator as a deco too (57,-129, its lift
+ * signpost at 58,-127), so the lift is not drawn twice.
+ */
+export function signDecoDrawn(street, signpost) {
+  const want = signpost?.deco?.sprite;
+  if (!want) return false;
+  const art = (name) => DECO_TWINS[name] || name;
+  const layer = (street?.layers || []).find((l) => l.id === 'middleground' || l.name === 'middleground');
+  return (layer?.decos || []).some((d) => art(d.sprite) === art(want) && Math.abs(d.x - signpost.x) <= 4 && Math.abs(d.y - signpost.y) <= 4);
+}
+
 /** The most arms a post draws: one for each number key. */
 export const SIGN_MAX_ARMS = 9;
 /** An arm's key cap, in holder units: its size and its gap from the arm's tip. */
@@ -475,6 +580,8 @@ export function addSignBoard(PIXI, view, armHolder, { width, left = false, key, 
  */
 export function setSignpostHover(g, on, boardIndex = null) {
   if (!g || g.destroyed) return;
+  // G1153: a lift drawn as its deco glows whole (its boards are all the lift).
+  if (g.signDecoGlow && !g.signDecoGlow.destroyed) g.signDecoGlow.visible = Boolean(on);
   const boards = g.signBoards || [];
   for (const board of boards) {
     const active = Boolean(on && (boardIndex == null || board.index === boardIndex));
@@ -3218,10 +3325,23 @@ export function buildStreetView(street, PIXI, opts = {}) {
   }
 
   // Signposts — original post/arm/shadow art (TSEngineAssets → SignpostView.as)
+  // G1153: a signpost with a deco (a tower lift) draws that art instead, unless the street
+  // already draws the same art at the post (signDecoDrawn).
+  const signDecoArt = (s) => {
+    if (signDecoDrawn(street, s)) return null;
+    const sprite = available.has(s.deco.sprite) ? s.deco.sprite : DECO_TWINS[s.deco.sprite] || s.deco.sprite;
+    if (!available.has(sprite)) {
+      missingSprites.add(s.deco.sprite);
+      return null;
+    }
+    const url = `${decoBase}${sprite}.png`;
+    const pick = isSharpDeco(url) ? sharpPick(url) : null;
+    return pick ? sharpTexture(pick) : textureFromUrl(url);
+  };
   const signViews = [];
   for (const s of street.signposts || []) {
     const pos = worldToScreen(street, s.x, s.y);
-    const g = buildSignpostSprite(PIXI, s, pos);
+    const g = s.deco?.sprite ? buildSignDecoView(PIXI, s, pos, { art: signDecoArt(s), plate: s.plate || '' }) : buildSignpostSprite(PIXI, s, pos);
     g.nav = pickConnection(s, availableStreetTsids());
     root.addChild(g);
     signViews.push(g);

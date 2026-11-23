@@ -11,7 +11,7 @@ import {
   convertLocationXml,
   isConvertibleStreet,
   collectSprites,
-} from '../public/js/location-xml.js?v=9bae75b2';
+} from '../public/js/location-xml.js?v=32377f99';
 import { assertStreetGeometry } from '../public/js/street-model.js?v=a9a05f9d';
 import {
   loadStreetDataFromFs,

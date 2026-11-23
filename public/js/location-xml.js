@@ -259,12 +259,17 @@ export function convertGameObjectToStreet(gameObject, hubNames = {}, opts = {}) 
             }
           }
         }
+        // G1153: a signpost that is drawn as a deco (the tower lobbies' lifts: SignpostView.as
+        // render 155-178 shows the deco and no post), its art and size.
+        const decoNode = findChild(sp, 'object', 'deco');
+        const decoSprite = decoNode ? String(childValue(decoNode, 'sprite_class', '') || '') : '';
         signposts.push({
           id: sp.id || sp.attrs?.id || '',
           x: Number(childValue(sp, 'x', 0)),
           y: Number(childValue(sp, 'y', 0)),
           w: Number(childValue(sp, 'w', 0)),
           h: Number(childValue(sp, 'h', 0)),
+          ...(decoSprite ? { deco: { sprite: decoSprite, w: Number(childValue(decoNode, 'w', 0)), h: Number(childValue(decoNode, 'h', 0)) } } : {}),
           connects,
         });
       }

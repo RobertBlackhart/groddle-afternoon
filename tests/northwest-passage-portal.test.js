@@ -24,7 +24,7 @@ import { homedir } from 'node:os';
 import { barriersScreen, platformsScreen, worldToScreen, streetWidth } from '../public/js/street-model.js?v=a9a05f9d';
 import { avatarGround, stepAvatar, JUMP_SPEED } from '../public/js/avatar-step.js?v=39d7b1af';
 import { rawTripleJumpMultiplier, scaledTripleJumpMultiplier, TRIPLE_JUMP_UPGRADES } from '../public/js/movement.js?v=f4be1a05';
-import { arrivalInTarget } from '../public/js/location-navigation.js?v=9555ce80';
+import { arrivalInTarget } from '../public/js/location-navigation.js?v=e9221d85';
 import { inTeleporter, teleportersOn, PLAIN_JUMP_APEX } from '../public/js/hidden-floors.js?v=e1a92661';
 import { hiddenFloorsFeature } from '../public/js/features/hidden-floors-feature.js?v=9a8baa9e';
 import {
