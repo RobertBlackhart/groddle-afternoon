@@ -5020,7 +5020,7 @@
    "title": "A player whose look is still loading is drawn as the default look washed pale, colourless and see-through, standing in for Glitch's placeholder skin (#537).",
    "kind": "visual",
    "status": "kept",
-   "ruling": "Austin 2026-11-20 (decision page): keep the washed stand-in; Glitch's own placeholder skin is not planned.",
+   "ruling": "Claude's default in lane avk 2026-11-19; on Austin's decision page (Groddle Calls Nov 19 Eve, card placeholder)",
    "where": [
     {
      "file": "public/js/avatar-placeholder.js",
@@ -5032,7 +5032,6 @@
     }
    ],
    "why": "Glitch drew a placeholder skin (AvatarSwf.as showPlaceholderSkin: pale see-through body parts, no clothes); its parts are in the CC0 Avatar.swf, but our compositor paints only the clothed body, so a wash of the default sheets stands in until it can paint those parts.",
-   "ruling": "Claude's default in lane avk 2026-11-19; on Austin's decision page (Groddle Calls Nov 19 Eve, card placeholder)",
    "rows": []
   },
   {
@@ -5070,7 +5069,7 @@
    "title": "On the train's line map the star slides from the stop it left to the next stop over the hop (#538).",
    "kind": "UI",
    "status": "kept",
-   "ruling": "Austin 2026-11-20 (decision page): build it.",
+   "ruling": "Austin approved the request 2026-11-19 (lane mapk)",
    "where": [
     {
      "file": "public/js/subway.js",
@@ -5086,7 +5085,6 @@
     }
    ],
    "why": "Glitch's transit map kept the star on the station the train left, greyed while moving (MapTransit.as setPlayerLocation). A player asked to see the train's progress; the star now moves like a progress bar, and steps in quarters under reduced motion.",
-   "ruling": "Austin approved the request 2026-11-19 (lane mapk)",
    "rows": []
   },
   {
@@ -5473,6 +5471,22 @@
    "rows": [
     "G1193"
    ]
+  },
+  {
+   "id": "decorate-box-set-down",
+   "title": "Decoration Mode's Set down puts what a Storage Display Box holds onto the floor beside it, not through the pack (Glitch's remove went only to the pack)",
+   "kind": "UI",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/features/homes-feature.js",
+     "symbol": "boxToFloor"
+    }
+   ],
+   "why": "bag_furniture_sdb.js remove 495-575 moved a box's things only into the pack. A player asked to move things between boxes and the floor without the pack (#384); floor to box already goes straight in (#473, stackIntoBox, as deposit 718-741 did), so this is the way back.",
+   "rows": [
+    "G1205"
+   ]
   }
-]
+ ]
 }

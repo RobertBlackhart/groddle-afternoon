@@ -152,7 +152,7 @@ describe('a Storage Display Box takes things, as the original did', () => {
  * side (ItemIconView.as 315-321), keeping its shape.
  */
 describe('#314 the shown item keeps its shape', async () => {
-  const { displayIconScale, SDB_ITEM_WH } = await import('../public/js/features/homes-feature.js?v=2fb62315');
+  const { displayIconScale, SDB_ITEM_WH } = await import('../public/js/features/homes-feature.js?v=217ff8ea');
   it('fits the longer side into 34 px', () => {
     assert.equal(SDB_ITEM_WH, 34);
     const wine = displayIconScale(15, 48);
@@ -190,5 +190,37 @@ describe('G1204: Take out in Decoration Mode takes what fits the pack (bag_furni
     assert.match(fn, /if \(box\.display\?\.count > 0\) engine\.toast\(STORAGE_TEXT\.noRoom\);/);
     assert.match(homes, /\} else if \(action === 'withdraw'\) \{\s+result = withdrawWhatFits\(engine, id\);/);
     assert.doesNotMatch(homes, /result = displayWithdraw\(decor, engine\.inv, id\);/, 'never everything whatever the room');
+  });
+});
+
+describe('G1205: Set down, from a box to the floor without the pack (#384)', () => {
+  const fn = homes.slice(homes.indexOf('function boxToFloor('), homes.indexOf('function expandHouse('));
+
+  it('what the box holds goes onto the floor beside it, the pack never holding it', async () => {
+    const { createDroppedItemState, dropInventoryStack } = await import('../public/js/world-items.js?v=46eb505b');
+    const state = room();
+    const inv = { emblem_alph: 40 };
+    displayDeposit(state, inv, 8, 'emblem_alph', 40);
+    delete inv.emblem_alph;
+    // boxToFloor: the box gives into nothing, the floor takes them (engine.dropWorldStack).
+    const out = {};
+    const taken = displayWithdraw(state, out, 8);
+    const dropped = createDroppedItemState();
+    const res = dropInventoryStack(dropped, { emblem_alph: taken.qty }, 'RH_HOME_INT', 'emblem_alph', taken.qty, { x: 820, y: 560 }, { merge: true });
+    assert.equal(res.ok, true);
+    assert.equal(dropped.streets.RH_HOME_INT[0].count, 40);
+    assert.equal(state.placed[0].display, undefined, 'the box is empty');
+    assert.deepEqual(inv, {}, 'the pack never held them');
+  });
+
+  it('the button is on a box with something in it, beside Take out, and its action never touches the pack', () => {
+    assert.match(homes, /label: `Set down \$\{item\.display\.count\}`, title: 'Set them on the floor beside the box', attrs: \{ 'data-home-action': 'floor' \}/);
+    assert.match(homes, /\} else if \(action === 'floor'\) \{\s+result = boxToFloor\(engine, id\);/);
+    assert.match(fn, /const taken = displayWithdraw\(decor, out, id\);/);
+    assert.match(fn, /engine\.dropWorldStack\(cls, taken\.qty, spot\.x \+ roomX0\(\), spot\.y, undefined, undefined, \{ merge: true \}\)/);
+    assert.doesNotMatch(fn, /engine\.inv/);
+    // A refused drop puts them back in the box.
+    assert.match(fn, /if \(!res\?\.ok\) \{\s+displayDeposit\(decor, out, id, cls, taken\.qty\);/);
+    assert.match(fn, /stackSurfaceAt\(decor, b\.x \+ b\.w \+ 24, INTERIOR\.floorY\)/);
   });
 });

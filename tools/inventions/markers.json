@@ -402,10 +402,12 @@
     "ours: home). The posted note comes back to the pack (ours: a pack item keeps no note).": "ours-home-street"
   },
   "public/js/features/homes-feature.js": {
+    "glitch-had-none: back of #473's floor-to-box drag (stackIntoBox). Glitch had no such verb": "decorate-box-set-down",
     "ours: // Report 153: the Mail Dispatcher (our own addition to the street) can be put": "ours-homes",
     "reimagined: // (reimagined); this reaches them from the": "ours-homes",
     "reimagined: HOMEMAIL: \"can I move my mail dispatcher?\"). Reimagined:": "ours-homes",
-    "reimagined: Move Magic Rock; cult.mailboxRx / cult.rockRx), reimagined as well:": "ours-homes"
+    "reimagined: Move Magic Rock; cult.mailboxRx / cult.rockRx), reimagined as well:": "ours-homes",
+    "remake-own: 495-575 went only to the pack), so this is the remake's own Decoration Mode button. The": "decorate-box-set-down"
   },
   "public/js/features/imagination-feature.js": {
     "remake-own: * Where a card jump under x1 counts as x1: the remake's own layouts, built for the": "ours-imagination"

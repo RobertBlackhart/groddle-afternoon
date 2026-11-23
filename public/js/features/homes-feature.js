@@ -4440,6 +4440,7 @@ function furniturePop(engine) {
   if (item.classTsid === 'bag_furniture_sdb') {
     if (item.display) {
       actions.push({ label: `Take out ${item.display.count}`, attrs: { 'data-home-action': 'withdraw' }, onClick: () => runFurnitureAction(engine, 'withdraw') });
+      actions.push({ label: `Set down ${item.display.count}`, title: 'Set them on the floor beside the box', attrs: { 'data-home-action': 'floor' }, onClick: () => runFurnitureAction(engine, 'floor') });
     }
     const choices = displayableItems(engine);
     if (choices.length) {
@@ -5080,6 +5081,8 @@ function runFurnitureAction(engine, action, arg) {
     if (result.ok) engine.refreshPack();
   } else if (action === 'withdraw') {
     result = withdrawWhatFits(engine, id);
+  } else if (action === 'floor') {
+    result = boxToFloor(engine, id);
   }
   if (result && !result.ok && result.msg) engine.toast(result.msg);
   renderFurniture(engine);
@@ -5105,6 +5108,36 @@ function withdrawWhatFits(engine, id) {
   engine.refreshPack();
   if (box.display?.count > 0) engine.toast(STORAGE_TEXT.noRoom);
   return result;
+}
+
+/**
+ * G1205 (#384): Set down, what a box holds onto the floor beside it, never through the pack: the way
+ * back of #473's floor-to-box drag (stackIntoBox). Glitch had no such verb (bag_furniture_sdb.js
+ * remove 495-575 went only to the pack), so this is the remake's own Decoration Mode button. The box
+ * and the room's dropped stacks each see one move, as stackIntoBox's do (the ledger counts both).
+ */
+function boxToFloor(engine, id) {
+  const box = placedItem(decor, id);
+  const cls = box?.display?.classTsid;
+  if (!cls || !engine.dropWorldStack) return { ok: false, reason: 'empty' };
+  const b = furnitureBounds(box);
+  const right = stackSurfaceAt(decor, b.x + b.w + 24, INTERIOR.floorY);
+  // Against the room's right end the floor spot is under the box: the left side instead.
+  const spot = right.x > b.x + b.w ? right : stackSurfaceAt(decor, b.x - 24, INTERIOR.floorY);
+  const out = {};
+  const taken = displayWithdraw(decor, out, id);
+  if (!taken.ok) return taken;
+  const res = engine.dropWorldStack(cls, taken.qty, spot.x + roomX0(), spot.y, undefined, undefined, { merge: true });
+  if (!res?.ok) {
+    displayDeposit(decor, out, id, cls, taken.qty);
+    return { ok: false, reason: res?.reason || 'drop', msg: res?.msg || '' };
+  }
+  settleRoomStacks(engine);
+  engine.playSound?.('ITEM_DROP', { volume: 0.45 });
+  const label = ITEM_CATALOG[cls]?.label || cls.replace(/_/g, ' ');
+  engine.pushActivity(`You set down ${taken.qty}× ${label} from the Storage Display Box.`);
+  engine.setData('homeStackLast', `floor:${id}:${cls}:${taken.qty}`);
+  return { ok: true, classTsid: cls, qty: taken.qty };
 }
 
 function expandHouse(engine) {
