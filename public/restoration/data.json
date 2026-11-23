@@ -2814,9 +2814,19 @@
   "deployed": "2026-11-23"
  },
  "git": {
-  "commits": 3237,
+  "commits": 3240,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-23",
+    "kind": "improve",
+    "text": "Unnu Slight's New Year glow sits soft on the stone dragon's rocks"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "new",
+    "text": "Happy New Ur, a countdown and fireworks at the six Groddle midnights of December 31, with the party at Unnu Slight"
+   },
    {
     "date": "2026-11-23",
     "kind": "new",
@@ -2926,19 +2936,9 @@
     "date": "2026-11-23",
     "kind": "fix",
     "text": "Bonelington Hole's Dirt Pile and Egg Plants stand in its cave, and Luiro Run and Naatamo Way show all four Peat Bogs"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "improve",
-    "text": "A Pot Luck Day Chicken dressed in one costume can be re-dressed in the other, and each Chicken counts once per player"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "The Bureaucracy clerks sell Card-Carrying Qualifications to badge holders too, for street projects"
    }
   ]
  },
- "tests": 1301,
+ "tests": 1302,
  "generatedAt": "2026-11-23"
 }
