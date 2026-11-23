@@ -2814,9 +2814,24 @@
   "deployed": "2026-11-23"
  },
  "git": {
-  "commits": 3257,
+  "commits": 3263,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "On a phone menus keep off Act, so each tap on Act opens or chooses, and the caption's favor takes a tap"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "On a phone the pinned quest never covers the stick, and the action hint keeps off Act and Jump"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "The phone's top row keeps whole counts, and the tutorial's pill is only as wide as its icon"
+   },
    {
     "date": "2026-11-23",
     "kind": "new",
@@ -2921,21 +2936,6 @@
     "date": "2026-11-23",
     "kind": "new",
     "text": "The start card shows the featured street project online, with See the project"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "improve",
-    "text": "Hell's Bartender says where a Drink Ticket comes from whenever he turns you away"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "improve",
-    "text": "A work step refused for a Fancy Pick says it won't do and that the step takes a Pick"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "It Takes Two's quest card shows who clicks Help dig, so the digger knows the count is theirs"
    }
   ]
  },
