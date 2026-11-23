@@ -9,7 +9,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import * as kit from '../public/js/quest-rooms/kit.js?v=facd397b';
+import * as kit from '../public/js/quest-rooms/kit.js?v=fc97e70f';
 import * as club from '../public/js/quest-rooms/clubhouse.js?v=6568fd5a';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

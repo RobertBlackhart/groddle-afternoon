@@ -10,7 +10,7 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { MIN_PACK_HEIGHT, PHONE_GROUND_MIN_CLEARANCE, VIEW_FLOOR_H, phoneGroundWorldHeight, sceneGroundLine, stageFor } from '../public/js/location-view.js?v=476fd6f0';
+import { MIN_PACK_HEIGHT, PHONE_GROUND_MIN_CLEARANCE, VIEW_FLOOR_H, phoneGroundWorldHeight, sceneGroundLine, stageFor } from '../public/js/location-view.js?v=3dead0c5';
 import { MIN_GROUND_CLEARANCE, cameraTargetY, cameraWorldHeightForGround } from '../public/js/movement.js?v=f4be1a05';
 import { STREET_GROUND_LINES } from '../public/js/street-ground-lines.js?v=a6a6fa28';
 import { CELL, GAP_SHARE, groundLineFromCover, measureStreet, rowCover, stampDeco } from '../tools/ground-line/build.mjs?v=1bfd0f53';
@@ -122,6 +122,7 @@ describe('G1146: the phone camera stops at the ground line', () => {
     assert.match(game, /function phoneGroundLine\(\) \{\n  if \(!TOUCH_PHONE \|\| !modernUi\(\) \|\| PINNED_VIEW_H > 0\) return NaN;/);
     assert.match(game, /groundLine: phoneGroundLine\(\),/);
     const fn = game.slice(game.indexOf('function activeCameraWorldHeight('), game.indexOf('function clampWorldOverlayX('));
-    assert.match(fn, /phoneGroundWorldHeight\(\{ worldHeight: world, groundLine: line, floorY: deepest/);
+    assert.match(fn, /const floor = phoneLine > 0 \? deepest : deepestReachableFloorY\(\);/);
+    assert.match(fn, /phoneGroundWorldHeight\(\{ worldHeight: world, groundLine: line, floorY: floor/);
   });
 });

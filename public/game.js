@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=1b51891c';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=4aa55c6c';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=0776f8ed';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -137,7 +137,7 @@ import {
 } from './js/legalize-it.js?v=7ec63cac';
 import { HALL, HALL_LAYOUT, HALL_QUESTIONS } from './js/bureaucratic-hall.js?v=a8eaa334';
 import { STATION_X, stationArrival, stationScreen, surfaceStation } from './js/subway.js?v=0a87a908';
-import { ALLEY, SHADY, drawAlley, inEnteredBox } from './js/quest-rooms/back-alley-set.js?v=36fc32e8';
+import { ALLEY, SHADY, drawAlley, inEnteredBox } from './js/quest-rooms/back-alley-set.js?v=f1dc47ea';
 import { WINTER_WALK_BOUNDS, WINTER_WALK_PASSAGE } from './js/winter-walk-streets.js?v=cbe116f2';
 import {
   WINTER_HAVEN_STREET_ID,
@@ -820,7 +820,7 @@ import { easeCameraAxis } from './js/camera-feel.js?v=e668afc5';
 import { renderResolution, resolutionCap, RESOLUTION_STEP, phoneZoomResolution } from './js/render-density.js?v=74c6f5f9';
 // g458: low energy and mood turn amber and red, and a click offers something from the pack.
 import { makingNeeds, vitalMenuEmpty, vitalMenuHeading, vitalSnacks } from './js/vitals.js?v=85a51302';
-import { DEFAULT_VP_H, LOCATION_VIEW_W, VIEW_CEIL_H, stageFor, sceneViewCap, sceneViewWidthCap, zoomMovesStage, phoneZoomSpan, phoneCameraAnchor, phoneGroundWorldHeight, sceneGroundLine, shortSceneBand } from './js/location-view.js?v=476fd6f0';
+import { DEFAULT_VP_H, LOCATION_VIEW_W, VIEW_CEIL_H, stageFor, sceneViewCap, sceneViewWidthCap, zoomMovesStage, phoneZoomSpan, phoneCameraAnchor, phoneGroundWorldHeight, reachableFloorY, sceneBottomLine, sceneGroundLine, shortSceneBand } from './js/location-view.js?v=3dead0c5';
 import {
   levelInfoForXp,
   reconcilePlayerProgression,
@@ -851,12 +851,12 @@ import {
 import { momentMoreText } from './js/ui/moment-card.js?v=35252236';
 import { CHAT_MAX_CHARS, chatBubbleText } from './js/ui/chat-input.js?v=8f2479a3';
 // HUB: the hub is the Modern skin's; Classic owns X in its skin (js/classic/classic-hub.js).
-import { MODERN, onUiModeChange, readUiCache, uiState, writeUiCache } from './js/classic/ui-mode.js?v=221f427c';
+import { MODERN, onUiModeChange, readUiCache, uiState, writeUiCache } from './js/classic/ui-mode.js?v=91aeace8';
 // ZOOM: the world zoom (a device preference) and Classic's frame scale under it; both load before main().
 import { worldZoom, setWorldZoom, stepWorldZoom, onZoomChange, zoomKeyAction, zoomKeyToast, zoomFixed, setZoomFixed, onZoomFixedChange, phoneZoom } from './js/world-zoom.js?v=38816228';
 import { nightTint, nightTintOn, onNightTintChange, worldTintOpacity } from './js/night-tint.js?v=1dfc9c89';
 import { streetMapSetting, toggleStreetMap } from './js/ui/street-minimap.js?v=ad22dde6';
-import './js/classic/classic-zoom.js?v=403f51f0';
+import './js/classic/classic-zoom.js?v=6d73d78f';
 import { mountImaginationHub } from './js/ui/imagination-hub.js?v=6928c5b7';
 import { newDayBubble, shuffleNewDayMessages, waitForScreenGates } from './js/screen-queue.js?v=cf0132c0';
 import { applyFamiliarLook, familiarCardHeading, familiarLook, skillArtFor, skillLearnedActivity } from './js/familiar.js?v=b9597cd3';
@@ -1161,7 +1161,7 @@ import { filterText } from './js/word-filter.js?v=9a7a7ebb'; // the remake's own
 import { mountStartStreet } from './js/start-street.js?v=7d8ce49c'; // #349: the start card names the save's street
 import { arrangeMapCards, fitMapExtras } from './js/map-extras.js?v=16e261b1'; // the Map's Shortcuts
 // The interface skin (js/classic/ui-mode.js) sets <html data-ui> as it loads: before main(), so before the boot cover lifts.
-import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=57864aa8';
+import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=bd71f1c4';
 import { standOnFeet, anchorBottomCentre } from './js/sprite-feet.js?v=6ffaec43';
 import { markLeaving, packPicks, takeCopies } from './js/copy-picks.js?v=01de4c58';
 import { holdKeepsBusy } from './js/instance-holds.js?v=ff3a63a3';
@@ -2143,7 +2143,28 @@ function stageArgs() {
     fitViewH: bgLayer?.fitViewH,
     // GROUND LINE (G1146): an upright phone fits the street down to its ground art's end, not past its bottom.
     groundLine: phoneGroundLine(),
+    // SCENE BOTTOM (G1157): a computer's canvas ends at the scene's bottom; a short scene magnifies to it.
+    groundFit: computerGroundFit(),
   };
+}
+
+/**
+ * SCENE BOTTOM (G1157): on a computer (not a phone, not the pinned QA page), where the camera stops
+ * the canvas's bottom (js/location-view.js sceneBottomLine: the street's or room's bottom, or its
+ * ground line where higher); NaN elsewhere, and on a home street, whose house fit (G796) frames the
+ * house over its soil.
+ */
+function computerGroundBottom() {
+  if (TOUCH_PHONE || PINNED_VIEW_H > 0 || !bgLayer || bgLayer.fitViewH > 0) return NaN;
+  // 1 px short: the eased camera rests on a device pixel (js/camera-feel.js), a fraction past its target.
+  return sceneBottomLine(bgLayer) - 1;
+}
+
+/** SCENE BOTTOM (G1157): stageFor's `groundFit` on a computer, or undefined (js/location-view.js groundFitScale). */
+function computerGroundFit() {
+  const bottom = computerGroundBottom();
+  if (!(bottom > 0)) return undefined;
+  return { bottom, floorY: deepestReachableFloorY(), coverCss: cameraPackCoverCss, clearance: MIN_GROUND_CLEARANCE };
 }
 
 /**
@@ -2454,6 +2475,11 @@ function deepestWalkableGroundY() {
   );
 }
 
+/** SCENE BOTTOM (G1157): the deepest floor the feet can reach (js/location-view.js reachableFloorY). */
+function deepestReachableFloorY() {
+  return reachableFloorY(streetPlatforms, GROUND_Y, WORLD_W);
+}
+
 /** The street's own y_cam_offset (G*.xml physics; default 150) as a viewport anchor. */
 function streetCameraAnchor() {
   const offset = Number(currentStreet?.physics?.setting?.y_cam_offset);
@@ -2463,7 +2489,7 @@ function streetCameraAnchor() {
   return phoneCameraAnchor({ anchor, viewH: LOCATION_VIEW_H, packReserve: PACK_VIEW_RESERVE, packCoverCss: cameraPackCoverCss, scale: STAGE_SCALE, clearance: MIN_GROUND_CLEARANCE });
 }
 
-/** G673: CSS px of the canvas's bottom the phone's pack row covers (syncCameraSafeArea); NaN when not shown. */
+/** G673: CSS px of the canvas's bottom the pack row covers (syncCameraSafeArea; phones and, G1157, computers); NaN when not shown. */
 let cameraPackCoverCss = NaN;
 
 /**
@@ -2499,9 +2525,8 @@ function measureTopHudCss() {
   return Math.max(0, low - c.top);
 }
 
-/** G673: measure the phone's pack row over the canvas (on resize and zoom, not every frame). */
+/** G673: measure the pack row over the canvas (on resize and zoom, not every frame); a computer's too since G1157. */
 function syncCameraPackCover() {
-  if (!TOUCH_PHONE) return;
   const bar = document.getElementById('pack-bar');
   const canvas = app?.canvas;
   if (!bar || !canvas?.isConnected || !shownElement(bar)) {
@@ -2517,9 +2542,12 @@ function activeCameraWorldHeight(anchorRatio = 0.75) {
   const deepest = deepestWalkableGroundY();
   const world = cameraWorldHeightForGround(bgLayer?.worldH || VIEW_H, deepest, LOCATION_VIEW_H, anchorRatio);
   // GROUND LINE (G1146, report #617): a phone's canvas stops at the street's ground art, the feet kept over the pack row.
-  const line = phoneGroundLine();
+  // SCENE BOTTOM (G1157): a computer's at the street's or room's bottom (or ground line), by the same rule.
+  const phoneLine = phoneGroundLine();
+  const line = phoneLine > 0 ? phoneLine : computerGroundBottom();
   if (!(line > 0)) return world;
-  return phoneGroundWorldHeight({ worldHeight: world, groundLine: line, floorY: deepest, packReserve: PACK_VIEW_RESERVE, packCoverCss: cameraPackCoverCss, scale: STAGE_SCALE, clearance: MIN_GROUND_CLEARANCE });
+  const floor = phoneLine > 0 ? deepest : deepestReachableFloorY();
+  return phoneGroundWorldHeight({ worldHeight: world, groundLine: line, floorY: floor, packReserve: PACK_VIEW_RESERVE, packCoverCss: cameraPackCoverCss, scale: STAGE_SCALE, clearance: MIN_GROUND_CLEARANCE });
 }
 
 /**

@@ -24,7 +24,7 @@ import {
   partyCommand,
 } from '../public/js/party.js?v=7615aab8';
 import { partyFeature } from '../public/js/features/party-feature.js?v=3b73a07a';
-import { FEATURES } from '../public/js/features/index.js?v=4aa55c6c';
+import { FEATURES } from '../public/js/features/index.js?v=0776f8ed';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');

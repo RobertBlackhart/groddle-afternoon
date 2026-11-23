@@ -18,7 +18,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { LOCATION_VIEW_W, MIN_PACK_HEIGHT, sceneViewWidthCap, stageFor } from '../public/js/location-view.js?v=476fd6f0';
+import { LOCATION_VIEW_W, MIN_PACK_HEIGHT, sceneViewWidthCap, stageFor } from '../public/js/location-view.js?v=3dead0c5';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const semsan = JSON.parse(readFileSync(join(here, '../public/assets/streets/GCR105E77812AEF.json'), 'utf8'));

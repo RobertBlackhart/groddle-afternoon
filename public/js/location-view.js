@@ -236,6 +236,13 @@ export function phoneZoomSpan(args = {}) {
  *   down to there instead of the scene's bottom (phoneStage); the camera keeps every phone above it
  *   (phoneGroundWorldHeight). Computers ignore it.
  *
+ * - SCENE BOTTOM (G1157): `groundFit` ({ bottom, floorY, coverCss, clearance }, game.js stageArgs;
+ *   computers only, not a home street's house fit) is where the computer's camera stops the canvas
+ *   (sceneBottomLine: the scene's bottom, or its ground line where that is higher) and the feet's
+ *   room over the pack row. A scene shorter than the canvas magnifies until the canvas ends there
+ *   (groundFitScale), as Glitch held its viewport to the location's height (TSMainView.as 1257) and
+ *   never showed below its bottom; the floors still hold.
+ *
  * width/height: the CSS room for the canvas (the game area under the top bar).
  * pinnedHeight: `viewh` (QA): the old layout, a LOCATION_VIEW_W view scaled to
  * the page width with that location height (the canvas may then outgrow the
@@ -254,6 +261,7 @@ export function stageFor({
   sceneBorders = false,
   fitViewH,
   groundLine,
+  groundFit,
 } = {}) {
   const W = finite(width);
   const H = finite(height);
@@ -261,7 +269,7 @@ export function stageFor({
   const pinned = finite(pinnedHeight);
   if (phone && !(pinned > 0) && W > 0 && H > W) return phoneStage({ width: W, height: H, packReserve: pack, sceneWidth, sceneHeight, closeup, groundLine });
   if (phone && !(pinned > 0) && W > 0 && H > 0) return landscapePhoneStage({ width: W, height: H, packReserve: pack, sceneWidth, sceneHeight, zoom, closeup, fitViewH });
-  return computerStage({ width: W, height: H, packReserve: pack, sceneWidth, sceneHeight, pinnedHeight: pinned, zoom, borders: sceneBorders, fitViewH });
+  return computerStage({ width: W, height: H, packReserve: pack, sceneWidth, sceneHeight, pinnedHeight: pinned, zoom, borders: sceneBorders, fitViewH, groundFit });
 }
 
 /**
@@ -278,7 +286,7 @@ export function stageFor({
  * max_vp_w = Math.min(max_vp_w, layer.w)): the game asks for no borders now (game.js stageArgs), so
  * such a street magnifies just enough to fill the window; every other street keeps the zoom's scale.
  */
-function computerStage({ width: W, height: H, packReserve: pack, sceneWidth, sceneHeight, pinnedHeight: pinned, zoom, borders = false, fitViewH, fitMinShare = 0 }) {
+function computerStage({ width: W, height: H, packReserve: pack, sceneWidth, sceneHeight, pinnedHeight: pinned, zoom, borders = false, fitViewH, fitMinShare = 0, groundFit }) {
   if (pinned > 0 || !(W > 0) || !(H > 0)) {
     const viewW = LOCATION_VIEW_W;
     const viewH = locationViewHeightFor({ forced: pinned > 0 ? pinned : NaN, sceneHeight });
@@ -289,11 +297,13 @@ function computerStage({ width: W, height: H, packReserve: pack, sceneWidth, sce
   const sw = finite(sceneWidth) > 0 ? Math.max(LOCATION_VIEW_W, finite(sceneWidth)) : Infinity;
   const sh = finite(sceneHeight) > 0 ? Math.max(VIEW_FLOOR_H, finite(sceneHeight)) : Infinity;
   const border = Boolean(borders) && Number.isFinite(sw);
+  // SCENE BOTTOM (G1157): close enough that the canvas ends at the scene's bottom line.
+  const bottomScale = groundFit ? groundFitScale({ height: H, ...groundFit }) : 0;
   const ruleScale = (capW, capH) => {
     let s = W < LOCATION_VIEW_W || H < floorH
       ? Math.min(W / LOCATION_VIEW_W, H / floorH)
       : Math.max(1, W / capW, H / (capH + pack));
-    s = Math.max(s, border ? 0 : W / sw, H / (sh + pack));
+    s = Math.max(s, border ? 0 : W / sw, H / (sh + pack), bottomScale);
     return Math.min(s, W / LOCATION_VIEW_W, H / floorH);
   };
   const z = Math.min(1, Math.max(0, finite(zoom, 0)));
@@ -475,6 +485,62 @@ export function sceneGroundLine(layer, lines = STREET_GROUND_LINES) {
 }
 
 /**
+ * PURE (G1157): where a computer's camera stops the canvas's bottom on a scene (world px from its
+ * top): the scene's bottom (an imported street's own height, sourceWorldH, not the camera's padding
+ * under its deepest floor; a room's worldH), or its ground line (sceneGroundLine) where that is
+ * higher. NaN with no scene.
+ */
+export function sceneBottomLine(layer, lines = STREET_GROUND_LINES) {
+  if (!layer) return NaN;
+  const bottom = finite(layer.sourceWorldH, finite(layer.worldH));
+  const line = sceneGroundLine(layer, lines);
+  if (!(bottom > 0)) return line;
+  return line > 0 ? Math.min(bottom, line) : bottom;
+}
+
+/**
+ * PURE (G1157): the deepest floor the feet can reach (screen y): the deepest platform line, and the
+ * fallback ground (`groundY`, game.js GROUND_Y: resolveGround's floor where no line is under the
+ * feet) unless a standable line (pc_perm not 0 or 1) runs the scene's whole width (`worldW`) over
+ * it. A room with no groundY of its own puts that ground 80 px over its bottom (game.js enterScene),
+ * under An Autumn Day's real floor, where no one can stand.
+ */
+export function reachableFloorY(platforms, groundY, worldW) {
+  const ground = finite(groundY, 0);
+  const W = finite(worldW, Infinity);
+  let deepest = 0;
+  let covered = false;
+  for (const p of Array.isArray(platforms) ? platforms : []) {
+    const y = Math.max(finite(p?.y1, 0), finite(p?.y2, 0));
+    deepest = Math.max(deepest, y);
+    const standable = !(finite(p?.pc_perm) >= 0);
+    if (standable && y <= ground && Math.min(p.x1, p.x2) <= 0 && Math.max(p.x1, p.x2) >= W) covered = true;
+  }
+  return covered ? deepest : Math.max(deepest, ground);
+}
+
+/**
+ * PURE (G1157): the least stage scale (CSS px per world px) at which a canvas `height` CSS px tall
+ * ends at the scene's bottom line (`bottom`, sceneBottomLine) with the camera at the scene's top, or
+ * over the feet's room on the deepest floor (`floorY`) and the pack row's cover (`coverCss`), as
+ * phoneGroundWorldHeight lets the camera stop: a canvas no taller than that never shows under the
+ * line. 0 with no bottom.
+ */
+export function groundFitScale({ height, bottom, floorY, coverCss, clearance = 40 } = {}) {
+  const H = finite(height);
+  const line = finite(bottom);
+  if (!(H > 0) || !(line > 0)) return 0;
+  let s = H / line;
+  const floor = finite(floorY);
+  if (Number.isFinite(floor)) {
+    const room = Math.min(finite(clearance, 40), Math.max(PHONE_GROUND_MIN_CLEARANCE, line - floor));
+    const cover = Math.max(0, finite(coverCss, 0));
+    if (floor + room > 0 && H > cover) s = Math.min(s, (H - cover) / (floor + room));
+  }
+  return s;
+}
+
+/**
  * PURE (G1146, report #617): the camera's world height on a phone (movement.js cameraTargetY's
  * worldHeight), so the canvas's bottom (the camera's view plus the pack reserve under it) stops at
  * the street's ground line: how far down its ground art covers the whole width. Glitch's camera
@@ -488,6 +554,9 @@ export function sceneGroundLine(layer, lines = STREET_GROUND_LINES) {
  * has under the deepest floor (`floorY`) when that is less, never under PHONE_GROUND_MIN_CLEARANCE.
  * So where the art ends close under the floor the camera stops as low as the pack row needs.
  * Never lower than `worldHeight` (the camera's usual height). No line: `worldHeight` as given.
+ *
+ * G1157: a computer's camera keeps the same rule with sceneBottomLine for the line (game.js
+ * activeCameraWorldHeight), so its canvas never shows below a street's or room's bottom either.
  */
 export function phoneGroundWorldHeight({ worldHeight, groundLine, floorY, packReserve = MIN_PACK_HEIGHT, packCoverCss, scale, clearance = 40 } = {}) {
   const world = finite(worldHeight);

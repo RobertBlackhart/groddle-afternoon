@@ -20,8 +20,8 @@ import {
   FRAME,
   CLASSIC_MIN_W,
   CLASSIC_MIN_H,
-} from '../public/js/classic/classic-layout.js?v=37246e4b';
-import { stageFor } from '../public/js/location-view.js?v=476fd6f0';
+} from '../public/js/classic/classic-layout.js?v=a5f858ff';
+import { stageFor } from '../public/js/location-view.js?v=3dead0c5';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const near = (a, b, eps = 0.01) => assert.ok(Math.abs(a - b) <= eps, `${a} ≈ ${b}`);
