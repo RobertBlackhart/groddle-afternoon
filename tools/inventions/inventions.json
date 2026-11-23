@@ -5512,6 +5512,27 @@
    "rows": [
     "G1187"
    ]
+  },
+  {
+   "id": "winter-walk-icicle-chime",
+   "title": "Tapping a hanging icicle on Winter Walk plays a chime (Tiny Speck's WM_E2 icicle note)",
+   "kind": "behaviour",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/winter-icicles.js",
+     "symbol": "ICICLE_CHIME"
+    },
+    {
+     "file": "public/js/features/rebuilt-rooms-feature.js",
+     "symbol": "tapIcicle"
+    }
+   ],
+   "why": "The walk's caption (Glitch's own words, read off the Snaps) asks about the ding-a-ling-ling sound icicles make when you tap them, but the walk's template and scripts are lost, so how a tap sounded is unknown and tapping did nothing (#298). A click or a tap on one of the six big hanging icicles now plays WM_E2, the highest of the icicle notes Lotha Harte's tapped icicles play (Clickable Broadcasters, js/street-toys.js). It works from anywhere on the walk, never walks you under one, and the falls (G472) are unchanged.",
+   "ruling": "Austin 2026-11-23 (G1203): make tapping the icicles play a chime from Tiny Speck's sounds, without changing the falling icicles",
+   "rows": [
+    "G1203"
+   ]
   }
  ]
 }

@@ -513,6 +513,7 @@
     "ours: source's width), standing over the name plate (ours: the source's delta_y": "ours-realtime"
   },
   "public/js/features/rebuilt-rooms-feature.js": {
+    "invented: * G1203 (an invention, Austin 2026-11-23): a click or a tap on a": "winter-walk-icicle-chime",
     "ours: the dark letters readable where a trunk passes (ours: the snaps": "ours-rebuilt-rooms"
   },
   "public/js/features/seasons-feature.js": {
@@ -1293,6 +1294,7 @@
     "remake-own: copy of the bug icon is on top of them). The remake's own window: the client had no such": "ours-window-stack"
   },
   "public/js/winter-icicles.js": {
+    "invented: * G1203 (Austin 2026-11-23, an invention: the walk's template and its scripts are lost,": "winter-walk-icicle-chime",
     "ours: * Ours: the trigger box's size (the recording shows one": "ours-winter-icicles"
   },
   "public/js/winter-walk-streets.js": {

@@ -24,6 +24,11 @@
  *   QA data: winterIcicles ("1:hang,2:down,..."). QA: ?autostart=1&fresh=1&resetgame=1&questoffer=off
  *   &questdemo=winter&wintericicles=near sets you down on the floor 220 px short of the first
  *   icicle (walk right under it); &wintericicles=drop drops them all on arrival (screenshots).
+ *   G1203 (an invention, Austin 2026-11-23): a click or a tap on a hanging icicle chimes
+ *   (js/winter-icicles.js ICICLE_CHIME): an invisible tap box on each, like the street toys'
+ *   (features/street-toys-feature.js), run as a one-click clickable_broadcaster from any distance.
+ *   QA data: winterIcicleChimes (taps that chimed), winterIcicleTapAt (i:x,y,w,h of each box in
+ *   world space, x, y its middle).
  * - G682: the two skill-quest practice streets (js/practice-streets.js) are empty too (the
  *   quest rooms place what their scripts did), and their wooden EXIT arrows carry the word the
  *   snaps show (drawn here, as the client drew a deco's sign text). QA data: practiceExit.
@@ -36,15 +41,19 @@ import { isLouiseVillaTsid, louiseVillaEcology } from '../louise-pasture-villa.j
 import { isPracticeStreetTsid, practiceExitSign, practiceStreetEcology } from '../practice-streets.js?v=557238c1';
 import { textureFromUrl } from '../textures.js?v=729b29ea';
 import {
+  ICICLE_CHIME,
+  ICICLE_CHIME_VERB,
   ICICLE_PILLAR_ASPECT,
   ICICLE_PILLAR_SPRITE,
   ICICLE_SOUND,
   createIcicleState,
+  icicleTapBox,
+  icicleTappable,
   fallProgress,
   fallenIcicle,
   icicleSummary,
   stepIcicles,
-} from '../winter-icicles.js?v=04c0780f';
+} from '../winter-icicles.js?v=5d9616ef';
 import { WINTER_WALK_FLOOR_Y, WINTER_WALK_ICICLES, WINTER_WALK_BOUNDS, WINTER_WALK_CAPTION, WINTER_WALK_TSID, winterStreetEcology } from '../winter-walk-streets.js?v=c921bf92';
 import { anchorBottomCentre } from '../sprite-feet.js?v=6ffaec43';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
@@ -64,8 +73,88 @@ const toScreen = (x, y) => ({ x: x - WINTER_WALK_BOUNDS.l, y: y - WINTER_WALK_BO
 const icicleView = (engine, i) => engine.decoViews?.get(`walk_icicle_${i + 1}`) || null;
 
 function startIcicles(engine) {
-  icicles = { state: createIcicleState(WINTER_WALK_ICICLES.length), from: [], pillars: [] };
+  clearTaps(engine);
+  icicles = { state: createIcicleState(WINTER_WALK_ICICLES.length), from: [], pillars: [], taps: [], chimes: 0 };
   engine.setData('winterIcicles', icicleSummary(icicles.state));
+  engine.setData('winterIcicleChimes', 0);
+}
+
+/* G1203: tap a hanging icicle and it chimes. */
+function clearTaps(engine) {
+  for (const t of icicles?.taps || []) {
+    if (!t) continue;
+    if (t.target) engine?.unregister?.(t.target);
+    if (t.sprite && !t.sprite.destroyed) t.sprite.destroy();
+  }
+  if (icicles) icicles.taps = [];
+}
+
+/** Icicle i's tap box in entity space, from where its deco is drawn now, or null. */
+function placeTap(engine, i) {
+  const view = icicleView(engine, i);
+  const layer = view?.parent;
+  const P = engine.PIXI;
+  if (!view || view.destroyed || !layer || !engine.entityLayer || !P) return null;
+  const box = icicleTapBox(view.x, view.y, WINTER_WALK_ICICLES[i].h);
+  const foot = engine.entityLayer.toLocal(layer.toGlobal(new P.Point(box.x, box.y)));
+  const top = engine.entityLayer.toLocal(layer.toGlobal(new P.Point(box.x, box.y - box.h)));
+  const h = Math.max(20, foot.y - top.y);
+  return { x: foot.x, y: foot.y, w: Math.max(20, box.w * (h / box.h)), h };
+}
+
+function syncTaps(engine) {
+  const { state } = icicles;
+  WINTER_WALK_ICICLES.forEach((_ic, i) => {
+    let t = icicles.taps[i];
+    if (!icicleTappable(state, i)) {
+      if (t) {
+        if (t.target) engine.unregister?.(t.target);
+        if (t.sprite && !t.sprite.destroyed) t.sprite.destroy();
+        icicles.taps[i] = null;
+      }
+      return;
+    }
+    const at = placeTap(engine, i);
+    if (!at) return;
+    if (!t || !t.sprite || t.sprite.destroyed || !t.sprite.parent) {
+      if (t?.target) engine.unregister?.(t.target);
+      // A unit box (bottom-centre at 0, 0) scaled to the tap box each frame; all but invisible.
+      const sprite = new engine.PIXI.Graphics().rect(-0.5, -1, 1, 1).fill({ color: 0xffffff, alpha: 0.001 });
+      sprite.zIndex = 940;
+      engine.entityLayer.addChild(sprite);
+      t = { sprite, target: null };
+      t.target = engine.register?.({
+        featureId: REBUILT_ROOMS_FEATURE_ID,
+        classId: 'clickable_broadcaster',
+        label: '',
+        subtitle: '',
+        sprite,
+        clickOnly: true,
+        reachAnywhere: true,
+        winterIcicle: i,
+      }) || null;
+      icicles.taps[i] = t;
+    }
+    t.sprite.x = at.x;
+    t.sprite.y = at.y;
+    t.sprite.scale.set(at.w, at.h);
+    t.sprite._worldHitW = at.w;
+    t.sprite._worldHitH = at.h;
+  });
+  engine.setData('winterIcicleTapAt', icicles.taps.map((t, i) => {
+    const s = t?.sprite;
+    if (!s || s.destroyed) return `${i + 1}:`;
+    return `${i + 1}:${Math.round(s.x)},${Math.round(s.y - s._worldHitH / 2)},${Math.round(s._worldHitW)},${Math.round(s._worldHitH)}`;
+  }).join('|'));
+}
+
+/** A tap on hanging icicle i: its chime. False when it is not one (gone, falling, fallen). */
+export function tapIcicle(engine, i) {
+  if (!icicles || !icicleTappable(icicles.state, i)) return false;
+  engine.playSound?.(ICICLE_CHIME, { volume: 0.8 });
+  icicles.chimes += 1;
+  engine.setData('winterIcicleChimes', icicles.chimes);
+  return true;
 }
 
 /** The fallen icicle's pillar and its standable cap (re-made if the street view was rebuilt). */
@@ -148,6 +237,7 @@ function tickIcicles(engine, now) {
   if (landed.length) engine.playSound?.(ICICLE_SOUND, { volume: 0.7 });
   state.stage.forEach((stage, i) => { if (stage === 'down') standIcicle(engine, i); });
   if (started.length || landed.length || engine.param?.('wintericicles')) engine.setData('winterIcicles', icicleSummary(state));
+  syncTaps(engine);
 }
 let exitWord = null;
 
@@ -235,6 +325,7 @@ export const rebuiltRoomsFeature = {
     engine.setData('rebuiltRoom', isRoom(street?.tsid) ? String(street.tsid) : '');
     clearCaption(engine);
     if (street?.tsid === WINTER_WALK_TSID) drawCaption(engine);
+    clearTaps(engine);
     icicles = null;
     engine.setData('winterIcicles', '');
     if (street?.tsid === WINTER_WALK_TSID) startIcicles(engine);
@@ -246,8 +337,21 @@ export const rebuiltRoomsFeature = {
     engine.setData('rebuiltRoom', '');
     clearCaption(engine);
     clearExitWord(engine);
+    clearTaps(engine);
     icicles = null;
     engine.setData('winterIcicles', '');
+  },
+
+  /** G1203: a hanging icicle's one verb, its tap (a one-click clickable_broadcaster). */
+  verbsFor(target) {
+    if (target?.featureId !== REBUILT_ROOMS_FEATURE_ID || !Number.isInteger(target.winterIcicle)) return null;
+    return [ICICLE_CHIME_VERB];
+  },
+
+  runVerb(target, verbId, engine) {
+    if (target?.featureId !== REBUILT_ROOMS_FEATURE_ID || verbId !== ICICLE_CHIME_VERB.id || !Number.isInteger(target.winterIcicle)) return false;
+    tapIcicle(engine, target.winterIcicle);
+    return true;
   },
 
   /** The walk's stages clear the world after the street is entered (game.js setupWinterWalkStage): put it back. */

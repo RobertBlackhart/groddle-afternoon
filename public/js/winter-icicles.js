@@ -35,6 +35,31 @@ export const ICICLE_PILLAR_ASPECT = 674 / 282;
 export const ICICLE_SOUND = 'ICE_CUBE';
 
 /**
+ * G1203 (Austin 2026-11-23, an invention: the walk's template and its scripts are lost, so how a
+ * tap sounded there is unknown): the caption asks about the ding-a-ling-ling of tapped icicles,
+ * so a click or a tap on a hanging icicle plays a chime from Tiny Speck's own icicle notes, the
+ * ones Lotha Harte's tapped icicles play (WM_D1, WM_D2, WM_E2; js/street-toys.js). WM_E2, its
+ * highest, reads as the lightest ding. The tap works from anywhere on the walk (no walk under it,
+ * so it never drops one) and leaves the falls as they were.
+ */
+export const ICICLE_CHIME = 'WM_E2';
+export const ICICLE_CHIME_VERB = Object.freeze({ id: 'click_broadcast', label: 'Tap', enabled: true, durationMs: 0 });
+
+/** Whether icicle i still hangs (a tap chimes; a falling or fallen one does not). */
+export function icicleTappable(state, i) {
+  return state?.stage?.[i] === 'hang';
+}
+
+/**
+ * The tap box of an icicle drawn at layer x, y (its point, the art's bottom centre) and h tall:
+ * the whole icicle, a little wider than the art so a thin one is easy to hit. { x, y, w, h }, bottom-centre.
+ */
+export function icicleTapBox(x, y, h) {
+  const w = Math.max(48, Math.round(h * 318 / 842) + 16);
+  return { x, y, w, h: Math.max(60, h) };
+}
+
+/**
  * Where icicle `ic` ({ x, top, h }, world) stands once fallen, on the floor `floorY` (world):
  * centre x, cap top y, cap width, and the standable line on its cap.
  */

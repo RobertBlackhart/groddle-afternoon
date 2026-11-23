@@ -10,6 +10,8 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { reachStreet } from '../public/js/builder/reach-graph.js?v=467ca20f';
 import {
+  ICICLE_CHIME,
+  ICICLE_CHIME_VERB,
   ICICLE_FALL_MS,
   ICICLE_PILLAR_SPRITE,
   ICICLE_RISE,
@@ -19,9 +21,13 @@ import {
   fallProgress,
   fallenIcicle,
   icicleSummary,
+  icicleTapBox,
+  icicleTappable,
   stepIcicles,
   underIcicle,
-} from '../public/js/winter-icicles.js?v=04c0780f';
+} from '../public/js/winter-icicles.js?v=5d9616ef';
+import { GLITCH_ONE_CLICK, oneClickChoice } from '../public/js/world-context-menu.js?v=e4c99c05';
+import { rebuiltRoomsFeature, tapIcicle } from '../public/js/features/rebuilt-rooms-feature.js?v=7f2e9a6f';
 import { WINTER_WALK_FLOOR_Y, WINTER_WALK_ICICLES, WINTER_WALK_PILLARS, winterWalkStreet } from '../public/js/winter-walk-streets.js?v=c921bf92';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -108,5 +114,47 @@ describe('G472 falling icicles: art, sound and wiring', () => {
     const feature = readFileSync(join(pub, 'js/features/rebuilt-rooms-feature.js'), 'utf8');
     assert.match(feature, /tickIcicles\(engine, now\)/);
     assert.match(feature, /plat_ww_fallen_icicle_/);
+  });
+});
+
+describe('G1203: tap a hanging icicle and it chimes (an invention)', () => {
+  it('the chime is Tiny Speck\'s own icicle note, the one Lotha Harte\'s highest icicle plays', () => {
+    assert.equal(ICICLE_CHIME, 'WM_E2');
+    const keys = JSON.parse(readFileSync(join(pub, 'assets/content/sound-keys.json'), 'utf8'));
+    const flat = JSON.stringify(keys);
+    assert.ok(flat.includes('"WM_E2"'), 'in the sound library');
+    assert.ok(existsSync(join(pub, 'assets/audio/sfx/WM_E2.mp3')));
+    assert.match(readFileSync(join(pub, 'js/street-toys.js'), 'utf8'), /WM_E2/);
+  });
+
+  it('only a hanging icicle chimes, and the tap is a one-click from anywhere', () => {
+    const state = createIcicleState(2);
+    assert.equal(icicleTappable(state, 0), true);
+    state.stage[0] = 'fall';
+    assert.equal(icicleTappable(state, 0), false);
+    state.stage[0] = 'down';
+    assert.equal(icicleTappable(state, 0), false);
+    const box = icicleTapBox(100, 200, 150);
+    assert.ok(box.w >= 48 && box.h === 150 && box.x === 100 && box.y === 200);
+    assert.equal(GLITCH_ONE_CLICK.clickable_broadcaster.verb, ICICLE_CHIME_VERB.id);
+    const target = { featureId: 'rebuilt-rooms', classId: 'clickable_broadcaster', winterIcicle: 0 };
+    assert.deepEqual(rebuiltRoomsFeature.verbsFor(target), [ICICLE_CHIME_VERB]);
+    assert.equal(oneClickChoice(target, rebuiltRoomsFeature.verbsFor(target)).kind, 'run');
+    assert.equal(rebuiltRoomsFeature.verbsFor({ featureId: 'street-toys', classId: 'clickable_broadcaster' }), null);
+  });
+
+  it('a tap plays the chime and leaves the icicle hanging; a fallen one stays quiet', () => {
+    const played = [];
+    const data = {};
+    const engine = { setData: (k, v) => { data[k] = v; }, playSound: (k) => played.push(k), streetTsid: 'none', unregister: () => {} };
+    rebuiltRoomsFeature.onStreetEnter({ tsid: 'GIFH2AKJ5I735SV' }, engine);
+    assert.equal(tapIcicle(engine, 2), true);
+    assert.deepEqual(played, ['WM_E2']);
+    assert.equal(data.winterIcicleChimes, 1);
+    assert.match(data.winterIcicles, /^1:hang,2:hang,3:hang/);
+    assert.equal(rebuiltRoomsFeature.runVerb({ featureId: 'rebuilt-rooms', winterIcicle: 1 }, 'click_broadcast', engine), true);
+    assert.equal(played.length, 2);
+    rebuiltRoomsFeature.onStreetClear(engine);
+    assert.equal(tapIcicle(engine, 2), false, 'off the walk');
   });
 });
