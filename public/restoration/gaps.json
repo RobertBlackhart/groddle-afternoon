@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.58.2",
+  "release": "v0.59.0",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -42,7 +42,7 @@
     "fixing": 3,
     "known": 15,
     "unreleased": 0,
-    "fixed": 481,
+    "fixed": 500,
     "lost": 5,
     "purpose": 16,
     "idea": 10
@@ -380,6 +380,18 @@
           "text": "Multiply Your Meditation did not say clearly that it needs ten other players.",
           "state": "fixed",
           "version": "v0.58.1"
+        },
+        {
+          "id": "G1184",
+          "text": "It Takes Two's quest card did not say that the player who clicks Help dig is the one whose count goes up.",
+          "state": "fixed",
+          "version": "v0.59.0"
+        },
+        {
+          "id": "G1187",
+          "text": "Only the player on the Peter out Peat quest could see its 9 second countdown, so helpers had to guess.",
+          "state": "fixed",
+          "version": "v0.59.0"
         }
       ]
     },
@@ -648,6 +660,18 @@
           "text": "Bonelington Hole's Dirt Pile was far from the cave where it stood, and two streets showed one Peat Bog too few.",
           "state": "fixed",
           "version": "v0.58.2"
+        },
+        {
+          "id": "G1208",
+          "text": "After a trip was interrupted, the street named in the top bar could differ from the street on screen.",
+          "state": "fixed",
+          "version": "v0.59.0"
+        },
+        {
+          "id": "G1203",
+          "text": "On Winter Walk, tapping an icicle did nothing even though the street invites you to.",
+          "state": "fixed",
+          "version": "v0.59.0"
         }
       ]
     },
@@ -1169,6 +1193,12 @@
           "version": "v0.58.2"
         },
         {
+          "id": "G1190",
+          "text": "Things dropped on a house or Tower floor were only seen by the player who dropped them, so visitors saw an empty floor.",
+          "state": "fixed",
+          "version": "v0.59.0"
+        },
+        {
           "id": "G48",
           "text": "The name sign on a player tower and the lettering of its floor numbers have no free source, so they look different from Glitch.",
           "state": "lost"
@@ -1336,6 +1366,24 @@
           "text": "Some street projects asked for Card-Carrying Qualifications that players who already had the badge could not buy.",
           "state": "fixed",
           "version": "v0.58.2"
+        },
+        {
+          "id": "G1191",
+          "text": "A work step refused a Fancy Pick by saying the player had no working Pick.",
+          "state": "fixed",
+          "version": "v0.59.0"
+        },
+        {
+          "id": "G1206",
+          "text": "The start card did not show the featured street project.",
+          "state": "fixed",
+          "version": "v0.59.0"
+        },
+        {
+          "id": "G1210",
+          "text": "The Projects panel could not sort projects by region.",
+          "state": "fixed",
+          "version": "v0.59.0"
         }
       ]
     },
@@ -1557,6 +1605,12 @@
           "text": "Naming an animal online could be refused unless you stood at its home spot, and the box did not show the name as it would be saved.",
           "state": "fixed",
           "version": "v0.56.0"
+        },
+        {
+          "id": "G1207",
+          "text": "An animal's name lost any apostrophe, hyphen or period, so Dr. Oink was saved as Dr Oink.",
+          "state": "fixed",
+          "version": "v0.59.0"
         }
       ]
     },
@@ -2492,6 +2546,18 @@
           "text": "With a bag open, nothing in the pack row showed which bag it was.",
           "state": "fixed",
           "version": "v0.51.0"
+        },
+        {
+          "id": "G1193",
+          "text": "A full bag was hard to spot in the pack row.",
+          "state": "fixed",
+          "version": "v0.59.0"
+        },
+        {
+          "id": "G1192",
+          "text": "Dragging a stack from the pack onto the street did nothing.",
+          "state": "fixed",
+          "version": "v0.59.0"
         }
       ]
     },
@@ -3168,6 +3234,12 @@
           "text": "Some Encyclopedia item pages, like Wine of the Dead, said only which remake file held them instead of how to get the item.",
           "state": "fixed",
           "version": "v0.50.0"
+        },
+        {
+          "id": "G1183",
+          "text": "There was no list of which streets have dirt piles, peat bogs, gas plants, paper and wood trees or sloths.",
+          "state": "fixed",
+          "version": "v0.59.0"
         }
       ]
     },
@@ -3185,6 +3257,12 @@
           "text": "The chat box could show its hint cut in half after moving to a street with a longer name.",
           "state": "fixed",
           "version": "v0.51.0"
+        },
+        {
+          "id": "G1185",
+          "text": "It was easy to type a line in Local chat that was meant for Global, or the other way round.",
+          "state": "fixed",
+          "version": "v0.59.0"
         }
       ]
     },
@@ -3549,6 +3627,62 @@
           "text": "After a device briefly lost its graphics, some rocks or a Glitch's skin could look wrong until a reload. Partly fixed; still looking.",
           "state": "fixed",
           "version": "v0.58.1"
+        }
+      ]
+    },
+    {
+      "name": "Characters",
+      "items": [
+        {
+          "id": "G1196",
+          "text": "Hell's Bartender turned players away without saying where a Drink Ticket comes from.",
+          "state": "fixed",
+          "version": "v0.59.0"
+        },
+        {
+          "id": "G1199",
+          "text": "Character names had to be at least three letters long.",
+          "state": "fixed",
+          "version": "v0.59.0"
+        }
+      ]
+    },
+    {
+      "name": "Mail",
+      "items": [
+        {
+          "id": "G1197",
+          "text": "Teleportation Scripts, tools and many other items could not be attached to mail when the pack held lots of different things.",
+          "state": "fixed",
+          "version": "v0.59.0"
+        }
+      ]
+    },
+    {
+      "name": "Saving",
+      "items": [
+        {
+          "id": "G1202",
+          "text": "Reloading online could put a player back at a spot from earlier instead of where they stood.",
+          "state": "fixed",
+          "version": "v0.59.0"
+        }
+      ]
+    },
+    {
+      "name": "Decorating",
+      "items": [
+        {
+          "id": "G1204",
+          "text": "Taking things out of a display box in Decoration Mode ignored how much room the pack had.",
+          "state": "fixed",
+          "version": "v0.59.0"
+        },
+        {
+          "id": "G1205",
+          "text": "Things in a display box could only be moved out through the pack, not set down on the floor beside it.",
+          "state": "fixed",
+          "version": "v0.59.0"
         }
       ]
     }

@@ -4868,6 +4868,183 @@
       "id": "G1174",
       "area": "Streets",
       "text": "In the Egret Taun Towers basement a hard black band shows under the ceiling where a soft shadow belongs."
+    },
+    {
+      "id": "G1183",
+      "area": "Encyclopedia",
+      "text": "There was no list of which streets have dirt piles, peat bogs, gas plants, paper and wood trees or sloths.",
+      "show": "fixing",
+      "commits": [
+        "game:1a6b0043dee"
+      ]
+    },
+    {
+      "id": "G1185",
+      "area": "Chat",
+      "text": "It was easy to type a line in Local chat that was meant for Global, or the other way round.",
+      "show": "fixing",
+      "commits": [
+        "game:1f5861a42bc"
+      ]
+    },
+    {
+      "id": "G1184",
+      "area": "Quests",
+      "text": "It Takes Two's quest card did not say that the player who clicks Help dig is the one whose count goes up.",
+      "show": "fixing",
+      "commits": [
+        "game:592f760c39d"
+      ]
+    },
+    {
+      "id": "G1191",
+      "area": "Street projects",
+      "text": "A work step refused a Fancy Pick by saying the player had no working Pick.",
+      "show": "fixing",
+      "commits": [
+        "game:f1939caabf2"
+      ]
+    },
+    {
+      "id": "G1196",
+      "area": "Characters",
+      "text": "Hell's Bartender turned players away without saying where a Drink Ticket comes from.",
+      "show": "fixing",
+      "commits": [
+        "game:bceba68fde2"
+      ]
+    },
+    {
+      "id": "G1206",
+      "area": "Street projects",
+      "text": "The start card did not show the featured street project.",
+      "show": "fixing",
+      "commits": [
+        "game:a18d07276ef"
+      ]
+    },
+    {
+      "id": "G1210",
+      "area": "Street projects",
+      "text": "The Projects panel could not sort projects by region.",
+      "show": "fixing",
+      "commits": [
+        "game:3ba1fc1c355"
+      ]
+    },
+    {
+      "id": "G1193",
+      "area": "Pack",
+      "text": "A full bag was hard to spot in the pack row.",
+      "show": "fixing",
+      "commits": [
+        "game:b49b4b8fb8f"
+      ]
+    },
+    {
+      "id": "G1197",
+      "area": "Mail",
+      "text": "Teleportation Scripts, tools and many other items could not be attached to mail when the pack held lots of different things.",
+      "show": "fixing",
+      "commits": [
+        "game:af8bf7254bd"
+      ]
+    },
+    {
+      "id": "G1208",
+      "area": "Streets",
+      "text": "After a trip was interrupted, the street named in the top bar could differ from the street on screen.",
+      "show": "fixing",
+      "commits": [
+        "game:abb6b03f8b3"
+      ]
+    },
+    {
+      "id": "G1202",
+      "area": "Saving",
+      "text": "Reloading online could put a player back at a spot from earlier instead of where they stood.",
+      "show": "fixing",
+      "commits": [
+        "game:b43eadc3bfa"
+      ]
+    },
+    {
+      "id": "G1204",
+      "area": "Decorating",
+      "text": "Taking things out of a display box in Decoration Mode ignored how much room the pack had.",
+      "show": "fixing",
+      "commits": [
+        "game:9c7a4b658c2"
+      ]
+    },
+    {
+      "id": "G1205",
+      "area": "Decorating",
+      "text": "Things in a display box could only be moved out through the pack, not set down on the floor beside it.",
+      "show": "fixing",
+      "commits": [
+        "game:fe49c383fca"
+      ]
+    },
+    {
+      "id": "G1192",
+      "area": "Pack",
+      "text": "Dragging a stack from the pack onto the street did nothing.",
+      "show": "fixing",
+      "commits": [
+        "game:ac3d10b6b23"
+      ]
+    },
+    {
+      "id": "G1199",
+      "area": "Characters",
+      "text": "Character names had to be at least three letters long.",
+      "show": "fixing",
+      "commits": [
+        "game:eb8ecd3caef",
+        "site:5694913"
+      ]
+    },
+    {
+      "id": "G1187",
+      "area": "Quests",
+      "text": "Only the player on the Peter out Peat quest could see its 9 second countdown, so helpers had to guess.",
+      "show": "fixing",
+      "commits": [
+        "game:9e3d68e6f9c"
+      ]
+    },
+    {
+      "id": "G1203",
+      "area": "Streets",
+      "text": "On Winter Walk, tapping an icicle did nothing even though the street invites you to.",
+      "show": "fixing",
+      "commits": [
+        "game:d10c17a3491"
+      ]
+    },
+    {
+      "id": "G1207",
+      "area": "Animals",
+      "text": "An animal's name lost any apostrophe, hyphen or period, so Dr. Oink was saved as Dr Oink.",
+      "show": "fixing",
+      "commits": [
+        "game:a023e68199c",
+        "server:1aacf08"
+      ]
+    },
+    {
+      "id": "G1190",
+      "area": "Homes",
+      "text": "Things dropped on a house or Tower floor were only seen by the player who dropped them, so visitors saw an empty floor.",
+      "show": "fixing",
+      "commits": [
+        "game:3b091e2a9b8",
+        "game:ac454cdbf2a",
+        "game:16faccdac68",
+        "server:001f410",
+        "site:14d27c3"
+      ]
     }
   ]
 }
