@@ -124,9 +124,22 @@ export function packTipPlacement({ anchor, tipWidth = 0, min = 8, max = 8, tray 
   return { left, floor };
 }
 
-/** How many columns a bag's tray grid has for `count` cells: 4 to 8 (the mock). */
-export function trayColumns(count) {
-  return Math.max(4, Math.min(8, Math.floor(Number(count) || 0)));
+/**
+ * How many columns a bag's tray grid has for `count` cells: 4 to 8 (the mock), and (#635, an Android
+ * phone 360 px wide: the Red Toolbox's 8th column ran past the tray's right edge) no more than fit
+ * `{ roomW }`, the width the tray may take, with its padding and border (`chrome`), the slot and the gap.
+ */
+export const TRAY_CHROME = 18;
+export function trayColumns(count, opts = null) {
+  const base = Math.max(4, Math.min(8, Math.floor(Number(count) || 0)));
+  const o = opts && typeof opts === 'object' ? opts : {};
+  const room = Number(o.roomW);
+  if (!(room > 0)) return base;
+  const slot = Number(o.slot) > 0 ? Number(o.slot) : 44;
+  const gap = Number.isFinite(Number(o.gap)) ? Number(o.gap) : 2;
+  const chrome = Number.isFinite(Number(o.chrome)) ? Number(o.chrome) : TRAY_CHROME;
+  const fit = Math.floor((room - chrome + gap) / (slot + gap));
+  return Math.max(1, Math.min(base, fit));
 }
 
 /** True when a stack's shown name matches the search (case and spacing ignored). */
@@ -376,9 +389,21 @@ export function createPackRow({ document: doc = globalThis.document, setData = (
   }
 
   /** Where the open bag's tray sits: over the row, its left edge by its bag, inside the band. */
+  /** #635: the tray's columns for the room the band leaves it (its max-width: the band less 16 px). */
+  function fitTrayColumns(tray, band) {
+    const slots = tray.querySelector('.pack-bag-slots');
+    if (!slots) return;
+    const cs = globalThis.getComputedStyle?.(slots);
+    const slot = parseFloat(cs?.getPropertyValue('--pack-slot')) || 44;
+    const gap = parseFloat(cs?.columnGap) || 2;
+    const cols = String(trayColumns(Number(slots.dataset.cells) || 0, { roomW: band.getBoundingClientRect().width - 16, slot, gap }));
+    if (slots.style.getPropertyValue('--pack-tray-cols') !== cols) slots.style.setProperty('--pack-tray-cols', cols);
+  }
+
   function placeTray(tray, bagEl) {
     const band = bar();
     if (!tray || !band) return;
+    fitTrayColumns(tray, band);
     const b = band.getBoundingClientRect();
     const w = tray.offsetWidth || 0;
     const range = packBandRange(band, w);
@@ -456,6 +481,7 @@ export function createPackRow({ document: doc = globalThis.document, setData = (
     slots.className = 'pack-slots pack-bag-slots';
     slots.setAttribute('role', 'list');
     slots.dataset.packContainer = bag.key;
+    slots.dataset.cells = String(bag.cells || 0);
     slots.style.setProperty('--pack-tray-cols', String(trayColumns(bag.cells)));
     row.append(head, slots);
     if (!bag.used) {
@@ -763,6 +789,14 @@ export function createPackRow({ document: doc = globalThis.document, setData = (
       input.setAttribute('aria-controls', 'pack-search-results');
       input.setAttribute('aria-expanded', 'false');
     }
+    // #635: a turned phone or a resized window refits an open tray's columns and its place by its bag.
+    globalThis.addEventListener?.('resize', () => {
+      const tray = $('pack-bag');
+      if (!tray || tray.hidden) return;
+      const key = tray.querySelector('.pack-bag-slots')?.dataset.packContainer;
+      const esc = globalThis.CSS?.escape || ((v) => v);
+      placeTray(tray, key ? doc.querySelector(`#pack-bags [data-pack-bag="${esc(key)}"]`) : null);
+    });
     $('pack-search-btn')?.addEventListener('click', () => openSearch());
     $('pack-search-close')?.addEventListener('click', () => closeSearch());
     input?.addEventListener('input', () => {

@@ -22,7 +22,7 @@ import {
   packSearchMatch,
   packSlotTip,
   trayColumns,
-} from '../public/js/ui/pack-row.js?v=62e891eb';
+} from '../public/js/ui/pack-row.js?v=8c1f055d';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');
@@ -30,6 +30,11 @@ const read = (p) => readFileSync(join(root, p), 'utf8');
 describe('pack row: the pure parts', () => {
   it('a tray is 4 to 8 columns wide', () => {
     assert.deepEqual([0, 1, 4, 6, 8, 9, 16].map(trayColumns), [4, 4, 4, 6, 8, 8, 8]);
+    // #635: no more columns than fit the room (360 px phone: the tray's 344 px takes 7 of 44 px with 2 px gaps).
+    assert.equal(trayColumns(16, { roomW: 344 }), 7);
+    assert.equal(trayColumns(16, { roomW: 900 }), 8);
+    assert.equal(trayColumns(6, { roomW: 200 }), 4);
+    assert.equal(trayColumns(16, { roomW: 20 }), 1);
   });
 
   it('search matches a part of the name, any case, and nothing for an empty query', () => {

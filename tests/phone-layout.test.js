@@ -11,6 +11,7 @@
  * - notices keep to their region (js/notify-view.js `region`);
  * - #595: nothing in the top row or the caption is cut (an ellipsis, or text wider than its box)
  *   with big counts at 360 to 402 px wide, and in the tutorial the pill is only as wide as its icons;
+ * - #635: an open bag keeps every slot (and a long count) inside its tray at 360x629;
  * - #5: the verb menu and the chooser keep off the stick, Act and Jump, Act taps open and choose
  *   every time, and favor on the caption takes a real touch tap (a 44 px tall hit area);
  * - the pinned quest never covers the stick (the tutorial too), and the action chip ("Tap · choose
@@ -442,6 +443,58 @@ describe('phone layout: no overlaps on the real game (Chrome)', { skip: !chromiu
         await tab.waitForTimeout(900);
       }
       if (opened < 2) bad.push(`${where}: Act opened a menu ${opened} of 2 times`);
+    }
+    await ctx.close();
+    assert.deepEqual(bad, []);
+    assert.deepEqual(errors, []);
+  });
+
+  it('#635 (an Android phone, 360x629): an open bag keeps every slot inside its tray, a full 16-slot bag and long counts too', { timeout: 120_000 }, async () => {
+    const base = `http://127.0.0.1:${server.address().port}`;
+    const ctx = await chrome.browser.newContext({ viewport: { width: 360, height: 629 }, isMobile: true, hasTouch: true, deviceScaleFactor: 1, userAgent: UA });
+    await ctx.addInitScript(() => { try { localStorage.setItem('groddle-play-device', 'qa-game'); } catch { /* none */ } });
+    const tab = await ctx.newPage();
+    const errors = [];
+    tab.on('pageerror', (e) => errors.push(e.message));
+    await tab.goto(`${base}/play/?autostart=1&questoffer=off&hstip=0`);
+    await tab.waitForFunction(() => !document.body.classList.contains('is-booting') && document.getElementById('overlay')?.classList.contains('hidden') && document.documentElement.classList.contains('phone-layout'), null, { timeout: 60_000 });
+    // The starter pack's bags arrive a moment after the street (the 16-slot notice).
+    await tab.waitForFunction(() => document.querySelectorAll('#pack-bags .pack-bag').length > 0, null, { timeout: 20_000 }).catch(() => {});
+    const bad = [];
+    for (const [w, h] of [[360, 629], [375, 667], [812, 402]]) {
+      await tab.setViewportSize({ width: w, height: h });
+      await tab.waitForTimeout(500);
+      const bags = await tab.evaluate(() => document.querySelectorAll('#pack-bags .pack-bag').length);
+      if (!bags) bad.push(`${w}x${h}: no bag to open`);
+      for (let i = 0; i < bags; i++) {
+        await tab.evaluate((n) => document.querySelectorAll('#pack-bags .pack-bag')[n].click(), i);
+        await tab.waitForTimeout(500);
+        const got = await tab.evaluate(() => {
+          const tray = document.querySelector('#pack-bar .pack-bag-row:not([hidden])');
+          if (!tray) return null;
+          // A long stack count on the rightmost slot of the first row (the widest a count gets: 9,999).
+          const slots = [...tray.querySelectorAll('.pack-bag-slots .pack-slot')];
+          const right = slots.reduce((a, b) => (b.getBoundingClientRect().right > (a?.getBoundingClientRect().right ?? -1) ? b : a), null);
+          if (right) {
+            let c = right.querySelector('.count');
+            if (!c) right.append(c = Object.assign(document.createElement('span'), { className: 'count' }));
+            c.textContent = '9,999';
+          }
+          const t = tray.getBoundingClientRect();
+          const out = [...tray.querySelectorAll('.pack-slot, .pack-slot *')].filter((e) => {
+            const r = e.getBoundingClientRect();
+            return r.width > 0 && (r.left < t.left - 0.5 || r.right > t.right + 0.5);
+          }).map((e) => `${e.className || e.tagName}@${Math.round(e.getBoundingClientRect().right)}`);
+          return { slots: slots.length, out: out.slice(0, 4), tray: [t.left, t.right].map(Math.round), screen: innerWidth };
+        });
+        if (!got) bad.push(`${w}x${h} bag ${i + 1}: did not open`);
+        else {
+          if (got.out.length) bad.push(`${w}x${h} bag ${i + 1} (${got.slots} slots): past the tray ${got.tray}: ${got.out.join(' ')}`);
+          if (got.tray[0] < 0 || got.tray[1] > got.screen) bad.push(`${w}x${h} bag ${i + 1}: the tray runs off the screen ${got.tray}`);
+        }
+        await tab.evaluate((n) => document.querySelectorAll('#pack-bags .pack-bag')[n].click(), i);
+        await tab.waitForTimeout(250);
+      }
     }
     await ctx.close();
     assert.deepEqual(bad, []);
