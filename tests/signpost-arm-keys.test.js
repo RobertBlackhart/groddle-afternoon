@@ -85,7 +85,7 @@ describe('signpost arm keys: the post at hand', () => {
 
   it('shows the keys only while the prompt is worked out, and hides them otherwise', () => {
     assert.match(game, /const nearSign = currentStreet \? signpostNear\(walkUpSignpostStreet\(currentStreet\), player\.x, 140, player\.y\) : null;\n\s*const postAtHand = signpostAtHand\(\);\n\s*showSignpostKeys\(postAtHand\);/);
-    assert.match(game, /prompt\.visible = false;\n\s*showSignpostKeys\(null\);/);
+    assert.match(game, /prompt\.visible = false;\n(?:\s*syncPromptCss\(0\);\n)?\s*showSignpostKeys\(null\);/);
   });
 });
 
