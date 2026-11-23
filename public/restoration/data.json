@@ -2814,9 +2814,14 @@
   "deployed": "2026-11-23"
  },
  "git": {
-  "commits": 3172,
+  "commits": 3174,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "Sharp copies of reworked decos and the For Sale houses are sealed too"
+   },
    {
     "date": "2026-11-23",
     "kind": "fix",
@@ -2931,11 +2936,6 @@
     "date": "2026-11-22",
     "kind": "fix",
     "text": "The Hall of Rejected Concepts has its deep dark floor and light shafts on the exhibits"
-   },
-   {
-    "date": "2026-11-22",
-    "kind": "fix",
-    "text": "On a computer the camera stops at the street's or room's bottom, not in a band under it"
    }
   ]
  },
