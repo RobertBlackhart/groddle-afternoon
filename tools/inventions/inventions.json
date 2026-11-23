@@ -5639,6 +5639,34 @@
    "rows": [
     "G1194"
    ]
+  },
+  {
+   "id": "shared-quarter-lots",
+   "title": "Marylpole Mount Quarter, 1100 block: a shared street of free player lots, each showing its owner's home-street house and leading to their home street",
+   "kind": "behaviour",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/quarter.js",
+     "symbol": "QUARTER, judgeClaim, quarterStreet"
+    },
+    {
+     "file": "public/js/features/quarter-feature.js",
+     "symbol": "quarterFeature"
+    },
+    {
+     "file": "public/js/street-render.js",
+     "symbol": "addQuarterBoard"
+    },
+    {
+     "file": "public/assets/streets/GQRMM1100BLOCK1.json"
+    }
+   ],
+   "why": "Players missed Glitch's pre-2012 quarter houses (G1186). No quarter street survives (made at run time, deleted in 2012), so the block is laid on Whipping Cross Crossing's CC0 lot street. Kept Glitch's: the '<Name> Quarter, <x><y>00 block' and '<x><y>## <Name> Quarter' names (groups/quarter.js), the QUARTER signpost (SignpostView.as), one house per player and none with an owner (pols_canBuy), the familiar's For Sale words, the For Sale sign. Ours: a lot is free (no currants, no papers), a front is the owner's G796 house leading to their home street through the G328 visit (no second house, no interior), giving a lot up puts it back on sale (Glitch sold back at 80%), the parent street and block number, solo shows only your own lot, and the claim and refusal lines where Glitch had none.",
+   "ruling": "Austin 2026-11-23 (G1186): option A, a new shared street of house lots, one meadow block of 10 to 12 lots; free, one lot per player, front to the home street, one quarter for everyone, solo own lot only (the note's defaults)",
+   "rows": [
+    "G1186"
+   ]
   }
  ]
 }

@@ -46,6 +46,10 @@ const SIGNPOST = {
   post: 'assets/ui/signpost/signpost_post.webp',
   arm: 'assets/ui/signpost/signpost_arm.webp',
   shadow: 'assets/ui/signpost/signpost_shadow.webp',
+  // G1186: a QUARTER signpost's board and its block grid (TSEngineAssets signpost_quarter_arm.png,
+  // signpost_quarter_grid.png, CC0).
+  quarterArm: 'assets/ui/quarter/signpost_quarter_arm.webp',
+  quarterGrid: 'assets/ui/quarter/signpost_quarter_grid.webp',
   /** Original holder.scale = 0.8 */
   scale: 0.8,
 };
@@ -263,6 +267,12 @@ function buildSignpostSprite(PIXI, signpost, pos) {
     postH = 200;
   }
 
+  if (signpost.quarter && typeof signpost.quarter === 'object') {
+    addQuarterBoard(PIXI, g, holder, signpost, postH, tex);
+    g.signpost = signpost;
+    return g;
+  }
+
   // Collect visible connections (all, with preferred loaded one first for label emphasis)
   const connects = (signpost.connects || []).filter((c) => c && (c.label || c.tsid));
   const available = availableStreetTsids();
@@ -381,6 +391,96 @@ function buildSignpostSprite(PIXI, signpost, pos) {
 
   g.signpost = signpost;
   return g;
+}
+
+/** SignpostView.as 211-238: the QUARTER board is 85 tall and at least 150 wide (holder units). */
+export const QUARTER_ARM_H = 85;
+export const QUARTER_ARM_MIN_W = 150;
+
+/**
+ * G1186: a QUARTER signpost (SignpostView.as render 211-238, QuarterInfo.as): one board on the
+ * right of the post, signpost_quarter_arm at 85 tall and at least 150 wide, its centre 50 under
+ * the post's top, tilted as a right arm (makeSign: 2 px out, -5.5 degrees), with the quarter's
+ * name (info.label) and the signpost_quarter_grid scaled as the board was and centred on it. The
+ * client drew the grid over the words; here the words go over the grid so they stay readable.
+ * A click takes the board's connect (the client opened LocationSelectorDialog's grid of blocks;
+ * this quarter has one block). Exported for tests.
+ */
+export function addQuarterBoard(PIXI, g, holder, signpost, postH, tex = {}) {
+  const info = signpost.quarter;
+  const conn = (signpost.connects || []).find((c) => c && (c.label || c.tsid)) || null;
+  const words = String(info.label || conn?.label || 'Quarter');
+  const armHolder = new PIXI.Container();
+  armHolder.x = 2;
+  armHolder.y = -postH + 50;
+  armHolder.rotation = (-5.5 * Math.PI) / 180;
+  armHolder.label = 'sign-arm-holder';
+  holder.addChild(armHolder);
+  const label = signLabel(PIXI, words);
+  label.style.wordWrap = true;
+  label.style.wordWrapWidth = QUARTER_ARM_MIN_W - 2 * SIGN_ARM_PAD_X;
+  label.style.align = 'center';
+  const w = Math.max(QUARTER_ARM_MIN_W, Math.ceil(Math.min(label.width, QUARTER_ARM_MIN_W) + 2 * SIGN_ARM_PAD_X));
+  const h = QUARTER_ARM_H;
+  const glow = new PIXI.Graphics();
+  glow.roundRect(0, -h / 2, w, h, 6).fill({ color: SIGN_GLOW_COLOUR, alpha: 1 });
+  if (PIXI.BlurFilter) glow.filters = [new PIXI.BlurFilter({ strength: 7, quality: 3 })];
+  glow.visible = false;
+  glow.label = 'sign-glow';
+  armHolder.addChild(glow);
+  let arm;
+  if (tex.quarterArm && !tex.quarterArm.source?.destroyed) {
+    arm = new PIXI.Sprite(tex.quarterArm);
+    arm.anchor.set(0, 0.5);
+    arm.width = w;
+    arm.height = h;
+  } else {
+    arm = new PIXI.Graphics();
+    arm.roundRect(0, -h / 2, w, h, 4).fill(0x4a3420);
+  }
+  arm.label = 'sign-arm';
+  armHolder.addChild(arm);
+  if (tex.quarterGrid && !tex.quarterGrid.source?.destroyed) {
+    // The grid at the board's smaller scale (85 / 195 tall: the arm PNG is 263 x 195), centred.
+    const grid = new PIXI.Sprite(tex.quarterGrid);
+    const k = Math.min(w / 263, h / 195);
+    grid.anchor.set(0.5, 0.5);
+    grid.scale.set(k);
+    grid.x = w / 2;
+    grid.alpha = 0.85;
+    grid.label = 'sign-quarter-grid';
+    armHolder.addChild(grid);
+  }
+  label.x = w / 2;
+  label.y = -1;
+  label.label = 'sign-label';
+  label._baseFill = SIGN_TEXT_FILL;
+  armHolder.addChild(label);
+  const keyCap = signKeyCap(PIXI, 1);
+  keyCap.x = w + SIGN_KEY_GAP + SIGN_KEY_W / 2;
+  keyCap.visible = false;
+  armHolder.addChild(keyCap);
+  g.signHoverParts.arms.push(arm);
+  g.signHoverParts.labels.push(label);
+  g.signHoverParts.baseLabelFills.push(SIGN_TEXT_FILL);
+  g.signQuarter = { label: words, width: w };
+  if (conn) {
+    g.signBoards.push({
+      index: 0,
+      connection: conn,
+      arm,
+      glow,
+      label,
+      keyCap,
+      key: '1',
+      baseFill: SIGN_TEXT_FILL,
+      x: armHolder.x,
+      y: armHolder.y,
+      rotation: armHolder.rotation,
+      hitArea: { x: 0, y: -h / 2, width: w, height: h },
+    });
+  }
+  return armHolder;
 }
 
 /**

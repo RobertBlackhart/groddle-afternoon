@@ -104,6 +104,7 @@ import { thornfadLettersFeature } from './thornfad-letters-feature.js?v=bdc8b420
 import { streetToysFeature } from './street-toys-feature.js?v=30f14486'; FEATURES.push(streetToysFeature);
 import { koulatoJarsFeature } from './koulato-jars-feature.js?v=2ad3cc85'; FEATURES.push(koulatoJarsFeature);
 import { rebuiltRoomsFeature } from './rebuilt-rooms-feature.js?v=7f2e9a6f'; FEATURES.push(rebuiltRoomsFeature);
+import { quarterFeature } from './quarter-feature.js?v=70a4da75'; FEATURES.push(quarterFeature);
 import { deadEndsFeature } from './dead-ends-feature.js?v=582a8195'; FEATURES.push(deadEndsFeature);
 import { interrogationRoomFeature } from './interrogation-room-feature.js?v=33b645b5'; FEATURES.push(interrogationRoomFeature);
 import { towerFloorsFeature } from './tower-floors-feature.js?v=2613cfb3'; FEATURES.push(towerFloorsFeature);

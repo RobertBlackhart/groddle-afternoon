@@ -250,6 +250,18 @@
           }
         },
         "plate": { "type": "string", "maxLength": 3, "description": "Words on a deco signpost's plate (a lift's floor: L for the lobby, as the client's showNumber wrote it)." },
+        "quarter": {
+          "description": "Feature-owned (G1186, public/js/quarter.js): a QUARTER signpost (glitch-client QuarterInfo.as), drawn as the signpost_quarter_arm board with the quarter's name and grid (SignpostView.as render 211-238); its connects are the quarter's blocks.",
+          "type": "object",
+          "required": ["style", "label"],
+          "additionalProperties": false,
+          "properties": {
+            "style": { "enum": ["normal"] },
+            "label": { "type": "string", "minLength": 1, "maxLength": 48 },
+            "cols": { "type": "integer", "minimum": 1, "maximum": 9 },
+            "rows": { "type": "integer", "minimum": 1, "maximum": 20 }
+          }
+        },
         "connects": { "type": "array", "maxItems": 8, "items": { "$ref": "#/$defs/connect" } }
       }
     },
@@ -546,6 +558,38 @@
         "starJinglers": { "type": "object", "description": "Feature-owned." },
         "glowOrbs": { "type": "object", "description": "Feature-owned." },
         "soilArt": { "type": "array", "description": "Feature-owned." },
+        "quarter": {
+          "description": "Feature-owned (G1186, public/js/quarter.js, features/quarter-feature.js): a quarter block's house lots, each a number on its door, a foot in world space and the meadow house deco it shows while for sale.",
+          "type": "object",
+          "required": ["style", "label", "block", "parent", "lots"],
+          "additionalProperties": false,
+          "properties": {
+            "style": { "enum": ["normal"] },
+            "label": { "type": "string", "minLength": 1, "maxLength": 48 },
+            "cols": { "type": "integer", "minimum": 1, "maximum": 9 },
+            "rows": { "type": "integer", "minimum": 1, "maximum": 20 },
+            "block": { "type": "object", "required": ["x", "y"], "additionalProperties": false, "properties": { "x": { "type": "integer", "minimum": 1, "maximum": 9 }, "y": { "type": "integer", "minimum": 1, "maximum": 20 } } },
+            "parent": { "$ref": "#/$defs/tsid" },
+            "lots": {
+              "type": "array",
+              "minItems": 1,
+              "maxItems": 20,
+              "items": {
+                "type": "object",
+                "required": ["lot", "x", "y", "sprite", "w", "h"],
+                "additionalProperties": false,
+                "properties": {
+                  "lot": { "type": "integer", "minimum": 100, "maximum": 9999 },
+                  "x": { "type": "number" },
+                  "y": { "type": "number" },
+                  "sprite": { "type": "string" },
+                  "w": { "type": "number", "exclusiveMinimum": 0 },
+                  "h": { "type": "number", "exclusiveMinimum": 0 }
+                }
+              }
+            }
+          }
+        },
 
         "emitters": { "type": "array", "maxItems": 40, "items": { "$ref": "#/$defs/emitter" }, "description": "Zone ambient effects (builder streets; no shipped street has them)." },
         "rumble": { "$ref": "#/$defs/rumble" }

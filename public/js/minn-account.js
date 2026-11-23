@@ -202,6 +202,15 @@ export function createMinnAccount(opts = {}) {
     },
 
     /**
+     * G1186: a Quarter block's claimed lots (groddle-afternoon-site src/Quarter.php):
+     * { street, lots: [{ lot, owner: { id, name }, house, style }] }. Claims go through the
+     * realtime server (quarter.go), which asks the site.
+     */
+    async quarter(street) {
+      return buddyCall('Loading the Quarter', `quarter/${encodeURIComponent(String(street || ''))}`);
+    },
+
+    /**
      * G328 slice 2 (groddle-afternoon-site src/ButlerParcels.php,
      * src/HomeTending.php): butlerParcels() answers { parcels: [{ id, from:
      * { id, name }, item: { c, n } | null, text, at }] } the owner's Butler

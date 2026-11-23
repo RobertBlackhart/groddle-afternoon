@@ -491,6 +491,9 @@
     "stand-in: // moveAvatar stand-in: ease the avatar onto the beam while it": "not-an-invention",
     "stand-in: // moveAvatar stand-in: ease the avatar to the trigger's centre (a": "not-an-invention"
   },
+  "public/js/features/quarter-feature.js": {
+    "remake-own: lots (register G1186; rules, sources and the remake's choices": "shared-quarter-lots"
+  },
   "public/js/features/quest-instances-feature.js": {
     "no-source: tower chain, location.js 443-456). Three have no source fail": "ours-quest-instances"
   },
@@ -967,6 +970,23 @@
   },
   "public/js/qa-gate.js": {
     "ours: try { delete scope[name]; } catch { /* not ours to remove */": "not-an-invention"
+  },
+  "public/js/quarter.js": {
+    "glitch-had-none: * Glitch's words, and the remake's where Glitch had none.": "shared-quarter-lots",
+    "invented: * The remake's own (inventions:": "shared-quarter-lots",
+    "made-up: - Solo: your own lot and the For Sale houses, no made-up": "shared-quarter-lots",
+    "ours: 'Someone else has just claimed that lot.', // ours": "shared-quarter-lots",
+    "ours: 'The Quarter can not be reached right now.', // ours": "shared-quarter-lots",
+    "ours: a moment, the Quarter is still answering.', // ours": "shared-quarter-lots",
+    "ours: claimVerb: 'Claim this lot', // ours (Glitch: \"Purchase location for N": "shared-quarter-lots",
+    "ours: for sale! It is free, one lot per player.', // ours": "shared-quarter-lots",
+    "ours: gave up ${label}. It is for sale again.`, // ours": "shared-quarter-lots",
+    "ours: giveUpVerb: 'Give up this lot', // ours": "shared-quarter-lots",
+    "ours: homeVerb: 'Go to your home street', // ours": "shared-quarter-lots",
+    "ours: noHome: 'You need a home street first.', // ours (groddle-afternoon-site Neighbours": "shared-quarter-lots",
+    "ours: none: \"You don't have a lot in the Quarter.\", // ours": "shared-quarter-lots",
+    "ours: yours! Its front leads to your home street.`, // ours": "shared-quarter-lots",
+    "remake-own: * The remake's own (inventions:": "shared-quarter-lots"
   },
   "public/js/quest-instance.js": {
     "remake-own: you stuck?\" wait stop while you are away (the remake's choice: Glitch's ran on,": "ours-quest-instance"

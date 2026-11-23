@@ -16,6 +16,8 @@
  * Also the two skill-quest practice streets (public/js/practice-streets.js, G682),
  * Breezy, EZ Cookin' and Talking 'bout Soil Appreciation: no doors lead in (the
  * quests' starts and the tutorial's EZ Cooking pick move you there).
+ * Also the Quarter's first block (public/js/quarter.js, G1186): Marylpole Mount Quarter, 1100
+ * block, laid on Whipping Cross Crossing, and the QUARTER signpost on Marylpole Mount that leads in.
  * Each door's own connect x/y is kept and snapped to the rebuilt floor. Safe to
  * re-run; run it again after a street re-import or a build-street-navigation.mjs
  * pass.
@@ -97,6 +99,18 @@ import {
   soilIndexEntry,
   soilStreet,
 } from '../public/js/practice-streets.js?v=557238c1';
+import {
+  QUARTER_PARENT_SIGN_ID,
+  QUARTER_PARENT_SIGN_X,
+  QUARTER_PARENT_TSID,
+  QUARTER_SIGN_X,
+  QUARTER_TEMPLATE_TSID,
+  QUARTER_GROUND_Y,
+  QUARTER_TSID,
+  quarterIndexEntry,
+  quarterSignpost,
+  quarterStreet,
+} from '../public/js/quarter.js?v=6eb35ef4';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const streetsDir = join(root, 'public/assets/streets');
@@ -266,6 +280,26 @@ for (const [tsid, build, row] of [[EZ_COOKIN_TSID, ezCookinStreet, ezCookinIndex
   if (!at?.snapped) throw new Error(`no floor under ${street.label}'s start`);
   put(`${tsid}.json`, `${JSON.stringify(street)}\n`);
   indexRow(tsid, row(street));
+}
+
+// G1186: the Quarter's first block, in by Marylpole Mount's QUARTER signpost, out by the block's own.
+{
+  const parent = read(`${QUARTER_PARENT_TSID}.json`);
+  const signFoot = arrivalInTarget(parent, QUARTER_PARENT_SIGN_X, -40);
+  if (!signFoot?.snapped) throw new Error("no floor under Marylpole Mount's QUARTER signpost");
+  // The way out lands just right of the QUARTER signpost, as a signpost arrival does.
+  const parentArrive = arrivalInTarget(parent, QUARTER_PARENT_SIGN_X + 90, -40);
+  if (!parentArrive?.snapped) throw new Error('no floor beside the QUARTER signpost');
+  const room = quarterStreet(read(`${QUARTER_TEMPLATE_TSID}.json`), { parentArrive: { x: parentArrive.x, y: parentArrive.y } });
+  const blockArrive = arrivalInTarget(room, QUARTER_SIGN_X + 100, QUARTER_GROUND_Y - 4);
+  if (!blockArrive?.snapped) throw new Error("no floor beside the block's signpost");
+  const sign = quarterSignpost({ y: signFoot.y + parent.bounds.t, arrive: { x: blockArrive.x, y: blockArrive.y } });
+  parent.signposts = [...parent.signposts.filter((p) => p.id !== QUARTER_PARENT_SIGN_ID), sign];
+  parent.stats.signpostCount = parent.signposts.length;
+  if (room.tsid !== QUARTER_TSID) throw new Error('quarter tsid');
+  put(`${QUARTER_TSID}.json`, `${JSON.stringify(room)}\n`);
+  put(`${QUARTER_PARENT_TSID}.json`, `${JSON.stringify(parent)}\n`);
+  indexRow(QUARTER_TSID, quarterIndexEntry(room));
 }
 
 if (indexChanged) put('index.json', `${JSON.stringify(index, null, 2)}\n`);
