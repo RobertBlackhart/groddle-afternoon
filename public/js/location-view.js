@@ -404,6 +404,25 @@ export function phoneStage({ width, height, packReserve = MIN_PACK_HEIGHT, scene
 }
 
 /**
+ * PURE (G1178, report #625): the canvas's room beside a window docked on a phone, in CSS px. Glitch
+ * docked the house's Customize window and fitted the viewport into what it left (ChassisManager.as
+ * scaleVP 189-247: avail_w = loc_vp_w - WIDTH_OF_CONFIG_UI). `dock` is { side: 'bottom' | 'left',
+ * css } (the window's height upright, its width sideways), or null for the whole room. The stage is
+ * worked out for the room left (stageFor), the canvas laid at `left` from the room's left edge and
+ * on its top.
+ * @returns {{ width: number, height: number, left: number }}
+ */
+export function stageRoomBeside(width, height, dock) {
+  const W = finite(width, 0);
+  const H = finite(height, 0);
+  const css = Math.max(0, finite(dock?.css, 0));
+  if (!(css > 0)) return { width: W, height: H, left: 0 };
+  if (dock.side === 'bottom') return { width: W, height: Math.max(1, H - css), left: 0 };
+  if (dock.side === 'left') return { width: Math.max(1, W - css), height: H, left: Math.min(css, W - 1) };
+  return { width: W, height: H, left: 0 };
+}
+
+/**
  * The least share of a sideways phone's usual scale the house fit (G796) may zoom out to: 0.72x
  * on a 844x390 phone would fall to 0.38x for the Firebog House, the avatar about 45 CSS px tall;
  * capped it stays at about 0.5x (Austin 2026-11-22: cap it).

@@ -73,6 +73,26 @@ const CSS = `
 .house-picker [data-hp-random]>i{width:18px;height:14px}
 .house-picker .hp-note{margin:0;font-size:var(--fs-sm);color:var(--text-muted)}
 @media (max-width:480px){.house-picker .hp-styles{grid-template-columns:repeat(4,1fr)}}
+:root.touch-phone .house-picker{z-index:calc(var(--z-panel) + 2)}
+:root.touch-phone .house-picker .hp-card{gap:var(--sp-2);padding:var(--sp-3);box-shadow:var(--shadow-3)}
+:root.touch-phone .house-picker .hp-kicker{font-size:var(--fs-xs)}
+:root.touch-phone .house-picker h2{font-size:var(--fs-md)}
+:root.touch-phone .house-picker .hp-styles{display:flex;gap:var(--sp-2);overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;padding-bottom:2px;flex:none}
+:root.touch-phone .house-picker .hp-style{flex:0 0 74px;scroll-snap-align:start;padding:var(--sp-1)}
+:root.touch-phone .house-picker .hp-thumb{height:40px}
+:root.touch-phone .house-picker .hp-body{display:flex;flex-direction:column;gap:var(--sp-2);min-height:0;overflow:auto;overscroll-behavior:contain}
+:root.touch-phone .house-picker .hp-row{padding:var(--sp-1) var(--sp-2)}
+:root.touch-phone .house-picker .hp-row b{font-size:var(--fs-sm)}
+:root.touch-phone .house-picker .hp-row button{min-height:32px}
+:root.touch-phone[data-ui="modern"]:has(#house-picker:not([hidden])) :is(.pack-bar,.touch-controls){visibility:hidden}
+@media (orientation:portrait){
+:root.touch-phone .house-picker{align-items:flex-end;padding:0}
+:root.touch-phone .house-picker .hp-card{width:100%;height:min(44dvh,380px);max-height:none;overflow:hidden;border-radius:var(--radius-md) var(--radius-md) 0 0;border-bottom:0;padding-bottom:calc(var(--sp-3) + var(--safe-b,0px));padding-left:calc(var(--sp-3) + var(--safe-l,0px));padding-right:calc(var(--sp-3) + var(--safe-r,0px))}
+}
+@media (orientation:landscape){
+:root.touch-phone .house-picker{align-items:stretch;padding:calc(var(--hud-h,44px) + var(--sp-2) + var(--safe-t,0px)) 0 calc(var(--sp-2) + var(--safe-b,0px)) calc(var(--sp-2) + var(--safe-l,0px))}
+:root.touch-phone .house-picker .hp-card{width:min(300px,40vw);max-height:none;overflow:hidden}
+}
 `;
 
 let panel = null;
@@ -140,6 +160,10 @@ function ensurePanel() {
   panel.addEventListener('click', (e) => {
     if (e.target.closest('[data-hp-close]')) closeHousePicker();
   });
+  // G1178: turning the phone moves the sheet (bottom upright, left sideways): the street follows.
+  window.addEventListener('resize', () => {
+    if (panel && !panel.hidden) syncDock();
+  });
   window.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && panel && !panel.hidden) {
       e.stopPropagation();
@@ -147,6 +171,41 @@ function ensurePanel() {
     }
   }, true);
   return panel;
+}
+
+/**
+ * PURE (G1178, report #625): the room the window takes off the street on a phone, docked as Glitch
+ * docked its configger beside the house (ChassisManager.as scaleVP): upright a sheet along the
+ * bottom (its height from its top to the screen's bottom), sideways a column at the left (its width
+ * from the screen's left to its right edge). `card` and `root` are rects (the card's and #game-root's);
+ * null when the card is not laid out.
+ * @returns {{ side: 'bottom' | 'left', css: number } | null}
+ */
+export function housePickerDockOf(card, root, upright) {
+  if (!card || !root || !(card.width > 0) || !(card.height > 0)) return null;
+  const css = upright ? Math.round(root.bottom - card.top) : Math.round(card.right - root.left);
+  return css > 0 ? { side: upright ? 'bottom' : 'left', css } : null;
+}
+
+/** The window's dock on a phone now (housePickerDockOf), null on a computer or when it is shut. */
+export function housePickerDock() {
+  if (!panel || panel.hidden || typeof document === 'undefined') return null;
+  if (!document.documentElement.classList.contains('touch-phone')) return null;
+  const card = panel.querySelector('.hp-card')?.getBoundingClientRect();
+  const root = (document.getElementById('game-root') || document.documentElement).getBoundingClientRect();
+  const upright = Boolean(window.matchMedia?.('(orientation: portrait)')?.matches);
+  return housePickerDockOf(card, root, upright);
+}
+
+let lastDock = '';
+/** Tell the homes feature where the window sits (opts.onDock), once per change. */
+function syncDock() {
+  if (!opts?.onDock) return;
+  const dock = housePickerDock();
+  const key = dock ? `${dock.side}:${dock.css}` : '';
+  if (key === lastDock) return;
+  lastDock = key;
+  opts.onDock(dock);
 }
 
 function change(next, what) {
@@ -211,12 +270,18 @@ function render() {
   random.addEventListener('click', () => change({ ...house, config: randomHouseConfig(house.chassis) }, 'random'));
   tools.append(flip, random);
   body.append(tools, el('p', { class: 'hp-note' }, HOUSE_PICKER_TEXT.note));
+  syncDock();
 }
 
-/** Open the window: { getHouse, apply(next, change), onClose }. */
+/**
+ * Open the window: { getHouse, apply(next, change), onClose, onDock(dock) }. `onDock` hears where
+ * the window docks on a phone (housePickerDock) on opening and whenever that changes, and null on
+ * closing.
+ */
 export function openHousePicker(options) {
   if (!ensurePanel()) return false;
   opts = options;
+  lastDock = '';
   panel.hidden = false;
   render();
   return true;
@@ -226,6 +291,8 @@ export function closeHousePicker() {
   if (!panel || panel.hidden) return;
   panel.hidden = true;
   const done = opts?.onClose;
+  if (lastDock) opts?.onDock?.(null);
+  lastDock = '';
   opts = null;
   done?.();
 }

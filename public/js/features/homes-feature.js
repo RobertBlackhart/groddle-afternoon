@@ -299,7 +299,7 @@ import { anchorBottomCentre, standOnFeet } from '../sprite-feet.js?v=6ffaec43';
 import { autoplayLog } from '../autoplay-log.js?v=55bb4823';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 import { HOUSE_ART_DIR, HOUSE_FROM_HOME_STYLE, HOUSE_STYLE_IDS, composeHouse, houseFitViewH, houseLabel, houseLot, normalizeHouse } from '../home-house.js?v=3c88c47c';
-import { closeHousePicker, housePickerOpen, openHousePicker, refreshHousePicker } from '../ui/house-picker.js?v=9d018a82';
+import { closeHousePicker, housePickerOpen, openHousePicker, refreshHousePicker } from '../ui/house-picker.js?v=67f03b99';
 
 export const HOMES_FEATURE_ID = 'homes';
 const HOME_STREET_TSID = 'RH_HOME_EXT';
@@ -2757,14 +2757,20 @@ function ownHouse(engine) {
   return houseOf(ctx.house || ctx.style || 'meadow');
 }
 
-/** Frame the house beside the window (the client scrolled the view so the house sat clear of it). */
+/** G1178: the window is docked on a phone and the street fits beside it (engine.setStageDock). */
+let houseDocked = false;
+
+/**
+ * Frame the house beside the window (the client scrolled the view so the house sat clear of it).
+ * On a phone the street already fits the room beside the docked window, so the house is centred.
+ */
 function lookAtHouse(engine) {
   const p = engine?.player;
   if (!p || typeof engine.setCameraLook !== 'function') return;
   const h = ownHouse(engine);
   const { bounds } = houseLot(h.chassis, h.config, h.facingRight);
   const x = homeStreetLayout(cult).houseX;
-  const dx = Math.round(x - p.x - HOUSE_UI_W / 2);
+  const dx = Math.round(x - p.x - (houseDocked ? 0 : HOUSE_UI_W / 2));
   const dy = Math.round(STREET_GROUND_Y + (bounds.t + bounds.b) / 2 - p.y + (engine.camera?.h || 408) * 0.25);
   houseLook = { x: dx, y: dy, engine };
   engine.setCameraLook(dx, dy);
@@ -2795,6 +2801,15 @@ export function openHouseCustomize(engine) {
     onClose: () => {
       releaseHouseLook();
       engine.setData?.('homeHousePicker', '0');
+    },
+    // G1178 (#625): on a phone the window docks (a sheet at the bottom upright, a column at the
+    // left sideways) and the street zooms out to fit the house in the room left, as ChassisManager
+    // scaleVP fitted the viewport beside its configger.
+    onDock: (dock) => {
+      houseDocked = Boolean(dock);
+      engine.setStageDock?.(dock);
+      engine.setData?.('homeHouseDock', dock ? `${dock.side}:${dock.css}` : '');
+      if (dock) lookAtHouse(engine);
     },
   });
   if (ok) {

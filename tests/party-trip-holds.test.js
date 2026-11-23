@@ -28,7 +28,7 @@ import {
 } from '../public/js/quest-instance.js?v=8858d29d';
 import { normalizePartyRecord } from '../public/js/party-spaces.js?v=b026ad60';
 import { partySpacesFeature, partyTeleporterSpot } from '../public/js/features/party-spaces-feature.js?v=c39f420f';
-import { questInstancesFeature } from '../public/js/features/quest-instances-feature.js?v=afa8de75';
+import { questInstancesFeature } from '../public/js/features/quest-instances-feature.js?v=f68d6d2c';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const GSJS = join(ROOT, '../glitch-GameServerJS');

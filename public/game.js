@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=92f87e00';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=f4b92c33';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=81e98d50';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE, playerClickBox } from './js/reach.js?v=456da8a8';
@@ -137,7 +137,7 @@ import {
 } from './js/legalize-it.js?v=7ec63cac';
 import { HALL, HALL_LAYOUT, HALL_QUESTIONS } from './js/bureaucratic-hall.js?v=a8eaa334';
 import { STATION_X, stationArrival, stationScreen, surfaceStation } from './js/subway.js?v=0a87a908';
-import { ALLEY, SHADY, drawAlley, inEnteredBox } from './js/quest-rooms/back-alley-set.js?v=51084738';
+import { ALLEY, SHADY, drawAlley, inEnteredBox } from './js/quest-rooms/back-alley-set.js?v=3c50bad7';
 import { WINTER_WALK_BOUNDS, WINTER_WALK_PASSAGE } from './js/winter-walk-streets.js?v=c921bf92';
 import {
   WINTER_HAVEN_STREET_ID,
@@ -830,7 +830,7 @@ import { easeCameraAxis } from './js/camera-feel.js?v=e668afc5';
 import { renderResolution, resolutionCap, RESOLUTION_STEP, phoneZoomResolution } from './js/render-density.js?v=74c6f5f9';
 // g458: low energy and mood turn amber and red, and a click offers something from the pack.
 import { makingNeeds, vitalMenuEmpty, vitalMenuHeading, vitalSnacks } from './js/vitals.js?v=85a51302';
-import { DEFAULT_VP_H, LOCATION_VIEW_W, VIEW_CEIL_H, stageFor, sceneViewCap, sceneViewWidthCap, zoomMovesStage, phoneZoomSpan, phoneCameraAnchor, phoneGroundWorldHeight, reachableFloorY, sceneBottomLine, sceneGroundLine, shortSceneBand } from './js/location-view.js?v=9f1380d7';
+import { DEFAULT_VP_H, LOCATION_VIEW_W, VIEW_CEIL_H, stageFor, sceneViewCap, sceneViewWidthCap, zoomMovesStage, phoneZoomSpan, phoneCameraAnchor, phoneGroundWorldHeight, reachableFloorY, sceneBottomLine, sceneGroundLine, shortSceneBand, stageRoomBeside } from './js/location-view.js?v=958f2016';
 import {
   levelInfoForXp,
   reconcilePlayerProgression,
@@ -861,12 +861,12 @@ import {
 import { momentMoreText } from './js/ui/moment-card.js?v=35252236';
 import { CHAT_MAX_CHARS, chatBubbleText } from './js/ui/chat-input.js?v=8f2479a3';
 // HUB: the hub is the Modern skin's; Classic owns X in its skin (js/classic/classic-hub.js).
-import { MODERN, onUiModeChange, readUiCache, uiState, writeUiCache } from './js/classic/ui-mode.js?v=384e19e8';
+import { MODERN, onUiModeChange, readUiCache, uiState, writeUiCache } from './js/classic/ui-mode.js?v=32607d66';
 // ZOOM: the world zoom (a device preference) and Classic's frame scale under it; both load before main().
 import { worldZoom, setWorldZoom, stepWorldZoom, onZoomChange, zoomKeyAction, zoomKeyToast, zoomFixed, setZoomFixed, onZoomFixedChange, phoneZoom } from './js/world-zoom.js?v=38816228';
 import { nightTint, nightTintOn, onNightTintChange, worldTintOpacity } from './js/night-tint.js?v=1dfc9c89';
 import { streetMapSetting, toggleStreetMap } from './js/ui/street-minimap.js?v=86d4a812';
-import './js/classic/classic-zoom.js?v=e6802090';
+import './js/classic/classic-zoom.js?v=d2c3ee91';
 import { mountImaginationHub } from './js/ui/imagination-hub.js?v=6928c5b7';
 import { newDayBubble, shuffleNewDayMessages, waitForScreenGates } from './js/screen-queue.js?v=cf0132c0';
 import { applyFamiliarLook, familiarCardHeading, familiarLook, skillArtFor, skillLearnedActivity } from './js/familiar.js?v=b9597cd3';
@@ -1172,7 +1172,7 @@ import { filterText } from './js/word-filter.js?v=9a7a7ebb'; // the remake's own
 import { mountStartStreet } from './js/start-street.js?v=7d8ce49c'; // #349: the start card names the save's street
 import { arrangeMapCards, fitMapExtras } from './js/map-extras.js?v=16e261b1'; // the Map's Shortcuts
 // The interface skin (js/classic/ui-mode.js) sets <html data-ui> as it loads: before main(), so before the boot cover lifts.
-import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=69132cc4';
+import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=042d8f82';
 import { standOnFeet, anchorBottomCentre } from './js/sprite-feet.js?v=6ffaec43';
 import { markLeaving, packPicks, takeCopies } from './js/copy-picks.js?v=01de4c58';
 import { holdKeepsBusy } from './js/instance-holds.js?v=ff3a63a3';
@@ -2120,6 +2120,17 @@ let viewSceneLayer = null;
 const STAGE_CLEAR = 0x8ec8e8;
 /** #386: a narrow street's canvas size in CSS px ({ w, h }), null when the canvas fills the root. */
 let stageCanvasSize = null;
+/** G1178: a docked canvas's size and its left offset in CSS px ({ w, h, left }), null when nothing is docked. */
+let dockCanvasSize = null;
+/**
+ * G1178 (#625): a window docked on a phone ({ side: 'bottom' | 'left', css }, engine.setStageDock),
+ * or null. The stage fits the room it leaves (js/location-view.js stageRoomBeside), as Glitch fitted
+ * its viewport beside the house's Customize window (ChassisManager.as scaleVP).
+ */
+let stageDock = null;
+function activeStageDock() {
+  return TOUCH_PHONE && PINNED_VIEW_H <= 0 && stageDock ? stageDock : null;
+}
 
 /**
  * PINCH PREVIEW (Austin 2026-11-13 on his iPhone: "The phone zoom in/out flickers and is mostly
@@ -2149,9 +2160,12 @@ function stageArgs() {
     const host = app?.canvas?.isConnected ? app.canvas : root;
     return { width: host.getBoundingClientRect().width || root.clientWidth, height: 1, pinnedHeight: PINNED_VIEW_H, sceneHeight };
   }
+  // G1178 (#625): a window docked on a phone (the house's Customize sheet) leaves the canvas the rest.
+  const dock = activeStageDock();
+  const room = stageRoomBeside(root.clientWidth, root.clientHeight, dock);
   return {
-    width: root.clientWidth,
-    height: root.clientHeight,
+    width: room.width,
+    height: room.height,
     packReserve: PACK_VIEW_RESERVE,
     sceneWidth: sceneViewWidthCap(bgLayer, WORLD_W),
     // NARROW STREETS (#580): a street narrower than the window's view magnifies just enough to fill
@@ -2161,7 +2175,7 @@ function stageArgs() {
     // TOUCH PORTRAIT: an upright phone fits the scene's height to the screen (location-view phoneStage).
     phone: TOUCH_PHONE,
     // PHONE ZOOM: its own close-up level on top (a pinch; Modern only: Classic's frame keeps its own rule).
-    closeup: phoneCloseup(),
+    closeup: dock ? 0 : phoneCloseup(),
     // HOUSE FIT (G796): a home street asks for a view that holds its whole house (features/homes-feature.js).
     fitViewH: bgLayer?.fitViewH,
     // GROUND LINE (G1146): an upright phone fits the street down to its ground art's end, not past its bottom.
@@ -2239,15 +2253,25 @@ function syncLocationViewHeight({ keepFraming = false } = {}) {
   setZoomFixed(streetZoomFixed());
   if (TOUCH_PHONE) phoneZoom.setFixed(phoneZoomSpanHere() <= 1.005);
   const root = document.getElementById('game-root');
+  const dock = activeStageDock();
   if (root && !stage.pinned && !pinchPreview) {
     // Only a view held under the window's height (a portrait phone) leaves a band above the canvas.
-    const band = root.clientHeight - stage.cssHeight;
+    // G1178: a docked canvas sits at the top, beside the window, with no band.
+    const band = dock ? 0 : root.clientHeight - stage.cssHeight;
     if (band >= 1) {
       root.style.setProperty('--stage-h', `${stage.cssHeight.toFixed(2)}px`);
       root.style.setProperty('--stage-gap', `${band.toFixed(2)}px`);
     } else {
       root.style.removeProperty('--stage-h');
       root.style.removeProperty('--stage-gap');
+    }
+    // G1178: a docked canvas is the size of the room the window leaves, beside it (pinStageCanvasSize).
+    if (dock) {
+      root.dataset.stageDocked = dock.side;
+      dockCanvasSize = { w: stage.cssWidth, h: stage.cssHeight, left: stageRoomBeside(root.clientWidth, root.clientHeight, dock).left };
+    } else {
+      delete root.dataset.stageDocked;
+      dockCanvasSize = null;
     }
     // NARROW STREETS (#337): the canvas as wide as the street, centred between plain borders.
     if (stage.bordered) {
@@ -2340,6 +2364,12 @@ function pinStageCanvasSize() {
   // Only ours (important): Pixi's own inline size stays, under the stylesheet as before.
   for (const prop of ['width', 'height', 'margin-inline']) {
     if (style.getPropertyPriority(prop) === 'important') style.removeProperty(prop);
+  }
+  // G1178: a docked canvas on the top, beside the window (a street with a docked window is never bordered).
+  if (dockCanvasSize) {
+    style.setProperty('width', `${dockCanvasSize.w.toFixed(2)}px`, 'important');
+    style.setProperty('height', `${dockCanvasSize.h.toFixed(2)}px`, 'important');
+    style.setProperty('margin-inline', `${dockCanvasSize.left.toFixed(2)}px auto`, 'important');
   }
 }
 
@@ -2438,7 +2468,7 @@ function syncCameraSafeArea() {
   const rail = document.getElementById('play-context');
   const railCss = rail && rail.offsetParent !== null ? Math.max(0, rootRect.right - rail.getBoundingClientRect().left) : 0;
   // NARROW STREETS (#337): a bordered canvas stops short of the root's right; only what covers it counts.
-  const canvasRect = root.dataset.stageBordered && app?.canvas ? app.canvas.getBoundingClientRect() : rootRect;
+  const canvasRect = (root.dataset.stageBordered || root.dataset.stageDocked) && app?.canvas ? app.canvas.getBoundingClientRect() : rootRect;
   const overlapCss = Math.max(drawerCss, railCss) - Math.max(0, rootRect.right - canvasRect.right);
   cameraRightInset = overlapCss > 0
     ? clamp(overlapCss * (VIEW_W / (canvasRect.width || rootRect.width)) + CAMERA_RAIL_CLEARANCE, 0, VIEW_W * CAMERA_RESERVE_SHARE)
@@ -14287,6 +14317,20 @@ const engine = {
    * (Camera Mode). The street clamps still apply. Returns the offset the
    * view actually reached, so a caller can stop panning at the street edge.
    */
+  /**
+   * G1178 (#625): dock a window on a phone ({ side: 'bottom' | 'left', css }) so the street fits the
+   * room it leaves, or null to give the street the whole screen back. Computers ignore it.
+   */
+  setStageDock(dock = null) {
+    const next = dock && (dock.side === 'bottom' || dock.side === 'left') && Number(dock.css) > 0
+      ? { side: dock.side, css: Math.round(Number(dock.css)) }
+      : null;
+    if ((next?.side || '') === (stageDock?.side || '') && (next?.css || 0) === (stageDock?.css || 0)) return false;
+    stageDock = next;
+    if (!TOUCH_PHONE) return false;
+    window.dispatchEvent(new Event('resize'));
+    return true;
+  },
   setCameraLook(dx = 0, dy = 0) {
     cameraLook.x = Number(dx) || 0;
     cameraLook.y = Number(dy) || 0;

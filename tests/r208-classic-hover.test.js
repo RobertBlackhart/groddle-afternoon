@@ -18,7 +18,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { imgCountText, imgStatShown } from '../public/js/classic/classic-topbar.js?v=a879d4d3';
+import { imgCountText, imgStatShown } from '../public/js/classic/classic-topbar.js?v=f8382e2f';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');
