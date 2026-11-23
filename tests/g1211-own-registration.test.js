@@ -20,7 +20,8 @@ import { SITE_DIR, sitePath, skipWithoutSite } from '../tools/repos.mjs';
 const root = join(import.meta.dirname, '..');
 const src = (f) => readFileSync(sitePath('src', f), 'utf8');
 const engine = process.env.MINN_ENGINE_DIR || join(homedir(), 'Cove/Sites/minn-engine.localhost/public/minn');
-const hasPhp = spawnSync('php', ['-v']).status === 0;
+// -r, not -v: the FrankenPHP wrapper some machines have first on PATH answers -v with an error.
+const hasPhp = spawnSync('php', ['-r', 'exit(0);']).status === 0;
 const skipPhp = skipWithoutSite || (!hasPhp && 'no php') || (!existsSync(join(engine, 'src/Minn/Autoloader.php')) && 'Minn Engine not found (set MINN_ENGINE_DIR)');
 
 describe('G1211: the game\'s own registrations skip Breakwater, nothing else does', { skip: skipWithoutSite }, () => {
