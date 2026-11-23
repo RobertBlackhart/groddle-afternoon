@@ -258,3 +258,32 @@ describe('item pages: Where to find it', () => {
     assert.equal((src.match(/whereToFind\(/g) || []).length, 1);
   });
 });
+
+describe('G1183: a resource or creature page lists the streets that have it', () => {
+  const CASES = [['item:dirt_pile', 'dirt_pile'], ['item:peat_1', 'peat_1'], ['item:trant_gas', 'trant_gas'], ['item:paper_tree', 'paper_tree'], ['item:wood_tree', 'wood_tree'], ['animals:npc_sloth', 'npc_sloth']];
+
+  it('takes the streets and counts from each street page\'s What is here', { skip }, () => {
+    for (const [, cls] of CASES) {
+      const rows = d.streetsWith(cls);
+      assert.ok(rows.length > 10, `${cls}: ${rows.length} streets`);
+      assert.equal(rows.length, d.streetsHaving(cls), cls);
+      for (const r of rows) {
+        const st = d.entries.get(r.key);
+        assert.equal(st.street.place, r.place, `${cls} on ${st.name}`);
+        assert.equal(new Map(st.street.here).get(cls), r.n, `${cls} on ${st.name}`);
+      }
+    }
+  });
+
+  it('links every one of those streets, grouped by region, under Where it is found', { skip }, () => {
+    for (const [key, cls] of CASES) {
+      const html = pageOf(key);
+      const rows = d.streetsWith(cls);
+      const regions = new Set(rows.map((r) => r.place));
+      assert.match(text(html), new RegExp(`On ${rows.length} streets in ${regions.size} regions?\\.`), key);
+      for (const r of rows) assert.ok(html.includes(`href="../../../${pathOf(r.key)}"`), `${key} links ${r.key}`);
+      for (const p of regions) assert.ok(html.includes(`<p class="ency-lead-small ency-with-region"><strong><a href="../../../${pathOf(p)}">`), `${key} heads ${p}`);
+    }
+  });
+});
+

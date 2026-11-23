@@ -53,9 +53,10 @@ const POPULATED = /^(npc_piggy|npc_chicken|npc_butterfly|trant_.*|wood_tree|rock
 
 /**
  * Everything the Streets section needs, added to the encyclopedia's data:
- * an entry `streets:<slug>` per street (refs empty: a street names many things, and
- * those pages do not list their streets back), `d.streetKeyOf(tsid)` and the
- * streets left out with the reason, and `d.streetsHaving(classId)` for the item pages.
+ * an entry `streets:<slug>` per street (refs empty: a street names many things),
+ * `d.streetKeyOf(tsid)` and the streets left out with the reason, and for the item
+ * and creature pages `d.streetsHaving(classId)` (how many streets) and
+ * `d.streetsWith(classId)` (which ones, drawn by streetsWithIt below).
  */
 export async function addStreets(d, { inventory, picture, slug }) {
   const index = json('assets/streets/index.json');
@@ -147,6 +148,7 @@ export async function addStreets(d, { inventory, picture, slug }) {
   const nodeIds = new Set(Object.keys(resources.RESOURCE_NODE_CATALOG));
   const stations = subway.SUBWAY_LINE.stations;
   const having = new Map(); // class -> number of kept streets that have it
+  const withIt = new Map(); // class -> [{ key, place, n }]: the kept streets that have it (G1183)
   for (const k of kept) {
     const { g, row, map, place } = k;
     const ecoRow = ecology.ecologyForStreet(g, eco);
@@ -163,7 +165,11 @@ export async function addStreets(d, { inventory, picture, slug }) {
       for (const [c, n] of Object.entries(ecoRow?.counts || {})) if (!POPULATED.test(c) && !nodeIds.has(c) && c !== 'street_spirit' && c !== 'garden' && !(c in (pop.featureCounts || {}))) add(c, n);
       for (const rows of [eco.wildlife, eco.furniture, eco.soil, eco.swoonerflies]) for (const [c, n] of Object.entries(rows?.[g] || {})) add(c, n);
     }
-    for (const c of here.keys()) having.set(c, (having.get(c) || 0) + 1);
+    for (const [c, n] of here) {
+      having.set(c, (having.get(c) || 0) + 1);
+      if (!withIt.has(c)) withIt.set(c, []);
+      withIt.get(c).push({ key: `streets:${k.slug}`, place: place.key, n });
+    }
     const npcVendors = Object.keys(eco.vendors?.[g] || {}).filter((c) => npcs.VENDOR_NPCS[c]);
     const station = stations.find((s) => s.streetTsid === g) || null;
     const surface = stations.find((s) => s.surfaceStreetTsid === g) || null;
@@ -215,6 +221,7 @@ export async function addStreets(d, { inventory, picture, slug }) {
   d.streetLabel = labelOf;
   d.streetsLeftOut = leftOut;
   d.streetsHaving = (cls) => having.get(cls) || 0;
+  d.streetsWith = (cls) => withIt.get(cls) || [];
   d.streetHome = home;
 }
 
@@ -449,6 +456,30 @@ ${placesSorted.map((pk) => `              <option value="${esc(info(pk).name)}"$
 }
 
 /** On a region's page: a street's name as a link to its page. */
+/**
+ * G1183: on an item's or creature's page, the streets that have it, by region, each linking
+ * its street page, with how many a street has when it has more than one. The same streets and
+ * counts as each street's "What is here" (populationForStreet, the call the game makes when it
+ * builds a street and fills its loading card). '' when no street has one.
+ */
+export function streetsWithIt(cls, P, d, info) {
+  const rows = d.streetsWith?.(cls) || [];
+  if (!rows.length) return '';
+  const byPlace = new Map();
+  for (const r of rows) (byPlace.get(r.place) || byPlace.set(r.place, []).get(r.place)).push(r);
+  const nameOf = (key) => info(key)?.name || key;
+  const regions = [...byPlace].sort((a, b) => b[1].length - a[1].length || nameOf(a[0]).localeCompare(nameOf(b[0]), 'en', { sensitivity: 'base' }));
+  const many = (n, one) => `${fmt(n)} ${one}${n === 1 ? '' : 's'}`;
+  const lead = `<p class="ency-lead-small">On ${many(rows.length, 'street')} in ${many(regions.length, 'region')}. A number after a street is how many it has.</p>`;
+  const groups = regions.map(([place, list]) => {
+    const chips = list.sort((a, b) => nameOf(a.key).localeCompare(nameOf(b.key), 'en', { sensitivity: 'base' }))
+      .map((r) => P.chip(`${esc(nameOf(r.key))}${r.n > 1 ? ` <b>${fmt(r.n)}</b>` : ''}`, { link: P.href(r.key), cls: 'ency-place' }));
+    const region = info(place) ? `<a href="${P.href(place)}">${esc(nameOf(place))}</a>` : esc(nameOf(place));
+    return `<p class="ency-lead-small ency-with-region"><strong>${region}</strong>, ${many(list.length, 'street')}</p>\n        ${P.chips(chips)}`;
+  });
+  return [lead, ...groups].join('\n        ');
+}
+
 export function regionStreetName(st, P, d) {
   const k = d.streetKeyOf?.(st.tsid);
   return k ? `<a href="${P.href(k)}">${esc(st.name)}</a>` : esc(st.name);

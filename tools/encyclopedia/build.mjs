@@ -30,7 +30,7 @@ import { MORE_PAGES } from './sections.mjs';
 import { neverReleased, neverReleasedNote, neverReleasedTag } from './never-released.mjs';
 import { tablesForSkill, timeLead, timeTableHtml } from './skill-times.mjs';
 import { STATUS, andList, article, badge, entrySearch, esc, fmt, inRemake, makeParts, pathOf, plainText, sep, statusLabel, tsHtml } from './parts.mjs';
-import { regionMoreStreets, regionStreetName, streetPage, streetsIndex } from './streets.mjs';
+import { regionMoreStreets, regionStreetName, streetPage, streetsIndex, streetsWithIt } from './streets.mjs';
 import { storePage } from './stores.mjs';
 import { subwayPage } from './subway.mjs';
 
@@ -384,6 +384,8 @@ function creaturePage(e, P, { linkFor, backOf, uniqBy, info, d }) {
   const lives = backOf(e.key, (b) => b.rel === 'lives').sort((a, b) => b.streets - a.streets || info(a.from).name.localeCompare(info(b.from).name));
   const totalStreets = lives.reduce((n, b) => n + b.streets, 0);
   const placeChips = lives.map((b) => P.chip(`${esc(info(b.from).name)} <b>${fmt(b.streets)}</b>`, { link: `${P.href(b.from)}`, cls: 'ency-place' }));
+  // G1183: the remake's streets that have it, by region, each linking its page; Tiny Speck's region counts when none does.
+  const streetsWith = e.creature ? streetsWithIt(e.id, P, d, info) : '';
   const quests = uniqBy(backOf(e.key, (b) => b.from.startsWith('quests:')), (b) => b.from).map((b) => P.tile(b.from, { sub: REL_WORD[b.rel] || '' }));
   const comesFrom = uniqBy(backOf(e.key, (b) => b.rel === 'gives' && !b.from.startsWith('quests:')), (b) => b.from).map((b) => P.tile(b.from, { sub: 'can give it' }));
   const achs = uniqBy(backOf(e.key, (b) => b.from.startsWith('achievements:')), (b) => b.from).map((b) => P.tile(b.from, { sub: b.n ? `${fmt(b.n)} times` : '' }));
@@ -412,7 +414,7 @@ function creaturePage(e, P, { linkFor, backOf, uniqBy, info, d }) {
     </section>
 ${band('give-h', e.store ? 'What they sell' : 'What it gives', [sells.length ? P.tiles(sells, 'ency-shop') : '', gives.length ? (e.store ? sub('Also gives', P.tiles(gives)) : P.tiles(gives)) : ''].filter(Boolean).join('\n        '), { alt: true, lead: e.store ? 'Prices in currants, as the remake sells them.' : 'The items its game code hands out.' })}
 ${band('verbs-h', 'What you can do', [verbList(c?.verbs || []), sub('Skills that change it', P.tiles(skills))].filter(Boolean).join('\n        '), { lead: c?.verbs?.length ? 'Its verbs, with Tiny Speck’s tooltips.' : '' })}
-${band('where-h', 'Where to find it', placeChips.length ? `<p class="ency-lead-small">On ${fmt(totalStreets)} street${totalStreets === 1 ? '' : 's'} in ${fmt(lives.length)} region${lives.length === 1 ? '' : 's'}, by the 2012 map and the streets’ own files.</p>${P.chips(placeChips)}` : '', { alt: true })}
+${band('where-h', 'Where to find it', streetsWith || (placeChips.length ? `<p class="ency-lead-small">On ${fmt(totalStreets)} street${totalStreets === 1 ? '' : 's'} in ${fmt(lives.length)} region${lives.length === 1 ? '' : 's'}, by the 2012 map and the streets’ own files.</p>${P.chips(placeChips)}` : ''), { alt: true })}
 ${band('rel-h', 'Quests and achievements', [sub('Quests', P.tiles(quests)), sub('Achievements', P.tiles(achs)), sub('Sounds', P.tiles(soundTiles(e.key, P, backOf, uniqBy))), sub('Where it comes from', P.tiles(comesFrom)), sub('The Giant', P.tiles(uniqBy(backOf(e.key, (b) => b.from.startsWith('giants:')), (b) => b.from).map((b) => P.tile(b.from)))), sub('Skills this Giant favors', P.tiles(giantSkills)), sub('Other shrines to this Giant', P.tiles(variants))].filter(Boolean).join('\n        '))}
 ${remakeBand(e)}
   </main>`;

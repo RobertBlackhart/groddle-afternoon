@@ -49,6 +49,7 @@ import { supplyConversions } from '../job-obtainable.mjs';
 import { loadEncyclopedia } from '../encyclopedia/data.mjs';
 import { imageSize } from '../image-size.mjs';
 import { whereToFind } from '../encyclopedia/where-to-find.mjs';
+import { streetsWithIt } from '../encyclopedia/streets.mjs';
 import { entrySearch, inRemake, makeParts, sep } from '../encyclopedia/parts.mjs';
 import { neverReleased, neverReleasedNote, neverReleasedTag } from '../encyclopedia/never-released.mjs';
 import { loadCosts } from './costs.mjs';
@@ -1093,13 +1094,15 @@ ${usesHtml.length ? `          <ul class="cat-list">
     .sort((a, b) => (qRank[a.rel] ?? 6) - (qRank[b.rel] ?? 6)).map((b) => P.tile(b.from, { sub: b.sub || QUEST_REL[b.rel] || '' }));
   const placeChips = fromAll((b) => b.from.startsWith('places:') && b.rel === 'lives').sort((a, b) => b.n - a.n)
     .map((b) => P.chip(`${esc(ency.entries.get(b.from).name)} <b>${fmt(b.n)}</b>`, { link: P.href(b.from), cls: 'ency-place' }));
+  const streetsWith = streetsWithIt(it.id, P, ency, info);
   const achTiles = fromAll((b) => b.from.startsWith('achievements:')).map((b) => P.tile(b.from, { sub: b.n > 1 ? `${fmt(b.n)} times` : '' }));
   // Music and sounds (tools/encyclopedia/sounds.mjs): the sounds Tiny Speck's game played from this item.
   const soundTiles = fromAll((b) => b.from.startsWith('sounds:')).map((b) => P.tile(b.from));
   const encyBody = [
     whereToFind(it.id, P, ency),
     questTiles.length ? `<h3>Quests</h3>\n        ${P.tiles(questTiles)}` : '',
-    placeChips.length ? `<h3>Where it is found</h3>\n        <p class="ency-lead-small">Regions on the map, with how many there are in each, from the streets’ own files.</p>\n        ${P.chips(placeChips)}` : '',
+    // G1183: the streets that have one, by region (the remake's own streets); Tiny Speck's region counts when none does.
+    streetsWith ? `<h3>Where it is found</h3>\n        ${streetsWith}` : placeChips.length ? `<h3>Where it is found</h3>\n        <p class="ency-lead-small">Regions on the map, with how many there are in each, from the streets’ own files.</p>\n        ${P.chips(placeChips)}` : '',
     achTiles.length ? `<h3>Achievements</h3>\n        ${P.tiles(achTiles)}` : '',
     soundTiles.length ? `<h3>Sounds</h3>\n        ${P.tiles(soundTiles)}` : '',
   ].filter(Boolean).join('\n        ');
