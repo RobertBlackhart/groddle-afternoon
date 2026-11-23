@@ -39,8 +39,8 @@ import {
   plainText,
   TROPHY_PIECES,
   planStreetTrophies,
-} from '../public/js/street-jobs.js?v=692d65c4';
-import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=9b1802a0';
+} from '../public/js/street-jobs.js?v=3fc80dcd';
+import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=1a186b3b';
 import { createAchievementState, applyAchievementProgress } from '../public/js/achievements.js?v=054773be';
 import { applyRewards } from '../public/js/quests.js?v=90a2ee3d';
 import { loadContentCatalogsFromDir, resetContentCatalogs } from '../public/js/content-catalogs.js?v=10b118dd';

@@ -33,7 +33,7 @@
  * #projects-ahead-list, cards [data-project] with [data-step].
  */
 
-import { PROJECTS_TEXT as T, shareLine, statusLine } from '../projects-tracker.js?v=efa005a7';
+import { PROJECTS_TEXT as T, shareLine, statusLine } from '../projects-tracker.js?v=28ac735e';
 import { featuredTag } from './featured-project.js?v=c632bca0';
 
 export const PROJECTS_PANEL_ID = 'projects-panel';

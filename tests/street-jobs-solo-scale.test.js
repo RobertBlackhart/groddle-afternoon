@@ -25,10 +25,10 @@ import {
   settlePhase,
   soloNeed,
   workCheck,
-} from '../public/js/street-jobs.js?v=692d65c4';
+} from '../public/js/street-jobs.js?v=3fc80dcd';
 import { projectTable } from '../tools/build-realtime-projects.mjs';
-import { PROJECTS_TEXT } from '../public/js/projects-tracker.js?v=efa005a7';
-import { streetJobsFeature, projectApi } from '../public/js/features/street-jobs-feature.js?v=9b1802a0';
+import { PROJECTS_TEXT } from '../public/js/projects-tracker.js?v=28ac735e';
+import { streetJobsFeature, projectApi } from '../public/js/features/street-jobs-feature.js?v=1a186b3b';
 import { createToolConditionState } from '../public/js/tools.js?v=4156bba8';
 import { Display, FakeEl, fakePixi } from './fake-scene.js';
 

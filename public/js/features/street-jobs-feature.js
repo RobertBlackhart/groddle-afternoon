@@ -115,7 +115,7 @@ import {
   phaseBaseCost,
   percentCompleteText,
   jobRewardsText,
-} from '../street-jobs.js?v=692d65c4';
+} from '../street-jobs.js?v=3fc80dcd';
 import { gateTerms } from '../subway.js?v=0a87a908';
 import { forceMetabolic, gainMetabolic, loseEnergy } from '../metabolics.js?v=48f784bf';
 import { holdNote, placeIndex, questHold, questStoryKey } from '../quest-reach.js?v=f94a0350';
@@ -147,7 +147,7 @@ import {
   sharedSlice,
   topLine,
   leaderboard,
-} from '../street-jobs-mp.js?v=2b2eb76f';
+} from '../street-jobs-mp.js?v=02f5be0a';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { createMinnAccount } from '../minn-account.js?v=edf182bb';
 import { normalizeGroups } from '../groups.js?v=2e9a714e';
@@ -159,8 +159,8 @@ import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { SIGN_ARMS } from '../map-routes.js?v=426e16ea';
 import { TELEPORTERS } from '../hidden-floors.js?v=18714dfa';
 import { WINTRY_PORTAL_TELEPORTERS } from '../wintry-portal.js?v=1437deda';
-import { PROJECTS_TEXT, aheadEntries, aheadRegions, contributedJobs, mineTotal, projectEntry, projectList } from '../projects-tracker.js?v=efa005a7';
-import { PROJECTS_PANEL_ID, buildProjectsPanel, renderAhead, renderProjects } from '../ui/projects-sheet.js?v=cd6b23a3';
+import { PROJECTS_TEXT, aheadEntries, aheadRegions, contributedJobs, mineTotal, projectEntry, projectList } from '../projects-tracker.js?v=28ac735e';
+import { PROJECTS_PANEL_ID, buildProjectsPanel, renderAhead, renderProjects } from '../ui/projects-sheet.js?v=4489f372';
 import { SIDE_SHEET_IDS } from '../ui/panel-shell.js?v=06a0d3fe';
 import { trophyGotText } from '../home-trophies.js?v=4eb640c3';
 import { FEATURED_TEXT, featuredChanged, featuredFromServer, featuredNeedsLine, featuredToast, featuredWaitMins } from '../featured-project.js?v=514e3e82';

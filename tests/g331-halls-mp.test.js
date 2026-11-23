@@ -13,8 +13,8 @@ import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { serverPath, sitePath, skipWithoutServer, skipWithoutSite } from '../tools/repos.mjs';
 import { projectTable } from '../tools/build-realtime-projects.mjs';
-import { HALL_TEXT, hallClock, hallFromServer, hoursText, isSharedJob, mergeHalls, rowFromServer } from '../public/js/street-jobs-mp.js?v=2b2eb76f';
-import { jobStatus, normalizeStreetJobState, phaseRequirements, streetJobs } from '../public/js/street-jobs.js?v=692d65c4';
+import { HALL_TEXT, hallClock, hallFromServer, hoursText, isSharedJob, mergeHalls, rowFromServer } from '../public/js/street-jobs-mp.js?v=02f5be0a';
+import { jobStatus, normalizeStreetJobState, phaseRequirements, streetJobs } from '../public/js/street-jobs.js?v=3fc80dcd';
 
 const root = join(import.meta.dirname, '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

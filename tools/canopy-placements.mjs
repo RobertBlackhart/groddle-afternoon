@@ -31,7 +31,7 @@ import {
   streetReservedSpots,
 } from '../public/js/street-ecology.js?v=ff90efe4';
 import { isZoneTsid } from '../public/js/zone-streets.js?v=b40010d5';
-import { upgradeEcologyEntry } from '../public/js/street-jobs.js?v=692d65c4';
+import { upgradeEcologyEntry } from '../public/js/street-jobs.js?v=3fc80dcd';
 import { creatureRequests, setCreatureEcology } from './build-realtime-objects.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

@@ -15,7 +15,7 @@ import { join, resolve } from 'node:path';
 import { INVENTORY_DB } from '../tools/catalog/build.mjs';
 import { SOLO_FEATS } from '../public/js/solo-feats.js?v=0ec0bd95';
 import { mpGoals } from '../public/js/feats-mp.js?v=49ed2393';
-import { soloNeed } from '../public/js/street-jobs.js?v=692d65c4';
+import { soloNeed } from '../public/js/street-jobs.js?v=3fc80dcd';
 import { denied, pageText } from './player-copy-dev-refs.js';
 import { servedByMinn } from './minn-served.js';
 

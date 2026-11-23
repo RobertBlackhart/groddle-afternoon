@@ -46,6 +46,7 @@
 import { TOWER_ROOM_SPOTS } from './tower-rooms.js?v=4f1f6af7';
 import { TOWER_PART_CHOICES, TOWER_VARIANT_ART } from './home-tower-art.js?v=9619a093';
 import { loseEnergy } from './metabolics.js?v=48f784bf';
+import { noWorkingToolMsg } from './street-jobs.js?v=3fc80dcd';
 import { filterText } from './word-filter.js?v=9a7a7ebb';
 
 export { TOWER_PART_CHOICES, TOWER_VARIANT_ART };
@@ -734,7 +735,8 @@ export function workCheck(jobId, got, rid, ctx = {}) {
   if (ctx.tick && tired) return { ok: false, req, tool, msg: "You don't have enough energy to continue." };
   if (!tool) {
     if (ctx.tick) return { ok: false, req, msg: "You don't have the necessary working tool." };
-    return { ok: false, req, msg: `You don't have a working ${ctx.itemName ? ctx.itemName(tools[0]) : tools[0].replace(/_/g, ' ')}.` };
+    // G1191: the same words as a street project's (street-jobs.js noWorkingToolMsg).
+    return { ok: false, req, msg: noWorkingToolMsg(tools, ctx.inv, ctx.itemName || undefined) };
   }
   if (tired) return { ok: false, req, tool, msg: "You don't have enough energy to continue." };
   return { ok: true, req, tool };

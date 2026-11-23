@@ -8,7 +8,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { TOWER_ART, TOWER_SIGN_KEY, TOWER_SIGN_POINTS, TOWER_SIGN_TEXT_DY, TOWER_SIGN_TEXT_WIDTH, towerSignPoint } from '../public/js/home-tower.js?v=18889f7a';
+import { TOWER_ART, TOWER_SIGN_KEY, TOWER_SIGN_POINTS, TOWER_SIGN_TEXT_DY, TOWER_SIGN_TEXT_WIDTH, towerSignPoint } from '../public/js/home-tower.js?v=84d99af0';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const GS = join(root, '../glitch-GameServerJS');

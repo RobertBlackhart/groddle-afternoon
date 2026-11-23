@@ -9,7 +9,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ROUTE_TEXT } from '../public/js/map-routes.js?v=426e16ea';
-import { mapRoutesFeature } from '../public/js/features/map-routes-feature.js?v=d01dfaa1';
+import { mapRoutesFeature } from '../public/js/features/map-routes-feature.js?v=d38f569c';
 import { createFeatureHost } from '../public/js/feature-host.js?v=b87e2cbc';
 import { applyStreetIndex } from '../public/js/street-loader.js?v=10376267';
 import { findCurrentStreet, homeDoorMapSpot, pickMapSpot } from '../public/js/map-graph.js?v=b035dfb3';

@@ -10,8 +10,8 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { closedStreets, normalizeStreetJobState, roadClosure } from '../public/js/street-jobs.js?v=692d65c4';
-import { applyWorld } from '../public/js/street-jobs-mp.js?v=2b2eb76f';
+import { closedStreets, normalizeStreetJobState, roadClosure } from '../public/js/street-jobs.js?v=3fc80dcd';
+import { applyWorld } from '../public/js/street-jobs-mp.js?v=02f5be0a';
 
 const ROOT = join(import.meta.dirname, '..');
 const read = (rel) => readFileSync(join(ROOT, rel), 'utf8');

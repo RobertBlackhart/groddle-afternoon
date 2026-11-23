@@ -651,6 +651,37 @@ export function workGear(req, ctx = {}) {
 }
 
 /**
+ * G1191: tools a player can take for one another, the plain tool and its upgrade (items/*.js). A
+ * work step takes only the classes it lists (quest.js get_status 950-974, as G1089 found), so a
+ * Fancy Pick will not do where a step lists only the Pick, and the other way round.
+ */
+export const TOOL_KIN = Object.freeze({
+  pick: 'fancy_pick', fancy_pick: 'pick',
+  hoe: 'high_class_hoe', high_class_hoe: 'hoe',
+  watering_can: 'irrigator_9000', irrigator_9000: 'watering_can',
+  shovel: 'ace_of_spades', ace_of_spades: 'shovel',
+  hatchet: 'class_axe', class_axe: 'hatchet',
+  scraper: 'super_scraper', super_scraper: 'scraper',
+  ore_grinder: 'grand_ol_grinder', grand_ol_grinder: 'ore_grinder',
+});
+
+const article = (name) => (/^[aeiou]/i.test(name) ? 'an' : 'a');
+
+/**
+ * The refusal when no listed tool works. quest.js get_status 973 names the step's class_id: "You
+ * don't have a working Pick." (kept as it was for one tool). G1191, a help line beside it: a step
+ * that lists two tools names both, and when you hold a kin tool the step does not take, it says
+ * that tool won't do and what the step takes ("Your Fancy Pick won't do: this step takes a Pick.").
+ */
+export function noWorkingToolMsg(tools, inv = {}, itemName = (cls) => String(cls).replace(/_/g, ' ')) {
+  const names = tools.map((t) => itemName(t));
+  const line = `You don't have a working ${names.join(' or ')}.`;
+  const kin = tools.map((t) => TOOL_KIN[t]).find((k) => k && !tools.includes(k) && whole(inv?.[k]) > 0);
+  if (!kin) return line;
+  return `${line} Your ${itemName(kin)} won't do: this step takes ${names.map((n) => `${article(n)} ${n}`).join(' or ')}.`;
+}
+
+/**
  * The first open work requirement of the current phase that takes `tool` (quest.js find_work
  * 1501-1514: work runs with a tool, and each unit goes to the first requirement still open for it).
  * Returns its id, or ''.
@@ -682,7 +713,7 @@ export function workCheck(state, catalog, jobId, rid, ctx = {}, now = Date.now()
   const itemName = (cls) => (ctx.itemName ? ctx.itemName(cls) : String(cls).replace(/_/g, ' '));
   const skillName = (id) => (ctx.skillName ? ctx.skillName(id) : String(id).replace(/_/g, ' '));
   if (ctx.tick && tired) return { ok: false, req, tool, canHire: false, msg: "You don't have enough energy to continue." };
-  if (!tool) return { ok: false, req, canHire, msg: ctx.tick ? "You don't have the necessary working tool." : `You don't have a working ${itemName(tools[0])}.` };
+  if (!tool) return { ok: false, req, canHire, msg: ctx.tick ? "You don't have the necessary working tool." : noWorkingToolMsg(tools, ctx.inv, itemName) };
   if (missingSkill) return { ok: false, req, canHire, tool, msg: `You don't know ${skillName(req.skill)}.` };
   if (tired) return { ok: false, req, tool, canHire: false, msg: "You don't have enough energy to continue." };
   return { ok: true, req, tool, canHire: false };

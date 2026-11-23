@@ -16,7 +16,7 @@ import { after, before, describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { projectApi, streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=9b1802a0';
+import { projectApi, streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=1a186b3b';
 import {
   findWork,
   jobRewardsText,
@@ -33,7 +33,8 @@ import {
   STREET_JOB_COOLDOWN_MS,
   workCheck,
   contributeItems,
-} from '../public/js/street-jobs.js?v=692d65c4';
+  noWorkingToolMsg,
+} from '../public/js/street-jobs.js?v=3fc80dcd';
 import { createToolConditionState } from '../public/js/tools.js?v=4156bba8';
 import { soloTerms } from '../public/js/street-jobs-solo.js?v=3bcf5d1c';
 import { Display, FakeEl, fakePixi } from './fake-scene.js';
@@ -126,6 +127,21 @@ describe('street project rules (pure)', () => {
     assert.equal(workCheck(state, catalog, JOB, WORK.id, { inv: {}, energy: 100, ...names }, NOW).msg, "You don't have a working Hatchet.");
     assert.equal(workCheck(state, catalog, JOB, WORK.id, { inv: { hatchet: 1 }, toolOk: () => false, energy: 100, tick: true, ...names }, NOW).msg, "You don't have the necessary working tool.");
     assert.equal(contributeItems(fresh(), catalog, JOB, 'ginger', 3, {}, NOW).msg, "You don't have any.");
+  });
+
+  it('G1191: holding the kin tool a step does not take says that tool won\'t do and what the step takes', () => {
+    const name = (c) => ({ pick: 'Pick', fancy_pick: 'Fancy Pick', hatchet: 'Hatchet', class_axe: 'Class Axe', shovel: 'Shovel', ace_of_spades: 'Ace of Spades', irrigator_9000: 'Irrigator 9000', watering_can: 'Watering Can' })[c] || c;
+    assert.deepEqual(WORK.classIds, ['hatchet']);
+    const state = fresh();
+    state.jobs[JOB] = { phase: 0, got: gotBefore(Number(WORK.group)), mine: {}, hired: {}, startedAt: 1, readyAt: 0, doneAt: 0, option: null };
+    assert.equal(workCheck(state, catalog, JOB, WORK.id, { inv: { class_axe: 1 }, energy: 100, itemName: name }, NOW).msg, "You don't have a working Hatchet. Your Class Axe won't do: this step takes a Hatchet.");
+    assert.equal(noWorkingToolMsg(['pick'], { fancy_pick: 1 }, name), "You don't have a working Pick. Your Fancy Pick won't do: this step takes a Pick.");
+    assert.equal(noWorkingToolMsg(['fancy_pick'], { pick: 1 }, name), "You don't have a working Fancy Pick. Your Pick won't do: this step takes a Fancy Pick.");
+    assert.equal(noWorkingToolMsg(['irrigator_9000'], { watering_can: 1 }, name), "You don't have a working Irrigator 9000. Your Watering Can won't do: this step takes an Irrigator 9000.");
+    assert.equal(noWorkingToolMsg(['pick'], {}, name), "You don't have a working Pick.", 'Glitch\'s words when there is no kin tool');
+    assert.equal(noWorkingToolMsg(['pick'], { pick: 1 }, name), "You don't have a working Pick.", 'a worn-out Pick of the right kind');
+    assert.equal(noWorkingToolMsg(['shovel', 'ace_of_spades'], {}, name), "You don't have a working Shovel or Ace of Spades.", 'a step that takes two names both');
+    assert.equal(noWorkingToolMsg(['fancy_pick', 'pick'], { pick: 1 }, name), "You don't have a working Fancy Pick or Pick.", 'a kin the step takes is not refused');
   });
 
   it('find_work: the first open step for the tool, passing over a finished one', () => {

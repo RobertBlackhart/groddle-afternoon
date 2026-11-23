@@ -5369,6 +5369,26 @@
    "rows": [
     "G1180"
    ]
+  },
+  {
+   "id": "work-step-kin-tool-line",
+   "title": "A work step you have no listed tool for names every tool it takes, and when you hold the kin tool it does not take, adds \"Your Fancy Pick won't do: this step takes a Pick.\" (G1191).",
+   "kind": "UI",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/street-jobs.js",
+     "symbol": "TOOL_KIN noWorkingToolMsg"
+    },
+    {
+     "file": "public/js/home-tower.js",
+     "symbol": "workCheck"
+    }
+   ],
+   "why": "quest.js get_status 973 says only \"You don't have a working <class_id>.\" and a step takes only the classes it lists (G1089), so players holding a Fancy Pick read the refusal as a bug. Glitch's sentence stays first and unchanged when no kin tool is held.",
+   "rows": [
+    "G1191"
+   ]
   }
 ]
 }

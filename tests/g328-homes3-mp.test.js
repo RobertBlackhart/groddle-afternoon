@@ -40,8 +40,8 @@ import {
   signpostCandidates,
 } from '../public/js/home-street-mp.js?v=4a89041f';
 import { NOTE_POLE_CONTAINERS, NOTE_POLE_PARTS, NOTE_POLE_SIGN_Y } from '../public/js/note-pole-art.js?v=fbda2f8a';
-import { isSharedJob } from '../public/js/street-jobs-mp.js?v=2b2eb76f';
-import { homeStreetMpFeature } from '../public/js/features/home-street-mp-feature.js?v=547a32f7';
+import { isSharedJob } from '../public/js/street-jobs-mp.js?v=02f5be0a';
+import { homeStreetMpFeature } from '../public/js/features/home-street-mp-feature.js?v=c18100fe';
 import { projectTable } from '../tools/build-realtime-projects.mjs';
 import { HAS_SITE, SITE_DIR, serverPath } from '../tools/repos.mjs';
 

@@ -13,11 +13,11 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { FEATURED_TEXT, featuredChanged, featuredFromServer, featuredLabel, featuredPillText, featuredStatus, featuredToast, featuredWaitMins, featuredWhere } from '../public/js/featured-project.js?v=514e3e82';
 import { FEATURED_MENU_ID, FEATURED_PILL_ID, FEATURED_ROW_ID, renderFeaturedLine, renderFeaturedRow } from '../public/js/ui/featured-project.js?v=c632bca0';
-import { buildProjectsPanel, renderProjects } from '../public/js/ui/projects-sheet.js?v=cd6b23a3';
+import { buildProjectsPanel, renderProjects } from '../public/js/ui/projects-sheet.js?v=4489f372';
 import { jobIndicatorView } from '../public/js/job-indicator.js?v=a7d840f2';
-import { normalizeStreetJobState } from '../public/js/street-jobs.js?v=692d65c4';
-import { rowFromServer } from '../public/js/street-jobs-mp.js?v=2b2eb76f';
-import { PROJECTS_TEXT, projectEntry } from '../public/js/projects-tracker.js?v=efa005a7';
+import { normalizeStreetJobState } from '../public/js/street-jobs.js?v=3fc80dcd';
+import { rowFromServer } from '../public/js/street-jobs-mp.js?v=02f5be0a';
+import { PROJECTS_TEXT, projectEntry } from '../public/js/projects-tracker.js?v=28ac735e';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');
