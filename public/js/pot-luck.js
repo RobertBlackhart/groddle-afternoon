@@ -12,11 +12,14 @@
  * (seasons-feature rotPumpkins, items/pumpkin_carved_*.js).
  *
  * Rules (ours):
- *  - Only during Pot Luck Day, only a street Chicken, only one that is not dressed yet: a dressed
- *    Chicken keeps its costume until the season ends (no swapping), and then every costume falls
- *    off, for everyone (the server holds each street Chicken's costume online, the save solo).
+ *  - Only during Pot Luck Day, only a street Chicken. A dressed Chicken can be re-dressed in the
+ *    other costume (G1181, Austin 2026-11-23), never in the one it wears. When the season ends
+ *    every costume falls off, for everyone (the server holds each street Chicken's costume
+ *    online, the save solo).
  *  - Dressing uses up the costume and counts `chicken_dressed:<costume>` (lane B's Plume Fluffer
- *    badges read it).
+ *    badges and Pot's Empty Table read it). Each player counts each Chicken once (G1181): a
+ *    Chicken you dressed is yours for the season, so re-dressing cannot be farmed. The record is
+ *    the player's own (the feature's save slice, `counted`), solo and online.
  *  - Squeezing a dressed Chicken, when the squeeze lands, drops a Fancy Feather one time in four,
  *    at most five a game day. Fancy Feathers rot into Lumps of Loam (Tiny Speck's loam) when the
  *    season ends.
@@ -73,7 +76,12 @@ export const POT_LUCK_LINES = Object.freeze({
   dressedOther: 'Somebody dressed this Chicken for Pot Luck Day.',
   noSeason: 'Chickens only dress up for Pot Luck Day.',
   noItem: 'You need a Turkey Tailfan or a Rooster Plume. The Toy Vendor has them for Pot Luck Day.',
-  already: 'This Chicken is already dressed for the feast. It is keeping it on until Pot Luck Day is over.',
+  /** G1181: re-dressing in the costume it already wears (the server says the same, objects_costumes.go). */
+  same: (cls) => `This Chicken is already wearing a ${costumeLabel(cls)}.`,
+  /** G1181: a dressed Chicken, and you carry only the costume it wears (or none). */
+  wearing: (cls) => `This Chicken is wearing a ${costumeLabel(cls)}. A ${costumeLabel(otherCostume(cls))} would dress it again.`,
+  /** G1181: you dressed this Chicken already this season; it counts once. */
+  counted: 'You have dressed this Chicken already. Each Chicken counts once for Pot Luck Day.',
   notChicken: 'Only a Chicken will wear that.',
   /** Your own Chickens and a yard's stay home: only the street's dress up (ours, the feast is the remake's). */
   streetOnly: 'Only a Chicken out on the streets can dress up for Pot Luck Day.',
@@ -86,35 +94,48 @@ export const POT_LUCK_LINES = Object.freeze({
 
 export const isCostume = (cls) => COSTUME_CLASSES.includes(cls);
 export const costumeLabel = (cls) => POT_LUCK_ITEMS[cls]?.label || '';
+/** The costume a Chicken wearing `cls` could be re-dressed in (G1181). */
+export const otherCostume = (cls) => COSTUME_CLASSES.find((c) => c !== cls) || '';
 
 /**
  * Dress check, in this order. ctx: { season (Pot Luck Day on), classId (the target's), street
  * (a street Chicken, not one of your own animals), costume (what it wears now, or ''), cls (the
- * costume offered), have (how many of it the pack holds) }. { ok } or { ok: false, code, msg }.
+ * costume offered), have (how many of it the pack holds), counted (you dressed this Chicken
+ * already this season) }. { ok } or { ok: false, code, msg }.
  */
 export function dressCheck(ctx = {}) {
   if (ctx.classId !== 'npc_chicken') return { ok: false, code: 'not_chicken', msg: POT_LUCK_LINES.notChicken };
   if (ctx.street === false) return { ok: false, code: 'not_street', msg: POT_LUCK_LINES.streetOnly };
   if (!ctx.season) return { ok: false, code: 'no_season', msg: POT_LUCK_LINES.noSeason };
   if (!isCostume(ctx.cls)) return { ok: false, code: 'not_costume', msg: POT_LUCK_LINES.notCostume };
-  if (ctx.costume) return { ok: false, code: 'dressed', msg: POT_LUCK_LINES.already };
+  if (ctx.counted) return { ok: false, code: 'counted', msg: POT_LUCK_LINES.counted };
+  if (ctx.costume && ctx.costume === ctx.cls) return { ok: false, code: 'same', msg: POT_LUCK_LINES.same(ctx.cls) };
   if (!((Number(ctx.have) || 0) > 0)) return { ok: false, code: 'no_item', msg: POT_LUCK_LINES.noItem };
   return { ok: true };
 }
 
+/** Why a street Chicken's plain Dress up row is greyed (G1181): counted, wearing, or nothing to wear. */
+export function dressWhy({ costume = '', counted = false } = {}) {
+  if (counted) return POT_LUCK_LINES.counted;
+  if (costume) return POT_LUCK_LINES.wearing(costume);
+  return POT_LUCK_LINES.noItem;
+}
+
 /**
- * The dress rows a street Chicken's menu gets during the season: one per costume in the pack
- * (`potluck:dress:<costume>`), or one disabled row that says why not (dressed already, none in
- * the pack). Off season: none. Your own or a yard's Chicken (`street` false) gets the same rows
- * greyed while you carry a costume, saying only a street Chicken dresses up; none without one.
+ * The dress rows a street Chicken's menu gets during the season: one per costume in the pack it
+ * could wear (`potluck:dress:<costume>`), or one disabled row that says why not (none in the
+ * pack). A dressed Chicken offers only the other costume, and only while you carry it and have
+ * not dressed that Chicken yourself (`counted`, G1181); else the disabled row says why. Off season:
+ * none. Your own or a yard's Chicken (`street` false) gets the rows greyed while you carry a
+ * costume, saying only a street Chicken dresses up; none without one.
  */
-export function dressVerbs({ season = false, costume = '', inv = {}, street = true } = {}) {
+export function dressVerbs({ season = false, costume = '', inv = {}, street = true, counted = false } = {}) {
   if (!season) return [];
   const owned = COSTUME_CLASSES.filter((cls) => (Number(inv?.[cls]) || 0) > 0);
   if (!street) return owned.map((cls) => ({ id: `${DRESS_VERB}:${cls}`, label: `Dress in ${costumeLabel(cls)}`, enabled: false, reason: POT_LUCK_LINES.streetOnly, tooltip: POT_LUCK_LINES.tip, durationMs: 0 }));
-  if (costume) return [{ id: DRESS_VERB, label: 'Dress up', enabled: false, reason: POT_LUCK_LINES.already, tooltip: POT_LUCK_LINES.tip, durationMs: 0 }];
-  if (!owned.length) return [{ id: DRESS_VERB, label: 'Dress up', enabled: false, reason: POT_LUCK_LINES.noItem, tooltip: POT_LUCK_LINES.tip, durationMs: 0 }];
-  return owned.map((cls) => ({ id: `${DRESS_VERB}:${cls}`, label: `Dress in ${costumeLabel(cls)}`, enabled: true, reason: '', tooltip: POT_LUCK_LINES.tip, durationMs: 0 }));
+  const wearable = counted ? [] : owned.filter((cls) => cls !== costume);
+  if (!wearable.length) return [{ id: DRESS_VERB, label: 'Dress up', enabled: false, reason: dressWhy({ costume, counted }), tooltip: POT_LUCK_LINES.tip, durationMs: 0 }];
+  return wearable.map((cls) => ({ id: `${DRESS_VERB}:${cls}`, label: `Dress in ${costumeLabel(cls)}`, enabled: true, reason: '', tooltip: POT_LUCK_LINES.tip, durationMs: 0 }));
 }
 
 /** The costume a dress verb id names, or ''. */

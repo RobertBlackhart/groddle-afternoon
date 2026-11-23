@@ -8,7 +8,9 @@
  * the costume on it does the same (js/world-drop.js dress rules), as a Rook Balm goes on a
  * Chicken. The costume leaves the pack, the Chicken wears it in every clip it plays (its frames
  * swapped for the costume sheets' twins, tools/pot-luck-art), and `chicken_dressed:<costume>` is
- * counted for lane B's badges.
+ * counted for lane B's badges. A dressed Chicken can be re-dressed in the other costume, and each
+ * player counts each Chicken once (G1181, Austin 2026-11-23): the save slice's `counted` holds the
+ * Chickens you dressed this season ("<street>:<i>"), solo and online, and empties when it ends.
  *
  * Who holds the costume: online, the realtime server, for everyone on the street (objects_
  * creatures.go askDress; the dress verb asks it first through street-objects-feature and the
@@ -22,7 +24,8 @@
  *
  * QA canvas data: potLuckOn (1|0), potLuckCostumes ("0:turkey_tailfan,1:-": the street's
  * Chickens, what each wears and whether its costume art is showing, "~" while it loads),
- * potLuckFeathers (today's), potLuckLast.
+ * potLuckFeathers (today's), potLuckCounted (how many Chickens you have dressed this season),
+ * potLuckLast.
  */
 
 import { addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=6414dbdc';
@@ -41,13 +44,14 @@ import {
   dressCheck,
   dressVerbCostume,
   dressVerbs,
+  dressWhy,
   featherDrop,
   isCostume,
 } from '../pot-luck.js?v=ccec0976';
 
 export const POT_LUCK_FEATURE_ID = 'pot-luck';
 
-const fresh = () => ({ dressed: {}, feathers: { day: '', n: 0 }, wasOn: false });
+const fresh = () => ({ dressed: {}, counted: {}, feathers: { day: '', n: 0 }, wasOn: false });
 let slice = fresh();
 let last = '';
 let checkAt = 0;
@@ -78,6 +82,9 @@ export function costumeOf(engine, t) {
   const c = online(engine) ? t.state?.costume : slice.dressed[keyOf(engine, t)];
   return isCostume(c) ? c : '';
 }
+
+/** G1181: did you dress this street Chicken already this season? */
+const countedOf = (engine, t) => isStreetChicken(t) && slice.counted[keyOf(engine, t)] === true;
 
 function say(engine, msg, ok = true) {
   last = String(msg || '');
@@ -180,10 +187,10 @@ export function dressSprite(spr, costume) {
 /* ------------------------------------------------------------ the verbs */
 
 function dressCtx(engine, target, cls) {
-  return { classId: target?.classId, street: isStreetChicken(target), season: seasonOn(engine), costume: costumeOf(engine, target), cls, have: countItem(engine.inv, cls) };
+  return { classId: target?.classId, street: isStreetChicken(target), season: seasonOn(engine), costume: costumeOf(engine, target), cls, have: countItem(engine.inv, cls), counted: countedOf(engine, target) };
 }
 
-/** The dress landing: the costume leaves the pack and goes on the Chicken. */
+/** The dress landing: the costume leaves the pack and goes on the Chicken (over the other one, G1181). */
 function dress(engine, target, cls) {
   const check = dressCheck(dressCtx(engine, target, cls));
   if (!check.ok) {
@@ -197,6 +204,8 @@ function dress(engine, target, cls) {
   if (!online(engine)) slice.dressed[keyOf(engine, target)] = cls;
   if (target.state) target.state.costume = cls;
   dressSprite(target.sprite, cls);
+  // Counted once per Chicken (dressCheck refuses a counted one, so this is its first).
+  slice.counted[keyOf(engine, target)] = true;
   engine.achievement?.(`${DRESS_COUNTER}:${cls}`, 1);
   engine.say?.(target, cls === 'rooster_plume' ? 'A-doodle-doo?' : 'Gobble? Gobble.', 2600);
   engine.playSound?.('ITEM_PICKUP', { volume: 0.5 });
@@ -211,6 +220,7 @@ function dress(engine, target, cls) {
 /** Pot Luck Day ended (not a preview): every costume off, Fancy Feathers to loam. */
 function seasonEnded(engine) {
   slice.dressed = {};
+  slice.counted = {};
   let any = false;
   for (const t of engine.interactables || []) {
     if (!isStreetChicken(t)) continue;
@@ -237,6 +247,7 @@ function publish(engine) {
     const shown = t.sprite?.[WRAP]?.shown;
     return `${t.classIndex}:${c || '-'}${c && shown !== c ? '~' : ''}`;
   }).join(',') || 'none');
+  engine.setData('potLuckCounted', String(Object.keys(slice.counted).length));
   engine.setData('potLuckFeathers', String(slice.feathers.day === getGameDayKey(Date.now()) ? slice.feathers.n : 0));
   engine.setData('potLuckLast', last || 'none');
 }
@@ -259,7 +270,7 @@ export const potLuckFeature = {
     const home = homeDressRows(target, engine);
     if (home.length) return [...verbs, ...home];
     if (!isStreetChicken(target) || !seasonOn(engine)) return null;
-    return [...verbs, ...dressVerbs({ season: true, costume: costumeOf(engine, target), inv: engine.inv })];
+    return [...verbs, ...dressVerbs({ season: true, costume: costumeOf(engine, target), inv: engine.inv, counted: countedOf(engine, target) })];
   },
 
   /** Your own Chicken's menu (animal-husbandry owns it): the dress rows greyed while you carry a costume. */
@@ -272,8 +283,8 @@ export const potLuckFeature = {
     if (!String(verbId).startsWith(DRESS_VERB)) return null;
     const cls = dressVerbCostume(verbId);
     if (!cls) {
-      // The plain row only says why not (dressed already, or nothing to wear).
-      const why = costumeOf(engine, target) ? POT_LUCK_LINES.already : seasonOn(engine) ? POT_LUCK_LINES.noItem : POT_LUCK_LINES.noSeason;
+      // The plain row only says why not (counted, wearing a costume you lack the other of, or nothing to wear).
+      const why = seasonOn(engine) ? dressWhy({ costume: costumeOf(engine, target), counted: countedOf(engine, target) }) : POT_LUCK_LINES.noSeason;
       say(engine, why, false);
       return true;
     }
@@ -320,13 +331,17 @@ export const potLuckFeature = {
   },
 
   save() {
-    return { version: 1, dressed: { ...slice.dressed }, feathers: { ...slice.feathers }, wasOn: slice.wasOn };
+    return { version: 1, dressed: { ...slice.dressed }, counted: { ...slice.counted }, feathers: { ...slice.feathers }, wasOn: slice.wasOn };
   },
 
   restore(data) {
     slice = fresh();
     if (!data || typeof data !== 'object') return;
     for (const [k, c] of Object.entries(data.dressed || {})) if (typeof k === 'string' && isCostume(c)) slice.dressed[k] = c;
+    // A save from before G1181 has no `counted`: solo, every Chicken it dressed was this player's.
+    if (data.counted && typeof data.counted === 'object') {
+      for (const [k, v] of Object.entries(data.counted)) if (v === true) slice.counted[k] = true;
+    } else for (const k of Object.keys(slice.dressed)) slice.counted[k] = true;
     if (data.feathers && typeof data.feathers === 'object') slice.feathers = { day: String(data.feathers.day || ''), n: Math.max(0, Math.floor(Number(data.feathers.n) || 0)) };
     slice.wasOn = data.wasOn === true;
   },

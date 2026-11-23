@@ -25,6 +25,7 @@ import {
   costumeFrame,
   dressCheck,
   dressVerbs,
+  dressWhy,
   featherDrop,
 } from '../public/js/pot-luck.js?v=ccec0976';
 import { applyCreatureState } from '../public/js/street-creatures.js?v=583ed80f';
@@ -80,7 +81,12 @@ describe('dress rules (js/pot-luck.js)', () => {
     assert.deepEqual(dressCheck(base), { ok: true });
     assert.equal(dressCheck({ ...base, season: false }).code, 'no_season');
     assert.equal(dressCheck({ ...base, have: 0 }).msg, POT_LUCK_LINES.noItem);
-    assert.equal(dressCheck({ ...base, costume: 'rooster_plume' }).code, 'dressed');
+    // G1181: a dressed Chicken takes the other costume, never the one it wears, and never twice from you.
+    assert.deepEqual(dressCheck({ ...base, costume: 'rooster_plume' }), { ok: true });
+    assert.deepEqual(dressCheck({ ...base, costume: 'turkey_tailfan' }), { ok: false, code: 'same', msg: 'This Chicken is already wearing a Turkey Tailfan.' });
+    assert.deepEqual(dressCheck({ ...base, costume: 'rooster_plume', counted: true }), { ok: false, code: 'counted', msg: POT_LUCK_LINES.counted });
+    assert.equal(dressCheck({ ...base, counted: true }).code, 'counted');
+    assert.equal(dressCheck({ ...base, costume: 'rooster_plume', have: 0 }).code, 'no_item');
     assert.equal(dressCheck({ ...base, classId: 'npc_piggy' }).code, 'not_chicken');
     assert.deepEqual(dressCheck({ ...base, street: false }), { ok: false, code: 'not_street', msg: POT_LUCK_LINES.streetOnly });
     assert.equal(dressCheck({ ...base, cls: 'chicken_egg' }).code, 'not_costume');
@@ -93,16 +99,36 @@ describe('dress rules (js/pot-luck.js)', () => {
       ['potluck:dress:rooster_plume', 'Dress in Rooster Plume', true],
     ]);
     assert.deepEqual(dressVerbs({ season: true, inv: {} }).map((r) => [r.id, r.enabled, r.reason]), [['potluck:dress', false, POT_LUCK_LINES.noItem]]);
-    assert.deepEqual(dressVerbs({ season: true, costume: 'turkey_tailfan', inv: { rooster_plume: 1 } }).map((r) => [r.id, r.enabled, r.reason]), [['potluck:dress', false, POT_LUCK_LINES.already]]);
+  });
+
+  it('G1181: a dressed Chicken offers the other costume, only while you carry it and have not dressed that Chicken', () => {
+    const rows = (o) => dressVerbs({ season: true, ...o }).map((r) => [r.id, r.label, r.enabled, r.reason]);
+    assert.deepEqual(rows({ costume: 'turkey_tailfan', inv: { turkey_tailfan: 1, rooster_plume: 1 } }), [['potluck:dress:rooster_plume', 'Dress in Rooster Plume', true, '']]);
+    assert.deepEqual(rows({ costume: 'rooster_plume', inv: { turkey_tailfan: 2 } }), [['potluck:dress:turkey_tailfan', 'Dress in Turkey Tailfan', true, '']]);
+    // Only the costume it wears, or none: the greyed row says what would work.
+    const wearing = 'This Chicken is wearing a Turkey Tailfan. A Rooster Plume would dress it again.';
+    assert.equal(POT_LUCK_LINES.wearing('turkey_tailfan'), wearing);
+    assert.deepEqual(rows({ costume: 'turkey_tailfan', inv: { turkey_tailfan: 1 } }), [['potluck:dress', 'Dress up', false, wearing]]);
+    assert.deepEqual(rows({ costume: 'turkey_tailfan', inv: {} }), [['potluck:dress', 'Dress up', false, wearing]]);
+    // Counted (you dressed it): no live row, dressed or not.
+    assert.deepEqual(rows({ costume: 'turkey_tailfan', counted: true, inv: { rooster_plume: 1 } }), [['potluck:dress', 'Dress up', false, POT_LUCK_LINES.counted]]);
+    assert.deepEqual(rows({ counted: true, inv: { rooster_plume: 1 } }), [['potluck:dress', 'Dress up', false, POT_LUCK_LINES.counted]]);
+    assert.equal(dressWhy({}), POT_LUCK_LINES.noItem);
+    for (const line of [POT_LUCK_LINES.counted, wearing, POT_LUCK_LINES.same('rooster_plume')]) assert.doesNotMatch(line, /\u2014/);
   });
 
   it('takes a costume dropped on a Chicken through its dress row', () => {
     const verbs = dressVerbs({ season: true, inv: { turkey_tailfan: 1, rooster_plume: 1 } });
     assert.equal(dropFor('npc_chicken', 'rooster_plume', verbs).verb.id, 'potluck:dress:rooster_plume');
     assert.equal(dropFor('npc_chicken', 'turkey_tailfan', verbs).verb.id, 'potluck:dress:turkey_tailfan');
-    // Dressed: the drop meets the disabled row, which says why.
+    // G1181: dressed in a tailfan, a plume dropped on it re-dresses it.
     const dressed = dressVerbs({ season: true, costume: 'turkey_tailfan', inv: { rooster_plume: 1 } });
-    assert.equal(dropFor('npc_chicken', 'rooster_plume', dressed).verb.enabled, false);
+    assert.equal(dropFor('npc_chicken', 'rooster_plume', dressed).verb.id, 'potluck:dress:rooster_plume');
+    // The costume it wears, or a Chicken you dressed: the drop meets the disabled row, which says why.
+    const same = dressVerbs({ season: true, costume: 'turkey_tailfan', inv: { turkey_tailfan: 1 } });
+    assert.equal(dropFor('npc_chicken', 'turkey_tailfan', same).verb.enabled, false);
+    const counted = dressVerbs({ season: true, costume: 'turkey_tailfan', counted: true, inv: { rooster_plume: 1 } });
+    assert.equal(dropFor('npc_chicken', 'rooster_plume', counted).verb.enabled, false);
     assert.equal(dropFor('npc_piggy', 'rooster_plume', verbs), null);
     assert.equal(dropFor('npc_chicken', 'rooster_plume', []), null, 'out of season the Chicken offers no dress verb');
   });
@@ -175,16 +201,71 @@ describe('the dress flow and the feather (features/pot-luck-feature.js)', () => 
     assert.deepEqual(potLuckFeature.save().dressed, { 'GA5101HF7F429V5:0': 'turkey_tailfan' });
     assert.deepEqual(e.counters, ['chicken_dressed:turkey_tailfan=1']);
     assert.equal(e.lines.at(-1), POT_LUCK_LINES.dressed.turkey_tailfan);
-    // Dressed already: refused, the plume stays in the pack.
+    // You dressed it: re-dressing it yourself is refused (G1181: each Chicken counts once), the plume stays in the pack.
     potLuckFeature.runVerbOverride(chicken, 'potluck:dress:rooster_plume', e);
     assert.equal(e.inv.rooster_plume, 1);
-    assert.equal(e.lines.at(-1), POT_LUCK_LINES.already);
+    assert.equal(e.lines.at(-1), POT_LUCK_LINES.counted);
     assert.deepEqual(potLuckFeature.decorateVerbs(chicken, [], e).map((r) => [r.id, r.enabled]), [['potluck:dress', false]]);
+    potLuckFeature.runVerbOverride(chicken, 'potluck:dress', e);
+    assert.equal(e.lines.at(-1), POT_LUCK_LINES.counted);
+    assert.deepEqual(potLuckFeature.save().counted, { 'GA5101HF7F429V5:0': true });
+    assert.equal(e.data.potLuckCounted, '1');
     // The save round-trips.
     const saved = potLuckFeature.save();
     potLuckFeature._reset();
     potLuckFeature.restore(saved);
     assert.deepEqual(potLuckFeature.save().dressed, saved.dressed);
+    assert.deepEqual(potLuckFeature.save().counted, saved.counted);
+    // A save from before G1181 (no counted): the Chickens it dressed were this player's.
+    potLuckFeature._reset();
+    potLuckFeature.restore({ version: 1, dressed: { 'GA5101HF7F429V5:0': 'turkey_tailfan' }, feathers: { day: '', n: 0 } });
+    assert.deepEqual(potLuckFeature.save().counted, { 'GA5101HF7F429V5:0': true });
+  });
+
+  it('G1181: re-dresses a Chicken someone else dressed in the other costume, counting it once', () => {
+    const { e, chicken } = fakeEngine({ inv: { turkey_tailfan: 1, rooster_plume: 2 } });
+    potLuckFeature.init(e);
+    // Another player's Turkey Tailfan (the save holds what it wears; nobody counted it here).
+    potLuckFeature.restore({ version: 1, dressed: { 'GA5101HF7F429V5:0': 'turkey_tailfan' }, counted: {}, feathers: { day: '', n: 0 } });
+    chicken.state.costume = 'turkey_tailfan';
+    assert.deepEqual(potLuckFeature.decorateVerbs(chicken, [], e).map((r) => [r.id, r.enabled]), [['potluck:dress:rooster_plume', true]]);
+    // The tailfan it wears: refused, kept.
+    potLuckFeature.runVerbOverride(chicken, 'potluck:dress:turkey_tailfan', e);
+    assert.equal(e.lines.at(-1), POT_LUCK_LINES.same('turkey_tailfan'));
+    assert.equal(e.inv.turkey_tailfan, 1);
+    assert.deepEqual(e.counters, []);
+    // The plume goes on over it, and counts.
+    potLuckFeature.runVerbOverride(chicken, 'potluck:dress:rooster_plume', e);
+    assert.equal(chicken.state.costume, 'rooster_plume');
+    assert.equal(e.inv.rooster_plume, 1);
+    assert.deepEqual(potLuckFeature.save().dressed, { 'GA5101HF7F429V5:0': 'rooster_plume' });
+    assert.deepEqual(e.counters, ['chicken_dressed:rooster_plume=1']);
+    // Now counted: no more rows that dress it, so the plume and tailfan can't farm it.
+    assert.deepEqual(potLuckFeature.decorateVerbs(chicken, [], e).map((r) => [r.id, r.enabled, r.reason]), [['potluck:dress', false, POT_LUCK_LINES.counted]]);
+    potLuckFeature.runVerbOverride(chicken, 'potluck:dress:turkey_tailfan', e);
+    assert.deepEqual(e.counters, ['chicken_dressed:rooster_plume=1']);
+    assert.equal(e.inv.turkey_tailfan, 1);
+  });
+
+  it('G1181: online, a re-dress asks the server, lands on the go-ahead and counts once; the record empties when the season ends', () => {
+    const { e, chicken } = fakeEngine({ mode: 'multiplayer', inv: { rooster_plume: 1 } });
+    chicken.state.costume = 'turkey_tailfan'; // the server's word: someone else's
+    assert.deepEqual(potLuckFeature.decorateVerbs(chicken, [], e).map((r) => [r.id, r.enabled]), [['potluck:dress:rooster_plume', true]]);
+    e.sharedAsk = true;
+    potLuckFeature.runVerbOverride(chicken, 'potluck:dress:rooster_plume', e);
+    assert.equal(chicken.state.costume, 'turkey_tailfan');
+    assert.deepEqual(e.counters, []);
+    e.sharedAsk = false;
+    potLuckFeature.runVerbOverride(chicken, 'potluck:dress:rooster_plume', e);
+    assert.equal(chicken.state.costume, 'rooster_plume');
+    assert.deepEqual(e.counters, ['chicken_dressed:rooster_plume=1']);
+    assert.deepEqual(potLuckFeature.save().counted, { 'GA5101HF7F429V5:0': true }, 'online the record is the player\'s save too');
+    assert.deepEqual(potLuckFeature.save().dressed, {});
+    // The season ends: the record goes with the costumes.
+    potLuckFeature.onTick(16, 0, e);
+    e.season.on = false;
+    potLuckFeature.onTick(16, 5000, e);
+    assert.deepEqual(potLuckFeature.save().counted, {});
   });
 
   it('refuses with no season, no costume and on a Chicken that is not the street\'s', () => {

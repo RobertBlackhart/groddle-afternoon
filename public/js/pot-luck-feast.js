@@ -421,6 +421,7 @@ const badge = (classTsid, name, desc, statusText, cond, rewards) => Object.freez
   icons: Object.freeze({}),
 });
 
+/** Chickens dressed: the counter counts each Chicken once per player, re-dressed or not (G1181, js/pot-luck.js). */
 const dressed = (n) => Object.freeze({ type: 'group_sum', group: 'chicken_dressed', name: 'chicken_dressed', num: n });
 
 export const FEAST_BADGES = Object.freeze({

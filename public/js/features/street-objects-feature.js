@@ -831,7 +831,8 @@ function sharedVerbOn(engine, target, verbId) {
       return {
         id: animal.id,
         wire: 'dress',
-        ready: () => (Number(engine.inv?.[c]) || 0) > 0 && !target.state?.costume && engine.query?.('seasonOn', 'pot_luck_day', engine) === true,
+        // G1181: a dressed Chicken takes the other costume (the server refuses the one it wears).
+        ready: () => (Number(engine.inv?.[c]) || 0) > 0 && target.state?.costume !== c && engine.query?.('seasonOn', 'pot_luck_day', engine) === true,
         c,
         n: 1,
       };

@@ -4333,7 +4333,7 @@
    "title": "Pot Luck Day chicken costumes: the Turkey Tailfan and the Rooster Plume, put on a street Chicken by a drop or a Dress verb, seen by everyone online, off when the season ends",
    "kind": "content",
    "status": "kept",
-   "ruling": "Austin 2026-11-21 (Pot Luck calls, costumes card): OK as built, the Rooster Plume art and the costume rules signed off; Pot Luck Day kept",
+   "ruling": "Austin 2026-11-21 (Pot Luck calls, costumes card): OK as built, the Rooster Plume art and the costume rules signed off; Pot Luck Day kept. Austin 2026-11-23 (G1181): a dressed Chicken can be re-dressed with the other costume; each player counts each Chicken once",
    "where": [
     {
      "file": "public/js/pot-luck.js",
@@ -4356,9 +4356,10 @@
      "symbol": "makeVariant"
     }
    ],
-   "why": "Austin 2026-11-17 (G982): both costumes, synced online. Glitch never dressed an animal; the drop-on and verb follow its Rook Balm habit. Ours: the items, their Toy Vendor price (150 currants), the rule that a dressed Chicken keeps its costume until the season ends, the chicken_dressed counter and the costume art (a parts edit of Tiny Speck's chicken FLA; the Rooster Plume is new and needs Austin's art review).",
+   "why": "Austin 2026-11-17 (G982): both costumes, synced online. Glitch never dressed an animal; the drop-on and verb follow its Rook Balm habit. Ours: the items, their Toy Vendor price (150 currants), the rule that a dressed Chicken wears its costume until the season ends or someone re-dresses it in the other costume (G1181, Austin 2026-11-23), each player counting each Chicken once (the save's counted record), the chicken_dressed counter and the costume art (a parts edit of Tiny Speck's chicken FLA; the Rooster Plume is new and needs Austin's art review).",
    "rows": [
-    "G982"
+    "G982",
+    "G1181"
    ]
   },
   {
