@@ -2814,9 +2814,29 @@
   "deployed": "2026-11-23"
  },
  "git": {
-  "commits": 3115,
+  "commits": 3120,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-22",
+    "kind": "improve",
+    "text": "The Fancy Feather says what it is for: just for show, sell it to any vendor, and it turns into loam when Pot Luck Day ends"
+   },
+   {
+    "date": "2026-11-22",
+    "kind": "fix",
+    "text": "An open Map redraws when a street project is built, so a finished road stops showing as under construction"
+   },
+   {
+    "date": "2026-11-22",
+    "kind": "fix",
+    "text": "The subway gate stops you at the end of the platform, in front of A Red Button"
+   },
+   {
+    "date": "2026-11-22",
+    "kind": "improve",
+    "text": "Four new start card tips: install on Android, currants find vendors, favor finds shrines, skills take longer each time"
+   },
    {
     "date": "2026-11-22",
     "kind": "fix",
@@ -2916,29 +2936,9 @@
     "date": "2026-11-22",
     "kind": "fix",
     "text": "Map routes take the subway only when the gate would let you through"
-   },
-   {
-    "date": "2026-11-22",
-    "kind": "improve",
-    "text": "The Coral Caves home street has its kelp, dark and pale crystals and pale spires, as Glitch's header shows"
-   },
-   {
-    "date": "2026-11-22",
-    "kind": "new",
-    "text": "Coral Caves' kelp stalks, crystal clusters and pale spires, made for Groddle"
-   },
-   {
-    "date": "2026-11-22",
-    "kind": "fix",
-    "text": "The whole house shows on a home street, tall ones too"
-   },
-   {
-    "date": "2026-11-22",
-    "kind": "fix",
-    "text": "Saved homes move onto Glitch's own houses: Meadow to the Groddle Cottage, Firebog to the Firebog House, Uralia to the Tiny Hominid House"
    }
   ]
  },
- "tests": 1278,
+ "tests": 1280,
  "generatedAt": "2026-11-22"
 }
