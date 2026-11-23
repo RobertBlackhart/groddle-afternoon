@@ -2810,11 +2810,11 @@
   ]
  },
  "release": {
-  "game": "0.57.0",
-  "deployed": "2026-11-22"
+  "game": "0.58.0",
+  "deployed": "2026-11-23"
  },
  "git": {
-  "commits": 3113,
+  "commits": 3115,
   "since": "2026-10-19",
   "recent": [
    {
