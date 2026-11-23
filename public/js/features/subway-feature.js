@@ -45,7 +45,7 @@ import { REPORT_WINDOW_SELECTOR, SCREEN_SELECTOR, START_CARD_SELECTOR, WINDOW_SE
 import { OVERLAY_USES, playOverlay } from '../overlays.js?v=1f5027a3';
 import { doorsFeature } from './doors-feature.js?v=9d08a902';
 import { createMapZoom } from '../map-zoom.js?v=4f0762b2';
-import { bindSubwayMap, renderSubwayMapSvg, subwayPaper } from '../map-views.js?v=e46f6a41';
+import { bindSubwayMap, renderSubwayMapSvg, subwayPaper } from '../map-views.js?v=ad712b91';
 import { frameTexture, textureFromUrl } from '../textures.js?v=729b29ea';
 import {
   CAR_FLOOR,
@@ -62,7 +62,8 @@ import {
   PAPERS_BADGE,
   RIDE_COUNTER,
   STATIONS,
-  STATION_FLOOR,
+  STATION_BUTTON,
+  STATION_GATE_WALL,
   STATION_X,
   SUBWAY_ART,
   SUBWAY_ART_BASE,
@@ -94,7 +95,7 @@ import {
   stationSpots,
   stepRide,
   ticketOffer,
-} from '../subway.js?v=0a87a908';
+} from '../subway.js?v=ea6921ff';
 import { BOARD_ANSWER_MS, SUBWAY_MP_TEXT, applyTrain, riderChanges, trainOf } from '../subway-mp.js?v=ffd57d82';
 import { anchorBottomCentre } from '../sprite-feet.js?v=6ffaec43';
 
@@ -705,8 +706,8 @@ function drawStation(engine, street, station) {
   // The station's art is the street's own (subway.js stationDecos, #482); the two things it clicks stay here.
   // A Red Button on the green gate box's face, under the grille, as the 2012 snaps show it (G838, #385);
   // it stood on the stone block beside the box before.
-  // #509: 27 x 47 at x 433, as the snaps show it (it was 26 x 45 at 437).
-  const button = addSprite(engine, { piece: 'subway_gate', x: STATION_X.button, y: STATION_FLOOR - 37, w: 27, h: 47, z: 4 }, b);
+  // #509: 27 x 47 at x 433, as the snaps show it (it was 26 x 45 at 437); G1221 (#619): mirrored, as the snaps show it.
+  const button = addSprite(engine, STATION_BUTTON, b);
   button.eventMode = 'static';
   button._worldHitW = 150;
   button._worldHitH = 200;
@@ -1099,8 +1100,8 @@ function demoStep(engine, now) {
       openMap(engine, { direction: dir });
       return set('done');
     }
-    // Walk-free: stand at the gate and push.
-    const spot = stationScreen(STATION_X.gate - 40);
+    // Walk-free: stand at the gate, on the platform's side of it (G1221), and push.
+    const spot = stationScreen(STATION_GATE_WALL.x - 24);
     engine.player.x = spot.x;
     engine.player.y = spot.y;
     engine.player.vx = 0;

@@ -117,7 +117,7 @@ import {
   percentCompleteText,
   jobRewardsText,
 } from '../street-jobs.js?v=3fc80dcd';
-import { gateTerms } from '../subway.js?v=0a87a908';
+import { gateTerms } from '../subway.js?v=ea6921ff';
 import { forceMetabolic, gainMetabolic, loseEnergy } from '../metabolics.js?v=48f784bf';
 import { holdNote, placeIndex, questHold, questStoryKey } from '../quest-reach.js?v=f94a0350';
 import { fewestClosures, loadStreetGraph, reachableStreets, streetGraph, worldRoads } from '../street-graph.js?v=dcc5cae4';

@@ -9,7 +9,7 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { STATIONS, STATION_FLOOR, STATION_GATE_WALL, STATION_X, stationScreen } from '../public/js/subway.js?v=0a87a908';
+import { STATIONS, STATION_BUTTON, STATION_FLOOR, STATION_GATE_WALL, STATION_X, stationScreen } from '../public/js/subway.js?v=ea6921ff';
 import { JUMP_SPEED, NORMAL_BUFF, avatarGround, stepAvatar, steerX } from '../public/js/avatar-step.js?v=39d7b1af';
 import { barriersScreen, platformsScreen } from '../public/js/street-model.js?v=a9a05f9d';
 
@@ -52,4 +52,27 @@ describe('#619 the subway gate closes the platform', () => {
       assert.ok(walk(street, stray, -1, 400) < 0, 'from past the gate you walk back to the platform');
     });
   }
+});
+
+describe('G1221 (#619) A Red Button is mirrored, as the 2012 snaps and video show it', () => {
+  it('the button keeps its spot and size and is drawn flipped', () => {
+    assert.equal(STATION_BUTTON.piece, 'subway_gate');
+    assert.equal(STATION_BUTTON.x, STATION_X.button);
+    assert.equal(STATION_BUTTON.x, 433);
+    assert.equal(STATION_BUTTON.y, STATION_FLOOR - 37);
+    assert.deepEqual([STATION_BUTTON.w, STATION_BUTTON.h], [27, 47]);
+    assert.equal(STATION_BUTTON.flip, true);
+  });
+
+  it('every station draws that one button row, and the feature honours its flip', () => {
+    const src = readFileSync(join(import.meta.dirname, '..', 'public', 'js', 'features', 'subway-feature.js'), 'utf8');
+    assert.match(src, /addSprite\(engine, STATION_BUTTON, b\)/, 'drawStation draws STATION_BUTTON');
+    assert.match(src, /if \(row\.flip\) s\.scale\.x = -Math\.abs\(s\.scale\.x\)/, 'addSprite mirrors a flipped row');
+  });
+
+  it('the walk-free gate demo stands you on the platform side of the gate', () => {
+    const src = readFileSync(join(import.meta.dirname, '..', 'public', 'js', 'features', 'subway-feature.js'), 'utf8');
+    assert.doesNotMatch(src, /stationScreen\(STATION_X\.gate - 40\)/);
+    assert.match(src, /stationScreen\(STATION_GATE_WALL\.x - 24\)/);
+  });
 });

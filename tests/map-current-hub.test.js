@@ -13,8 +13,8 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { MAP_TRAIL_MAX, findCurrentStreet, noteMapTrail, pickMapSpot } from '../public/js/map-graph.js?v=b035dfb3';
-import { CAR_TSID, STATIONS, stationById } from '../public/js/subway.js?v=0a87a908';
-import { subwayFeature } from '../public/js/features/subway-feature.js?v=d3b81934';
+import { CAR_TSID, STATIONS, stationById } from '../public/js/subway.js?v=ea6921ff';
+import { subwayFeature } from '../public/js/features/subway-feature.js?v=12164d69';
 
 const pub = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const readJson = (rel) => JSON.parse(readFileSync(join(pub, rel), 'utf8'));

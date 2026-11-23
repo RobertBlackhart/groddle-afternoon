@@ -14,7 +14,7 @@ import { execFileSync, spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { SITE_DIR, skipWithoutSite } from '../tools/repos.mjs';
-import { powdersFeature } from '../public/js/features/powders-feature.js?v=7199ec8b';
+import { powdersFeature } from '../public/js/features/powders-feature.js?v=678ef2ca';
 
 const hasPhp = spawnSync('php', ['-v']).status === 0;
 const skip = skipWithoutSite || !hasPhp;

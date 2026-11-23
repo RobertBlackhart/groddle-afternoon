@@ -1,8 +1,8 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 
-import { createAnimalState } from '../public/js/animals.js?v=ce235be2';
-import { getVerbsFor } from '../public/content.js?v=0c9f7fdf';
+import { createAnimalState } from '../public/js/animals.js?v=56071914';
+import { getVerbsFor } from '../public/content.js?v=9e8197df';
 
 // #375: butterfly verbs list Massage before Milk, so quick clicks go in doing order
 // (piggies already list pet before nibble). Glitch had milk 59 / massage 60 (npc_butterfly.js 703, 761).

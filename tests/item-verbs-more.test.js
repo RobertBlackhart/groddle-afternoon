@@ -51,7 +51,7 @@ import {
   verbMessage,
   vvSniffButton,
 } from '../public/js/item-verbs-more.js?v=377f760a';
-import { itemVerbsMoreFeature, runMoreVerb, eatLicoriceNow } from '../public/js/features/item-verbs-more-feature.js?v=fe86a5b4';
+import { itemVerbsMoreFeature, runMoreVerb, eatLicoriceNow } from '../public/js/features/item-verbs-more-feature.js?v=4d7df155';
 import {
   LETTER_WEIGHTS,
   POTIONS,
@@ -71,8 +71,8 @@ import {
   wisdomCheck,
   wisdomMessage,
 } from '../public/js/potions.js?v=4f4c996d';
-import { potionsFeature, usePotionNow, pourSauce } from '../public/js/features/potions-feature.js?v=d6778d9a';
-import { husbandryPack } from '../public/js/animal-husbandry.js?v=d2a40989';
+import { potionsFeature, usePotionNow, pourSauce } from '../public/js/features/potions-feature.js?v=c64bd98b';
+import { husbandryPack } from '../public/js/animal-husbandry.js?v=83779ca2';
 import { XP_FOR_LEVEL } from '../public/js/progression.js?v=05ff0260';
 import { moodScaledXp } from '../public/js/mood-xp.js?v=e311b45c';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';

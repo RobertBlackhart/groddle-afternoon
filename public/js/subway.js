@@ -558,6 +558,14 @@ export const STATION_X = Object.freeze({ stairs: -684, crack: -627, sign: -447, 
  * facing A Red Button, on the box's left face as in every snap. All 12 stations share it.
  */
 export const STATION_GATE_WALL = Object.freeze({ id: 'wall_subway_gate', x: 395, y: STATION_FLOOR - 410, h: 410, pc_perm: -1 });
+/**
+ * A Red Button on the gate box's face (#509: centre x 433, 27 x 47, as the snaps show it), drawn
+ * mirrored. G1221 (#619): Tiny Speck's subway_gate art has the plate's thick edge on its left and the
+ * plate rising to the right; every 2012 station snap and the 2012 video still show it the other way
+ * round (the plate's top edge falling to the right, the button bulging left), so the station placed
+ * it flipped. The spot stays: only the mirror was wrong. All 12 stations draw the same button.
+ */
+export const STATION_BUTTON = Object.freeze({ piece: 'subway_gate', x: STATION_X.button, y: STATION_FLOOR - 37, w: 27, h: 47, z: 4, flip: true });
 
 /**
  * Each station's sign (centre x, centre y) and Subway Map post (centre x, foot y), world px, read off

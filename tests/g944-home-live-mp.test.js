@@ -19,7 +19,7 @@ import {
   visitSceneKey,
 } from '../public/js/home-live.js?v=cebb24d4';
 import { createHomeLive, homeLiveFeature } from '../public/js/features/home-live-feature.js?v=d45b03f8';
-import { YARD_ACT_HOLD_MS, YARD_LINGER_MS, followYardPath, holdYardWalk } from '../public/js/yard-wander.js?v=d3e33e02';
+import { YARD_ACT_HOLD_MS, YARD_LINGER_MS, followYardPath, holdYardWalk } from '../public/js/yard-wander.js?v=9f957f8b';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => readFileSync(join(root, rel), 'utf8');

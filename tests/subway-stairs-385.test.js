@@ -10,11 +10,11 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { STATIONS, STATION_BOUNDS, STATION_FLOOR, STATION_STAIRS_LINE, SUBWAY_ART, stationArrival, stationFloorY, stationScreen } from '../public/js/subway.js?v=0a87a908';
+import { STATIONS, STATION_BOUNDS, STATION_FLOOR, STATION_STAIRS_LINE, SUBWAY_ART, stationArrival, stationFloorY, stationScreen } from '../public/js/subway.js?v=ea6921ff';
 import { NORMAL_BUFF, avatarGround, stepAvatar, steerX } from '../public/js/avatar-step.js?v=39d7b1af';
 import { barriersScreen, platformsScreen, stuckWay } from '../public/js/street-model.js?v=a9a05f9d';
 import { defaultArrival } from '../public/js/street-arrival.js?v=44464031';
-import { subwayFeature } from '../public/js/features/subway-feature.js?v=d3b81934';
+import { subwayFeature } from '../public/js/features/subway-feature.js?v=12164d69';
 
 const PUB = join(import.meta.dirname, '..', 'public');
 const readJson = (rel) => JSON.parse(readFileSync(join(PUB, rel), 'utf8'));

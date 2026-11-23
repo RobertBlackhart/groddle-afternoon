@@ -31,6 +31,7 @@ import {
   STATION_BOUNDS,
   STATION_FLOOR,
   STATION_SPOTS,
+  STATION_BUTTON,
   STATION_X,
   STATION_Y_CAM_OFFSET,
   SUBWAY_ART,
@@ -60,8 +61,8 @@ import {
   stationStreet,
   stepRide,
   ticketOffer,
-} from '../public/js/subway.js?v=0a87a908';
-import { choiceCardKey, dialogMayTakeFocus, subwayFeature } from '../public/js/features/subway-feature.js?v=d3b81934';
+} from '../public/js/subway.js?v=ea6921ff';
+import { choiceCardKey, dialogMayTakeFocus, subwayFeature } from '../public/js/features/subway-feature.js?v=12164d69';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pub = join(spike, 'public');
@@ -299,7 +300,8 @@ describe('G838 (#385): the station as the 2012 snaps show it', () => {
   });
   it('puts A Red Button on the green gate box under its grille, not on the stone block', () => {
     // #509: 27 x 47 at x 433, as the 2012 snaps show it in all 12 stations (it was 26 x 45 at 437).
-    assert.match(feature, /piece: 'subway_gate', x: STATION_X\.button, y: STATION_FLOOR - 37, w: 27, h: 47/);
+    assert.match(feature, /addSprite\(engine, STATION_BUTTON, b\)/);
+    assert.deepEqual([STATION_BUTTON.piece, STATION_BUTTON.x, STATION_BUTTON.y, STATION_BUTTON.w, STATION_BUTTON.h], ['subway_gate', STATION_X.button, STATION_FLOOR - 37, 27, 47]);
     assert.equal(STATION_X.button, 433);
     const gate = stationArt(STATIONS[0]).find((row) => row.piece === 'subway_gate_static');
     // The box is the left 55% of subway_gate_static; the stone block the right.
