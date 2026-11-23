@@ -6,6 +6,9 @@
  * four. Glitch set all of them by hand (dirt_pile.js, peat_1.js, trant_*.js obey_physics false), so
  * their spots now come from those pictures (tools/snap-placements/node-pictures.json, seated and
  * written by node-pictures.mjs into js/node-picture-spots-data.js), as the snaps' spots do elsewhere.
+ *
+ * The siblings check: every street draws as many nodes of each kind as its card counts, the card
+ * the game shows and the card Glitch showed (the location file's count), save the listed exceptions.
  */
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
@@ -16,6 +19,7 @@ import { fileURLToPath } from 'node:url';
 
 import {
   MEASURED_NODE_SPOTS,
+  RESOURCE_NODE_CAPS,
   ecologyForStreet,
   measuredNodeCovers,
   measuredNodeSpots,
@@ -29,6 +33,7 @@ import { homeToFromPopulation } from '../public/js/exploration.js?v=8f19e25d';
 import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs } from '../public/js/street-loader.js?v=10376267';
 import { streetObjectLayout } from '../tools/build-realtime-objects.mjs';
 import { floorUnder, streetFloors } from '../tools/snap-placements/node-pictures.mjs';
+import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');
@@ -96,5 +101,50 @@ describe('nodes where the street pictures show them (#633 G1182)', () => {
       assert.equal(snaps.trees.streets[tsid], undefined, tsid);
     }
     assert.deepEqual(Object.keys(TREE_PICTURE_SPOTS), [BONELINGTON]);
+  });
+});
+
+/**
+ * Real exceptions to the siblings check, each with its reason. A street here draws fewer of a kind
+ * than its card counts.
+ */
+const DRAWN_SHORT = Object.freeze({
+  // A small round street (2,500 px, 11 platforms) whose floors seat 6 of the 8 Salmon the render cap
+  // allows at their 60 px clearance; its file names 17.
+  'GUVSBGGQCHC386B npc_salmon': 'Hetuhila: the planner has room for 6 Salmon',
+});
+
+describe('every street draws as many nodes of each kind as its card counts (G1182 siblings)', () => {
+  it('the game\'s card, Glitch\'s card (the location file) and the shared layout agree', { skip: skipWithoutServer }, () => {
+    const data = JSON.parse(readFileSync(serverPath('data/objects.json'), 'utf8'));
+    // The kinds the shared layout holds (the server owns them); the rest (Fireflies, dust traps,
+    // Sloths) are drawn from no planner spot the server keeps.
+    const KINDS = ['mortar_barnacle', 'ice_knob', 'jellisac', 'dirt_pile', 'peat_1', 'paper_tree', 'npc_salmon'];
+    const short = [];
+    const seen = new Set();
+    let checked = 0;
+    for (const [tsid, street] of Object.entries(data.streets)) {
+      const row = ecologyForStreet(tsid);
+      const pop = populationForStreet(tsid, row, { starter: tsid === STREET_INDEX.default });
+      const home = homeToFromPopulation(pop);
+      // The card names a Paper Tree with the trees (exploration.js HOME_TO_TREES), a Peat Bog as `peat`.
+      const card = { ...home.counts, paper_tree: Object.fromEntries(home.trees).paper_tree || 0 };
+      for (const cls of KINDS) {
+        const drawn = (street.nodes || []).filter((n) => n[1] === cls).length;
+        const shown = card[cls === 'peat_1' ? 'peat' : cls] || 0;
+        // Glitch's card counted every one its file names; only the wandering Salmon have a render cap.
+        const file = Math.min(row?.counts?.[cls] || 0, RESOURCE_NODE_CAPS[cls] ?? Infinity);
+        if (!drawn && !shown && !file) continue;
+        checked += 1;
+        if (drawn === shown && drawn === file) continue;
+        const key = `${tsid} ${cls}`;
+        seen.add(key);
+        if (!DRAWN_SHORT[key]) short.push(`${row?.label || tsid} ${cls}: file ${file}, card ${shown}, drawn ${drawn}`);
+      }
+    }
+    assert.deepEqual(short, []);
+    assert.ok(checked >= 450, `${checked} street kinds checked`);
+    // Every listed exception is still real (drop it once the street draws them all).
+    assert.deepEqual(Object.keys(DRAWN_SHORT).filter((k) => !seen.has(k)), []);
   });
 });
