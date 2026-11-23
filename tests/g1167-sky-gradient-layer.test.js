@@ -230,8 +230,40 @@ describe('G1167: the frame loop places the sky from the layer, not the view', ()
     const src = read('public/js/street-render.js');
     const body = src.slice(src.indexOf('root.updateParallax = ('), src.indexOf('root.edgeMirrorFrame?.(camX, vpW);'));
     assert.ok(body.includes('root.placeSky(camX, camY, vpW, skyH);'));
-    assert.ok(!/skyView\.height\s*=/.test(src), 'the sky is not sized to the view');
-    const editor = read('public/js/builder/editor.js');
-    assert.ok(!/skyView\.height\s*=/.test(editor), 'nor in the level builder');
+  });
+
+  it('nothing sizes or moves the sky container itself (it holds three sprites: placeSky places them)', () => {
+    // The level builder's full-street render set skyView.width/height and so scaled the container:
+    // a black sky over the far layers (builder-render golden, Hechey Track).
+    const files = [];
+    const walk = (rel) => {
+      for (const ent of readdirSync(join(here, '..', rel), { withFileTypes: true })) {
+        const r = `${rel}/${ent.name}`;
+        if (ent.isDirectory()) {
+          if (!['vendor', 'assets'].includes(ent.name)) walk(r);
+        } else if (/\.(m?js|html)$/.test(ent.name)) files.push(r);
+      }
+    };
+    walk('public');
+    const offenders = files.filter((f) => /skyView\.(width|height|x|y|scale)\b\s*=(?!=)/.test(read(f)));
+    assert.deepEqual(offenders, []);
+    assert.ok(read('public/builder-render/render.js').includes('view.placeSky?.(frame.cam.x, frame.cam.y, frame.vw, frame.vh);'));
+    assert.ok(read('public/js/builder/editor.js').includes('v.placeSky?.(S.cam.x, S.cam.y, w, h);'));
+  });
+
+  it('the builder: layers at one camera, the sky over another frame, gradient still on the sky layer', () => {
+    // The editor's "Layout" overlay and builder-render's full view: updateParallax for a Wide view,
+    // then placeSky over the whole picture. The backdrop covers the picture; the gradient stays on the layer.
+    const s = street(KIPACRE);
+    const PIXI = fakePixi();
+    const root = withDocument(() => buildStreetView({ ...s, signposts: [] }, PIXI, { available: new Set() }));
+    root.updateParallax(2520, 592, 960, 408, 408);
+    root.placeSky(0, 0, 6000, 1000);
+    const skyLc = root.parallaxLayers.find((lc) => lc.label === 'sky');
+    const [base, cap, gradient] = root.skyView.children;
+    assert.deepEqual([base.x, base.y, base.width, base.height], [0, 0, 6000, 1000]);
+    assert.deepEqual([gradient.x, gradient.y, gradient.width, gradient.height], [0, skyLc.y, 6000, 1000]);
+    assert.equal(cap.visible, false);
+    assert.deepEqual([root.skyView.x, root.skyView.y, root.skyView.scale.x, root.skyView.scale.y], [0, 0, 1, 1]);
   });
 });

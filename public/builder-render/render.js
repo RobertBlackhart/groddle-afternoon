@@ -138,12 +138,8 @@ async function render({ street, assets = null, params = {}, reach = null, findin
   // `layers` shows those layers only: the middleground too (the renderer always builds it).
   if (only.size) for (const lc of view.layerContainers || []) if (!only.has(lc.label)) lc.visible = false;
   view.updateParallax(frame.parallax.x, frame.parallax.y, frame.parallax.w, frame.parallax.h, frame.parallax.h);
-  if (view.skyView) {
-    view.skyView.x = frame.cam.x;
-    view.skyView.y = frame.cam.y;
-    view.skyView.width = frame.vw;
-    view.skyView.height = frame.vh;
-  }
+  // The sky over the whole picture, its gradient on the backmost layer where the parallax put it (G1167).
+  view.placeSky?.(frame.cam.x, frame.cam.y, frame.vw, frame.vh);
   world.addChild(view);
   if (view.frontView) world.addChild(view.frontView);
   const fx = data.emitters?.length ? createStreetEffects(data, PIXI, view, { available: withNewArt(available, assets), reduced: false, always: true }) : null;
