@@ -321,3 +321,77 @@ export function failInterruptedGreedyStreetSpirit(questState, now = Date.now()) 
   }
   return { failed, finishRepeat };
 }
+
+/*
+ * G1163 (#623): Storyland's two walk-in boxes (street GNVD57N9ERF3TNH `boxes`). Storyland takes
+ * the street over (js/location-events.js OWNED_STREETS), so nothing read them and the EXIT did
+ * nothing. Glitch:
+ * - greedy_street_spirit_check (x 5703, 200 x 600, just before the exit): with any act unread it
+ *   said the line below once and moved you back 100 px to the left; once every act was read it said
+ *   the Piggy line once (quests/greedy_street_spirit.js callback_greedy_street_spirit_check 107-131;
+ *   the repeat's greedy_street_spirit_reminisce.js 82-92 has the warning only).
+ * - instance_exit (x 5856, 50 x 70): back where you came from (locations/location.js 1488-1493,
+ *   instances_get_exit, teleportToLocationDelayed). A run left with acts unread failed
+ *   (onExitLocation 145-163), as the Leave button's abandon does.
+ */
+export const GREEDY_CHECK_BOX_ID = 'greedy_street_spirit_check';
+export const GREEDY_EXIT_BOX_ID = 'instance_exit';
+export const GREEDY_MISSED_STORY_LINE = "You've missed some of the story! It's much more rewarding if you read it all the way through.";
+export const GREEDY_BACK_TO_PIGGY_LINE = "What a wonderful story. Let's return to the Piggy to wrap this up.";
+/** pc.moveAvatar(pc.x-100, pc.y, 'left'). */
+export const GREEDY_CHECK_PUSH_BACK = 100;
+/**
+ * The client tested the avatar's box, not its feet (as js/newxp.js inHitBox): the exit box's
+ * bottom is 36 px over Storyland's floor (517 vs 553), so a feet-only test never fires.
+ */
+export const GREEDY_AVATAR_BODY_H = 100;
+
+/** PURE: the avatar (feet x, y) overlaps a street box (bottom-centre x, y, w, h). */
+export function greedyBoxHit(box, x, y, bodyH = GREEDY_AVATAR_BODY_H) {
+  if (!box) return false;
+  const w = Number(box.w) || 0;
+  const h = Number(box.h) || 0;
+  return x >= box.x - w / 2 && x <= box.x + w / 2 && y >= box.y - h && y - bodyH <= box.y;
+}
+
+/** PURE: Storyland's two boxes from the street JSON (others are left out). */
+export function greedyStreetBoxes(street) {
+  return (street?.boxes || []).filter((b) => b?.id === GREEDY_CHECK_BOX_ID || b?.id === GREEDY_EXIT_BOX_ID);
+}
+
+/**
+ * PURE: the boxes the avatar has just walked into this frame (a box fires on the way in, as the
+ * client's hitbox did); `inside` (a Set of ids) is kept up to date.
+ */
+export function greedyBoxesEntered(boxes, inside, x, y) {
+  const entered = [];
+  for (const box of boxes || []) {
+    const hit = greedyBoxHit(box, x, y);
+    if (hit && !inside.has(box.id)) entered.push(box.id);
+    if (hit) inside.add(box.id);
+    else inside.delete(box.id);
+  }
+  return entered;
+}
+
+/**
+ * What walking into a box does: { say, pushBack } for the check box (each line once a run, the run
+ * remembering it), { leave: true, abandon } for the exit (abandon: acts left unread), else null.
+ */
+export function greedyStreetBoxEnter(state, boxId) {
+  if (!state || state.status === 'expired' || state.status === 'complete') return null;
+  const done = state.actsRead.length === GREEDY_ACTS.length;
+  if (boxId === GREEDY_CHECK_BOX_ID) {
+    if (!done && !state.warnedStory) {
+      state.warnedStory = true;
+      return { say: GREEDY_MISSED_STORY_LINE, pushBack: GREEDY_CHECK_PUSH_BACK };
+    }
+    if (done && !state.repeat && !state.piggyExplained) {
+      state.piggyExplained = true;
+      return { say: GREEDY_BACK_TO_PIGGY_LINE, pushBack: 0 };
+    }
+    return null;
+  }
+  if (boxId === GREEDY_EXIT_BOX_ID) return { leave: true, abandon: !done };
+  return null;
+}

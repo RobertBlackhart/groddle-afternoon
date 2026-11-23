@@ -343,6 +343,7 @@ import {
   expireGreedyStreetSpirit,
   failInterruptedGreedyStreetSpirit,
   greedyActsAllRead,
+  greedyBoxesEntered,
   greedyButtonXs,
   greedyObjective,
   greedyRemainingMs,
@@ -350,6 +351,8 @@ import {
   markGreedyRepeatComplete,
   markGreedyRepeatFailed,
   pressGreedyAct,
+  greedyStreetBoxEnter,
+  greedyStreetBoxes,
 } from './js/greedy-street-spirit.js?v=4a262003';
 import {
   PARADISE_COURSES,
@@ -3120,6 +3123,10 @@ let greedyStreetButtons = [];
 let greedyStreetStartPromise = null;
 let greedyStreetTransitionBusy = false;
 let greedyStreetAutoNextAt = 0;
+/** G1163: Storyland's walk-in boxes the avatar stands in (js/greedy-street-spirit.js greedyBoxesEntered). */
+let greedyStreetBoxesInside = new Set();
+/** G1163 / R46: a way out that failed is not tried again before this (ms epoch). */
+let greedyStreetExitRetryAt = 0;
 ensureMakingItems();
 ensureSpinningWheelItems();
 ensureCubimalItems();
@@ -19862,6 +19869,7 @@ function setupGreedyStreetInstance() {
     shrine: false,
   };
   applyGreedySceneEvent('player_enter');
+  greedyStreetBoxesInside = new Set();
   const groundY = streetPlatforms?.[0]?.y1 || GROUND_Y;
   // #598: each act's button under its own scene (js/greedy-street-spirit.js greedyButtonXs).
   const buttonXs = greedyButtonXs(greedyStreetSceneManifest, currentStreet);
@@ -19992,10 +20000,10 @@ function pressGreedyStoryButton(target) {
     kicker: `${GREEDY_ACTS[result.actIndex].title} · scene ${result.step + 1} of ${GREEDY_ACTS[result.actIndex].lines.length}`,
     beats: [{ text: result.line, response: result.storyCompleted ? 'The end' : 'Continue' }],
     onComplete: () => {
-      if (result.storyCompleted) {
-        const text = greedyStreetState.repeat
-          ? 'The whole story has been remembered. Return to Ur for breakfast.'
-          : "What a wonderful story. Let's return to the Piggy to wrap this up.";
+      // G1163: the first story's Piggy line is the check box's by the exit, as in Glitch
+      // (callback_greedy_street_spirit_check 127-131).
+      if (result.storyCompleted && greedyStreetState?.repeat) {
+        const text = 'The whole story has been remembered. Return to Ur for breakfast.';
         toast(text, 4800);
         pushActivity(text);
       }
@@ -20037,6 +20045,31 @@ function finishGreedyRepeat() {
   return true;
 }
 
+/**
+ * G1163 / R46: a way out of Storyland whose trip failed (js/street-trip.js has said so) leaves you
+ * in Storyland as you were. When the failed load had begun replacing the street, Storyland is
+ * built again where you stood, as a held place comes back (HELD_PLACES.storyland.resume).
+ */
+async function restoreGreedyStreetAfterFailedExit(before) {
+  if (currentStreet === before.street && bgLayer === before.bg && greedyStreetIsInstanced()) return true;
+  try {
+    await enterStreetWithTransition(GREEDY_STREET_GEOMETRY_TSID, {
+      quiet: true,
+      useTransition: false,
+      arrive: () => {
+        if (!greedyStreetState || !greedyStreetSceneManifest) return;
+        setupGreedyStreetInstance();
+        for (const id of greedyReplayEvents(greedyStreetState.actSteps, GREEDY_ACTS)) applyGreedySceneEvent(id);
+        standAtHeldSpot(before.at);
+      },
+    });
+    return true;
+  } catch (err) {
+    console.warn('storyland restore', err);
+    return false;
+  }
+}
+
 async function returnFromGreedyStreetSpirit({ abandon = false, expired = false } = {}) {
   if (!greedyStreetState || greedyStreetTransitionBusy) return false;
   if (!abandon && !expired && greedyStreetState.status !== 'ready') {
@@ -20051,27 +20084,38 @@ async function returnFromGreedyStreetSpirit({ abandon = false, expired = false }
   const questId = wasRepeat
     ? GREEDY_STREET_SPIRIT_REPEAT_ID
     : GREEDY_STREET_SPIRIT_QUEST_ID;
-  let status = expired ? 'expired' : abandon ? 'abandoned' : greedyStreetState.status;
-  if (expired || abandon) {
-    delete questState.active[questId];
-    if (wasRepeat) markGreedyRepeatFailed(questState, Date.now());
-  } else if (wasRepeat) {
-    finishGreedyRepeat();
-    status = 'complete';
-  }
   closeQuestDialogue({ force: true });
-  greedyStreetState = null;
-  greedyStreetSourceLocation = null;
-  greedyStreetSceneManifest = null;
-  greedyStreetButtons = [];
-  const hud = document.getElementById('greedy-street-hud');
-  if (hud) hud.hidden = true;
+  const before = { street: currentStreet, bg: bgLayer, at: { x: player?.x, y: player?.y } };
   try {
-    await enterStreetWithTransition(destination.tsid, {
-      spawnX: destination.x,
-      spawnY: destination.y,
-      quiet: true,
-    });
+    // R46 (G1163): the trip first. The run ends only once you have arrived, so a trip that failed
+    // (said in one line by js/street-trip.js) leaves the run, its quest and Storyland as they were.
+    try {
+      await enterStreetWithTransition(destination.tsid, {
+        spawnX: destination.x,
+        spawnY: destination.y,
+        quiet: true,
+      });
+    } catch (err) {
+      console.warn('storyland exit', err);
+      greedyStreetExitRetryAt = Date.now() + 5000;
+      await restoreGreedyStreetAfterFailedExit(before);
+      return false;
+    }
+    let status = expired ? 'expired' : abandon ? 'abandoned' : greedyStreetState.status;
+    if (expired || abandon) {
+      delete questState.active[questId];
+      if (wasRepeat) markGreedyRepeatFailed(questState, Date.now());
+    } else if (wasRepeat) {
+      finishGreedyRepeat();
+      status = 'complete';
+    }
+    greedyStreetState = null;
+    greedyStreetSourceLocation = null;
+    greedyStreetSceneManifest = null;
+    greedyStreetButtons = [];
+    greedyStreetBoxesInside = new Set();
+    const hud = document.getElementById('greedy-street-hud');
+    if (hud) hud.hidden = true;
     savePlayerLocation(destination);
     if (app?.canvas) app.canvas.dataset.greedyStoryStatus = status;
     if (expired) toast('Storyland faded before the bedtime story was finished.', 4200);
@@ -20091,6 +20135,32 @@ async function returnFromGreedyStreetSpirit({ abandon = false, expired = false }
     return true;
   } finally {
     greedyStreetTransitionBusy = false;
+  }
+}
+
+/**
+ * G1163 (#623): Storyland's walk-in boxes, per frame (js/greedy-street-spirit.js
+ * greedyStreetBoxEnter): the check box before the exit warns once and moves you back 100 px with
+ * acts unread, and the exit box takes you back where you came from (abandoning a run with acts
+ * unread, as Glitch's onExitLocation failed it).
+ */
+function stepGreedyStreetBoxes(now) {
+  if (!player || !currentStreet) return;
+  const boxes = greedyStreetBoxes(currentStreet);
+  for (const id of greedyBoxesEntered(boxes, greedyStreetBoxesInside, player.x, player.y)) {
+    const fx = greedyStreetBoxEnter(greedyStreetState, id);
+    if (!fx) continue;
+    if (fx.pushBack) {
+      player.x -= fx.pushBack;
+      player.vx = 0;
+      greedyStreetBoxesInside.delete(id);
+    }
+    if (fx.say) openLocationVog({ lines: [fx.say] });
+    if (fx.leave && now >= greedyStreetExitRetryAt) {
+      if (app?.canvas) app.canvas.dataset.greedyStoryExit = fx.abandon ? 'abandon' : 'return';
+      returnFromGreedyStreetSpirit({ abandon: fx.abandon });
+      return;
+    }
   }
 }
 
@@ -20176,9 +20246,11 @@ function updateGreedyStreetSpirit() {
   const now = Date.now();
   if (greedyRemainingMs(greedyStreetState, now) <= 0) {
     expireGreedyStreetSpirit(greedyStreetState, now);
-    returnFromGreedyStreetSpirit({ expired: true });
+    if (now >= greedyStreetExitRetryAt) returnFromGreedyStreetSpirit({ expired: true });
     return;
   }
+  stepGreedyStreetBoxes(now);
+  if (!greedyStreetIsInstanced() || greedyStreetTransitionBusy) return;
   const autoplay = new URLSearchParams(location.search).get('greedyautoplay');
   if (autoplay === '1' && now >= greedyStreetAutoNextAt) {
     greedyStreetAutoNextAt = now + 190;
