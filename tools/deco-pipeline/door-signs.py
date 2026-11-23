@@ -255,7 +255,12 @@ def cmd_build(args):
         found, tmp = build.render_batch(work, zoom, [(n, decos[n]) for n in ns])
         for n in ns:
             r = deco_plan[n]
-            renders[n] = build.stage_resample(build.load(found[n]), r['stage'], zoom, r['size3'] if r.get('hires') else r['size2'])
+            # Seams sealed as in build.py (G1162), capped by the old PNG, which has the sign.
+            stage_px = (max(1, round(r['stage'][0] * zoom)), max(1, round(r['stage'][1] * zoom)))
+            ref = (build.ref_alpha(build.load(os.path.join(build.SRC, n + '.png')), r.get('shift'), stage_px)
+                   if str(r.get('reason', 'swf')).startswith('swf') else None)
+            ren = build.seal_seams(build.load(found[n]), ref)[0]
+            renders[n] = build.stage_resample(ren, r['stage'], zoom, r['size3'] if r.get('hires') else r['size2'])
         tmps += tmp
     keep = set()
     for n in names:

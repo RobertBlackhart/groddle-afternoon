@@ -21,7 +21,7 @@ const planRow = (name) => JSON.parse(decoPlan.split('\n').find((l) => l.startsWi
 const HOUSES = ['door_asset_house_large_01', 'door_asset_house_medium_03', 'door_asset_house_large_05'];
 
 test('each home-street house has a sharp copy sized for its scale on a 4x backing store', async () => {
-  const { SHARP_DECOS } = await import('../public/js/deco-sharp-list.js?v=2fdf46bd');
+  const { SHARP_DECOS } = await import('../public/js/deco-sharp-list.js?v=33bf93b4');
   for (const name of HOUSES) {
     const r = rows.get(name);
     assert.ok(r, name);
@@ -46,7 +46,7 @@ test('the two re-framed house copies line up with their 2x files', () => {
 });
 
 test('the house picks its copy at R 4 and keeps the 2x file on a phone', async () => {
-  const { landscapeArt } = await import('../public/js/features/homes-feature.js?v=874d0e25');
+  const { landscapeArt } = await import('../public/js/features/homes-feature.js?v=715bfb41');
   const house = { s: 'door_asset_house_medium_03', w: 764, h: 586, scale: 0.58 };
   assert.equal(landscapeArt(house, 4).url, `assets/decos/groddle/door_asset_house_medium_03@${rows.get('door_asset_house_medium_03').res}x.webp`);
   assert.equal(landscapeArt(house, 1).url, 'assets/decos/groddle/door_asset_house_medium_03.png');
@@ -69,7 +69,8 @@ test("Firebog's ground fronts and Grimssea's knot ship the SWF render with a 3x 
     assert.equal(planRow(name).hires, true, name);
     assert.ok(existsSync(join(pub, `assets/decos/groddle/${name}@1.5x.webp`)), name);
   }
-  // The knot is a far bark deco: a sharp SVG for Grimssea Hollow's T_ench_bark.
-  assert.equal(rows.get('tree_knot_01b_et1').kind, 'svg');
+  // The knot is a far bark deco: a sharp copy for Grimssea Hollow's T_ench_bark. FFDec's SVG of it has
+  // seams and its sealed copy is drawn too wide on a 25 px deco, so it is the sealed WebP (G1162).
+  assert.ok(['svg', 'webp'].includes(rows.get('tree_knot_01b_et1').kind));
   assert.ok(rows.get('tree_knot_01b_et1').sf > 0);
 });

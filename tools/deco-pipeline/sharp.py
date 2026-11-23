@@ -29,8 +29,8 @@ Format, decided per deco by measurement against FFDec's raster render:
   FFDec's SVG export drops some placement colour transforms (alpha) and draws masks differently.
   Bytes are tiny; the game rasterises it at the screen's need (js/deco-hires.js sharpDeco).
   Seams (G1162): Chromium's raster must be as solid inside as the PNG (build.seam_gaps <= build.py
-  `seam_max`); an export with FFDec's seams ships sealed (seal_svg: each opaque region gets a thin
-  non-scaling stroke of its own fill, so shared edges are solid as Flash drew them; `sealed` in
+  `seam_max`; where the PNG is other art, as FFDec's sealed render); an export with FFDec's seams ships sealed (seal_svg: each opaque region gets a thin
+  stroke of its own fill, so shared edges are solid as Flash drew them; `sealed` in
   the row) when that copy passes the same checks, else the WebP ships. The FFDec check
   render and the WebPs come from the sealed raster render (build.seal_seams).
 - aligned webp (ALIGN_TO_PNG): a deco kept as its PNG only because the PNG frames the same art a
@@ -78,7 +78,7 @@ SETTINGS = {
     'svg_bad': 3.0,       #                                  % of visible px off by more than 32 (both after check_box)
     'check_side': 1200,   # longest side of the SVG check renders
     'check_box': 4,       # box filter (px) both check renders get before they are compared
-    'seal_stroke': 0.75,  # screen px of the own-colour stroke seal_svg gives each opaque region (G1162)
+    'seal_stroke': 0.75,  # stage px (the SVG's own px) of the own-colour stroke seal_svg gives each opaque region (G1162)
 }
 
 
@@ -529,9 +529,10 @@ def seal_svg(text):
     each Flash colour region as its own path, so where two regions share an edge each is
     anti-aliased to part coverage and the background shows through between them; Flash drew the
     edge once. Every opaque filled path (a solid colour or a gradient with no see-through stop, no
-    fill-opacity, not a clip path) gets a stroke of its own fill, `seal_stroke` screen px wide
-    whatever the scale (vector-effect non-scaling-stroke) with round joins, which covers the shared
-    edge from both sides. Semi-transparent fills are left alone: a stroke would draw over their own
+    fill-opacity, not a clip path) gets a stroke of its own fill with round joins, `seal_stroke` px of
+    the SVG's own viewport (the deco's stage px) wide through any nested sprite transform
+    (vector-effect non-scaling-stroke; drawn larger, the whole picture scales, so the check render
+    shows it as the game does), which covers the shared edge from both sides. Semi-transparent fills are left alone: a stroke would draw over their own
     edge twice."""
     solid = {gid for _, gid, body in GRADIENT.findall(text)
              if not any(float(v) < 1 for v in re.findall(r'stop-opacity="([\d.]+)"', body))}
@@ -745,6 +746,18 @@ def soft_rows(soft):
     return [{k: r[k] for k in ('name', 'ratio', 'front', 'edge', 'edge_of', 'worst')} for r in soft]
 
 
+def seam_reference(r, refs):
+    """(image, shift) a sharp copy's inside is measured against (build.seam_gaps): the PNG where it
+    is the SWF's art (an aligned copy is on the PNG's frame), else, where the PNG is other art
+    (build.py reason 'corrected'), FFDec's sealed check render."""
+    prow = r['_prow']
+    if r['name'] in ALIGN_TO_PNG:
+        return build.load(build.src_png(r['name'])), None
+    if str(prow.get('reason', 'swf')).startswith('swf') or r['name'] not in refs:
+        return build.load(build.src_png(r['name'])), prow.get('shift')
+    return build.load(refs[r['name']]), None
+
+
 def build_chunk(work, chunk, args):
     S = SETTINGS
     items = [(r['name'], r['_swf']) for r in chunk]
@@ -801,7 +814,7 @@ def build_chunk(work, chunk, args):
             raster = build.load(svgpng)
             r['svg_check'] = list(visible_diff(build.load(refs[r['name']]), raster))
             # As solid inside as the PNG (G1162), measured on Chromium's raster.
-            r['seam'] = build.seam_gaps(raster, build.load(build.src_png(r['name'])), r['_prow'].get('shift'))
+            r['seam'] = build.seam_gaps(raster, *seam_reference(r, refs))
             r['sealed'] = tag == 'sealed.svg'
             ok = (r['svg_check'][0] <= S['svg_rgb'] and r['svg_check'][1] <= S['svg_alpha'] and r['svg_check'][2] <= S['svg_bad']
                   and r['seam'] <= build.SETTINGS['seam_max'])
@@ -861,7 +874,7 @@ def build_chunk(work, chunk, args):
                     os.remove(svg_old)
                 r['bytes'], r['lossless'], r['err'] = build.encode(img, dst, os.path.join(work, 'enc'))
                 r['sha'] = sha(dst)
-                r['seam'] = build.seam_gaps(img, build.load(build.src_png(r['name'])), None if r['name'] in ALIGN_TO_PNG else r['_prow'].get('shift'))
+                r['seam'] = build.seam_gaps(img, *seam_reference(r, refs))
             for p in tmp:
                 shutil.rmtree(p, ignore_errors=True)
     if os.environ.get('SHARP_KEEP_CHECK'):
