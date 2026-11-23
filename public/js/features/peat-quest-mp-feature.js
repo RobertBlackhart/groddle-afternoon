@@ -10,12 +10,18 @@
  * Solo: the quest is not offered (quests.json solo:false), and quest-offers-feature takes it out
  * of a save that already held it (js/peat-quest.js retireSoloPeatQuest).
  *
+ * G1187 (an invention, Austin 2026-11-23): everyone else on the street who hears the bog call sees
+ * the 9 s count down too, a Peter out Peat chip in their buff strip (buffStripRows, the rule in
+ * js/peat-quest.js peatHelperRow), as the holder sees on their own timer buff.
+ *
  * QA: canvas data peatQuest (the last step: asked, started, refused, emptied, not_emptied).
  */
 
 import { ensureQuestOfferState } from '../quest-offers.js?v=32d4127e';
 import { nodeId } from '../street-objects.js?v=c7c69227';
-import { PEAT_ANSWER_GRACE_MS, PEAT_EVENT, PEAT_QUEST, PEAT_TEXT, fullBogNear } from '../peat-quest.js?v=c7baea41';
+import { PEAT_ANSWER_GRACE_MS, PEAT_EVENT, PEAT_QUEST, PEAT_TEXT, fullBogNear, peatHelperRow, peatHelperRun } from '../peat-quest.js?v=654cdb1b';
+import { getBuffCatalog } from '../content-catalogs.js?v=10b118dd';
+import { BUFF_ICONS } from '../buff-triggers.js?v=9fd877c4';
 
 export const PEAT_QUEST_FEATURE_ID = 'peat-quest-mp';
 
@@ -23,6 +29,15 @@ let bound = null;
 let reqSeq = 0;
 /** The start the server has yet to answer: { req, go, refuse }. */
 let asking = null;
+/** The bog call this player last heard (G1187): { street, id, startedAt, endsAt }. */
+let helperRun = null;
+
+/** True while this player's own Peter out Peat timer runs (their buff shows the 9 s already). */
+function holdsTimer(engine, now) {
+  if (!engine?.questState?.active?.[PEAT_QUEST]) return false;
+  const timer = engine.questState.offers?.timers?.[PEAT_QUEST];
+  return Number(timer?.endsAt) > now;
+}
 
 function note(engine, text) {
   engine.setData?.('peatQuest', text);
@@ -51,6 +66,8 @@ function bind(engine) {
     if (!m || m.street !== engine.streetTsid) return;
     const row = (engine.query?.('streetResourceNodes', engine) || []).find((n) => nodeId(n.key) === m.id);
     if (row?.target) engine.say?.(row.target, PEAT_TEXT.call, PEAT_TEXT.callMs);
+    helperRun = peatHelperRun(m.street, m.id, Date.now());
+    engine.updateHud?.();
   });
   client.on('msg:bog_test', (m) => {
     if (!engine.questState?.active?.[PEAT_QUEST]) return;
@@ -89,6 +106,23 @@ export const peatQuestMpFeature = {
    * quest-offers-feature, before Peter out Peat starts: onStarted's check. { go, refuse } are how
    * it goes on, once the server has answered. Null for any other quest (and in solo).
    */
+  /** G1187: the helper's countdown chip for game.js renderBuffStrip (none for the holder). */
+  buffStripRows(engine, now = Date.now()) {
+    if (!helperRun || engine?.mode !== 'multiplayer') return [];
+    if (now >= helperRun.endsAt) {
+      helperRun = null;
+      return [];
+    }
+    const row = peatHelperRow(helperRun, {
+      street: engine.streetTsid,
+      holding: holdsTimer(engine, now),
+      now,
+      def: getBuffCatalog()?.[PEAT_QUEST] || null,
+      sourceItem: BUFF_ICONS[PEAT_QUEST],
+    });
+    return row ? [row] : [];
+  },
+
   questStartGate(classTsid, gate, engine) {
     if (classTsid !== PEAT_QUEST || engine?.mode !== 'multiplayer') return null;
     const client = bind(engine);

@@ -454,6 +454,9 @@
     "no-source: Grey-brown dust where a tree has just died (no source overlay for die()).": "ours-patches",
     "stand-in: patch within reach (GSJS config.verb_radius stand-in).": "not-an-invention"
   },
+  "public/js/features/peat-quest-mp-feature.js": {
+    "invented: * G1187 (an invention, Austin 2026-11-23): everyone else on the street": "peat-helpers-see-the-timer"
+  },
   "public/js/features/player-verbs-mp-feature.js": {
     "guess: // G373 catalog_buffs.js 412-419: nobody guessed, show_rainbow('charades_gameover') at the": "not-an-invention"
   },
@@ -879,6 +882,8 @@
     "ours: Beans (patch_dark.js canPlant; that line is ours).": "dark-patch-bean-line"
   },
   "public/js/peat-quest.js": {
+    "glitch-had-none: * G1187 (Austin 2026-11-23, an invention: Glitch had no shared countdown, the timer buff ran": "peat-helpers-see-the-timer",
+    "invented: * G1187 (Austin 2026-11-23, an invention: Glitch had no shared countdown, the timer buff": "peat-helpers-see-the-timer",
     "ours: 'You need to be online to try this.', // ours": "remake-copy",
     "ours: quest log here. It waits for you online.', // ours": "remake-copy"
   },

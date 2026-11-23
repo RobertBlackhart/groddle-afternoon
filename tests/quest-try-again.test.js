@@ -30,7 +30,7 @@ import {
   retryTimedQuest,
   showWaitingOffer,
   startBlockedReason,
-} from '../public/js/features/quest-offers-feature.js?v=ffa7a657';
+} from '../public/js/features/quest-offers-feature.js?v=4c5562d7';
 
 const PUBLIC = join(dirname(fileURLToPath(import.meta.url)), '../public');
 const read = (p) => readFileSync(join(PUBLIC, p), 'utf8');

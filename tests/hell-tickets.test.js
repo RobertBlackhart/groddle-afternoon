@@ -30,9 +30,9 @@ import {
 import { hellTicketsFeature } from '../public/js/features/hell-tickets-feature.js?v=e52a57b6';
 import { hellFeature } from '../public/js/features/hell-feature.js?v=9575e2c8';
 import { hellBarFeature } from '../public/js/features/hell-bar-feature.js?v=e9f142eb';
-import { questOffersFeature } from '../public/js/features/quest-offers-feature.js?v=ffa7a657';
+import { questOffersFeature } from '../public/js/features/quest-offers-feature.js?v=4c5562d7';
 import { questFlagsFeature } from '../public/js/features/quest-flags-feature.js?v=17c6ef48';
-import { FEATURES } from '../public/js/features/index.js?v=e25685b2';
+import { FEATURES } from '../public/js/features/index.js?v=c69ef6e2';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const CONTENT = join(spike, 'public/assets/content');

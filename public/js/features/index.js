@@ -7,7 +7,7 @@
 import { questFlagsFeature } from './quest-flags-feature.js?v=17c6ef48';
 import { hellFeature } from './hell-feature.js?v=9575e2c8';
 import { resourceNodesFeature } from './resource-nodes-feature.js?v=f236a24b';
-import { questOffersFeature } from './quest-offers-feature.js?v=ffa7a657';
+import { questOffersFeature } from './quest-offers-feature.js?v=4c5562d7';
 import { meditationFeature } from './meditation-feature.js?v=8e1ad57e';
 import { teleportationFeature } from './teleportation-feature.js?v=aece67b4';
 import { racesFeature } from './races-feature.js?v=68d6d429';
@@ -152,7 +152,7 @@ import { buddiesFeature } from './buddies-feature.js?v=e9f1256e'; FEATURES.push(
 import { profilesFeature } from './profiles-feature.js?v=5d37c0df'; FEATURES.push(profilesFeature);
 import { neighboursMpFeature } from './neighbours-mp-feature.js?v=ab88a24e'; FEATURES.push(neighboursMpFeature);
 import { questsMpFeature } from './quests-mp-feature.js?v=01a859c1'; FEATURES.push(questsMpFeature);
-import { peatQuestMpFeature } from './peat-quest-mp-feature.js?v=a619d065'; FEATURES.push(peatQuestMpFeature);
+import { peatQuestMpFeature } from './peat-quest-mp-feature.js?v=b8621d05'; FEATURES.push(peatQuestMpFeature);
 import { groupsFeature } from './groups-feature.js?v=a7b73885'; FEATURES.push(groupsFeature);
 import { giftsFeature } from './gifts-feature.js?v=6c197146'; FEATURES.push(giftsFeature);
 import { auctionsFeature } from './auctions-feature.js?v=22942941'; FEATURES.push(auctionsFeature);

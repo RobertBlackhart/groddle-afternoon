@@ -5487,6 +5487,31 @@
    "rows": [
     "G1205"
    ]
+  },
+  {
+   "id": "peat-helpers-see-the-timer",
+   "title": "Everyone on the street who hears a Peat Bog's call sees Peter out Peat's 9 second countdown, not only the quest holder",
+   "kind": "UI",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/peat-quest.js",
+     "symbol": "peatHelperRow"
+    },
+    {
+     "file": "public/js/features/peat-quest-mp-feature.js",
+     "symbol": "buffStripRows"
+    },
+    {
+     "file": "public/game.js",
+     "symbol": "renderBuffStrip"
+    }
+   ],
+   "why": "In Glitch the 9 second timer was a buff on the quest holder alone (quests/bogspecialization_harvest_full_peat_bog_in_time_period.js 80, catalog_buffs.js 149-169), so helpers could not see it and groups missed the window by fractions of a second. Helpers now get the same Peter out Peat chip in their buff strip from the bog's call (bog_call, sent as the 9 s start); the holder keeps their own buff. The rules, the 9 s and the words stay Glitch's.",
+   "ruling": "Austin 2026-11-23 (G1187): show the Peter out Peat timer to everyone helping, a small departure from Glitch",
+   "rows": [
+    "G1187"
+   ]
   }
  ]
 }

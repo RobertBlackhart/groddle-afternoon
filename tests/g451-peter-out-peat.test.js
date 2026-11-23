@@ -9,11 +9,12 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, it } from 'node:test';
 
-import { PEAT_ANSWER_GRACE_MS, PEAT_EVENT, PEAT_FULL, PEAT_QUEST, PEAT_REACH, PEAT_TEXT, fullBogNear, retireSoloPeatQuest } from '../public/js/peat-quest.js?v=c7baea41';
+import { PEAT_ANSWER_GRACE_MS, PEAT_EVENT, PEAT_FOR_MS, PEAT_FULL, PEAT_QUEST, PEAT_REACH, PEAT_TEXT, fullBogNear, peatHelperRow, peatHelperRun, retireSoloPeatQuest } from '../public/js/peat-quest.js?v=654cdb1b';
+import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
 import { MULTIPLAYER_QUESTS, creditedMultiplayerQuests } from '../public/js/quests-mp.js?v=e697cec3';
 import { ensureQuestOfferState, tickQuestTimers } from '../public/js/quest-offers.js?v=32d4127e';
-import { peatQuestMpFeature } from '../public/js/features/peat-quest-mp-feature.js?v=a619d065';
-import { FEATURES } from '../public/js/features/index.js?v=e25685b2';
+import { peatQuestMpFeature } from '../public/js/features/peat-quest-mp-feature.js?v=b8621d05';
+import { FEATURES } from '../public/js/features/index.js?v=c69ef6e2';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => readFileSync(join(root, rel), 'utf8');
@@ -96,5 +97,37 @@ describe('G451 Peter out Peat', () => {
     ensureQuestOfferState(queued).queue.push(PEAT_QUEST);
     assert.equal(retireSoloPeatQuest(queued), false);
     assert.deepEqual(queued.offers.queue, []);
+  });
+});
+
+describe('G1187: everyone who hears the bog call sees the 9 s count down (an invention)', () => {
+  const def = { classTsid: PEAT_QUEST, name: 'Peter out Peat', itemClass: 'peat_2' };
+
+  it('the rule: a row for the street that heard it, until the 9 s end, never for the holder', () => {
+    const run = peatHelperRun('GA1', 'node:peat_1:0', 1000);
+    assert.equal(PEAT_FOR_MS, catalog[PEAT_QUEST].timer.durationSec * 1000);
+    const row = peatHelperRow(run, { street: 'GA1', now: 4000, def, sourceItem: 'peat' });
+    assert.deepEqual([row.classTsid, row.appliedAt, row.expiresAt, row.sourceItem], [PEAT_QUEST, 1000, 1000 + PEAT_FOR_MS, 'peat']);
+    assert.equal(peatHelperRow(run, { street: 'GA2', now: 4000, def }), null, 'another street');
+    assert.equal(peatHelperRow(run, { street: 'GA1', now: 1000 + PEAT_FOR_MS, def }), null, 'the 9 s are over');
+    assert.equal(peatHelperRow(run, { street: 'GA1', now: 4000, def, holding: true }), null, 'the holder has their own buff');
+  });
+
+  it('the feature: a helper gets a chip in the buff strip, the holder does not', async () => {
+    await loadContentCatalogsFromDir(join(root, 'public/assets/content'));
+    const handlers = {};
+    const client = { on: (t, fn) => { handlers[t] = fn; } };
+    const engine = { mode: 'multiplayer', started: true, streetTsid: 'GA1', questState: { active: {} }, query: (k) => (k === 'realtimeClient' ? client : []), updateHud: () => {} };
+    peatQuestMpFeature.onTick(16, Date.now(), engine);
+    assert.deepEqual(peatQuestMpFeature.buffStripRows(engine), [], 'nothing before a call');
+    handlers['msg:bog_call']({ street: 'GA1', id: 'node:peat_1:0' });
+    const [row] = peatQuestMpFeature.buffStripRows(engine);
+    assert.equal(row.def.name, 'Peter out Peat');
+    assert.ok(row.expiresAt - Date.now() > PEAT_FOR_MS - 1000 && row.expiresAt - Date.now() <= PEAT_FOR_MS);
+    const holder = { ...engine, questState: { active: { [PEAT_QUEST]: {} }, offers: { timers: { [PEAT_QUEST]: { endsAt: Date.now() + PEAT_FOR_MS } } } } };
+    assert.deepEqual(peatQuestMpFeature.buffStripRows(holder), [], 'the holder sees their own timer buff');
+    assert.deepEqual(peatQuestMpFeature.buffStripRows({ ...engine, mode: 'solo' }), []);
+    assert.deepEqual(peatQuestMpFeature.buffStripRows(engine, Date.now() + PEAT_FOR_MS), [], 'gone when the 9 s end');
+    assert.match(read('public/game.js'), /features\.collect\('buffStripRows', engine, now\)/, 'the buff strip draws the rows');
   });
 });

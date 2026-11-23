@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=e517a49b';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=e25685b2';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=c69ef6e2';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE, playerClickBox } from './js/reach.js?v=456da8a8';
@@ -29970,7 +29970,8 @@ function renderBuffStrip() {
   const now = Date.now();
   // G267: timer buffs (a timed quest's clock, its time left on the chip) lead the strip,
   // as the client adds them at the front (BuffViewManager.as 57; BuffUI.as 117-121, 294-298).
-  const rows = [...listActiveBuffs(buffState, now), ...listPendingBuffs(buffState, now)]
+  // G1187: features add rows of their own (a Peter out Peat helper's countdown, peat-quest-mp-feature).
+  const rows = [...listActiveBuffs(buffState, now), ...listPendingBuffs(buffState, now), ...features.collect('buffStripRows', engine, now)]
     .sort((a, b) => Number(Boolean(b.def?.isTimer)) - Number(Boolean(a.def?.isTimer)));
   strip.innerHTML = '';
   strip.hidden = rows.length === 0;

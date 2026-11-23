@@ -17,6 +17,8 @@ export const PEAT_BOG = 'peat_1';
 export const PEAT_FULL = 4; // peat_1.js harvests_remaining 0-4
 export const PEAT_REACH = 100; // onStarted: pc.findCloseStack(is_bog, 100)
 export const PEAT_EVENT = 'peat_bog:emptied'; // js/quest-offers.js routes it to peat_bog_fully_harvested
+/** The bog's 9 seconds (catalog_buffs.js 152 duration 9; objects_peat.go bogFor). */
+export const PEAT_FOR_MS = 9000;
 /** How long a quest's timer waits for the server's word past its 9 s, a trip there and back. */
 export const PEAT_ANSWER_GRACE_MS = 4000;
 export const PEAT_TEXT = Object.freeze({
@@ -60,4 +62,25 @@ export function retireSoloPeatQuest(questState) {
     if (Array.isArray(offers.queue)) offers.queue = offers.queue.filter((id) => id !== PEAT_QUEST);
   }
   return held;
+}
+
+/**
+ * G1187 (Austin 2026-11-23, an invention: Glitch had no shared countdown, the timer buff ran on
+ * the quest holder alone, quest line 80): everyone on the street who hears the bog's
+ * "Empty me out! Go!" (bog_call, sent the moment the 9 s start) sees the same timer the holder
+ * sees, a Peter out Peat chip in their buff strip counting down. The holder keeps their own buff
+ * and gets no second chip.
+ */
+export function peatHelperRun(street, id, now = Date.now()) {
+  return { street: String(street || ''), id: String(id || ''), startedAt: now, endsAt: now + PEAT_FOR_MS };
+}
+
+/**
+ * The helper's chip as a buff strip row ({ classTsid, def, appliedAt, expiresAt, sourceItem }), or
+ * null: no run, another street, the 9 s over, or the player holds the quest's own timer.
+ */
+export function peatHelperRow(run, { street, holding = false, now = Date.now(), def = null, sourceItem = null } = {}) {
+  if (!run || holding || !def) return null;
+  if (run.street !== String(street || '') || now >= run.endsAt) return null;
+  return { classTsid: PEAT_QUEST, def, appliedAt: run.startedAt, expiresAt: run.endsAt, sourceItem: sourceItem || def.itemClass || null, helper: true };
 }
