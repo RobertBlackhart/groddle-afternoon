@@ -41,7 +41,7 @@ import {
   questAwardPayload,
   routeQuestEvent,
   turnInQuest,
-} from '../quest-offers.js?v=69e064ff';
+} from '../quest-offers.js?v=32d4127e';
 import { addItem, removeItem, countItem } from '../inventory.js?v=6414dbdc';
 import { getQuestCatalog } from '../content-catalogs.js?v=10b118dd';
 import {
@@ -52,7 +52,7 @@ import {
   isRaceStreet,
   normalizeQuestsMpSlice,
   tradeHoochCount,
-} from '../quests-mp.js?v=1fc5ff58';
+} from '../quests-mp.js?v=e697cec3';
 
 export const QUESTS_MP_FEATURE_ID = 'quests-mp';
 const FACT_CHECK_MS = 1_000;

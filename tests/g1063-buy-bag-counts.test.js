@@ -26,7 +26,7 @@ import {
   routeQuestEvent,
   settleFirstSkillQuest,
   turnInQuest,
-} from '../public/js/quest-offers.js?v=69e064ff';
+} from '../public/js/quest-offers.js?v=32d4127e';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const CONTENT = join(ROOT, 'public/assets/content');

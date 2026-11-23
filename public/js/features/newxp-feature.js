@@ -143,7 +143,7 @@ import { soundForQuoin } from '../sound-moments.js?v=3e66996f';
 import { IMAGINATION_UPGRADES } from '../imagination.js?v=1bdfd77c';
 import { EZ_COOKIN_TSID, EZ_FOOD, practiceScreen } from '../practice-streets.js?v=557238c1';
 import { assignQuest, completeQuest } from '../quests.js?v=90a2ee3d';
-import { acceptOffer, enqueueQuestOffer, questAwardPayload, turnInQuest } from '../quest-offers.js?v=69e064ff';
+import { acceptOffer, enqueueQuestOffer, questAwardPayload, turnInQuest } from '../quest-offers.js?v=32d4127e';
 import { getQuestCatalog } from '../content-catalogs.js?v=10b118dd';
 import { locationEventsApi } from './location-events-feature.js?v=ac6acbc9';
 import * as kit from '../quest-rooms/kit.js?v=2ccf327e';
@@ -152,7 +152,7 @@ import { upgradeSource } from '../sprite-hires.js?v=ad1e46a9';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { displayTopOf, itemstackOverlayPoint, playPoofIn, playSheetOverlay, poofInAlpha } from '../overlay-art.js?v=95f23414';
 import { HOME_MACHINE } from '../home-ticket.js?v=acb21418';
-import { createAnimalState } from '../animals.js?v=b8f2ba79';
+import { createAnimalState } from '../animals.js?v=6212bb90';
 import {
   AK_ANIMALS,
   AK_BUBBLE,

@@ -24,13 +24,13 @@ import {
   smallEnlightenmentSeconds,
   smeltItDealtItFreeSmelts,
 } from '../public/js/buff-triggers.js?v=9fd877c4';
-import { MIRRORED_BUFFS, buffTriggersFeature } from '../public/js/features/buff-triggers-feature.js?v=1fc54963';
+import { MIRRORED_BUFFS, buffTriggersFeature } from '../public/js/features/buff-triggers-feature.js?v=a95bd193';
 import { meditationFeature } from '../public/js/features/meditation-feature.js?v=e66acb22';
 import { teleportationFeature } from '../public/js/features/teleportation-feature.js?v=31009d39';
 import { rookAttackFeature } from '../public/js/features/rook-attack-feature.js?v=c0722c98';
 import { rubeFeature } from '../public/js/features/rube-feature.js?v=d85402a7';
-import { smugglingFeature } from '../public/js/features/smuggling-feature.js?v=8581e4e7';
-import { normalizeHusbandryPack } from '../public/js/animal-husbandry.js?v=f5568fe2';
+import { smugglingFeature } from '../public/js/features/smuggling-feature.js?v=05a50b24';
+import { normalizeHusbandryPack } from '../public/js/animal-husbandry.js?v=91a8c21c';
 import {
   BUFF_ITEM_CATALOG,
   activateBuffItem,
@@ -531,7 +531,7 @@ describe('systems with their own timer show the source buff', () => {
     const quests = JSON.parse(readFileSync(join(root, 'assets/content/quests.json'), 'utf8'));
     const all = quests.quests || quests;
     // Player verbs: Blocks That Rock is offered in multiplayer (js/quests-mp.js), so its timer buff runs there.
-    const { MULTIPLAYER_QUESTS } = await import('../public/js/quests-mp.js?v=1fc5ff58');
+    const { MULTIPLAYER_QUESTS } = await import('../public/js/quests-mp.js?v=e697cec3');
     const solo = Object.entries(all).filter(([id, q]) => q.timer?.buff && (q.solo || MULTIPLAYER_QUESTS[id])).map(([id, q]) => `${id}>${q.timer.buff}`).sort();
     assert.deepEqual(QUEST_TIMER_BUFFS.map((r) => `${r.quest}>${r.buff}`).sort(), solo);
   });

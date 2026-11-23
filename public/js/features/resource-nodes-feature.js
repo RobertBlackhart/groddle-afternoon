@@ -75,7 +75,7 @@ import { rollSlothBonusSnails } from '../imagination-effects.js?v=70169933';
 import { SLOTH_ART_DIR, SLOTH_KNOCKER_ART, SLOTH_LOOPERS, SLOTH_SHEETS } from '../sloth-art.js?v=a2768e2f';
 import { SLOTH_FULL_PEEK_GAP_MS, SLOTH_PEEK_GAP_MS, chooseSlothLine, slothCellAt, slothIdleTick, slothTimeline } from '../sloth-encounter.js?v=d78eba08';
 import { slothTrees } from '../sloth-trees.js?v=a3299191';
-import { avatarHitBox, boxesTouch } from '../reach.js?v=1fd5de5a';
+import { avatarHitBox, boxesTouch } from '../reach.js?v=456da8a8';
 import {
   DUST_TRAP_DROP_ITEM_DEFS,
   ORGANELLE_OVERLAY,
@@ -105,14 +105,14 @@ import {
   tickResourceNode,
 } from '../resource-nodes.js?v=cf9aae18';
 import { frameTexture as sheetFrameTexture, loadTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=729b29ea';
-import { acceptOffer, markOffered, npcQuestOffers, putOffOffer, questStatus } from '../quest-offers.js?v=69e064ff';
+import { acceptOffer, markOffered, npcQuestOffers, putOffOffer, questStatus } from '../quest-offers.js?v=32d4127e';
 import { OVERLAY_USES, playOverlay } from '../overlays.js?v=1f5027a3';
 import { OVERLAY_FADE, displayTopOf, itemstackOverlayPoint } from '../overlay-art.js?v=95f23414';
 import { playItemOverlay } from '../item-overlay.js?v=c498066d';
 import { nodeToolOverlay, nodeToolSheet } from '../node-tools.js?v=47a93d54';
 import { vpSequence } from '../quest-rooms/vp-overlay.js?v=038e7344';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { salmonSwimAt } from '../street-creatures.js?v=756e531f';
+import { salmonSwimAt } from '../street-creatures.js?v=583ed80f';
 import { GAME_EPOCH_MS } from '../game-day.js?v=50c112eb';
 import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import { anchorBottomCentre } from '../sprite-feet.js?v=6ffaec43';

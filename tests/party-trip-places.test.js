@@ -23,7 +23,7 @@ import {
   heldPlaceKind,
   shiftHeldClock,
 } from '../public/js/party-held-places.js?v=c34cb987';
-import { GREEDY_ACTS, createGreedyStreetSpiritState, greedyRemainingMs, pressGreedyAct } from '../public/js/greedy-street-spirit.js?v=4a262003';
+import { GREEDY_ACTS, createGreedyStreetSpiritState, greedyRemainingMs, pressGreedyAct } from '../public/js/greedy-street-spirit.js?v=00620a1c';
 import { createWinterWalkState, winterWalkRemainingMs } from '../public/js/winter-walk.js?v=89f8dc32';
 import { normalizePartyRecord } from '../public/js/party-spaces.js?v=b026ad60';
 import { partyTeleporterSpot } from '../public/js/features/party-spaces-feature.js?v=c39f420f';

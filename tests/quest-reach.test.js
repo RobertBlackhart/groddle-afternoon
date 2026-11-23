@@ -20,15 +20,15 @@ import { join } from 'node:path';
 
 import { loadContentCatalogsFromDir, resetContentCatalogs, getQuestCatalog } from '../public/js/content-catalogs.js?v=10b118dd';
 import { createQuestState } from '../public/js/quests.js?v=90a2ee3d';
-import { acceptOffer, pendingQuestOffers, setQuestHeldCheck } from '../public/js/quest-offers.js?v=69e064ff';
+import { acceptOffer, pendingQuestOffers, setQuestHeldCheck } from '../public/js/quest-offers.js?v=32d4127e';
 import { SUBWAY_STREETS, closedStreets, initializeStreetJobs, normalizeStreetJobState } from '../public/js/street-jobs.js?v=692d65c4';
 import { applyWorld } from '../public/js/street-jobs-mp.js?v=2b2eb76f';
 import { routeGraph } from '../public/js/map-routes.js?v=426e16ea';
 import { TELEPORTERS } from '../public/js/hidden-floors.js?v=18714dfa';
 import { WINTRY_PORTAL_TELEPORTERS } from '../public/js/wintry-portal.js?v=1437deda';
-import { holdNote, placeIndex, questHold, questPlaceNeeds } from '../public/js/quest-reach.js?v=22b0540a';
+import { holdNote, placeIndex, questHold, questPlaceNeeds } from '../public/js/quest-reach.js?v=f94a0350';
 import { fewestClosures, reachableStreets, streetGraph } from '../public/js/street-graph.js?v=dcc5cae4';
-import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=7cdc360e';
+import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=35d4075a';
 
 const root = join(import.meta.dirname, '..');
 const PUB = join(root, 'public');

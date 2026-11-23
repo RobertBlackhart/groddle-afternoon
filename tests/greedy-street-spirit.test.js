@@ -25,7 +25,7 @@ import {
   markGreedyRepeatComplete,
   markGreedyRepeatFailed,
   pressGreedyAct,
-} from '../public/js/greedy-street-spirit.js?v=4a262003';
+} from '../public/js/greedy-street-spirit.js?v=00620a1c';
 
 const PUBLIC = join(import.meta.dirname, '..', 'public');
 

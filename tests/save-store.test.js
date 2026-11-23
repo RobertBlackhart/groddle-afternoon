@@ -36,20 +36,20 @@ import { HANDOFF_KEY, claimCharacter, leaveHandoff, listenForClaims, takeHandoff
 import { SITE_DIR, skipWithoutSite } from '../tools/repos.mjs';
 import { spawnSync } from 'node:child_process';
 import { persist as persistGarden } from '../public/js/features/shared-gardens-feature.js?v=3800e7d5';
-import { persist as persistPatch } from '../public/js/features/shared-patches-feature.js?v=b1d39e79';
+import { persist as persistPatch } from '../public/js/features/shared-patches-feature.js?v=d49882be';
 import { persist as persistTrade } from '../public/js/features/trade-feature.js?v=9bd8db07';
 import { persist as persistFeat } from '../public/js/features/solo-feats-feature.js?v=13b5cb98';
 import { persist as persistMayhem } from '../public/js/features/mayhem-feature.js?v=aed6ccb7';
 import { mpPersist as persistCrowns } from '../public/js/features/crowns-feature.js?v=ce40dbf9';
-import { flush as flushHomeStreet } from '../public/js/features/home-street-mp-feature.js?v=d4883596';
-import { flush as flushHomeStorage } from '../public/js/features/home-storage-feature.js?v=66a90c7b';
-import { persist as persistBoards } from '../public/js/features/boards-mp-feature.js?v=b0ff804d';
+import { flush as flushHomeStreet } from '../public/js/features/home-street-mp-feature.js?v=40677b4b';
+import { flush as flushHomeStorage } from '../public/js/features/home-storage-feature.js?v=416790ec';
+import { persist as persistBoards } from '../public/js/features/boards-mp-feature.js?v=8a6b290d';
 import { persist as persistDrops } from '../public/js/features/drops-mp-feature.js?v=3f718120';
 import { createOnlineRequests } from '../public/js/online-request.js?v=2a5117ff';
 import { AUDIO_MUTED_KEY } from '../public/js/audio-pref.js?v=80d433c3';
 import { STORAGE_KEY as APPEARANCE_KEY, APPEARANCE_PRESETS, appearanceToJson, loadAppearance, saveAppearance } from '../public/js/character-builder.js?v=d2f33c8e';
 import { getGameDayKey, getLastNewDayKey, getLastNewDayTs, resetGameDayClock, setLastNewDayTs } from '../public/js/game-day.js?v=50c112eb';
-import { createPlayerSave, parsePlayerSave, serializePlayerSave } from '../public/js/player-save.js?v=99bd4921';
+import { createPlayerSave, parsePlayerSave, serializePlayerSave } from '../public/js/player-save.js?v=cc7a6efd';
 
 const pub = join(import.meta.dirname, '..', 'public');
 const read = (rel) => readFileSync(join(pub, rel), 'utf8');

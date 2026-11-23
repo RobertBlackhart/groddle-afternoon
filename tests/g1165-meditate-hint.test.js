@@ -11,7 +11,7 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { MEDITATE_TOGETHER_HINT, MEDITATE_TOGETHER_QUEST } from '../public/js/quests-mp.js?v=1fc5ff58';
+import { MEDITATE_TOGETHER_HINT, MEDITATE_TOGETHER_QUEST } from '../public/js/quests-mp.js?v=e697cec3';
 
 const ROOT = join(import.meta.dirname, '..');
 const read = (p) => readFileSync(join(ROOT, p), 'utf8');

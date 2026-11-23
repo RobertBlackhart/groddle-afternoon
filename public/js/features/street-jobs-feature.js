@@ -52,7 +52,7 @@
 import { pluralize } from '../words.js?v=274023af';
 import { ITEM_CATALOG, addItem, countItem, ensureItem, itemIcon, packStamp, removeItem } from '../inventory.js?v=6414dbdc';
 import { canUseTool, useToolCondition, workStepCost } from '../tools.js?v=4156bba8';
-import { ecologyForStreet } from '../street-ecology.js?v=9ca2d04e';
+import { ecologyForStreet } from '../street-ecology.js?v=8dea93f8';
 import { worldToScreen } from '../street-model.js?v=a9a05f9d';
 import { signArmWidth } from '../street-render.js?v=073c8455';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
@@ -118,7 +118,7 @@ import {
 } from '../street-jobs.js?v=692d65c4';
 import { gateTerms } from '../subway.js?v=0a87a908';
 import { forceMetabolic, gainMetabolic, loseEnergy } from '../metabolics.js?v=48f784bf';
-import { holdNote, placeIndex, questHold, questStoryKey } from '../quest-reach.js?v=22b0540a';
+import { holdNote, placeIndex, questHold, questStoryKey } from '../quest-reach.js?v=f94a0350';
 import { fewestClosures, loadStreetGraph, reachableStreets, streetGraph, worldRoads } from '../street-graph.js?v=dcc5cae4';
 import { openWorld } from '../open-roads.js?v=597feeb5';
 import { getQuestCatalog as questCatalog } from '../content-catalogs.js?v=10b118dd';

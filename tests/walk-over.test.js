@@ -20,7 +20,7 @@ import {
   walkOverGoals,
 } from '../public/js/walk-over.js?v=277ab977';
 import { VERB_RANGES } from '../public/js/verb-ranges-data.js?v=4d0a4515';
-import { OUT_OF_REACH_LINE, avatarHitBox, behindFloor } from '../public/js/reach.js?v=1fd5de5a';
+import { OUT_OF_REACH_LINE, avatarHitBox, behindFloor } from '../public/js/reach.js?v=456da8a8';
 import { createUserPath, stepUserPath } from '../public/js/user-path.js?v=68e6892c';
 import { NORMAL_BUFF, avatarGround, stepAvatar, steerX } from '../public/js/avatar-step.js?v=39d7b1af';
 import { avatarHeadReach, groundBeneath, platformsScreen, barriersScreen, streetWidth } from '../public/js/street-model.js?v=a9a05f9d';
