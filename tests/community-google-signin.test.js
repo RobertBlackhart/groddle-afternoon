@@ -11,7 +11,7 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { sitePath, skipWithoutSite } from '../tools/repos.mjs';
-import { GOOGLE_SCRIPT, googleButtonOptions as gameButtonOptions, googleOutcome } from '../public/js/account-forms.js?v=6729bb05';
+import { GOOGLE_SCRIPT, googleButtonOptions as gameButtonOptions, googleOutcome } from '../public/js/account-forms.js?v=683e1475';
 
 const src = (p) => readFileSync(sitePath(p), 'utf8');
 /** One exported function of community.js, run here (the module itself needs a page). */

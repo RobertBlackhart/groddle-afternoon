@@ -214,4 +214,4 @@ import { feastDayFeature } from './feast-day-feature.js?v=51e6ac11'; FEATURES.pu
 import { calendarFeature } from './calendar-feature.js?v=48e2a61e'; FEATURES.push(calendarFeature);
 import { streetObjectsFeature } from './street-objects-feature.js?v=86c2bf26'; FEATURES.push(streetObjectsFeature);
 import { realtimeFeature } from './realtime-feature.js?v=ce1f8176'; FEATURES.push(realtimeFeature);
-import { accountBackupFeature } from './account-backup-feature.js?v=55b0dbfb'; FEATURES.push(accountBackupFeature);
+import { accountBackupFeature } from './account-backup-feature.js?v=5937defa'; FEATURES.push(accountBackupFeature);

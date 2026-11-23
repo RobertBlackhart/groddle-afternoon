@@ -10,7 +10,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PARTY_TEXT } from '../public/js/party-spaces.js?v=b026ad60';
 import { SKILL_REMAKE_NOTES } from '../public/js/skill-tree.js?v=df9b7332';
-import { SETTINGS_COPY } from '../public/js/account-forms.js?v=6729bb05';
+import { SETTINGS_COPY } from '../public/js/account-forms.js?v=683e1475';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

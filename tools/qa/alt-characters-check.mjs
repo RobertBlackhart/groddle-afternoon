@@ -249,7 +249,7 @@ try {
       const err = () => page.$eval('[data-online-fresh-error]', (e) => e.textContent);
       await page.fill('#online-fresh-name', 'x');
       await page.click('[data-online-fresh-form] button[type="submit"]');
-      ok((await err()).startsWith('Names are 3 to 19 letters'), `${ui} fresh: the sign-up's name rule (${await err()})`);
+      ok((await err()).startsWith('Names are 2 to 19 letters'), `${ui} fresh: the sign-up's name rule (${await err()})`);
       ok(!log.some((l) => l.method === 'POST' && l.path === 'characters'), `${ui} fresh: nothing sent for a bad name`);
       await page.fill('#online-fresh-name', 'Ada');
       await page.click('[data-online-fresh-form] button[type="submit"]');

@@ -35,7 +35,7 @@
  */
 
 import { createMinnAccountCore } from '../minn-account-core.js?v=bd210eb9';
-import { mountAccountForms, resetLinkFrom, verifyLinkFrom } from '../account-forms.js?v=6729bb05';
+import { mountAccountForms, resetLinkFrom, verifyLinkFrom } from '../account-forms.js?v=683e1475';
 import { gateFor, quietSession, suspendedNow } from '../online-session.js?v=6f1348c8';
 import { REPORT_MAX, REPORT_TEXT, STATUS_WORDS, canEditFirst, createReportsApi, messagePictures, numberedLine, pictureRefused, pictureSrc, refusalWords, reportFromHash, reportNumber, unreadCount, whenWords } from '../reports.js?v=08604732';
 import { PICTURE_TEXT, REPORT_PICTURES, convertPicture, refusalWords as pictureRefusal, roomFor, takeForRoom } from '../report-pictures.js?v=4eb43496';

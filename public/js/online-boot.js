@@ -28,7 +28,7 @@
  */
 
 import { createMinnAccountCore } from './minn-account-core.js?v=bd210eb9';
-import { EMAIL_LINK_COPY, FORM_COPY, characterNameProblem, emailLinkFrom, emailLinkOutcome, mountAccountForms, resetLinkFrom, verifyLinkFrom } from './account-forms.js?v=6729bb05';
+import { EMAIL_LINK_COPY, FORM_COPY, characterNameProblem, emailLinkFrom, emailLinkOutcome, mountAccountForms, resetLinkFrom, verifyLinkFrom } from './account-forms.js?v=683e1475';
 import { claimCharacter, newWriterId, takeHandoff } from './save-claim.js?v=f538f8c7';
 import { gateFor, quietSession, suspendedNow } from './online-session.js?v=6f1348c8';
 

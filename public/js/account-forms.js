@@ -58,7 +58,7 @@ export const TURNSTILE_SCRIPT = 'https://challenges.cloudflare.com/turnstile/v0/
  */
 export function characterNameProblem(name) {
   const n = String(name || '').trim().replace(/\s+/g, ' ');
-  if (!/^[A-Za-z0-9](?:[A-Za-z0-9 _-]{1,17})[A-Za-z0-9]$/.test(n)) return 'Names are 3 to 19 letters, numbers, spaces, - or _, starting and ending with a letter or number.';
+  if (!/^[A-Za-z0-9](?:[A-Za-z0-9 _-]{0,17})[A-Za-z0-9]$/.test(n)) return 'Names are 2 to 19 letters, numbers, spaces, - or _, starting and ending with a letter or number.';
   return hasBadWord(n) ? NAME_REFUSED : '';
 }
 
@@ -210,7 +210,7 @@ export const FORM_COPY = Object.freeze({
   signup: {
     submit: 'Make my character',
     busy: 'Making your character…',
-    nameHelp: 'What other players see. 3 to 19 letters, numbers, spaces, - or _.',
+    nameHelp: 'What other players see. 2 to 19 letters, numbers, spaces, - or _.',
     passwordHelp: 'At least 8 characters.',
     emailHelp: 'You sign in with it, and password resets go to it.',
     privacy: 'Privacy policy',

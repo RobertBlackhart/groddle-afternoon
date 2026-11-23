@@ -25,7 +25,7 @@ import * as acorn from 'acorn';
 import { NAME_REFUSED, SYMBOLS, badSpans, filterText, grawlix, hasBadWord, isBadWord } from '../public/js/word-filter.js?v=9a7a7ebb';
 import { WORD_FILTER } from '../public/js/word-filter-list.js?v=20da9845';
 import { VECTORS, wordFilterOutputs } from '../tools/build-word-filter.mjs';
-import { HAS_SERVER, HAS_SITE, SITE_DIR, serverPath, sitePath } from '../tools/repos.mjs';
+import { HAS_SERVER, HAS_SITE, SITE_DIR, serverPath, sitePath, skipWithoutSite } from '../tools/repos.mjs';
 import { bagLabel } from '../public/js/bag-names.js?v=bba085e1';
 import { BAG_DEFS, PACK_CAPACITY, layoutPack, normalizePrefs, ownBagLabel, renameBag } from '../public/js/pack-slots.js?v=d9ab4a0b';
 import { ITEM_CATALOG, isToolItem } from '../public/js/inventory.js?v=6414dbdc';
@@ -40,7 +40,7 @@ import { teachPhrase } from '../public/js/seasons.js?v=64c72251';
 import { cleanCaption } from '../public/js/snaps.js?v=55d4c257';
 import { sauceLabel, sauceStreetLine } from '../public/js/potions.js?v=4f4c996d';
 import { groupNameProblem } from '../public/js/groups.js?v=2e9a714e';
-import { characterNameProblem } from '../public/js/account-forms.js?v=6729bb05';
+import { characterNameProblem } from '../public/js/account-forms.js?v=683e1475';
 
 const ROOT = join(import.meta.dirname, '..');
 const read = (rel) => readFileSync(join(ROOT, rel), 'utf8');
@@ -288,10 +288,29 @@ describe('the game filters what players name and write', () => {
     assert.equal(characterNameProblem('ShitLord'), '', 'whole words only: a run-together name is not caught (Kshitij must stay fine)');
     assert.equal(characterNameProblem('Hancock'), '');
     assert.equal(characterNameProblem('Kshitij'), '');
-    assert.match(characterNameProblem('x'), /^Names are 3 to 19/);
+    assert.match(characterNameProblem('x'), /^Names are 2 to 19/);
+    assert.equal(characterNameProblem('dm'), '', 'two letters, as Glitch allowed (G1199: its name picker set only a 19 maximum)');
+    assert.match(characterNameProblem('d-'), /^Names are 2 to 19/, 'still starts and ends with a letter or number');
     const forms = read('public/js/account-forms.js');
     assert.equal((forms.match(/const nameProblem = characterNameProblem\(/g) || []).length, 3, 'New player, the link, Google');
     assert.equal(groupNameProblem('Bitch Club'), NAME_REFUSED);
     assert.equal(groupNameProblem('Gardeners'), '');
+  });
+});
+
+describe('character names: two to nineteen letters, the game and the site alike (G1199)', { skip: skipWithoutSite }, () => {
+  it('the site\'s PlayerAccount::NAME is the game\'s rule and takes two letters', () => {
+    const acct = readFileSync(sitePath('src/PlayerAccount.php'), 'utf8');
+    const m = acct.match(/public const NAME = '\/(.+)\/';/);
+    assert.ok(m, 'PlayerAccount::NAME');
+    const site = new RegExp(m[1]);
+    assert.ok(site.test('dm'), 'two letters');
+    assert.ok(!site.test('d'), 'one letter is still too short');
+    assert.ok(site.test('A'.repeat(19)) && !site.test('A'.repeat(20)), '19 at most');
+    assert.ok(read('public/js/account-forms.js').includes(m[1]), 'the forms check the same pattern');
+    for (const f of ['src/PlayerAccount.php', 'src/AdminConsole.php', 'src/GoogleSignIn.php', 'src/CharacterRoutes.php']) {
+      const s = readFileSync(sitePath(f), 'utf8');
+      assert.ok(!s.includes('3 to 19'), `${f} no longer says 3 to 19`);
+    }
   });
 });
