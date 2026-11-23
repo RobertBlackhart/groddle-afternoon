@@ -12,8 +12,8 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PHONE_RENDER_RESOLUTION, PHONE_ZOOM_RESOLUTION_CAP, RESOLUTION_STEP, phoneZoomResolution, renderResolution, resolutionCap } from '../public/js/render-density.js?v=74c6f5f9';
-import { MIN_PACK_HEIGHT, stageFor } from '../public/js/location-view.js?v=19fdf569';
-import { recolourBakeResolution, streetBakeResolution } from '../public/js/street-render.js?v=943d8f57';
+import { MIN_PACK_HEIGHT, stageFor } from '../public/js/location-view.js?v=7cd08a76';
+import { recolourBakeResolution, streetBakeResolution } from '../public/js/street-render.js?v=9554b635';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const game = readFileSync(join(root, 'public/game.js'), 'utf8');

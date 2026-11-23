@@ -12,10 +12,10 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { MIN_PACK_HEIGHT, PHONE_GROUND_MIN_CLEARANCE, groundFitScale, phoneGroundWorldHeight, reachableFloorY, sceneBottomLine, stageFor } from '../public/js/location-view.js?v=19fdf569';
+import { MIN_PACK_HEIGHT, PHONE_GROUND_MIN_CLEARANCE, groundFitScale, phoneGroundWorldHeight, reachableFloorY, sceneBottomLine, stageFor } from '../public/js/location-view.js?v=7cd08a76';
 import { MIN_GROUND_CLEARANCE, cameraTargetY, cameraWorldHeightForGround, yCamOffsetAnchor } from '../public/js/movement.js?v=f4be1a05';
-import { STREET_GROUND_LINES } from '../public/js/street-ground-lines.js?v=509ca1c6';
-import { MAIN as AUTUMN } from '../public/js/quest-rooms/an-autumn-day.js?v=523e9bcc';
+import { STREET_GROUND_LINES } from '../public/js/street-ground-lines.js?v=6de5231f';
+import { MAIN as AUTUMN } from '../public/js/quest-rooms/an-autumn-day.js?v=871f1b0b';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const game = readFileSync(join(root, 'public/game.js'), 'utf8');

@@ -21,7 +21,7 @@ import {
   skyColourAt,
   skyGradientLayerIndex,
   skyGradientPlacement,
-} from '../public/js/street-render.js?v=943d8f57';
+} from '../public/js/street-render.js?v=9554b635';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const read = (rel) => readFileSync(join(here, '..', rel), 'utf8');

@@ -8,7 +8,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { shareFromDash, rampStop, moodState, volumeFrame, dateLines, energyText, faceName } from '../public/js/classic/classic-topbar.js?v=0718924d';
+import { shareFromDash, rampStop, moodState, volumeFrame, dateLines, energyText, faceName } from '../public/js/classic/classic-topbar.js?v=2ece1a1d';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 

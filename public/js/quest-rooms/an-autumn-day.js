@@ -51,7 +51,7 @@
 import { AN_AUTUMN_DAY_FILES } from '../an-autumn-day-art.js?v=d6b2601b';
 import { runOutcome } from '../autoplay-log.js?v=55bb4823';
 import { textureFromUrl } from '../textures.js?v=729b29ea';
-import { sceneAnim } from '../deco-anim.js?v=0bc8f80d';
+import { sceneAnim } from '../deco-anim.js?v=5f6feb46';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 
 export const ROOM_ID = 'an_autumn_day';

@@ -32,7 +32,7 @@
  * skirt below them). `viewh` (QA) pins the window's share.
  */
 
-import { STREET_GROUND_LINES } from './street-ground-lines.js?v=509ca1c6';
+import { STREET_GROUND_LINES } from './street-ground-lines.js?v=6de5231f';
 
 export const MIN_VP_H = 400;
 export const MAX_VP_H = 600;

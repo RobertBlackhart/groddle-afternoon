@@ -11,9 +11,9 @@
 
 import { frameTexture, isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=729b29ea';
 import { quoinTouches } from '../quoins.js?v=5abad2c7';
-import { sharpRoomDeco } from '../deco-hires.js?v=6908b4fe';
+import { sharpRoomDeco } from '../deco-hires.js?v=83dc9d29';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
-import { VIEW_FLOOR_H } from '../location-view.js?v=19fdf569';
+import { VIEW_FLOOR_H } from '../location-view.js?v=7cd08a76';
 
 export const DECO_DIR = 'assets/decos/groddle/';
 export const ICON_DIR = 'assets/sprites/icons/';
