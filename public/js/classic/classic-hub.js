@@ -28,10 +28,10 @@
  * come with the game's init), so under Classic it takes X first. It never takes X while typing, while
  * the loading or start card is up, or while the upgrade cards are open (X closes those, as before).
  */
-import { uiState, onUiModeChange, readUiCache, writeUiCache } from './ui-mode.js?v=2b018d69';
+import { uiState, onUiModeChange, readUiCache, writeUiCache } from './ui-mode.js?v=409f6aa6';
 import { classicArtUrl } from './classic-art.js?v=5f713e7d';
 import { focusBack } from '../ui/focus-return.js?v=da190597';
-import { skillsCloud, skillIconUrl, CLOUD_ICONS_ROW } from './classic-skills.js?v=0c8f3b8b';
+import { skillsCloud, skillIconUrl, CLOUD_ICONS_ROW } from './classic-skills.js?v=620f131a';
 
 /** The clouds, in the client's two rows (ImgMenuView.as 343-415). */
 export const HUB_CLOUDS = Object.freeze([

@@ -20,7 +20,7 @@ import {
   sceneViewCap,
   sceneViewWidthCap,
   stageFor,
-} from '../public/js/location-view.js?v=e5b8e4e2';
+} from '../public/js/location-view.js?v=19fdf569';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const client = path.resolve(root, '..', 'glitch-client', 'com', 'tinyspeck', 'engine');
@@ -94,9 +94,9 @@ test('sceneViewCap: the declared height and the smallest layer (TSMainView 1247-
   assert.equal(sceneViewCap({ worldH: 1100, sourceWorldH: 1000, street: { layers: [{ h: 1000 }, { h: 590 }, { w: 3 }] } }), 590);
   const street = JSON.parse(fs.readFileSync(path.join(root, 'public/assets/streets/GA55S7P5RJ42VTG.json'), 'utf8'));
   assert.ok(sceneViewCap({ sourceWorldH: 1000, street }) >= 600, 'Dust Path 1E grows to the full 600');
-  // Symphonious Maximus' peaks were drawn for the 408 px view.
+  // Symphonious Maximus no longer holds a 408 px view: its peaks move with the street.
   const sym = JSON.parse(fs.readFileSync(path.join(root, 'public/assets/streets/GUVR3SGQ6EF3400.json'), 'utf8'));
-  assert.equal(locationViewHeightFor({ forced: 600, sceneHeight: sceneViewCap({ sourceWorldH: 2200, street: sym }) }), 408);
+  assert.equal(locationViewHeightFor({ forced: 600, sceneHeight: sceneViewCap({ sourceWorldH: 1500, street: sym }) }), 600);
 });
 
 test('game.js sizes the canvas from the rule, live', () => {

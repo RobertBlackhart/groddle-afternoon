@@ -34,9 +34,9 @@ import {
   islandYAt,
   ladderGeometry,
   touchesStar,
-} from '../public/js/symphonious-maximus.js?v=345ad437';
-import { symphoniousMaximusFeature, isSymphonious } from '../public/js/features/symphonious-maximus-feature.js?v=77b68213';
-import { FEATURES } from '../public/js/features/index.js?v=78d15b68';
+} from '../public/js/symphonious-maximus.js?v=e3e9a0ae';
+import { symphoniousMaximusFeature, isSymphonious } from '../public/js/features/symphonious-maximus-feature.js?v=992c0d30';
+import { FEATURES } from '../public/js/features/index.js?v=0e683495';
 import { parallaxLayerOffset } from '../public/js/street-render.js?v=b744f8fc';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -112,7 +112,7 @@ describe('Symphonious Maximus street', () => {
     assert.equal(lad.y, GROUND_Y);
     const top = islandYAt(ISLANDS.find((i) => i.id === 'yellow_b'), lad.x);
     assert.ok(top !== null && Math.abs(lad.y - lad.h - top) <= 12, 'the ladder tops out at the island surface');
-    assert.ok(lad.h > 900, 'a long climb (t0130-t0140)');
+    assert.ok(lad.h > 800, 'a long climb (template y 385-1190)');
   });
 
   it('lets you hop the top row of islands left to right', () => {
@@ -125,8 +125,9 @@ describe('Symphonious Maximus street', () => {
     for (let i = 0; i + 1 < ends.length; i += 1) {
       const a = ends[i];
       const b = ends[i + 1];
-      assert.ok(b.x0 - a.x1 <= 140, `${a.id} -> ${b.id} gap ${b.x0 - a.x1}`);
-      assert.ok(a.y1 - b.y0 <= 100, `${a.id} -> ${b.id} step up ${a.y1 - b.y0}`);
+      // A running jump carries ~240 px; a plain one rises ~142.
+      assert.ok(b.x0 - a.x1 <= 200, `${a.id} -> ${b.id} gap ${b.x0 - a.x1}`);
+      assert.ok(a.y1 - b.y0 <= 130, `${a.id} -> ${b.id} step up ${a.y1 - b.y0}`);
     }
   });
 
@@ -145,10 +146,10 @@ describe('Symphonious Maximus street', () => {
     }
   });
 
-  it('places 51 Star-Jinglers in reach (by jump from a platform, or a crater bounce)', () => {
+  it('places the template\'s 48 Star-Jinglers in reach (by jump from a platform, or a crater bounce)', () => {
     const stars = sym.starJinglers.stars;
     assert.equal(stars.length, STARS.length);
-    assert.equal(stars.length, 51);
+    assert.equal(stars.length, 48);
     assert.equal(new Set(stars.map((s) => s.id)).size, stars.length);
     for (const s of stars) {
       const wx = s.x + L;
@@ -206,52 +207,36 @@ describe('Star-Jinglers (items/toy_star_1.js)', () => {
     assert.equal(symphoniousMaximusFeature.ecologyOverride({ tsid: CEBARKUL_TSID }), null);
   });
 
-  it('G104: the peaks leave navy sky above them at the floor and sink out of view as you climb', () => {
-    const W = sym.bounds.r - sym.bounds.l;
-    const H = sym.bounds.b - sym.bounds.t;
-    const VIEW_H = 408;
-    const floorCamY = 1582; // camera y with the avatar on the floor (feet at screen 306)
-    const floorEdge = 288; // the floor base's top edge on screen at floorCamY
-    const view = (layer, camY) => {
-      const at = parallaxLayerOffset(layer, 0, camY, 960, VIEW_H, W, H);
-      return layer.decos.map((d) => ({ top: d.y - d.h + at.y - camY, feet: d.y + at.y - camY }));
-    };
-    for (const id of ['bg_peaks', 'bg_peaks_far']) {
-      const layer = sym.layers.find((l) => l.id === id);
-      assert.ok(layer.decos.length >= 8, id);
-      const atFloor = view(layer, floorCamY);
-      assert.ok(Math.min(...atFloor.map((p) => p.top)) >= 20, `${id}: sky shows above every peak at the floor`);
-      assert.ok(Math.max(...atFloor.map((p) => p.top)) < floorEdge - 120, `${id}: peaks still rise well above the floor`);
-      // While the floor's back edge is in view, the peaks' cut-off feet stay behind it.
-      for (let up = 0; floorEdge + up < VIEW_H; up += 10) {
-        for (const p of view(layer, floorCamY - up)) assert.ok(p.feet >= floorEdge + up, `${id}: feet hidden ${up} px up`);
-      }
-      // Standing on the island row (camera ~494) no peak is in view.
-      assert.ok(view(layer, 494).every((p) => p.top > VIEW_H), `${id}: none behind the island row`);
+  it('is the 2012 full-street template\'s size, with its peaks standing on the floor where it has them', () => {
+    assert.deepEqual(sym.bounds, { l: -2000, r: 2000, t: -1500, b: 0 });
+    const peaks = sym.layers.find((l) => l.id === 'T_sym_peaks');
+    assert.deepEqual([peaks.w, peaks.h], [4000, 1500], 'moves with the street, so the peaks keep their place');
+    assert.ok(peaks.decos.length >= 8);
+    const floor = sym.layers.find((l) => l.id === 'T_sym_floor');
+    const floorTop = Math.min(...floor.decos.filter((d) => /surface/.test(d.sprite)).map((d) => d.y - d.h));
+    for (const d of peaks.decos) {
+      assert.ok(d.y > floorTop, 'feet behind the floor');
+      assert.ok(d.y - d.h > 600 && d.y - d.h < 900, 'tops between the islands and the floor');
     }
+    assert.ok(peaks.z < floor.z);
+    // The lower tier: teal-capped chunks and pink snow under the floor's front edge.
+    const lower = sym.layers.find((l) => l.id === 'T_sym_lower');
+    assert.ok(lower.decos.filter((d) => /^ground_\d+$/.test(d.sprite)).length >= 12);
+    for (const d of lower.decos.filter((x) => /^ground_\d+$/.test(x.sprite))) assert.ok(d.y - d.h > FLOOR_BOTTOM_Y - T - 10, `${d.sprite} under the floor`);
+    assert.ok(sym.layers.find((l) => l.id === 'T_sym_lower_snow').decos.length >= 4);
     assert.deepEqual(sym.gradient, { top: '163460', bottom: '215A76' });
   });
 
-  it('G104 second pass: white haloed glow orbs from the Snaps, clear of the stars and islands', () => {
+  it('G104 second pass: white haloed glow orbs from the Snaps, where the template has them, clear of the stars', () => {
     // Snap 248953's big orb: disc ~16 Snap px, dark gap to ~19, pale ring to ~23.5.
     assert.ok(Math.abs(ORB_SHAPE.disc - 16 / 23.5) < 0.02 && Math.abs(ORB_SHAPE.gap - 19 / 23.5) < 0.02);
-    assert.ok(GLOW_ORBS.length >= 12, 'orbs across the street');
+    assert.equal(GLOW_ORBS.length, 18, 'the template\'s orbs');
     const radii = GLOW_ORBS.map((o) => o.r);
-    assert.ok(Math.min(...radii) >= 18 && Math.max(...radii) <= 56, 'Snap ring diameters ~15-47 px at ~2.4 world px each');
-    assert.ok(new Set(radii).size >= 8, 'several sizes');
+    assert.ok(Math.min(...radii) >= 10 && Math.max(...radii) <= 56, 'the template\'s discs run 15-43 px across');
+    assert.ok(new Set(radii).size >= 5, 'several sizes');
     for (const o of GLOW_ORBS) {
       assert.ok(o.y < GROUND_Y - o.r - 150, 'in the sky, above the treetops and craters');
       for (const st of STARS) assert.ok(Math.hypot(st.x - o.x, st.y - o.y) > o.r + 40, `orb at ${o.x} clear of ${st.id}`);
-    }
-    // Islands: an orb never sits inside an island deco's box (it would be hidden behind it).
-    const mid = sym.layers.find((l) => l.id === 'middleground');
-    const islandBoxes = mid.decos.filter((d) => String(d.id || '').startsWith('island_'));
-    assert.equal(islandBoxes.length, ISLANDS.length);
-    for (const o of GLOW_ORBS) {
-      for (const d of islandBoxes) {
-        const inside = Math.abs(o.x - d.x) < d.w / 2 + o.r && o.y + o.r > d.y - d.h && o.y - o.r < d.y;
-        assert.ok(!inside, `orb at ${o.x},${o.y} behind ${d.id}`);
-      }
     }
     // Written into the street for the feature (screen space, same order).
     assert.equal(sym.glowOrbs.orbs.length, GLOW_ORBS.length);

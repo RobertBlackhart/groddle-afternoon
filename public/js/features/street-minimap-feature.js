@@ -71,7 +71,7 @@
 
 import { createPictureCache, createStreetMinimap, minimapVisibility, onStreetMapChange, sceneSignMarks, setStreetMap, signpostMarks, snapshotStreetView, snapsWithScene, stationMarks, streetMapOn } from '../ui/street-minimap.js?v=ad22dde6';
 import { classicArtUrl } from '../classic/classic-art.js?v=5f713e7d';
-import { onUiModeChange } from '../classic/ui-mode.js?v=2b018d69';
+import { onUiModeChange } from '../classic/ui-mode.js?v=409f6aa6';
 import { focusBack } from '../ui/focus-return.js?v=da190597';
 import { isPhoneDevice } from '../touch-controls.js?v=b10f17bb';
 import { isFailed, isLoaded, onFailed, onLoaded } from '../textures.js?v=729b29ea';

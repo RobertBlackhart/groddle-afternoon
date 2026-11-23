@@ -20,7 +20,7 @@ import {
   SYMPHONIOUS_TSID,
   symphoniousIndexEntry,
   symphoniousStreet,
-} from '../public/js/symphonious-maximus.js?v=345ad437';
+} from '../public/js/symphonious-maximus.js?v=e3e9a0ae';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const streetsDir = join(root, 'public/assets/streets');

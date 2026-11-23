@@ -9,7 +9,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import * as kit from '../public/js/quest-rooms/kit.js?v=986aa933';
+import * as kit from '../public/js/quest-rooms/kit.js?v=02c6f185';
 import { QUEST_ROOMS, roomModulePath } from '../public/js/quest-rooms/catalog.js?v=10c8100d';
 import { questSceneTsid } from '../public/js/quest-instance.js?v=8858d29d';
 import {

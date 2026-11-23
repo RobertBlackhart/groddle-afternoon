@@ -72,8 +72,8 @@ import {
   PICTURE_RESOLUTION, PROFILE_COPY, PROFILE_PAGE_VERB,
   aboutCounter, profilePagePath, profilePageVerb, avatarKeyOf, base64Bytes, homeKeyOf, homeSizes, imageBase64, pngBase64, shouldUpload, stillTransform,
 } from '../profiles.js?v=054ca723';
-import { homeLayoutJson, homeLayoutKeyOf, HOME_LAYOUT_LIMITS } from '../home-layout.js?v=5faa4d77';
-import { collectHomeLayout, homeFrameFor } from '../home-layout-scene.js?v=2187cc91';
+import { homeLayoutJson, homeLayoutKeyOf, HOME_LAYOUT_LIMITS } from '../home-layout.js?v=65079e5e';
+import { collectHomeLayout, homeFrameFor } from '../home-layout-scene.js?v=2c9c1de1';
 
 export const PROFILES_FEATURE_ID = 'profiles';
 

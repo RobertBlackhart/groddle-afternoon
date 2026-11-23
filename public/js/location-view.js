@@ -32,7 +32,7 @@
  * skirt below them). `viewh` (QA) pins the window's share.
  */
 
-import { STREET_GROUND_LINES } from './street-ground-lines.js?v=94ed0d1c';
+import { STREET_GROUND_LINES } from './street-ground-lines.js?v=509ca1c6';
 
 export const MIN_VP_H = 400;
 export const MAX_VP_H = 600;
@@ -88,12 +88,11 @@ export const LANDSCAPE_PHONE_CLOSEST_SHARE = 0.56;
 export const DEFAULT_VP_H = VIEW_FLOOR_H;
 
 /**
- * Remake-built streets whose art was drawn for one view height. Symphonious
- * Maximus sizes its parallax peaks for the 408 px view (js/symphonious-maximus.js
- * 377-410, layerHeightFor); taller views show the peaks' cut-off feet over the
- * floor while you climb, so the street holds the view at 408.
+ * Remake-built streets whose art was drawn for one view height (none now:
+ * Symphonious Maximus held 408 for its parallax peaks until it was laid out
+ * from its full-street template with peaks that move with the street).
  */
-export const HELD_VIEW_H = Object.freeze({ GUVR3SGQ6EF3400: 408 });
+export const HELD_VIEW_H = Object.freeze({});
 
 const finite = (value, fallback = NaN) => {
   const n = Number(value);

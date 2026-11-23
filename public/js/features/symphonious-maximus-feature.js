@@ -24,7 +24,7 @@
  */
 
 import { textureFromUrl } from '../textures.js?v=729b29ea';
-import { STAR_JINGLER, SYMPHONIOUS_LABEL, SYMPHONIOUS_SOURCE_TSID, glowAlpha, isSymphoniousTsid, touchesStar } from '../symphonious-maximus.js?v=345ad437';
+import { STAR_JINGLER, SYMPHONIOUS_LABEL, SYMPHONIOUS_SOURCE_TSID, glowAlpha, isSymphoniousTsid, touchesStar } from '../symphonious-maximus.js?v=e3e9a0ae';
 
 export const SYMPHONIOUS_FEATURE_ID = 'symphonious-maximus';
 const STAR_Z = 12;

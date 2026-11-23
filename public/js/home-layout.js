@@ -43,7 +43,7 @@ import { CULTIVATION_CLASSES } from './homes-catalog.js?v=f3fe838d';
 import { TOWER_CHASSIS, TOWER_PROTO } from './home-tower.js?v=18889f7a';
 import { GROWN_TREE_LABELS } from './patches.js?v=2498e678';
 import { shortHash } from './profiles.js?v=054ca723';
-import { MIN_PACK_HEIGHT, VIEW_CEIL_H, VIEW_MAX_W, stageFor } from './location-view.js?v=e5b8e4e2';
+import { MIN_PACK_HEIGHT, VIEW_CEIL_H, VIEW_MAX_W, stageFor } from './location-view.js?v=19fdf569';
 
 export const HOME_LAYOUT_VERSION = 1;
 

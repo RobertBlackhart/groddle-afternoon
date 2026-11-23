@@ -25,32 +25,23 @@
  *   to yellow. Nothing resets the state, so a touched star keeps cycling
  *   its glow (the video's stars are the pale cycle, not the rest yellow).
  *
- * Everything else is read off Lily Linguistic's visit (video 7SzDOzodeDQ,
- * t0012-t0175; reference only, no pixels or audio), measured at ~2.36 world
- * px per video px (the avatar is ~55 video px against the remake's 130),
- * with the client minimap and the loading card for the whole-street layout:
- * - a Uralia night: navy sky, deep violet higher up; pale mint peaks.
- * - a pale mint floor with craters. Walking into a crater throws the avatar
- *   high into the sky (t0038-t0046, t0094-t0098), so the craters are bounce
- *   pads (rebuilt as location event boxes, like the fungal wall shrooms).
- * - red, purple, teal and green mushroom trees, the twisted shelf tree with
- *   a dark doorway, a stone arch.
- * - left: a grid of stars over the first crater (two outer columns of 3,
- *   three inner columns of 3, half a row apart), and small floating islands
- *   stepping up from it.
- * - up top: a row of floating islands (teal, yellow, big lilac with a smaller
- *   one under it, yellow, yellow) hung with vines, rows of stars over each,
- *   three big stars in the gaps, a teal ladder from the floor up to the
- *   fourth island, and the Cebarkul signpost on the last one (t0128).
+ * The layout is the stitched 2012 full-street template (below): the
+ * street at 1:1, 4000 x 1500. An earlier pass built it from Lily
+ * Linguistic's visit (video 7SzDOzodeDQ, t0012-t0175; reference only) at
+ * ~2.36 world px per video px, which came out ~1.45 times too big; the
+ * video still gives what the template cannot:
+ * - walking into a crater throws the avatar high into the sky (t0038-t0046,
+ *   t0094-t0098), so the craters are bounce pads (rebuilt as location event
+ *   boxes, like the fungal wall shrooms).
+ * - the ladder is climbed from the floor to the fourth island and the
+ *   Cebarkul signpost stands on the last one (t0128-t0140).
  * Four player Snaps (G104: research/wayback/raw/snaps/symphonious_maximus/,
- * Dec 2012, reference only) add: big white glow orbs, each a disc in a thin
- * dark gap and a pale ring, at several sizes, in the sky among the trees and
- * under the islands (GLOW_ORBS; no CC0 art has them, so they are clean
- * vectors, drawn and slowly drifted by the feature as in the video); a
- * purple-brown hexagon-patterned soil band under the mint floor with a
- * music-note burrow (zutto1.swf ground_large_2, SOIL_NOTES) and a striped
- * caterpillar (ground_caterpillar); vines with a hook under the islands
- * (liana_2).
+ * Dec 2012, reference only) show the big white glow orbs up close (a disc
+ * in a thin dark gap and a pale ring; no CC0 art has them, so they are clean
+ * vectors, drawn and slowly drifted by the feature as in the video), the
+ * purple soil with its music-note burrow (zutto1.swf ground_large_2,
+ * SOIL_NOTES) and striped caterpillar (ground_caterpillar), and the hooked
+ * vines under the islands (liana_2); the template puts each where it is.
  * Not rebuilt: the music (none is listed for the street in
  * inc_data_sounds.js).
  *
@@ -71,24 +62,36 @@ export const CEBARKUL_DOOR = 'door_1354232290656';
 /** The door's connect x/y: world, in Symphonious Maximus. */
 export const SYMPHONIOUS_ARRIVE = Object.freeze({ x: -1925, y: -312 });
 export const SYMPHONIOUS_SOURCE =
-  "reconstruction: Symphonious Maximus (LUVR3SGQ6EF3400, not in tinyspeck/glitch-locations); layout from video 7SzDOzodeDQ, art CC0 zutto1.swf decos and glitch-items toy_star_1.swf";
+  "reconstruction: Symphonious Maximus (LUVR3SGQ6EF3400, not in tinyspeck/glitch-locations); layout from the 2012 full-street template (FullStreetTemplates/Uralia), crater bounces from video 7SzDOzodeDQ, art CC0 zutto1.swf decos and glitch-items toy_star_1.swf";
 
 /** True for the street under either TSID prefix (G as imported, L as GSJS names it). */
 export const isSymphoniousTsid = (tsid) => String(tsid || '').slice(1) === SYMPHONIOUS_TSID.slice(1);
 
-/** World px per video px (avatar ~55 video px, 130 in the remake). */
-export const VIDEO_SCALE = 2.36;
+/**
+ * The street is laid out from the stitched 2012 full-street template
+ * (reference only, no pixels): research/goodnight-groddle-archive/glitch-art/
+ * FullStreetTemplates/Uralia/Symphonious Maximus.png, 4000 x 1500, the
+ * street's bounds at 1:1. Its floor stands where Cebarkul's door lands
+ * (-1925, -312: template x 75, y 1188), so world x = template x - 2000 and
+ * world y = template y - 1500. Every star, crater, island, tree, orb and
+ * peak below is placed where the template shows it, at the size it shows.
+ */
+const TX = -2000;
+const TY = -1500;
+/** Template px to world. */
+const tx = (x) => x + TX;
+const ty = (y) => y + TY;
 
-const L = -2400;
-const R = 3400;
-const T = -2200;
+const L = -2000;
+const R = 2000;
+const T = -1500;
 const B = 0;
 export const SYMPHONIOUS_BOUNDS = Object.freeze({ l: L, r: R, t: T, b: B });
 const W = R - L;
 const H = B - T;
 const screen = (x, y) => ({ x: Math.round(x - L), y: Math.round(y - T) });
 
-/** The floor's walk line (the door's arrival y). */
+/** The floor's walk line (the door's arrival y; template y 1188, where the ladder stands). */
 export const GROUND_Y = -312;
 
 /* ------------------------------------------------------------------ */
@@ -112,40 +115,33 @@ export const STAR_JINGLER = Object.freeze({
 /** The remake avatar's body box for a star touch (feet x, y; ~130 px tall). */
 export const AVATAR_BODY = Object.freeze({ w: 56, h: 124 });
 
-const grid = [];
-// Star grid over the first crater (t0039-t0046, t0159-t0175): world x of the
-// five columns, rows above the floor read off f41/f168.
-const OUTER = [-1776, -1005];
-const INNER = [-1557, -1363, -1170];
-for (const x of OUTER) for (const up of [373, 618, 864]) grid.push([x, GROUND_Y - up]);
-for (const x of INNER) for (const up of [250, 503, 755]) grid.push([x, GROUND_Y - up]);
-
-const row = (x0, step, n, y) => Array.from({ length: n }, (_, i) => [x0 + i * step, y]);
+/** Template centres of a row of stars. */
+const trow = (xs, y) => xs.map((x) => [tx(x), ty(y)]);
+// The grid over the first crater: two outer columns of 3, three inner columns of 4, half a row apart.
+const grid = [
+  ...[109, 567].flatMap((x) => [481, 626, 776].map((y) => [tx(x), ty(y)])),
+  ...[239, 354, 469].flatMap((x) => [546, 696, 846, 996].map((y) => [tx(x), ty(y)])),
+];
 
 /**
- * Star-Jinglers: world centre x, y. `where` names the cluster.
+ * Star-Jinglers: world centre x, y, read off the template one by one. `where` names the cluster.
  */
 export const STARS = Object.freeze([
   ...grid.map(([x, y]) => ({ x, y, where: 'grid' })),
-  ...row(-645, 150, 4, -1540).map(([x, y]) => ({ x, y, where: 'teal island' })),
-  ...row(125, 170, 4, -1560).map(([x, y]) => ({ x, y, where: 'first yellow island' })),
-  ...row(210, 170, 3, -1640).map(([x, y]) => ({ x, y, where: 'first yellow island, high' })),
-  ...row(1045, 170, 4, -1620).map(([x, y]) => ({ x, y, where: 'lilac island' })),
-  ...row(1945, 170, 4, -1580).map(([x, y]) => ({ x, y, where: 'ladder island' })),
-  ...row(2030, 170, 3, -1680).map(([x, y]) => ({ x, y, where: 'ladder island, high' })),
-  ...row(2760, 130, 3, -1590).map(([x, y]) => ({ x, y, where: 'signpost island' })),
-  // Among the mushroom trees on the floor (t0057-t0063, t0100-t0110).
-  ...[
-    [-300, -470], [-120, -560], [60, -500], [240, -610], [420, -480], [600, -560],
-    [1000, -620], [1180, -470], [1700, -520], [1900, -600], [2380, -500],
-  ].map(([x, y]) => ({ x, y, where: 'mushroom trees' })),
+  ...[[789, 995], [1007, 975], [1221, 993], [1435, 979], [1650, 991], [1858, 976], [2087, 989], [2281, 983]].map(([x, y]) => ({ x: tx(x), y: ty(y), where: 'mushroom trees' })),
+  ...trow([1178, 1294, 1408, 1522], 208).map(([x, y]) => ({ x, y, where: 'teal island' })),
+  ...trow([1906, 2020, 2134], 168).map(([x, y]) => ({ x, y, where: 'first yellow island, high' })),
+  ...trow([1851, 1967, 2081, 2195], 276).map(([x, y]) => ({ x, y, where: 'first yellow island' })),
+  ...trow([2510, 2626, 2740, 2854], 215).map(([x, y]) => ({ x, y, where: 'lilac island' })),
+  ...trow([3172, 3286, 3400], 175).map(([x, y]) => ({ x, y, where: 'ladder island, high' })),
+  ...trow([3113, 3229, 3343, 3457], 274).map(([x, y]) => ({ x, y, where: 'ladder island' })),
 ].map((s, i) => Object.freeze({ id: `star_${String(i + 1).padStart(2, '0')}`, ...s })));
 
-/** The three big stars in the island gaps: decoration only (items had one size). */
+/** The three big stars in the island gaps (template ~110 px across): decoration only (items had one size). */
 export const BIG_STARS = Object.freeze([
-  Object.freeze({ x: -50, y: -1290, scale: 2.2 }),
-  Object.freeze({ x: 805, y: -1290, scale: 2.2 }),
-  Object.freeze({ x: 1785, y: -1270, scale: 2.2 }),
+  Object.freeze({ x: tx(1707), y: ty(472), scale: 2.4 }),
+  Object.freeze({ x: tx(2330), y: ty(495), scale: 2.4 }),
+  Object.freeze({ x: tx(3044), y: ty(493), scale: 2.4 }),
 ]);
 
 /** Did an avatar with feet at (px, py) touch the star (both screen space)? */
@@ -175,13 +171,16 @@ export const CRATER_DEPTH = 56;
 /** Bounce: the fungal shroom recipe (gravity x -7.5) held long enough to clear the star grid. */
 export const CRATER_BOUNCE = Object.freeze({ param: 'gravity', value: -7.5, duration: 1400 });
 
+/** The template's eight craters, each under a pale shaft of light: centre and width (template x in `why`). */
 export const CRATERS = Object.freeze([
-  { id: 'c1', x: -1360, w: 520, shaft: true, why: 'under the star grid: the first bounce (t0038-t0046) lands in the grid' },
-  { id: 'c2', x: -660, w: 330, why: 'the smaller crater right of the purple mushroom (f39)' },
-  { id: 'c3', x: 40, w: 380, shaft: true, why: 'in front of the green mushroom trees: she walks in and is thrown up (t0094-t0098)' },
-  { id: 'c4', x: 880, w: 420, why: 'by the twisted shelf tree (t0058-t0063)' },
-  { id: 'c5', x: 1560, w: 400, shaft: true, why: 'by the blue mushroom and the arch: the bounce reaches the lilac island (t0064-t0075)' },
-  { id: 'c6', x: 2230, w: 360, why: 'left of the ladder (t0134)' },
+  { id: 'c1', x: tx(362), w: 395, why: 'under the star grid (template x 165-560): the first bounce lands in the grid' },
+  { id: 'c2', x: tx(784), w: 232, why: 'right of the shelf tree, under the small teal island (template x 668-900)' },
+  { id: 'c3', x: tx(1217), w: 225, why: 'in front of the green mushroom stumps, under the teal island (template x 1105-1330)' },
+  { id: 'c4', x: tx(1652), w: 215, why: 'under the big star (template x 1545-1760)' },
+  { id: 'c5', x: tx(2095), w: 220, why: 'under the first yellow island (template x 1985-2205)' },
+  { id: 'c6', x: tx(2607), w: 385, why: 'under the lilac island (template x 2415-2800)' },
+  { id: 'c7', x: tx(3185), w: 370, why: 'under the ladder island, by the arch (template x 3000-3370)' },
+  { id: 'c8', x: tx(3826), w: 228, why: 'under the signpost island (template x 3712-3940)' },
 ].map((c) => Object.freeze(c)));
 
 function groundPoints() {
@@ -223,14 +222,15 @@ const DECO_SIZE = Object.freeze({
 /** Feet stand a little into the snow or grass. */
 const SINK = 8;
 
+/** The islands as the template draws them: centre x, deco top y and scale from each one's left and right ends (template x in `why`). */
 export const ISLANDS = Object.freeze([
-  { id: 'teal_small', sprite: 'flying_platform_4', x: -1200, top: -1250, s: 0.75, why: 'small teal island above the grid, where the first bounce can land (f41: right of the grid)' },
-  { id: 'lilac_small', sprite: 'flying_platform_5', x: -880, top: -1340, s: 0.8, why: 'small lilac island, one step up (f41 top right, t0106)' },
-  { id: 'teal', sprite: 'flying_platform_3', x: -420, top: -1400, s: 1.0, why: 'first of the top row: snowy mint (minimap 28-41%, t0107-t0110)' },
-  { id: 'yellow_a', sprite: 'flying_platform_6', x: 380, top: -1440, s: 0.9, why: 'lit yellow top (minimap 45-58%, t0111-t0116)' },
-  { id: 'lilac', sprite: 'flying_platform_2', x: 1300, top: -1480, s: 0.9, why: 'the big lilac island with a smaller one under it (minimap 61-76%, t0117-t0121)' },
-  { id: 'yellow_b', sprite: 'flying_platform_1', x: 2200, top: -1460, s: 0.85, why: 'yellow island with the ladder at its right end (t0122-t0131)' },
-  { id: 'yellow_c', sprite: 'flying_platform_6', x: 2960, top: -1470, s: 0.7, flip: true, why: 'the last island, with the Cebarkul signpost (t0128-t0129)' },
+  { id: 'teal_small', sprite: 'flying_platform_4', x: tx(745), top: ty(545), s: 0.505, why: 'small teal island over the second crater (template x 645-845)' },
+  { id: 'lilac_small', sprite: 'flying_platform_5', x: tx(941), top: ty(398), s: 0.68, why: 'small lilac island with a tuft, one step up (template x 828-1055)' },
+  { id: 'teal', sprite: 'flying_platform_3', x: tx(1354), top: ty(318), s: 0.763, why: 'first of the top row: snowy mint (template x 1090-1618)' },
+  { id: 'yellow_a', sprite: 'flying_platform_6', x: tx(2021), top: ty(292), s: 0.62, why: 'lit yellow top (template x 1745-2297)' },
+  { id: 'lilac', sprite: 'flying_platform_2', x: tx(2691), top: ty(288), s: 0.562, why: 'the big lilac island with a smaller one under it (template x 2400-2982)' },
+  { id: 'yellow_b', sprite: 'flying_platform_1', x: tx(3318), top: ty(302), s: 0.593, why: 'yellow island with the ladder at its right end (template x 3040-3597)' },
+  { id: 'yellow_c', sprite: 'flying_platform_6', x: tx(3854), top: ty(327), s: 0.47, flip: true, why: 'the last island, with the Cebarkul signpost, running off the street\'s right end (template x 3645-4000)' },
 ].map((i) => Object.freeze(i)));
 
 const median3 = (a, i) => {
@@ -238,7 +238,7 @@ const median3 = (a, i) => {
   return v[1];
 };
 
-/** An island's walk line: world points left to right. */
+/** An island's walk line: world points left to right, clipped to the street. */
 export function islandPoints(island) {
   const [lw, lh] = DECO_SIZE[island.sprite];
   const w = lw * island.s;
@@ -249,7 +249,8 @@ export function islandPoints(island) {
     const f = 0.05 + i * 0.05;
     const src = island.flip ? prof.length - 1 - i : i;
     const y = island.top + median3(prof, src) * h + SINK;
-    pts.push([Math.round(island.x - w / 2 + f * w), Math.round(y)]);
+    const x = Math.round(island.x - w / 2 + f * w);
+    if (x <= R) pts.push([x, Math.round(y)]);
   }
   return pts;
 }
@@ -271,8 +272,8 @@ const islandById = (id) => ISLANDS.find((i) => i.id === id);
 /* Ladder and signpost                                                 */
 /* ------------------------------------------------------------------ */
 
-export const LADDER = Object.freeze({ id: 'ladder_sym_1', x: 2560, w: 110, island: 'yellow_b', why: 'teal ladder from the floor to the right end of the fourth island (t0130-t0140)' });
-export const SIGNPOST = Object.freeze({ id: 'signpost_sym_1', x: 3080, island: 'yellow_c', why: '"Cebarkul" on a post at the right of the last island (t0128)' });
+export const LADDER = Object.freeze({ id: 'ladder_sym_1', x: tx(3552), w: 70, island: 'yellow_b', why: 'teal ladder from the floor to the right end of the ladder island (template x 3520-3585, y 385-1190)' });
+export const SIGNPOST = Object.freeze({ id: 'signpost_sym_1', x: tx(3835), island: 'yellow_c', why: '"Cebarkul" on a post on the last island (template x 3835)' });
 
 export function ladderGeometry() {
   const top = Math.round(islandYAt(islandById(LADDER.island), LADDER.x) - 10);
@@ -285,74 +286,108 @@ export function ladderGeometry() {
 
 const deco = (sprite, x, y, w, h, z, extra = {}) => ({ sprite, x: Math.round(x), y: Math.round(y), w: Math.round(w), h: Math.round(h), z, r: 0, ...extra });
 
-/** Middleground props: [sprite, world x, bottom y, logical w, h, scale, z, flip]. */
+/** Native size of each prop deco (its WebP). */
+const PROP_SIZE = Object.freeze({
+  zutto_platform_1: [486, 460], zutto_platform_2: [302, 212], zutto_platform_3: [280, 300],
+  purple_mushroom_1: [90, 118], purple_mushroom_2: [42, 96], purple_mushroom_3: [168, 140],
+  tree_4: [508, 236], tree_6: [368, 476], tree_7: [256, 418], tree_8: [512, 842], tree_10: [292, 364],
+  tree_11: [332, 570], tree_12: [320, 362], tree_14: [460, 422], tree_15: [188, 228],
+  zutto_plant_1: [82, 106], zutto_plant_2: [202, 186], zutto_plant_3: [118, 110], plant_giant_fern_1: [86, 188],
+  plant_fern_1: [62, 142], plant_fern_2: [72, 144], plant_fern_4: [58, 154], mushroom_aqua_1: [80, 160],
+  ground_guys: [190, 120], grass_stone_2: [188, 62], liana_2: [102, 316], platform_4: [180, 132],
+  ground_5: [162, 250], ground_6: [214, 250], ground_7: [168, 188], ground_8: [208, 250], ground_9: [366, 254],
+  ground_10: [366, 254], ground_11: [398, 252], ground_13: [200, 228], ground_14: [396, 240], ground_15: [102, 136],
+  snow_plat_01a_al1: [728, 160], snow_plat_01b_al1: [694, 210],
+});
+
+/**
+ * Middleground props off the template: [sprite, template centre x, template
+ * bottom y, width on the template, z, flip, height (when it is not the art's
+ * aspect)], left to right.
+ */
 const PROPS = [
-  // Far left (t0034): a lilac snowy rock bush.
-  ['zutto_platform_1', -2250, -300, 486, 460, 0.8, 20],
-  ['purple_mushroom_3', -2050, -318, 168, 140, 0.7, 41],
-  // The red spotted mushroom over the first crater (f39 x 240).
-  ['tree_15', -1460, -330, 188, 228, 1.6, 30],
-  ['tree_8', -1100, -326, 512, 842, 0.45, 26],
-  ['tree_14', -930, -322, 460, 422, 0.55, 32],
-  ['zutto_plant_2', -1780, -312, 202, 186, 0.6, 44],
-  ['plant_giant_fern_1', -1640, -305, 86, 188, 0.6, 45],
-  ['tree_11', -480, -330, 332, 570, 0.85, 28],
-  // The green mushroom trees with fern spirals and stars on their trunks.
-  ['zutto_platform_3', -150, -322, 280, 300, 1.2, 24],
-  ['zutto_platform_2', 120, -318, 302, 212, 1.1, 33],
-  ['platform_4', 330, -316, 180, 132, 1.3, 36],
-  ['zutto_platform_3', 520, -322, 280, 300, 1.0, 25, true],
-  ['zutto_platform_2', 700, -318, 302, 212, 0.9, 34],
-  ['tree_7', 260, -330, 256, 418, 0.7, 18],
-  // The twisted shelf tree and the stump with a dark doorway (t0058-t0063).
-  ['tree_8', 900, -330, 512, 842, 0.95, 22],
-  ['tree_int_enter', 1030, -320, 920, 1434, 0.4, 35],
-  ['tree_10', 1180, -326, 292, 364, 0.9, 27],
-  ['tree_14', 1310, -322, 460, 422, 0.5, 31],
-  ['tree_12', 1460, -330, 320, 362, 1.1, 29],
-  ['tree_4', 1820, -318, 508, 236, 0.8, 37],
-  ['tree_11', 2060, -330, 332, 570, 0.9, 28],
-  ['tree_13', 2390, -326, 450, 408, 0.8, 26],
-  ['tree_15', 2830, -330, 188, 228, 1.2, 30],
-  ['tree_12', 3150, -330, 320, 362, 0.9, 29],
-  ['tree_6', 3320, -330, 368, 476, 0.7, 23, true],
-  // Small plants along the floor.
-  ['zutto_plant_1', -1250, -312, 82, 106, 1.1, 46],
-  ['zutto_plant_3', -380, -312, 118, 110, 1.1, 46],
-  ['zutto_plant_2', 1250, -312, 202, 186, 0.5, 46],
-  ['purple_mushroom_1', 1680, -316, 90, 118, 1.2, 47],
-  ['zutto_plant_1', 2700, -312, 82, 106, 1.1, 46],
-  ['plant_fern_1', -820, -310, 62, 142, 0.8, 48],
-  ['plant_fern_4', 600, -310, 58, 154, 0.8, 48],
-  ['plant_fern_2', 2000, -310, 72, 144, 0.8, 48],
-  ['purple_mushroom_2', 3000, -316, 42, 96, 1.2, 47],
+  // Template x 0-1000: the snowy blue stumps, the red spotted mushroom, the shelf tree and red caps on the rock ledge, the purple tree.
+  ['zutto_platform_1', 105, 1142, 222, 20],
+  ['purple_mushroom_2', 148, 1130, 20, 41],
+  ['tree_15', 318, 1128, 226, 30],
+  ['tree_8', 552, 1052, 128, 26],
+  ['tree_14', 664, 1032, 124, 32],
+  ['zutto_plant_1', 28, 1162, 50, 44],
+  ['zutto_plant_1', 628, 1132, 42, 44, true],
+  ['zutto_plant_2', 697, 1142, 96, 45],
+  ['zutto_plant_3', 772, 1128, 52, 45],
+  ['tree_11', 882, 1142, 158, 28],
+  ['purple_mushroom_1', 975, 1138, 52, 47],
+  ['plant_fern_1', 860, 1142, 34, 48],
+  ['grass_stone_2', 524, 1162, 72, 46],
+  // Template x 1000-2000: the green mushroom stumps, the glassy blue mushroom, the big shelf tree with its doorway, blue trees.
+  ['zutto_platform_3', 1243, 1112, 246, 24],
+  ['zutto_platform_2', 1515, 1118, 202, 33],
+  ['zutto_platform_3', 1388, 1170, 196, 36],
+  ['mushroom_aqua_1', 1350, 1186, 62, 47],
+  ['plant_fern_4', 1205, 1150, 34, 48],
+  ['plant_fern_2', 1520, 1150, 36, 48],
+  ['tree_7', 1758, 1034, 82, 18],
+  ['tree_10', 1990, 1062, 160, 21],
+  ['tree_8', 1855, 1142, 252, 22],
+  ['zutto_plant_2', 1775, 1272, 110, 49],
+  ['plant_fern_1', 1810, 1150, 34, 48],
+  ['plant_fern_2', 1095, 1272, 34, 49],
+  ['grass_stone_2', 1035, 1262, 72, 46],
+  // Template x 2000-3000: the snowy stump, the green stump, the red caps on the rock ledge, the blue mushroom tree.
+  ['zutto_platform_1', 2090, 1062, 190, 19],
+  ['zutto_platform_3', 2192, 1162, 196, 34],
+  ['zutto_plant_2', 2370, 1112, 100, 45],
+  ['zutto_plant_1', 2515, 1122, 50, 44],
+  ['zutto_plant_1', 2625, 1122, 50, 44, true],
+  ['plant_giant_fern_1', 2548, 1118, 36, 45],
+  ['tree_14', 2782, 1028, 116, 31],
+  ['tree_12', 2895, 1102, 212, 29],
+  ['purple_mushroom_3', 2830, 1138, 80, 47],
+  ['purple_mushroom_3', 2850, 1252, 62, 49, true],
+  ['zutto_plant_3', 2865, 1132, 50, 45],
+  ['zutto_platform_2', 3022, 1152, 196, 33],
+  ['plant_fern_4', 2950, 1262, 36, 49],
+  // Template x 3000-4000: the snowy arch, the purple tree, snowy stumps behind the ladder, blue trees, the eyes, a red cap.
+  ['tree_4', 3185, 1122, 166, 27, false, 104],
+  ['tree_11', 3342, 1132, 158, 28],
+  ['zutto_platform_1', 3492, 1088, 220, 19],
+  ['mushroom_aqua_1', 3445, 1142, 62, 47],
+  ['plant_giant_fern_1', 3502, 1092, 34, 45],
+  ['tree_7', 3620, 1062, 156, 18],
+  ['zutto_plant_2', 3690, 1128, 100, 45],
+  ['zutto_plant_3', 3756, 1128, 40, 45],
+  ['tree_6', 3825, 1042, 92, 25],
+  ['ground_guys', 3830, 1106, 82, 46],
+  ['tree_15', 3975, 1068, 120, 30],
+  ['zutto_platform_2', 3643, 1268, 128, 50],
+  ['purple_mushroom_3', 3720, 1366, 80, 49],
 ];
 
-/** Vines hung under the islands (the islands' own art has some); liana_2 ends in the Snaps' hook. */
+/** Vines hung under the islands, each ending in a hook (liana_2), as the template shows under the lilac and ladder islands. */
 const VINES = [
-  ['liana_2', 1180, -900, 102, 316, 0.7, 8],
-  ['liana_2', 2330, -1010, 102, 316, 0.6, 8, true],
-  ['liana_1', -360, -1210, 332, 436, 0.5, 8],
-  ['liana_5', 300, -1160, 298, 272, 0.6, 8],
-  ['liana_6', 560, -1180, 342, 230, 0.5, 8, true],
-  ['liana_1', 1240, -1000, 332, 436, 0.55, 8, true],
-  ['liana_5', 2100, -1120, 298, 272, 0.6, 8],
-  ['liana_3', 2380, -1150, 456, 362, 0.5, 8],
+  ['liana_2', 2695, 712, 50, 8],
+  ['liana_2', 3278, 634, 46, 8, true],
 ];
+
+/** A prop row to a deco (template to world; height from the art's aspect unless given). */
+function propDeco([sprite, cx, bottom, w, z, flip, h]) {
+  const [lw, lh] = PROP_SIZE[sprite];
+  return deco(sprite, tx(cx), ty(bottom), w, h || (w * lh) / lw, z, flip ? { flip: true } : {});
+}
 
 function middlegroundDecos() {
   const out = [];
-  for (const [sprite, x, y, lw, lh, s, z, flip] of [...PROPS, ...VINES]) {
-    out.push(deco(sprite, x, y, lw * s, lh * s, z, flip ? { flip: true } : {}));
-  }
+  for (const row of [...PROPS, ...VINES]) out.push(propDeco(row));
   for (const isl of ISLANDS) {
     const [lw, lh] = DECO_SIZE[isl.sprite];
     out.push(deco(isl.sprite, isl.x, isl.top + lh * isl.s, lw * isl.s, lh * isl.s, 60, { id: `island_${isl.id}`, ...(isl.flip ? { flip: true } : {}) }));
   }
   // Ladder art: zutto stone ladder tiles stacked from the floor to the island,
-  // each shifted so its two rails line up (rail midpoint measured per tile).
+  // each shifted so its two rails line up (rail midpoint measured per tile),
+  // sized to the template's 65 px wide ladder.
   const lad = ladderGeometry();
-  const k = 0.75;
+  const k = 0.47;
   const step = 100 * k;
   const TILES = {
     ladder_tile_cap_1_stone: [150, 100, 71],
@@ -371,62 +406,34 @@ function middlegroundDecos() {
 }
 
 /**
- * Pale peaks behind the floor, on two parallax layers (G104). The video's
- * client view is ~1,500 x 1,000 world px, so at floor level its peaks fill
- * the lower two thirds and leave navy sky above and between them; the
- * remake's 408 px view would show only their pale feet at full size. So the
- * peaks are drawn small enough for the same framing in 408 px: at the floor
- * the near peaks rise ~150-250 px and the far ones ~200-270 px above the
- * floor's back edge, with navy above and between them. They sink at half
- * to 0.7 of the climb (feet always hidden behind the floor while it is in
- * view), so the star grid has the far peaks in its lower half and the
- * island row has none, as in t0039-t0046 and t0105-t0129.
- * [sprite, height] in order; each deco keeps its art's aspect.
+ * The pale peaks behind the floor, where the template has them: [sprite,
+ * template left x, right x, top y, flip]. They stand on the floor's back
+ * edge (template y 1150, hidden behind it) and move with the street, so
+ * their feet never show.
  */
-const HILL_ASPECT = Object.freeze({
-  bck_hill_1: 598 / 610, bck_hill_2: 1108 / 742, bck_hill_4: 330 / 458, bck_hill_5: 336 / 476,
-  bck_hill_8: 656 / 640, bck_hill_12: 342 / 438, bck_hill_14: 412 / 368, bck_hill_15: 428 / 470,
-  bck_hill_16: 452 / 506, bck_hill_17: 410 / 576,
-});
-const PEAKS_NEAR = [
-  ['bck_hill_14', 200], ['bck_hill_12', 275], ['bck_hill_15', 230], ['bck_hill_2', 190], ['bck_hill_17', 290],
-  ['bck_hill_16', 235], ['bck_hill_5', 255], ['bck_hill_14', 215], ['bck_hill_4', 270], ['bck_hill_15', 205],
-  ['bck_hill_12', 250], ['bck_hill_2', 200], ['bck_hill_16', 280], ['bck_hill_17', 225],
+const PEAKS = [
+  ['bck_hill_2', -10, 560, 760],
+  ['bck_hill_14', 380, 680, 880, true],
+  ['bck_hill_14', 640, 1170, 722],
+  ['bck_hill_2', 1320, 1960, 684],
+  ['bck_hill_14', 2090, 2520, 778],
+  ['bck_hill_14', 2480, 2770, 862, true],
+  ['bck_hill_14', 2990, 3280, 828],
+  ['bck_hill_16', 3200, 3470, 658],
+  ['bck_hill_14', 3690, 4010, 812, true],
 ];
-const PEAKS_FAR = [
-  ['bck_hill_2', 300], ['bck_hill_17', 355], ['bck_hill_8', 310], ['bck_hill_1', 335],
-  ['bck_hill_16', 360], ['bck_hill_2', 290], ['bck_hill_15', 345], ['bck_hill_17', 325],
-];
-/** Vertical parallax rate of the near and far peak layers (1 = moves with the floor). */
-export const PEAK_RATE = Object.freeze({ near: 0.7, far: 0.5 });
-/** Screen y of the peaks' feet with the avatar on the floor (the floor's back edge is ~288). */
-const PEAK_FEET = Object.freeze({ near: 330, far: 390 });
-/** percY with the avatar on the floor (camera y 1582 of 1792 in a 408 px view). */
-const FLOOR_PERC_Y = 1582 / (H - 408);
-
-/** A parallax layer height for a vertical rate (the client's percY rule over a 408 px view). */
-const layerHeightFor = (rate) => Math.round(408 + rate * (H - 408));
-/** Layer y of the peaks' feet, so they stand at `feet` on screen with the avatar on the floor. */
-const peakBase = (rate, feet) => Math.round(feet + FLOOR_PERC_Y * (layerHeightFor(rate) - 408));
-
-/** Peaks laid out left to right in groups of three with a sky gap after each group. */
-function peakDecos(list, { start, step, gap, base, width }) {
-  const out = [];
-  let x = start;
-  let i = 0;
-  while (x < width + step) {
-    const [sprite, h] = list[i % list.length];
-    const w = h * HILL_ASPECT[sprite];
-    out.push(deco(sprite, x, base, w, h, i, i % 3 === 1 ? { flip: true } : {}));
-    i += 1;
-    x += step + (i % 3 === 0 ? gap : 0);
-  }
-  return out;
+const PEAK_FOOT = 1150;
+/** Hills at the template's floor line (screen space: the street's own height, so they keep their place). */
+function peakDecos() {
+  return PEAKS.map(([sprite, x0, x1, top, flip], i) => {
+    const p = screen(tx((x0 + x1) / 2), ty(PEAK_FOOT));
+    return deco(sprite, p.x, p.y, x1 - x0, PEAK_FOOT - top, i, flip ? { flip: true } : {});
+  });
 }
 const SKY = [
-  ['zutto_stars_1', 600, 500, 1777, 455], ['stars_2', 1700, 820, 1374, 383], ['zutto_stars_1', 2600, 380, 1777, 455],
-  ['stars_3', 3200, 700, 396, 260], ['stars_2', 3600, 300, 1374, 383], ['stars_3', 900, 1000, 396, 260],
-  ['zutto_stars_1', 3400, 1050, 1777, 455], ['stars_3', 2100, 1150, 396, 260],
+  ['zutto_stars_1', 420, 345, 1226, 314], ['stars_2', 1170, 565, 948, 264], ['zutto_stars_1', 1790, 262, 1226, 314],
+  ['stars_3', 2210, 483, 273, 179], ['stars_2', 2480, 207, 948, 264], ['stars_3', 620, 690, 273, 179],
+  ['zutto_stars_1', 2345, 724, 1226, 314], ['stars_3', 1450, 793, 273, 179],
 ];
 
 /** Floor layer: mint surface shapes, crater bowls, flower sprinkles (screen space). */
@@ -437,15 +444,16 @@ function floorDecos() {
   let k = 0;
   for (let x = L - 200; x < R + 400; x += 900) {
     const sprite = surfaces[k % surfaces.length];
-    const [lw, lh] = sizes[sprite];
+    const [lw] = sizes[sprite];
     // Bottom edge just over the soil band's frost fringe (G104); the top stays where it was.
     const p = screen(x, FLOOR_BOTTOM_Y);
     out.push(deco(sprite, p.x, p.y, lw * 1.15, FLOOR_BOTTOM_Y + 366, 1 + (k % 3), k % 2 ? { flip: true } : {}));
     k += 1;
   }
+  // The bowls (template: ~0.16 of their width deep, bottoms ~52 px under the walk line).
   for (const c of CRATERS) {
-    const p = screen(c.x, GROUND_Y + CRATER_DEPTH + 20);
-    out.push(deco('cave_gr_hole_1', p.x, p.y, c.w * 0.92, c.w * 0.24, 10, { id: `crater_${c.id}` }));
+    const p = screen(c.x, GROUND_Y + 52);
+    out.push(deco('cave_gr_hole_1', p.x, p.y, c.w, Math.round(c.w * 0.17 + 8), 10, { id: `crater_${c.id}` }));
   }
   // Low mounds along the back edge, so the floor meets the peaks in a ragged line.
   const mounds = [['grass_hill', 786, 146, 0.6], ['hillock_1', 332, 134, 0.6], ['zutto_hill_3', 998, 250, 0.45], ['ground_hill_1', 318, 82, 0.8], ['grass_stone_2', 188, 62, 1.0]];
@@ -460,7 +468,7 @@ function floorDecos() {
   const sprinkles = ['grass_texture_1', 'grass_texture_2', 'grass_texture_3'];
   k = 0;
   for (let x = L + 300; x < R; x += 640) {
-    const p = screen(x + ((k * 137) % 200), -170 - ((k * 53) % 90));
+    const p = screen(x + ((k * 137) % 200), -230 - ((k * 53) % 60));
     out.push(deco(sprinkles[k % 3], p.x, p.y, 375, 55, 20));
     k += 1;
   }
@@ -468,28 +476,25 @@ function floorDecos() {
 }
 
 /**
- * Top of the purple soil band under the mint floor (G104). The Snaps and the
- * video put it ~190 world px under the walk line, below the remake's 408 px
- * view, so the band (squashed to 210 px) is raised to show in the bottom of
- * the view from ~115 px down, as the peaks were scaled down. It is its own
- * layer between the floor base and the pale floor surfaces: the surfaces end
- * at FLOOR_BOTTOM_Y over its mint cap, so only the frost fringe and the
- * purple soil show under them (the cap's unfiltered teal would not match the
- * filtered floor).
+ * Top of the purple soil band under the mint floor (G104), the floor's front
+ * edge at template y 1293 and the soil down to the street's bottom. It is
+ * its own layer between the floor base and the pale floor surfaces: the
+ * surfaces end at FLOOR_BOTTOM_Y over its mint cap, so only the frost fringe
+ * and the purple soil show under them.
  */
 export const SOIL_TOP_Y = GROUND_Y + 55;
-const SOIL_H = 210;
+const SOIL_H = 262;
 /** Bottom edge of the floor surfaces (world y), a little under a crater's bowl (GROUND_Y + 76). */
 export const FLOOR_BOTTOM_Y = GROUND_Y + 105;
 
-/** Music-note burrows: zutto1.swf ground_large_2's top (tools/symphonious-maximus-art.py --soil), world centre x. */
+/** Music-note burrows: zutto1.swf ground_large_2's top (tools/symphonious-maximus-art.py --soil), world centre x (template notes at x 1310 and 3430). */
 export const SOIL_NOTES = Object.freeze([
-  Object.freeze({ x: -420, why: 'between the two left craters (Snap 248938: under the floor near a crater)' }),
-  Object.freeze({ x: 2760, why: 'right of the ladder' }),
+  Object.freeze({ x: tx(1310), why: 'a note in the soil under the green stumps (template x 1310)' }),
+  Object.freeze({ x: tx(3430), why: 'a note in the soil under the purple tree (template x 3430)' }),
 ]);
 export const SOIL_NOTE_ART = Object.freeze({ file: 'assets/sprites/symphonious/ground_large_2_top@2x.webp', w: 420, h: 128, dy: 12 });
-/** Striped caterpillars in the soil (ground_caterpillar), world x: one beside each note as in the Snap, one more. */
-export const SOIL_CATERPILLARS = Object.freeze([-250, 1300, 2930]);
+/** Striped caterpillars in the soil (ground_caterpillar), world x: the template's one, and two more as in the Snaps. */
+export const SOIL_CATERPILLARS = Object.freeze([tx(1442), tx(2620), tx(3560)]);
 
 /**
  * The soil band with its frost fringe (layer T_sym_soil, screen space):
@@ -508,9 +513,70 @@ function soilDecos() {
   }
   SOIL_CATERPILLARS.forEach((x, i) => {
     const p = screen(x, SOIL_TOP_Y + 66 + 68);
-    out.push(deco('ground_caterpillar', p.x, p.y, 76, 68, 4, i % 2 ? { flip: true } : {}));
+    out.push(deco('ground_caterpillar', p.x, p.y, 62, 56, 4, i % 2 ? { flip: true } : {}));
   });
   return out;
+}
+
+/**
+ * The lower tier under the floor's front edge: teal-capped ground chunks
+ * and their plants, the eyes peeking out (template y 1300-1500), as
+ * [sprite, template centre x, top y, width, flip]. The chunks run on down
+ * past the street's bottom.
+ */
+const LOWER_CHUNKS = [
+  ['ground_14', 155, 1408, 250], ['ground_13', 292, 1354, 154, true], ['ground_8', 812, 1430, 120], ['ground_9', 930, 1374, 140, true],
+  ['ground_7', 1070, 1354, 140], ['ground_13', 1335, 1368, 120, true], ['ground_10', 1628, 1364, 145], ['ground_6', 1595, 1440, 130],
+  ['ground_9', 1835, 1374, 130, true], ['ground_15', 1945, 1440, 110], ['ground_5', 2215, 1300, 150], ['ground_15', 2285, 1434, 110, true],
+  ['ground_11', 2435, 1384, 250], ['ground_13', 2910, 1394, 140], ['ground_14', 3140, 1330, 280, true], ['ground_7', 3110, 1400, 100],
+  ['ground_11', 3610, 1340, 380], ['ground_15', 3485, 1410, 110, true],
+];
+/** Pale pink snow mounds on the lower tier (their own tinted layer): [sprite, centre x, top y, width, height]. */
+const LOWER_SNOW = [
+  ['snow_plat_01a_al1', 92, 1262, 190, 80], ['snow_plat_01b_al1', 724, 1350, 270, 120], ['snow_plat_01a_al1', 2590, 1428, 180, 70],
+  ['snow_plat_01a_al1', 2665, 1355, 140, 60], ['snow_plat_01b_al1', 3770, 1388, 230, 92], ['snow_plat_01b_al1', 3905, 1324, 200, 100],
+];
+/** Plants and the eyes on the lower tier: [sprite, centre x, bottom y, width, flip]. */
+const LOWER_PLANTS = [
+  ['ground_guys', 175, 1422, 72], ['plant_fern_1', 48, 1402, 36], ['plant_fern_4', 300, 1372, 36], ['platform_4', 438, 1556, 210],
+  ['plant_fern_2', 920, 1372, 40], ['plant_giant_fern_1', 1610, 1402, 30], ['ground_guys', 1730, 1446, 64, true],
+  ['plant_fern_1', 1860, 1382, 32], ['plant_fern_4', 2330, 1390, 36], ['purple_mushroom_3', 2445, 1392, 70],
+  ['plant_giant_fern_1', 2890, 1400, 34], ['plant_fern_2', 3480, 1408, 36],
+];
+
+function lowerDecos() {
+  const out = [];
+  let z = 1;
+  for (const [sprite, cx, top, w, flip] of LOWER_CHUNKS) {
+    const [lw, lh] = PROP_SIZE[sprite];
+    const h = (w * lh) / lw;
+    const p = screen(tx(cx), ty(top) + h);
+    out.push(deco(sprite, p.x, p.y, w, h, z++, flip ? { flip: true } : {}));
+  }
+  for (const [sprite, cx, bottom, w, flip] of LOWER_PLANTS) {
+    const [lw, lh] = PROP_SIZE[sprite];
+    const p = screen(tx(cx), ty(bottom));
+    out.push(deco(sprite, p.x, p.y, w, (w * lh) / lw, z++, flip ? { flip: true } : {}));
+  }
+  return out;
+}
+
+function lowerSnowDecos() {
+  return LOWER_SNOW.map(([sprite, cx, top, w, h], i) => {
+    const p = screen(tx(cx), ty(top) + h);
+    return deco(sprite, p.x, p.y, w, h, i, i % 2 ? { flip: true } : {});
+  });
+}
+
+/** The rock ledges behind the floor that trees stand on (template: mint tops at y 1030-1040), as [sprite, centre x, top y, width]. */
+const BACK_LEDGES = [['ground_9', 605, 1032, 292], ['ground_10', 1705, 1002, 196], ['ground_9', 2710, 1038, 220], ['ground_14', 3815, 1040, 180]];
+function backLedgeDecos() {
+  return BACK_LEDGES.map(([sprite, cx, top, w], i) => {
+    const [lw, lh] = PROP_SIZE[sprite];
+    const h = (w * lh) / lw;
+    const p = screen(tx(cx), ty(top) + h);
+    return deco(sprite, p.x, p.y, w, h, i);
+  });
 }
 
 /* ------------------------------------------------------------------ */
@@ -525,15 +591,15 @@ export const ORB_SHAPE = Object.freeze({ disc: 0.68, gap: 0.81, ringAlpha: 0.4, 
 /** A slow drift (the video's orbs float; the Snaps freeze them): px and period. */
 export const ORB_DRIFT = Object.freeze({ amp: 10, periodMs: 7000 });
 /**
- * Orbs: world x, height above the floor, outer radius R. Ring diameters in
- * the Snaps run ~15-47 Snap px (~36-113 world px at ~2.4 world px per Snap
- * px); they sit among the treetops and under the islands, clear of the stars.
+ * Orbs where the template has them: template centre x, y and the white
+ * disc's diameter (the outer ring R is the disc / 1.36). Two over the left
+ * end, the rest among the treetops and under the islands to the right.
  */
 export const GLOW_ORBS = Object.freeze([
-  [-2150, 520, 34], [-1900, 230, 22], [-1660, 470, 46], [-860, 640, 28], [-560, 740, 40], [-250, 680, 52],
-  [150, 640, 24], [480, 250, 44], [800, 560, 30], [1150, 260, 26], [1600, 380, 48], [2000, 520, 36],
-  [2440, 250, 24], [2800, 600, 50], [3150, 240, 30], [3300, 760, 20],
-].map(([x, up, r]) => Object.freeze({ x, y: GROUND_Y - up, r })));
+  [739, 381, 15], [939, 262, 21], [2436, 985, 32], [2513, 842, 15], [2599, 949, 38], [2687, 843, 21],
+  [2968, 693, 32], [3038, 950, 15], [3121, 599, 21], [3128, 783, 26], [3234, 946, 38], [3279, 686, 26],
+  [3685, 755, 38], [3726, 938, 32], [3810, 638, 21], [3816, 850, 43], [3921, 942, 26], [3946, 760, 15],
+].map(([x, y, d]) => Object.freeze({ x: tx(x), y: ty(y), r: Math.round(d / (2 * ORB_SHAPE.disc)) })));
 
 /** Floor base: one opaque white block tinted the video's floor mint, so no sky shows between the surface shapes. */
 function floorBaseDecos() {
@@ -542,21 +608,22 @@ function floorBaseDecos() {
 }
 
 /**
- * Light shafts over three craters: the cone turned over (rotated about its
+ * Light shafts over the craters: the cone turned over (rotated about its
  * top), so it fades out upward and its hard narrow end sits behind the floor.
- * Its own layer between the peaks and the floor (screen space).
+ * Its own layer between the peaks and the floor (screen space). The
+ * template's shafts are pale boxes about as wide as their crater, ~500 px tall.
  */
 function shaftDecos() {
-  return CRATERS.filter((c) => c.shaft).map((c) => {
-    const top = screen(c.x, -1300);
+  return CRATERS.map((c) => {
+    const top = screen(c.x, GROUND_Y - 520);
     const bottom = screen(c.x, GROUND_Y + 10);
-    return deco('cave_shaft_light_1', top.x, top.y, 700, bottom.y - top.y, 0, { r: 180 });
+    return deco('cave_shaft_light_1', top.x, top.y, Math.round(c.w * 1.5), bottom.y - top.y, 0, { r: 180 });
   });
 }
 
 /** Sky fade: object_floor_fade turned over (opaque at the top) and tinted violet. */
 function skyFadeDecos() {
-  return [deco('object_floor_fade', W / 2, 0, W + 400, 1500, 0, { r: 180 })];
+  return [deco('object_floor_fade', W / 2, 0, W + 400, 1000, 0, { r: 180 })];
 }
 
 function parallaxLayer(id, name, z, w, h, decos, filters = null) {
@@ -564,21 +631,17 @@ function parallaxLayer(id, name, z, w, h, decos, filters = null) {
 }
 
 function layers() {
-  const nearW = Math.round(W * 0.88);
-  const farW = Math.round(W * 0.72);
-  const skyW = Math.round(W * 0.62);
-  const nearH = layerHeightFor(PEAK_RATE.near);
-  const farH = layerHeightFor(PEAK_RATE.far);
-  const near = peakDecos(PEAKS_NEAR, { start: 80, step: 250, gap: 260, base: peakBase(PEAK_RATE.near, PEAK_FEET.near), width: nearW });
-  const far = peakDecos(PEAKS_FAR, { start: 220, step: 340, gap: 300, base: peakBase(PEAK_RATE.far, PEAK_FEET.far), width: farW });
+  const skyW = Math.round(W * 0.8);
   return [
     parallaxLayer('T_sym_skyfade', 'sky fade', -9, W, H, skyFadeDecos(), { tintColor: 0x1b0d33, tintAmount: 100 }),
-    parallaxLayer('sky', 'sky', -8, skyW, Math.round(H * 0.8), SKY.map(([s, x, y, w, h], i) => deco(s, x, y, w, h, i))),
-    parallaxLayer('bg_peaks_far', 'far peaks', -7, farW, farH, far, { brightness: -25, saturation: -15 }),
-    parallaxLayer('bg_peaks', 'peaks', -6, nearW, nearH, near, { brightness: -8 }),
+    parallaxLayer('sky', 'sky', -8, skyW, Math.round(H * 0.9), SKY.map(([s, x, y, w, h], i) => deco(s, x, y, w, h, i))),
+    parallaxLayer('T_sym_peaks', 'peaks', -6, W, H, peakDecos(), { brightness: -8 }),
     parallaxLayer('T_sym_shafts', 'light shafts', -4, W, H, shaftDecos()),
+    parallaxLayer('T_sym_ledges', 'rock ledges', -3.5, W, H, backLedgeDecos(), { brightness: 10, saturation: -20 }),
     parallaxLayer('T_sym_floorbase', 'floor base', -3, W, H, floorBaseDecos(), { tintColor: 0x8dc3cb, tintAmount: 100 }),
-    parallaxLayer('T_sym_soil', 'soil', -2.5, W, H, soilDecos(), { brightness: 12, saturation: -15 }),
+    parallaxLayer('T_sym_soil', 'soil', -2.5, W, H, soilDecos(), { brightness: 30, saturation: -15 }),
+    parallaxLayer('T_sym_lower', 'lower tier', -2.3, W, H, lowerDecos(), { brightness: 10, saturation: -20 }),
+    parallaxLayer('T_sym_lower_snow', 'lower tier snow', -2.2, W, H, lowerSnowDecos(), { tintColor: 0xeab4c6, tintAmount: 70 }),
     parallaxLayer('T_sym_floor', 'floor', -2, W, H, floorDecos(), { saturation: -40, brightness: 50 }),
     { id: 'middleground', name: 'middleground', z: 0, w: W, h: H, decos: middlegroundDecos() },
   ];
@@ -666,10 +729,10 @@ export function symphoniousStreet({ cebarkulArrive = null } = {}) {
     soilArt: SOIL_NOTES.map((n) => ({ file: SOIL_NOTE_ART.file, ...screen(n.x, SOIL_TOP_Y + SOIL_NOTE_ART.dy), w: SOIL_NOTE_ART.w, h: SOIL_NOTE_ART.h })),
     why: {
       street: 'inc_data_maps_prod.js 16034 (hub 51); no location XML. Cebarkul door_1354232290656 (2012-11-30) arrives at -1925,-312.',
-      layout: 'Video 7SzDOzodeDQ t0012-t0175 at 2.36 world px per video px, with its minimap and loading card for the whole street.',
-      stars: 'items/toy_star_1.js Star-Jingler-mid: touch plays BIG_STAR_3 and sets state glow (the SWF\'s 29-frame cycle); placements from the video.',
+      layout: 'The stitched 2012 full-street template (FullStreetTemplates/Uralia/Symphonious Maximus.png, 4000 x 1500 at 1:1): every star, crater, island, tree, orb and peak, and the lower tier of ground chunks.',
+      stars: 'items/toy_star_1.js Star-Jingler-mid: touch plays BIG_STAR_3 and sets state glow (the SWF\'s 29-frame cycle); the 48 placements off the template.',
       craters: 'Inferred from the video: walking into a crater throws the avatar into the sky. Rebuilt as event boxes with the fungal bounce recipe.',
-      orbs: 'Snaps 248938/248947/248953 (Dec 2012): white discs with a pale ring halo; clean vectors (no CC0 art), drawn by the feature.',
+      orbs: 'Snaps 248938/248947/248953 (Dec 2012): white discs with a pale ring halo; clean vectors (no CC0 art), drawn by the feature; the 18 placements off the template.',
       soil: 'Snap 248938: purple hexagon soil under the mint floor with a music-note burrow (zutto1 ground_large_2) and a striped caterpillar (ground_caterpillar).',
       ladder: LADDER.why,
       signpost: SIGNPOST.why,
