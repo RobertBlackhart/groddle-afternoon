@@ -3008,6 +3008,10 @@ button.play-context-head:focus-visible {
 .pack-bag-opener i { display: none; }
 /* G656: full, in the accent, so 16 of 16 never looks like 15 of 16. */
 .pack-bag-opener.is-full { background: var(--accent); }
+/* G1193: and a dark backdrop behind the full bag and its bar, so it shows across the row (Modern only:
+   Classic prints the count). Open or not; the open bag's gold ring still shows on it. */
+[data-ui="modern"] .pack-slots .pack-slot.pack-bag.is-bag-full { background: var(--c-navy-26); }
+[data-ui="modern"] .pack-slots .pack-slot.pack-bag.is-bag-full:hover { background: color-mix(in srgb, var(--c-navy-26) 82%, var(--surface-parchment)); }
 /* #524: the open bag is marked in the row: a gold ring and glow (the route signpost's glow colour,
    MapHub.as 72) and a caret up to its tray. Glitch drew the open bag's slot in its tray's colour, joined
    to the tray above it (PackSlot.as drawFullBox 119-141); Modern's tray floats, so the caret points to it. */

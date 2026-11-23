@@ -16,11 +16,18 @@ const classic = readFileSync(join(pub, 'css', 'classic.css'), 'utf8');
 
 describe('a full bag reads full at a glance', () => {
   it('marks the opener is-full at capacity', () => {
-    assert.match(game, /opener\.classList\.toggle\('is-full', s\.bag\.capacity > 0 && s\.bag\.used >= s\.bag\.capacity\);/);
+    assert.match(game, /const bagFull = s\.bag\.capacity > 0 && s\.bag\.used >= s\.bag\.capacity;\s*opener\.classList\.toggle\('is-full', bagFull\);/);
   });
 
   it('Modern colours a full bar with the accent; Classic keeps its count strip', () => {
     assert.match(style, /\n\.pack-bag-opener\.is-full \{ background: var\(--accent\); \}/);
     assert.ok(!classic.includes('is-full'), 'Classic shows the count instead');
+  });
+
+  it('G1193: Modern puts a dark backdrop behind a full bag, and says full to a screen reader', () => {
+    assert.match(game, /slot\.classList\.toggle\('is-bag-full', bagFull\);/);
+    assert.match(game, /if \(bagFull && slot\.getAttribute\('aria-label'\)\) slot\.setAttribute\('aria-label', `\$\{slot\.getAttribute\('aria-label'\)\}, full`\);/);
+    assert.match(style, /\n\[data-ui="modern"\] \.pack-slots \.pack-slot\.pack-bag\.is-bag-full \{ background: var\(--c-navy-26\); \}/);
+    assert.ok(!classic.includes('is-bag-full'), 'Classic keeps its count strip');
   });
 });
