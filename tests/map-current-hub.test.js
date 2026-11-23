@@ -12,7 +12,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { MAP_TRAIL_MAX, findCurrentStreet, noteMapTrail, pickMapSpot } from '../public/js/map-graph.js?v=c3586fa9';
+import { MAP_TRAIL_MAX, findCurrentStreet, noteMapTrail, pickMapSpot } from '../public/js/map-graph.js?v=b035dfb3';
 import { CAR_TSID, STATIONS, stationById } from '../public/js/subway.js?v=0a87a908';
 import { subwayFeature } from '../public/js/features/subway-feature.js?v=132275da';
 

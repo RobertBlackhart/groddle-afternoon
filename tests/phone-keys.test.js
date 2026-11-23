@@ -12,7 +12,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { minimapOffOnDevice } from '../public/js/features/street-minimap-feature.js?v=252a33c5';
-import { hubMapSubtitle } from '../public/js/panel-copy.js?v=85c3e029';
+import { hubMapSubtitle } from '../public/js/panel-copy.js?v=f854d1dd';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

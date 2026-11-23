@@ -7067,17 +7067,49 @@ body.buff-purple-pulse::after {
   stroke-width: calc(9px * var(--map-line-k, 1));
   opacity: 0.85; /* MapStreet.as 18 HIGHLIGHT_ALPHA */
 }
-/* Ticket 66: under construction (MapStreet.as: a locked street paler, its name dimmed), with stripes. */
-.map-seg.travelable.building { opacity: 0.6; }
-.map-seg-stripes {
-  stroke: var(--c-sand-24);
-  stroke-width: calc(7px * var(--map-line-k, 1));
-  stroke-dasharray: calc(5px * var(--map-line-k, 1)) calc(6px * var(--map-line-k, 1));
-  opacity: 0.55;
+/* Ticket 66: under construction (MapStreet.as: a locked street paler, its name dimmed). The look is
+   ours: #626, dashed stripes read as Glitch's unvisited dots on a phone, so it is one unbroken blue
+   road on a dark edge with a road-works diamond at its middle (.map-project-mark), nothing dotted.
+   Blue, not orange: the route you set is the orange road (map-routes-feature.js MAP_ROUTE_CSS). */
+.map-seg.travelable.building {
+  stroke: var(--c-blue-74);
+  stroke-width: calc(5px * var(--map-line-k, 1));
+  stroke-linecap: butt;
+  opacity: 1;
+}
+.map-seg-edge {
+  stroke: var(--c-navy-26);
+  stroke-width: calc(8px * var(--map-line-k, 1));
+  stroke-linecap: butt;
   fill: none;
+  opacity: 0.85;
   pointer-events: none;
 }
-.map-street.building:hover .map-seg-stripes { stroke-width: calc(9px * var(--map-line-k, 1)); }
+.map-street.travelable.building:hover .map-seg.travelable.building,
+.map-street.travelable.building.is-hot .map-seg.travelable.building {
+  stroke: var(--c-teal-83);
+  stroke-width: calc(6px * var(--map-line-k, 1));
+  opacity: 1;
+}
+.map-street.building:hover .map-seg-edge,
+.map-street.building.is-hot .map-seg-edge { stroke-width: calc(10px * var(--map-line-k, 1)); }
+.map-project-mark { pointer-events: none; }
+.hub-map-svg .map-project-mark > * {
+  transform-box: fill-box;
+  transform-origin: center;
+  transform: scale(var(--map-mark-k, 1));
+}
+.map-project-sign {
+  fill: var(--c-blue-74);
+  stroke: var(--c-navy-26);
+  stroke-width: 1.6px;
+  stroke-linejoin: round;
+}
+.map-project-bar {
+  stroke: var(--c-navy-26);
+  stroke-width: 2px;
+  stroke-linecap: round;
+}
 /* #526: a street you have not been to has no road, only dots (MapStreet.as 51-63, showDots 142-155):
    black, radius 2.5 every 8 (2 x 2.5 + 3 padd), the first one 2.5 in from the end. Glitch drew them
    at 0.4 of the street's alpha (0.28), which vanished on dark paintings such as Kloro's (#571): ours

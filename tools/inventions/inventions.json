@@ -4990,19 +4990,28 @@
   },
   {
    "id": "map-building-no-dots",
-   "title": "A street under construction keeps its striped road on the hub map instead of Glitch's unvisited dots (#526).",
+   "title": "A street under construction is drawn on the hub map as an unbroken blue road on a dark edge with a road-works diamond at its middle, never Glitch's unvisited dots (#526, #626).",
    "kind": "UI",
    "status": "proposed",
    "where": [
     {
      "file": "public/js/map-graph.js",
      "symbol": "unvisited building"
+    },
+    {
+     "file": "public/style.css",
+     "symbol": ".map-seg.travelable.building"
+    },
+    {
+     "file": "public/js/panel-copy.js",
+     "symbol": "hubMapSubtitle"
     }
    ],
-   "why": "Glitch dotted every unvisited street (MapStreet.as 51-63); with our construction stripes (ticket 66) dots over stripes read as a second kind of dotted street, and no one can have walked a closed street.",
+   "why": "Glitch dotted every unvisited street (MapStreet.as 51-63) and drew a locked street only paler (LOCKED_ALPHA .6). Our construction state (ticket 66) needs its own look: the first dashed stripes read as a second kind of dotted street, and on a phone players took built streets not yet walked (dotted, as Glitch) for projects (#626). The blue road and diamond share nothing with the dots (blue, as the route you set is orange), and the Map's key line names both.",
    "ruling": "Claude's default in lane checkb, told Austin 2026-11-19; his call if he wants them dotted",
    "rows": [
-    "G1038"
+    "G1038",
+    "G1179"
    ]
   },
   {

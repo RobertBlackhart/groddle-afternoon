@@ -26,7 +26,7 @@ import { homePoolMpFeature } from '../public/js/features/home-pool-mp-feature.js
 import { qurazyFeature, resetQurazyFeatureForTests } from '../public/js/features/qurazy-feature.js?v=5b025eca';
 import { QURAZY_SPAWN_LINE } from '../public/js/qurazy.js?v=ccced38d';
 import { QURAZY_PLACEMENT_GROUP } from '../public/js/features/qurazy-feature.js?v=5b025eca';
-import { hubMapArtNote, hubMapSubtitle, questLogSummary } from '../public/js/panel-copy.js?v=85c3e029';
+import { hubMapArtNote, hubMapSubtitle, questLogSummary } from '../public/js/panel-copy.js?v=f854d1dd';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => readFileSync(join(root, rel), 'utf8');

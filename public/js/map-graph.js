@@ -928,14 +928,15 @@ export function renderHubMapSvg(view) {
   for (const s of view.streets || []) {
     if (!s.loaded || s.hidden) continue;
     // Ticket 66: a street still under construction (`building`, the street-jobs feature) is drawn
-    // fainter with construction stripes, as the client drew a locked street paler with a dimmed
-    // name (MapStreet.as 16-20, 53-55, 125: STREET_LOCKED 'SL', location.js 2880-2935); its menu
-    // still opens and says where to help build it.
+    // set apart, as the client drew a locked street paler with a dimmed name (MapStreet.as 16-20,
+    // 53-55, 125: STREET_LOCKED 'SL', location.js 2880-2935); its menu still opens and says where
+    // to help build it.
     const building = Boolean(s.building && !s.current);
     // #526: a street you have not been to is a row of dots, not a road (MapStreet.as 51-63, showDots
     // 142-155); the street you are on counts as visited (MapHub.as 559-562). game.js sets `unvisited`.
-    // A street under construction keeps its striped road (ours, ticket 66): stripes over dots read
-    // as a second kind of dotted street, and no one has walked it yet anyway.
+    // A street under construction is ours (ticket 66): a solid blue road on a dark edge with a
+    // project sign at its middle (#626: the old dashed stripes read as Glitch's dots on a phone, so
+    // built streets not yet walked looked like projects), never dotted; no one has walked it anyway.
     const unvisited = Boolean(s.unvisited && !s.current && !building);
     const cls = s.current ? 'map-seg current' : `map-seg travelable${building ? ' building' : ''}${unvisited ? ' unvisited' : ''}`;
     const travelTsid = s.loadedTsid || s.tsid;
@@ -947,8 +948,8 @@ export function renderHubMapSvg(view) {
         (building ? `<title>${escapeXml(s.label)}: under construction</title>` : '') +
         // #571: the dots wear a pale ring so they read on dark paintings (Kloro) as on light ones.
         (unvisited ? `<line class="map-seg-ring" x1="${s.x1}" y1="${s.y1}" x2="${s.x2}" y2="${s.y2}"/>` : '') +
+        (building ? `<line class="map-seg-edge" x1="${s.x1}" y1="${s.y1}" x2="${s.x2}" y2="${s.y2}"/>` : '') +
         `<line class="${cls}" x1="${s.x1}" y1="${s.y1}" x2="${s.x2}" y2="${s.y2}"/>` +
-        (building ? `<line class="map-seg-stripes" x1="${s.x1}" y1="${s.y1}" x2="${s.x2}" y2="${s.y2}"/>` : '') +
         `<line class="map-seg-hit" x1="${s.x1}" y1="${s.y1}" x2="${s.x2}" y2="${s.y2}"/>` +
         `</g>`
     );
@@ -962,6 +963,19 @@ export function renderHubMapSvg(view) {
       `<text class="${lab.cls}"${lab.seg ? ` data-segment="${escapeXml(lab.seg)}"` : ''} x="${lab.x.toFixed(1)}" y="${lab.y.toFixed(1)}" text-anchor="middle" ` +
         `transform="rotate(${lab.rot.toFixed(1)} ${lab.x.toFixed(1)} ${lab.y.toFixed(1)})" ` +
         `filter="url(#labelHalo)">${escapeXml(lab.name)}</text>`
+    );
+  }
+
+  // #626: the project sign at the middle of each street being built (ticket 66), over its name so it
+  // always shows: a road-works diamond, not a dot. Clicks pass through to the street.
+  for (const s of view.streets || []) {
+    if (!s.loaded || s.hidden || !s.building || s.current) continue;
+    const f = (n) => Number(Number(n).toFixed(1));
+    parts.push(
+      `<g class="map-project-mark" data-segment="${escapeXml(s.tsid)}" transform="translate(${f(s.mx)} ${f(s.my)})">` +
+        `<polygon class="map-project-sign" points="0,-8 8,0 0,8 -8,0"/>` +
+        `<line class="map-project-bar" x1="-3.2" y1="0" x2="3.2" y2="0"/>` +
+        `</g>`
     );
   }
 

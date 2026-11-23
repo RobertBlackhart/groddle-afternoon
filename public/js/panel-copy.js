@@ -11,13 +11,22 @@
 
 /**
  * The Map subtitle: streets, playable streets and how to use the map. `touch` (a phone, html.touch-phone)
- * says tap for click.
+ * says tap for click. #626: when the map shows them, its key also names Glitch's dots (a street you have
+ * not been to, MapStreet.as showDots) and the blue road of a street being built (ticket 66), so a
+ * built street not yet walked is not taken for a project.
  */
 export function hubMapSubtitle(view, { touch = false } = {}) {
   // The streets the map draws (map-graph.js buildHubMapView `hidden`: not the Start streets or towers).
   const streets = (Array.isArray(view?.streets) ? view.streets : []).filter((s) => !s.hidden);
   const playable = streets.filter((s) => s.loaded).length;
-  return `${streets.length} streets · ${playable} playable here · ${touch ? 'tap' : 'click'} a street to set a destination or teleport · red star = you`;
+  // As map-graph.js renderHubMapSvg draws them: only playable streets, never the one you are on.
+  const drawn = streets.filter((s) => s.loaded && !s.current);
+  const building = drawn.some((s) => s.building);
+  const unvisited = drawn.some((s) => s.unvisited && !s.building);
+  const key = ['red star = you'];
+  if (unvisited) key.push('dots = not visited yet');
+  if (building) key.push('blue = being built');
+  return `${streets.length} streets · ${playable} playable here · ${touch ? 'tap' : 'click'} a street to set a destination or teleport · ${key.join(' · ')}`;
 }
 
 /** QA only (data-map-art on the subtitle): whether the region has painted art. */

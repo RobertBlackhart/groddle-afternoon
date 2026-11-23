@@ -10,7 +10,7 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { renderHubMapSvg } from '../public/js/map-graph.js?v=c3586fa9';
+import { renderHubMapSvg } from '../public/js/map-graph.js?v=b035dfb3';
 
 const root = join(import.meta.dirname, '..');
 const street = (tsid, name, extra = {}) => ({ tsid, name, label: name, loaded: true, loadedTsid: tsid, x1: 100, y1: 100, x2: 300, y2: 120, mx: 200, my: 110, ...extra });
@@ -34,9 +34,9 @@ describe('#526: unvisited streets are dotted on the Map', () => {
     assert.match(svg, /data-tsid="GA1"[^>]*data-ctx="map-street"[^>]*>(?:(?!<\/g>).)*map-seg-hit/);
   });
 
-  it('a street under construction keeps its striped road (stripes over dots read as a second dotted kind); its name still dims', () => {
+  it('a street under construction keeps its own orange road, never dotted (#626); its name still dims', () => {
     const svg = svgOf([street('GA1', 'Camsteeple Strat', { unvisited: true, building: true })]);
-    assert.match(svg, /<line class="map-seg travelable building"[^>]*\/><line class="map-seg-stripes"/);
+    assert.match(svg, /<line class="map-seg-edge"[^>]*\/><line class="map-seg travelable building"/);
     assert.doesNotMatch(svg, /map-seg[^"]*unvisited/);
     assert.doesNotMatch(svg, /map-seg-ring/);
     assert.match(svg, /class="map-label loaded building unvisited"/);
