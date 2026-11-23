@@ -27,41 +27,41 @@
     4662,
     62
    ],
-   "src_sha": "1429cb4e0d49f369",
+   "src_sha": "5c36203b19b658f0",
    "res": 0.873,
    "size": [
     4070,
     54
    ],
    "size_error": 0.1443,
-   "bytes": 30670,
+   "bytes": 6250,
    "lossless": false,
-   "err": 2.48,
-   "sha": "0afb1ec203881976"
+   "err": 2.46,
+   "sha": "380595904e8e1233"
   },
   "apartment_xsection_top_1": {
    "size2": [
     4656,
     62
    ],
-   "src_sha": "de97d20f063c9ffb",
+   "src_sha": "0c20c8c8c9f1490c",
    "res": 0.872,
    "size": [
     4060,
     54
    ],
    "size_error": 0.0734,
-   "bytes": 31686,
+   "bytes": 6222,
    "lossless": false,
    "err": 2.43,
-   "sha": "49f4c65a32c06e2f"
+   "sha": "13e7eddf2501e09c"
   },
   "blur_landscape_piece_01": {
    "size2": [
     4350,
     2188
    ],
-   "src_sha": "2225d6f0d62c42f0",
+   "src_sha": "4d48d280f6c50569",
    "res": 0.937,
    "size": [
     4076,
@@ -71,126 +71,126 @@
    "bytes": 199620,
    "lossless": false,
    "err": 0.0,
-   "sha": "1ba662c757b9c492"
+   "sha": "7b252be5a8bbeb5e"
   },
   "blur_landscape_piece_02": {
    "size2": [
     5004,
     1920
    ],
-   "src_sha": "3b678d9794ed86e4",
+   "src_sha": "56bdc80f2aea1949",
    "res": 0.8,
    "size": [
     4003,
     1536
    ],
    "size_error": 0.25,
-   "bytes": 185058,
+   "bytes": 185042,
    "lossless": false,
    "err": 0.0,
-   "sha": "07082651872bc281"
+   "sha": "1cca14a761beeb4a"
   },
   "bureaucratic_hall_bg": {
    "size2": [
     4425,
     1400
    ],
-   "src_sha": "4e85b32942c6ff45",
+   "src_sha": "bf6eb4ef560973c5",
    "res": 0.925,
    "size": [
     4093,
     1295
    ],
    "size_error": 0.1351,
-   "bytes": 280246,
+   "bytes": 276852,
    "lossless": false,
-   "err": 0.97,
-   "sha": "051de88e12448a6b"
+   "err": 1.04,
+   "sha": "71e13dc37ac5e847"
   },
   "cityscape_asset_01": {
    "size2": [
     4972,
     1780
    ],
-   "src_sha": "27d39dca76b8b03d",
+   "src_sha": "d9bf26f2c090c07e",
    "res": 0.823,
    "size": [
     4092,
     1465
    ],
    "size_error": 0.0729,
-   "bytes": 87916,
+   "bytes": 88288,
    "lossless": false,
    "err": 0.26,
-   "sha": "8fd693916cfbc6a6"
+   "sha": "468720d4284db02e"
   },
   "cityscape_asset_02": {
    "size2": [
     4972,
     1558
    ],
-   "src_sha": "233c969e65d81627",
+   "src_sha": "fcbd753f2588a8a6",
    "res": 0.821,
    "size": [
     4082,
     1279
    ],
    "size_error": 0.1437,
-   "bytes": 39904,
+   "bytes": 39908,
    "lossless": false,
    "err": 0.06,
-   "sha": "559c7685576d717e"
+   "sha": "0084f0f9283d1c8f"
   },
   "cl2_fat_ground_2250px_01": {
    "size2": [
     4500,
     590
    ],
-   "src_sha": "0573a421faee511c",
+   "src_sha": "69768f85595ae0e4",
    "res": 0.91,
    "size": [
     4095,
     537
    ],
    "size_error": 0.1099,
-   "bytes": 145954,
+   "bytes": 49106,
    "lossless": false,
-   "err": 0.36,
-   "sha": "70e77afb64d662fa"
+   "err": 0.31,
+   "sha": "9b5ecbf8ba0d4112"
   },
   "cl2_fat_ground_2250px_02": {
    "size2": [
     4500,
     600
    ],
-   "src_sha": "4252d444f9c12f06",
+   "src_sha": "3204d8e1c19e4b1e",
    "res": 0.91,
    "size": [
     4095,
     546
    ],
    "size_error": 0.0,
-   "bytes": 137144,
+   "bytes": 46710,
    "lossless": false,
-   "err": 0.32,
-   "sha": "643af70191a37016"
+   "err": 0.28,
+   "sha": "d1b3af79ad2c551f"
   },
   "ground_front_2500px_02": {
    "size2": [
     5000,
     220
    ],
-   "src_sha": "b162114309e7406d",
+   "src_sha": "637ee5f801a39222",
    "res": 0.819,
    "size": [
     4095,
     180
    ],
    "size_error": 0.2198,
-   "bytes": 37162,
+   "bytes": 36964,
    "lossless": false,
-   "err": 1.15,
-   "sha": "7f30d26a78d2ff45"
+   "err": 1.08,
+   "sha": "216014511a133c5c"
   },
   "haze_gradient_01": {
    "size2": [
@@ -214,51 +214,51 @@
     1628,
     4840
    ],
-   "src_sha": "b63f87a22604e53d",
+   "src_sha": "f67b0a15afe8587e",
    "res": 0.844,
    "size": [
     1374,
     4085
    ],
    "size_error": 0.0474,
-   "bytes": 90886,
+   "bytes": 92442,
    "lossless": false,
-   "err": 1.47,
-   "sha": "1e561b6be14004c8"
+   "err": 1.44,
+   "sha": "6674e5e2d3bd85c9"
   },
   "landscape_piece_01": {
    "size2": [
     4316,
     2192
    ],
-   "src_sha": "860b2dcc4e8a0f08",
+   "src_sha": "64694c573f89f405",
    "res": 0.949,
    "size": [
     4096,
     2080
    ],
    "size_error": 0.2192,
-   "bytes": 209444,
+   "bytes": 209234,
    "lossless": false,
    "err": 0.0,
-   "sha": "6ef271df8d35b1a1"
+   "sha": "6d007be7cf33cef9"
   },
   "organs_wall_black2": {
    "size2": [
     4300,
     984
    ],
-   "src_sha": "4e9182935110307c",
+   "src_sha": "64c95cc8e94a3097",
    "res": 0.95,
    "size": [
     4085,
     935
    ],
    "size_error": 0.2105,
-   "bytes": 7792,
+   "bytes": 7808,
    "lossless": false,
    "err": 0.0,
-   "sha": "d1f89a3a9d768db8"
+   "sha": "f254b9d3d0865e8f"
   },
   "patch_rough8": {
    "size2": [
