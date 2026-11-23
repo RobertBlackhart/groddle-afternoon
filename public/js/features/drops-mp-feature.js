@@ -47,7 +47,7 @@ import { ITEM_CATALOG, addItem, countItem, removeItem } from '../inventory.js?v=
 import { TOOL_CONDITION_CATALOG, leavingCopyTag, leavingToolWear, receiveToolCopy, takeToolCopy } from '../tools.js?v=4156bba8';
 import { createMinnAccount } from '../minn-account.js?v=83127c18';
 import { saveStore, savedThrough } from '../save-store.js?v=4e720735';
-import { DROP_OP, DROP_TEXT, dropEffect, dropRefusalText, eatenStack, groundFrom, homePlaceOf, isPublicStreet, normalizeGroundStack, normalizeMine, pickupAsk, pigAnimalKey, shareReason, stackAt, stackLeft } from '../drops-mp.js?v=0cd411dc';
+import { DROP_OP, DROP_QUEUE_MAX, DROP_TEXT, bucketTake, dropEffect, dropRefusalText, eatenStack, groundFrom, homePlaceOf, isPublicStreet, normalizeGroundStack, normalizeMine, pickupAsk, pigAnimalKey, shareReason, stackAt, stackLeft } from '../drops-mp.js?v=880e94f7';
 
 export const DROPS_MP_FEATURE_ID = 'drops-mp';
 const TABLE_URL = 'assets/content/trade-items.json';
@@ -78,6 +78,14 @@ function createSession(engine, client) {
   const stacks = new Map();
   /** The drop the server is weighing: { ref, c, n, r?, x, y, at }. */
   let dropping = null;
+  /**
+   * G1192: drops sent while one is being weighed wait here and go in order, each when the last is
+   * answered and the server's rate allows (DROP_RATE): { street, classTsid, count, x, y, copy }.
+   */
+  const queue = [];
+  /** The client's copy of drops.go's per-player bucket (drops and pickups alike). */
+  const rate = { tokens: 0, at: 0 };
+  let pumpTimer = null;
   /** The stack a pickup asked for: { id, at }. */
   let picking = null;
   let lastLine = '';
@@ -99,6 +107,7 @@ function createSession(engine, client) {
   function publish() {
     engine.setData?.('sharedStacks', String(stacks.size));
     engine.setData?.('dropState', dropping ? 'dropping' : picking ? 'picking' : 'none');
+    engine.setData?.('dropQueue', String(queue.length));
     engine.setData?.('dropLast', lastLine);
     engine.setData?.('dropEaten', lastEaten);
   }
@@ -259,11 +268,15 @@ function createSession(engine, client) {
       // The server would not share it: as in solo, the drop is the player's own.
       if (d && ['type', 'off', 'private'].includes(String(msg.why))) dropOwn(d);
       else tell(dropRefusalText(msg, client.street || street));
+      // A full place stays full for the drops behind it: they stay in the pack.
+      if (String(msg.why) === 'full') queue.length = 0;
       publish();
+      pump();
       return;
     }
     const s = normalizeGroundStack(msg.stack, street);
     apply(String(msg.op || ''), 'dropped', s ? { c: s.classTsid, n: s.count } : d ? { c: d.c, n: d.n } : null, shown(s), d?.copy ?? null);
+    pump();
   });
 
   client.on('msg:ground_taken', (msg) => {
@@ -284,8 +297,10 @@ function createSession(engine, client) {
     if (state === 'online') sync();
     else {
       // Off the server: its stacks are not drawn, and an answer under way comes back through the site's list.
+      // The drops still waiting stay in the pack.
       dropping = null;
       picking = null;
+      queue.length = 0;
       if (stacks.size) {
         stacks.clear();
         street = '';
@@ -316,7 +331,11 @@ function createSession(engine, client) {
   }
   sync();
 
-  /** dropPackItem: true when the drop went to the server (the pack changes on its answer). */
+  /**
+   * dropPackItem: true when the drop went to the server (the pack changes on its answer). G1192: one
+   * sent while another is being weighed waits its turn (the server weighs one at a time and answered
+   * "Wait a moment"); each goes when the last is answered and the server's rate allows.
+   */
   function drop({ classTsid, count, x, y, copy = null }) {
     const p = here();
     const c = String(classTsid || '');
@@ -326,15 +345,47 @@ function createSession(engine, client) {
       return null;
     }
     if (reasonAt(p, c)) return null;
-    if (dropping) {
-      if (Date.now() - dropping.at < WAIT_MS) {
-        engine.toast?.(DROP_TEXT.busy, 2400);
-        return true;
-      }
-      dropping = null;
+    if (dropping && Date.now() - dropping.at >= WAIT_MS) dropping = null; // no answer came: let the next go
+    if (countItem(engine.inv, c) < 1) return null;
+    if (queue.length >= DROP_QUEUE_MAX) {
+      engine.toast?.(DROP_TEXT.busy, 2400);
+      return true;
     }
+    queue.push({ street: p.street, classTsid: c, count, x, y, copy });
+    pump();
+    return true;
+  }
+
+  /** Sends the next waiting drop when none is being weighed and the rate allows; else waits for that. */
+  function pump() {
+    if (pumpTimer) {
+      clearTimeout(pumpTimer);
+      pumpTimer = null;
+    }
+    while (!dropping && queue.length) {
+      const p = here();
+      const next = queue[0];
+      // Left the place (or it stopped sharing): what waited stays in the pack.
+      if (!p || p.street !== next.street) {
+        queue.length = 0;
+        break;
+      }
+      const go = bucketTake(rate, Date.now());
+      if (!go.ok) {
+        pumpTimer = setTimeout(pump, go.waitMs);
+        break;
+      }
+      queue.shift();
+      if (!send(p, next)) rate.tokens = Math.min(rate.tokens + 1, 6); // nothing went: the token stays
+    }
+    publish();
+  }
+
+  /** One drop to the server, its count cut to what the pack has now (the drops before it went first). */
+  function send(p, { classTsid: c, count, x, y, copy }) {
+    if (reasonAt(p, c)) return false;
     const n = Math.min(Math.max(1, Math.floor(Number(count) || 1)), countItem(engine.inv, c));
-    if (n < 1) return null;
+    if (n < 1) return false;
     const item = { c, n };
     // The tool chosen (its own slot) carries its own wear; else the most worn of those that leave.
     const chosen = n === 1 && Number.isInteger(copy) && copy >= 0 && copy < countItem(engine.inv, c) ? copy : null;
@@ -351,7 +402,6 @@ function createSession(engine, client) {
     }
     const ref = `d${Date.now().toString(36)}${(refN += 1)}`;
     dropping = { ref, c, n, r: item.r, t: item.t ?? null, copy: chosen, x: Number(x) || 0, y: Number(y) || 0, at: Date.now() };
-    publish();
     // The ledger must have seen what the drop takes: write the save first.
     persist(engine).then(() => {
       if (dropping?.ref !== ref) return;
@@ -360,6 +410,7 @@ function createSession(engine, client) {
         const d = dropping;
         dropping = null;
         dropOwn(d);
+        pump();
       }
     });
     return true;
@@ -382,6 +433,11 @@ function createSession(engine, client) {
       return false;
     }
     if (picking && Date.now() - picking.at < WAIT_MS) return true;
+    // drops.go allow: a pickup takes from the same bucket as a drop; over it the server answers nothing.
+    if (!bucketTake(rate, Date.now()).ok) {
+      engine.toast?.(DROP_TEXT.slow, 2400);
+      return true;
+    }
     const n = pickupAsk(stacks.get(id).count, count);
     picking = { id, n, at: Date.now() };
     const ox = here()?.ox || 0;
@@ -415,6 +471,7 @@ function createSession(engine, client) {
     get street() { return street; },
     get stacks() { return [...stacks.values()]; },
     get dropping() { return dropping; },
+    get queued() { return queue.map((q) => ({ ...q })); },
     get picking() { return picking; },
     drop,
     pickup,
@@ -430,6 +487,11 @@ function createSession(engine, client) {
         redraw();
       }
       if (now - syncedAt > SYNC_EVERY_MS && client.state === 'online') sync();
+      // An answer that never came does not hold the drops behind it for good.
+      if (dropping && queue.length && now - dropping.at >= WAIT_MS) {
+        dropping = null;
+        pump();
+      }
     },
   };
 }

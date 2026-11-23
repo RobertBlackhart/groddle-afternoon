@@ -70,6 +70,7 @@ export const DROP_TEXT = Object.freeze({
   back: (n, label) => `Nobody picked up your ${n}× ${label}, so it came back to your pack.`, // ours
   by: (name) => `Dropped by ${name}`, // ours
   busy: 'Wait a moment, you are still dropping something.', // drops.go
+  slow: 'Slow down a little.', // drops.go allow (slow_down)
   // drops.go dropTextFull (ours) says "street" everywhere; a house or Tower floor holds 60 too (dropStreetMax).
   full: (place) => `This ${place} can't hold any more dropped things.`,
   gone: 'That stack has already been picked up.', // the game's own
@@ -79,6 +80,29 @@ export const DROP_TEXT = Object.freeze({
   // stack is dropped for everyone (stacks dropped for others never merge: drops.go).
   prompt: 'Drop it on the ground.',
 });
+
+/**
+ * drops.go allow (dropBurst 6, dropEvery 1 s, party.go bucket.take): every ground_drop and
+ * ground_pickup takes a token from the player's bucket of 6, one back a second; a frame over it gets
+ * only a slow_down error, never its answer. The client keeps the same bucket so it never sends one.
+ */
+export const DROP_RATE = Object.freeze({ burst: 6, everyMs: 1000 });
+
+/** How many drops may wait their turn behind the one the server is weighing. */
+export const DROP_QUEUE_MAX = 12;
+
+/**
+ * PURE: take a token from `b` ({ tokens, at }, changed in place) at `now`, as party.go bucket.take:
+ * { ok: true } when one was there, else { ok: false, waitMs } until the next one is.
+ */
+export function bucketTake(b, now, { burst = DROP_RATE.burst, everyMs = DROP_RATE.everyMs } = {}) {
+  const t = Number(now) || 0;
+  b.tokens = b.at ? Math.min(burst, (Number(b.tokens) || 0) + (t - b.at) / everyMs) : burst;
+  b.at = t;
+  if (b.tokens < 1) return { ok: false, waitMs: Math.max(1, Math.ceil((1 - b.tokens) * everyMs)) };
+  b.tokens -= 1;
+  return { ok: true };
+}
 
 /**
  * What a full place is called in its refusal (drops.go refuses "full" at dropStreetMax stacks on any

@@ -52,7 +52,7 @@ import { ELEMENT_CLASSES, NO_BAG_CLASSES, NO_SLOT_CLASSES } from '../pack-slots-
 import { TOOL_CONDITION_CATALOG, copyTagKind, copyTags, pickToolCopies, receiveToolCopy, setCopyTag, takeToolCopy } from '../tools.js?v=4156bba8';
 import { draggedStack, takeDragged } from '../drag-stack.js?v=536cddfb';
 import { scriptFromTag, scriptLabel } from '../teleportation.js?v=1bbe1ab3';
-import { possessive, readVisitScene } from '../neighbours-mp.js?v=49694312';
+import { possessive, readVisitScene } from '../neighbours-mp.js?v=917e10c7';
 import { homesFeature } from './homes-feature.js?v=a0dd7513';
 import { saveStore, savedThrough } from '../save-store.js?v=4e720735';
 import {
