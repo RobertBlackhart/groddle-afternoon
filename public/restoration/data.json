@@ -2814,9 +2814,19 @@
   "deployed": "2026-11-23"
  },
  "git": {
-  "commits": 3159,
+  "commits": 3164,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "The level builder's street picture draws its sky and far layers again"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "Street skies show the gradient where Glitch painted it, so ground level sees the lower colours"
+   },
    {
     "date": "2026-11-23",
     "kind": "improve",
@@ -2926,19 +2936,9 @@
     "date": "2026-11-22",
     "kind": "fix",
     "text": "Signposts take the street's colour, no longer glowing on dark streets"
-   },
-   {
-    "date": "2026-11-22",
-    "kind": "fix",
-    "text": "Tower lobby lifts are the signpost again, with no wooden post"
-   },
-   {
-    "date": "2026-11-22",
-    "kind": "improve",
-    "text": "The Fancy Feather says what it is for: just for show, sell it to any vendor, and it turns into loam when Pot Luck Day ends"
    }
   ]
  },
- "tests": 1289,
+ "tests": 1290,
  "generatedAt": "2026-11-23"
 }
