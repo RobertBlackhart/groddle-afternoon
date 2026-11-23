@@ -1503,6 +1503,75 @@ export function stageSkyColour(street) {
   return /^[0-9a-f]{6}$/i.test(top) ? `#${top.toLowerCase()}` : '#8eb8d8';
 }
 
+/**
+ * PURE (G1167): the layer a street's sky gradient is painted on, the backmost drawn layer, as an
+ * index into street.layers (-1 when it has none). Glitch drew the gradient into the graphics of the
+ * first LayerRenderer (LocationView.as 101-106 fastUpdateGradient: _layerRenderers[0], the layers
+ * sorted by z, LocationViewBuilder 82-89), at that layer's own w x h (DrawUtil.drawBGForLoc), so it
+ * moved with that layer's parallax. Hidden layers never draw (layerIsDrawn); a tie keeps the first.
+ */
+export function skyGradientLayerIndex(layers) {
+  let best = -1;
+  let bestZ = Infinity;
+  (layers || []).forEach((layer, i) => {
+    if (!layerIsDrawn(layer)) return;
+    const z = layer.z ?? i;
+    if (z < bestZ) {
+      best = i;
+      bestZ = z;
+    }
+  });
+  return best;
+}
+
+/**
+ * PURE (G1167): where the sky gradient runs, in the street view's coordinates. `layerTop` is the
+ * backmost layer's top (its container's y after updateParallax) and `layerH` its height; the view
+ * is `viewTop` to `viewTop + viewH` (the canvas, the pack's band included).
+ *
+ * Glitch: DrawUtil.drawVerticalGradientBG fills 0..h of the layer, the top colour at the layer's
+ * top and the bottom colour at its bottom (createGradientBox(w, h, PI/2), ratios 0..255). The view
+ * never showed past it: TSMainView.resizeToStage 1245-1257 held the view to the smallest layer's
+ * height and LocationRenderer.recomputeParallax kept every layer over the view. The remake's view
+ * can show past it (an upright phone's camera over the street's top, the pack's band under the
+ * view, the 408 px view floor on a shorter scene): the gradient's own end colours carry on there
+ * (Flash's SpreadMethod.PAD), the top colour above the layer and the bottom colour below it.
+ *
+ * Returns the gradient's span `{ y, h }`, the top colour's cap `{ y, h }` (null when the view does
+ * not reach above the layer) and the bottom colour's base `{ y, h }` (the whole view, under both).
+ * The cap is at least `capMin` tall, reaching down under the gradient, so it is never a long thin
+ * quad (js/wide-quads.js: the GPU can drop half of one).
+ */
+export function skyGradientPlacement(layerTop, layerH, viewTop, viewH, capMin = 0) {
+  const top = Number(layerTop) || 0;
+  const h = Math.max(1, Number(layerH) || 1);
+  const vTop = Number(viewTop) || 0;
+  const vH = Math.max(0, Number(viewH) || 0);
+  let cap = null;
+  if (vTop < top) {
+    const y = Math.min(vTop, top - Math.max(0, capMin));
+    cap = { y, h: top - y + 1 };
+  }
+  return { gradient: { y: top, h }, cap, base: { y: vTop, h: vH } };
+}
+
+/**
+ * PURE (G1167): the sky's colour at street-view y, as 0xrrggbb: the gradient's top colour above the
+ * layer, its bottom colour below, a straight blend between (what Flash's linear fill draws).
+ */
+export function skyColourAt(top, bottom, layerTop, layerH, y) {
+  const a = parseInt(String(top).replace(/^(#|0x)/i, ''), 16) || 0;
+  const b = parseInt(String(bottom).replace(/^(#|0x)/i, ''), 16) || 0;
+  const t = Math.min(1, Math.max(0, (y - layerTop) / Math.max(1, layerH)));
+  let out = 0;
+  for (const shift of [16, 8, 0]) {
+    const ca = (a >> shift) & 0xff;
+    const cb = (b >> shift) & 0xff;
+    out |= Math.round(ca + (cb - ca) * t) << shift;
+  }
+  return out;
+}
+
 /** Vertical sky gradient texture from the location's top/bottom colours. */
 function gradientTexture(PIXI, top, bottom) {
   const canvas = document.createElement('canvas');
@@ -2955,12 +3024,29 @@ export function buildStreetView(street, PIXI, opts = {}) {
   const cameraBottomPadding = Math.max(0, Number(opts.cameraBottomPadding) || 0);
   const H = Math.ceil(Math.max(sourceH, deepestPlatformY + cameraBottomPadding));
 
-  // The location's own sky gradient, fixed to the viewport (positioned by
-  // updateParallax). Streets without one keep the painted fallback below.
+  // G1167: the location's own sky gradient, painted over the backmost layer at that layer's height
+  // and moving with it (skyGradientPlacement, placed by updateParallax), its end colours carried on
+  // past the layer: the bottom colour under the whole view, the top colour's cap above the layer.
+  // Behind every layer and unfiltered, as Glitch drew it in that layer's own graphics. Streets
+  // without one keep the painted fallback below.
   let skyView = null;
+  /** @type {{ base: any, cap: any, gradient: any } | null} */
+  let skyParts = null;
   if (street.gradient?.top && street.gradient?.bottom) {
-    skyView = new PIXI.Sprite(gradientTexture(PIXI, street.gradient.top, street.gradient.bottom));
+    skyView = new PIXI.Container();
     skyView.zIndex = -1100;
+    skyView.label = 'street-sky';
+    const solid = (hex) => {
+      const s = new PIXI.Sprite(PIXI.Texture.WHITE);
+      s.tint = parseInt(String(hex).replace(/^(#|0x)/i, ''), 16) || 0;
+      return s;
+    };
+    skyParts = {
+      base: solid(street.gradient.bottom),
+      cap: solid(street.gradient.top),
+      gradient: new PIXI.Sprite(gradientTexture(PIXI, street.gradient.top, street.gradient.bottom)),
+    };
+    skyView.addChild(skyParts.base, skyParts.cap, skyParts.gradient);
     root.addChild(skyView);
   }
 
@@ -3269,6 +3355,35 @@ export function buildStreetView(street, PIXI, opts = {}) {
   // MINIMAP (G370, js/ui/street-minimap.js snapshotStreetView): every layer, and the sky it leaves out.
   root.layerContainers = layerContainers;
   root.skyView = skyView;
+  // G1167: the layer the sky gradient goes with (skyGradientLayerIndex). The middleground, or a
+  // layer without its own size, does not slide: its span is the street's, 0 to sourceH.
+  const skyLayer = (street.layers || [])[skyGradientLayerIndex(street.layers)];
+  const skyLc = layerContainers.find((lc) => lc.skirtLayer === skyLayer && lc.parallaxLayer) || null;
+  /**
+   * G1167: put the sky for a view whose top-left is camX, camY, vpW x skyH (the canvas, the pack's
+   * band included): the gradient on the backmost layer where updateParallax left it this frame.
+   */
+  root.placeSky = (camX, camY, vpW, skyH) => {
+    if (!skyParts) return;
+    const at = skyGradientPlacement(skyLc ? skyLc.y : 0, skyLc ? skyLc.parallaxLayer.h : sourceH, camY, skyH, vpW / 16);
+    const put = (spr, span) => {
+      spr.x = camX;
+      spr.y = span.y;
+      spr.width = vpW;
+      spr.height = span.h;
+    };
+    put(skyParts.base, at.base);
+    put(skyParts.gradient, at.gradient);
+    skyParts.cap.visible = Boolean(at.cap);
+    if (at.cap) put(skyParts.cap, at.cap);
+  };
+  /** QA (G1167): the gradient's layer and where it ran at the last placeSky. */
+  root.skyStats = () => (skyParts ? {
+    layer: skyLc ? skyLc.label : skyLayer?.id || null,
+    y: skyParts.gradient.y,
+    h: skyParts.gradient.height,
+    cap: skyParts.cap.visible ? { y: skyParts.cap.y, h: skyParts.cap.height } : null,
+  } : null);
   root.skyTop = stageSkyColour(street);
   // The client filters the whole middleground plane, so avatars and items on
   // it share the decos' treatment (Hell One's greyscale Glitches).
@@ -3357,7 +3472,8 @@ export function buildStreetView(street, PIXI, opts = {}) {
    * Call once per frame with the camera's top-left in screen space. `snap` ({ x, y, dx, dy }: the
    * renderer resolution on an axis whose camera rests, 0 while it moves, and the camera's
    * direction of travel) settles each layer on a device pixel at rest without stepping back;
-   * moving layers keep their exact share (js/camera-feel.js).
+   * moving layers keep their exact share (js/camera-feel.js). `skyH` is the height the sky covers
+   * (the canvas, the pack's band included: placeSky).
    */
   root.updateParallax = (camX, camY, vpW, vpH, skyH = vpH, snap = null) => {
     const slidesX = W - vpW > 0;
@@ -3382,12 +3498,7 @@ export function buildStreetView(street, PIXI, opts = {}) {
       lc.screenX = x - camX;
       lc.screenY = y - camY;
     }
-    if (skyView) {
-      skyView.x = camX;
-      skyView.y = camY;
-      skyView.width = vpW;
-      skyView.height = skyH;
-    }
+    root.placeSky(camX, camY, vpW, skyH);
     root.edgeMirrorFrame?.(camX, vpW);
   };
 
