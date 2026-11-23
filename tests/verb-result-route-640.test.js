@@ -13,7 +13,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { RESULT_FLOAT_MAX_CHARS, resultLineRoute } from '../public/js/verb-result-route.js?v=5516b73f';
+import { RESULT_FLOAT_MAX_CHARS, resultLineRoute } from '../public/js/verb-result-route.js?v=61b4fc9d';
 import { runVerb } from '../public/content.js?v=0c9f7fdf';
 import { createMineRock } from '../public/js/mining.js?v=9eabaaf1';
 import { createInventory } from '../public/js/inventory.js?v=6414dbdc';
@@ -54,6 +54,8 @@ describe('#640: a verb the thing answers in its bubble raises no notice', () => 
     assert.deepEqual(resultLineRoute({ ok: false, changed: false, shown: false, line: 'You try to pet a Piggy.' }), { float: false, notice: false, log: 'log' });
     assert.deepEqual(resultLineRoute({ ok: false, changed: false, shown: true, line: 'Not now.' }), { float: false, notice: true, log: 'activity' });
     assert.deepEqual(resultLineRoute({ ok: true, changed: true, shown: true, line: 'short', canFloat: false }), { float: false, notice: true, log: 'activity' });
+    // game.js's `(!spoke || result.toastWithSpeech) && ...` is undefined under a bubble: never shown (the live check found it).
+    assert.deepEqual(resultLineRoute({ ok: true, changed: true, shown: undefined, line: long }), { float: false, notice: false, log: 'gain' });
   });
 
   it('game.js and the resource nodes ask it', () => {

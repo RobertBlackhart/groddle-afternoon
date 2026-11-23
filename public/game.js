@@ -1167,7 +1167,7 @@ import { createSaveHealth, mountSaveTrouble } from './js/save-trouble.js?v=bbec1
 import { grantSoloStarterItems, isNewMultiplayerPlayer, newPlayerInventory, newPlayerStats } from './js/new-player.js?v=f76dcbaf';
 import { SPEECH_HOLD_MARGIN, clearSpeechOfBox, deepestSpeechTip, giveArtHeight, holdSpeechSide, hudColumnBox, limitSpeechShift, limitSpeechTip, placeSpeechTail, placeSpeechTip, settleSpeechMove, slideOffAvatars, speechBubbleOutline, speechOffsetFor, speechPushLimit, speechTipOnSide, standingFeet } from './js/speech-placement.js?v=0371ea0c';
 import { shrineDonationResponseKey, verbResponse } from './js/verb-responses.js?v=97df8351';
-import { RESULT_FLOAT_MAX_CHARS, resultLineRoute } from './js/verb-result-route.js?v=5516b73f';
+import { RESULT_FLOAT_MAX_CHARS, resultLineRoute } from './js/verb-result-route.js?v=61b4fc9d';
 import { itemZ } from './js/item-bands.js?v=e98b10bc';
 import { outlinePoints } from './js/outline-points.js?v=c9edb089';
 import { STAT_PAINTS } from './js/stat-icons.js?v=b89600eb';
@@ -10695,7 +10695,7 @@ function runVerbFinish(target, verbId) {
     const route = resultLineRoute({
       ok: result.ok,
       changed: verbChangedSomething(result.effects),
-      shown: (!spoke || result.toastWithSpeech) && toastLine !== reactionText, // report 121
+      shown: Boolean((!spoke || result.toastWithSpeech) && toastLine !== reactionText), // report 121
       line: toastLine,
       canFloat: Boolean(target.sprite && !target.sprite.destroyed),
     });

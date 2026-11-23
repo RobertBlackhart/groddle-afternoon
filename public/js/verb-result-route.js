@@ -21,9 +21,10 @@ export const RESULT_FLOAT_MAX_CHARS = 72;
  * already answered (and the result does not ask for the line beside it), `changed` when the verb
  * gained or cost something, `canFloat` when the thing is on screen to float from.
  */
-export function resultLineRoute({ ok = false, changed = false, shown = true, line = '', canFloat = true } = {}) {
+export function resultLineRoute({ ok = false, changed = false, shown, line = '', canFloat = true } = {}) {
   const gain = Boolean(ok && changed);
-  if (!shown) return { float: false, notice: false, log: gain ? 'gain' : 'log' };
+  // Only an explicit true shows it: the caller's `(!spoke || result.toastWithSpeech) && ...` is undefined under a bubble.
+  if (shown !== true) return { float: false, notice: false, log: gain ? 'gain' : 'log' };
   if (gain && canFloat && String(line).length <= RESULT_FLOAT_MAX_CHARS) return { float: true, notice: false, log: 'gain' };
   return { float: false, notice: true, log: 'activity' };
 }
