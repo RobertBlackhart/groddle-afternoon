@@ -213,7 +213,7 @@ import { potLuckFeastFeature } from './pot-luck-feast-feature.js?v=05ab91fb'; FE
 import { feastDayFeature } from './feast-day-feature.js?v=f3eb21e2'; FEATURES.push(feastDayFeature);
 import { calendarFeature } from './calendar-feature.js?v=0dc4e97a'; FEATURES.push(calendarFeature);
 // G1195 Happy New Ur: the countdown at the Groddle midnights of December 31, the show and the party street.
-import { newUrFeature } from './new-ur-feature.js?v=dbda6d03'; FEATURES.push(newUrFeature);
+import { newUrFeature } from './new-ur-feature.js?v=36c1edb2'; FEATURES.push(newUrFeature);
 import { streetObjectsFeature } from './street-objects-feature.js?v=26a6b85b'; FEATURES.push(streetObjectsFeature);
 import { realtimeFeature } from './realtime-feature.js?v=ce1f8176'; FEATURES.push(realtimeFeature);
 import { accountBackupFeature } from './account-backup-feature.js?v=5937defa'; FEATURES.push(accountBackupFeature);

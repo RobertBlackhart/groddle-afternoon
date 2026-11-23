@@ -57,16 +57,16 @@ import {
 export const NEW_UR_FEATURE_ID = 'new-ur';
 
 const STYLE = `
-.new-ur-hud { position: absolute; z-index: 80; bottom: 6.6rem; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: var(--sp-4); padding: var(--sp-2) var(--sp-6); border-radius: var(--radius-pill);
-  background: rgba(20, 28, 70, 0.82); color: #ffe7a3; font: 700 var(--fs-md)/var(--lh-normal) var(--font-system); box-shadow: var(--shadow-2); pointer-events: none; white-space: nowrap; }
+.new-ur-hud { position: absolute; z-index: var(--z-overlay); bottom: 6.6rem; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: var(--sp-4); padding: var(--sp-2) var(--sp-6); border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--c-navy-23b) 82%, transparent); color: var(--c-gold-93b); font: 700 var(--fs-md)/var(--lh-normal) var(--font-system); box-shadow: var(--shadow-2); pointer-events: none; white-space: nowrap; }
 .new-ur-hud[hidden], .new-ur-big[hidden] { display: none; }
 .new-ur-hud.is-big { font-size: var(--fs-xl); padding: var(--sp-3) var(--sp-7); }
-.new-ur-hud button { pointer-events: auto; border: 1px solid #ffe7a3; border-radius: var(--radius-pill); background: #ffe7a3; color: #1a2350; font: inherit; font-size: var(--fs-sm); padding: 0 var(--sp-5); cursor: pointer; }
-.new-ur-big { position: absolute; z-index: 80; left: 50%; top: 38%; transform: translate(-50%, -50%); color: #fff3c4; font: 900 7rem/1 var(--font-system); text-shadow: 0 0 0.3em rgba(255, 200, 80, 0.9), 0 0.06em 0 #1a2350; pointer-events: none; }
+.new-ur-hud button { pointer-events: auto; border: 1px solid var(--c-gold-93b); border-radius: var(--radius-pill); background: var(--c-gold-93b); color: var(--c-navy-28); font: inherit; font-size: var(--fs-sm); padding: 0 var(--sp-5); cursor: pointer; }
+.new-ur-big { position: absolute; z-index: var(--z-overlay); left: 50%; top: 38%; transform: translate(-50%, -50%); color: var(--c-gold-96); font: 900 var(--fs-countdown)/var(--lh-none) var(--font-system); text-shadow: 0 0 0.3em color-mix(in srgb, var(--c-gold-86d) 90%, transparent), 0 0.06em 0 var(--c-navy-28); pointer-events: none; }
 .new-ur-count { position: absolute; left: 0; top: 0; width: 0; height: 0; overflow: hidden; }
-.new-day-screen.is-new-ur .new-day-title { color: #a8560a; text-shadow: 0 0 0.4em rgba(255, 205, 90, 0.9); }
-.new-day-screen.is-new-ur .new-day-card { box-shadow: 0 0 0 3px #ffd76a, var(--shadow-3); }
-@media (max-width: 640px) { .new-ur-hud { bottom: 5.6rem; font-size: var(--fs-sm); } .new-ur-big { font-size: 4.5rem; } }
+.new-day-screen.is-new-ur .new-day-title { color: var(--c-orange-55); text-shadow: 0 0 0.4em color-mix(in srgb, var(--c-gold-89) 90%, transparent); }
+.new-day-screen.is-new-ur .new-day-card { box-shadow: 0 0 0 3px var(--c-gold-90), var(--shadow-3); }
+@media (max-width: 640px) { .new-ur-hud { bottom: 5.6rem; font-size: var(--fs-sm); } .new-ur-big { font-size: var(--fs-hero); } }
 `;
 
 const CONFETTI_COLOURS = [0xff5a5a, 0xffd23f, 0x3fc1ff, 0x7ddc5a, 0xff8ad8, 0xffffff];
