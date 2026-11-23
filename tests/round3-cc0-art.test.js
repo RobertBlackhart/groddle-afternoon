@@ -20,7 +20,7 @@ import { fileURLToPath } from 'node:url';
 
 import { FLOORS, RAINBOW_ART, radiantLayout, rainbowY, room as glareRoom } from '../public/js/quest-rooms/radiant-glare.js?v=058752c2';
 import { room as lightRoom } from '../public/js/quest-rooms/light-perspective.js?v=b22216c0';
-import { glitchLayerMatrix } from '../public/js/street-render.js?v=27e80c50';
+import { glitchLayerMatrix } from '../public/js/street-render.js?v=32ac8ad3';
 import { FLOOR_WASH, MOON, VOYAGE_DECOS, VOYAGE_FLOOR, VOYAGE_OWL, VOYAGE_STONE, VOYAGE_STUMP, VOYAGE_W, WASHING, WASHING_LINE, violetMatrix, voyageGroundPlan } from '../public/js/purple-journey-scene.js?v=815e41e9';
 import * as esq from '../public/js/quest-rooms/esquibeth.js?v=74efa68e';
 import { ESQUIBETH_ART, ESQUIBETH_GLYPHS, ESQUIBETH_STAFFS } from '../public/js/quest-rooms/esquibeth-art.js?v=fe515887';

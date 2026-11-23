@@ -725,7 +725,7 @@ import {
   ensureStreetIndex,
   resolveIndexTsid,
 } from './js/street-loader.js?v=10376267';
-import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=6bd3699d';
+import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=90b88ad8';
 import {
   ladderTopDeck,
   groundBeneath,
@@ -756,7 +756,7 @@ import {
   setSignpostHover,
   setSignpostKeys,
   signpostBoardAt,
-} from './js/street-render.js?v=27e80c50';
+} from './js/street-render.js?v=32ac8ad3';
 import {
   GAME_DAY_MS,
   shouldFireNewDay,
@@ -36360,7 +36360,8 @@ async function main() {
               ? { key: 'Enter', label: signBoardLabel(lit) || lit.connection?.label || 'go', x: nearSign.screen.x, y }
               : arms.length === 1
                 ? { key: 'Enter', label: signBoardLabel(arms[0].board) || arms[0].board.connection?.label || conn?.label || '', x: nearSign.screen.x, y }
-                : { key: 'Enter', label: 'Choose a road', x: nearSign.screen.x, y };
+                // G1153: a lift drawn as its deco offers floors.
+                : { key: 'Enter', label: postAtHand?.view?.signDeco ? 'Choose a floor' : 'Choose a road', x: nearSign.screen.x, y };
         }
         // TOUCH: a phone's hint chips name a tap or the stick, not a key (js/touch-controls.js touchPrompt).
         settlePrompt(TOUCH_PHONE ? touchPrompt(want) : want, performance.now());

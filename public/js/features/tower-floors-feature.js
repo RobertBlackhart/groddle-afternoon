@@ -14,7 +14,7 @@
  *   (Hauki Seeks Manor, floor 3, at the lift); a lobby's lift arms lead to each floor.
  */
 
-import { TOWER_FLOOR_BOUNDS, TOWER_LIFT, TOWER_LIFT_PLATE, towerFloorEcology, towerFloorFor, towerFloorLayout } from '../tower-floors.js?v=5ae5fef9';
+import { TOWER_FLOOR_BOUNDS, TOWER_LIFT, TOWER_LIFT_PLATE, towerFloorEcology, towerFloorFor, towerFloorLayout } from '../tower-floors.js?v=91217aeb';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 
 export const TOWER_FLOORS_FEATURE_ID = 'tower-floors';
@@ -39,8 +39,9 @@ function drawPlate(engine, floor, street) {
     text: String(floor.n),
     style: {
       fontFamily: WORLD_FONT_FAMILY,
-      fontSize: 26,
-      fontWeight: '800',
+      // The size the lobby's L is drawn at (street-render.js buildSignDecoView, G1153).
+      fontSize: 40,
+      fontWeight: '900',
       fill: 0xe9cf86,
     },
   });

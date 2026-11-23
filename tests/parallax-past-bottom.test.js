@@ -13,7 +13,7 @@ import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { layerIsDrawn, parallaxLayerOffset, skirtBandOffset } from '../public/js/street-render.js?v=27e80c50';
+import { layerIsDrawn, parallaxLayerOffset, skirtBandOffset } from '../public/js/street-render.js?v=32ac8ad3';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const streetsDir = join(here, '../public/assets/streets');

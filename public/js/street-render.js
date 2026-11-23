@@ -439,7 +439,7 @@ export function buildSignDecoView(PIXI, signpost, pos, { art = null, plate = '' 
     g.signDecoArt = spr;
   }
   if (plate) {
-    const t = new PIXI.Text({ text: String(plate), style: { fontFamily: WORLD_FONT_FAMILY, fontSize: 26, fontWeight: '800', fill: SIGN_DECO_PLATE_FILL } });
+    const t = new PIXI.Text({ text: String(plate), style: { fontFamily: WORLD_FONT_FAMILY, fontSize: 40, fontWeight: '900', fill: SIGN_DECO_PLATE_FILL } });
     t.resolution = 3;
     t.anchor.set(0.5, 0.5);
     t.x = SIGN_DECO_PLATE.dx;
@@ -468,8 +468,12 @@ export function buildSignDecoView(PIXI, signpost, pos, { art = null, plate = '' 
   return g;
 }
 
-/** The lift plate's centre from the lift's foot (tower-floors.js TOWER_LIFT_PLATE) and its paint. */
-const SIGN_DECO_PLATE = Object.freeze({ dx: -114, dy: 138 });
+/**
+ * The lift plate's centre from the lift's foot (signpost_asset_elevator.webp's plate, 117-212 x
+ * 562-696 of 784 x 844: -114, -108; tower-floors.js TOWER_LIFT_PLATE) and its paint. The 2012
+ * Gregarious Towers lobby template's L is about 29 px tall on the 67 px plate.
+ */
+const SIGN_DECO_PLATE = Object.freeze({ dx: -114, dy: 108 });
 const SIGN_DECO_PLATE_FILL = 0xe9cf86;
 
 /**

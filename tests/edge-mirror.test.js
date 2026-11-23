@@ -22,7 +22,7 @@ import {
   edgeMirrorWidths,
   parallaxLayerOffset,
   wholeTexels,
-} from '../public/js/street-render.js?v=27e80c50';
+} from '../public/js/street-render.js?v=32ac8ad3';
 import { cameraTargetX } from '../public/js/movement.js?v=f4be1a05';
 
 describe('edge mirror widths', () => {

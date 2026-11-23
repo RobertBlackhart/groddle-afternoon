@@ -10,8 +10,8 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { convertLocationXml } from '../public/js/location-xml.js?v=32377f99';
-import { buildSignDecoView, DECO_TWINS, signDecoDrawn, signpostBoardAt } from '../public/js/street-render.js?v=27e80c50';
-import { TOWERS } from '../public/js/tower-floors.js?v=5ae5fef9';
+import { buildSignDecoView, DECO_TWINS, signDecoDrawn, signpostBoardAt } from '../public/js/street-render.js?v=32ac8ad3';
+import { TOWER_LIFT_PLATE, TOWERS } from '../public/js/tower-floors.js?v=91217aeb';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const streetsDir = join(root, 'public/assets/streets');
@@ -71,7 +71,11 @@ describe('G1153: a signpost drawn as its deco', () => {
     const labels = g.children.map((c) => c.label);
     assert.ok(labels.includes('sign-deco-art'));
     assert.ok(!labels.some((l) => /sign-(post|arm|shadow)/.test(l || '')), labels.join());
-    assert.equal(g.children.find((c) => c.label === 'sign-deco-plate').text, 'L');
+    const plate = g.children.find((c) => c.label === 'sign-deco-plate');
+    assert.equal(plate.text, 'L');
+    // On the art's plate (117-212 x 562-696 of 784 x 844, drawn 392 x 422), as the floors' number.
+    assert.deepEqual([plate.x, plate.y], [-114, -108]);
+    assert.deepEqual(TOWER_LIFT_PLATE, { dx: -114, dy: 108 });
     assert.equal(g.signDeco, true);
     assert.deepEqual(g.signBoards.map((b) => b.key), lift.connects.map((_, i) => String(i + 1)));
     // A click on the lift door finds a board; a click beside the lift finds none.
@@ -91,6 +95,7 @@ describe('G1153: a signpost drawn as its deco', () => {
     const src = readFileSync(join(root, 'public/game.js'), 'utf8');
     assert.match(src, /if \(signBoard\?\.view\?\.signDeco\) \{\s*openSignpostArmsMenu\(signBoard/);
     assert.match(src, /if \(at\.view\?\.signDeco\) \{\s*openSignpostArmsMenu\(/);
+    assert.match(src, /postAtHand\?\.view\?\.signDeco \? 'Choose a floor' : 'Choose a road'/);
     const render = readFileSync(join(root, 'public/js/street-render.js'), 'utf8');
     assert.match(render, /s\.deco\?\.sprite \? buildSignDecoView\(/);
   });

@@ -25,7 +25,7 @@ import {
   towerFloorLayout,
   towerFloorStreet,
   towerLiftDeco,
-} from '../public/js/tower-floors.js?v=5ae5fef9';
+} from '../public/js/tower-floors.js?v=91217aeb';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const streetsDir = join(root, 'public/assets/streets');

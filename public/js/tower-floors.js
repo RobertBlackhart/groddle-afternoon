@@ -88,8 +88,12 @@ const CEILING_Y = -560;
 const WINDOW_MAX_W = 200;
 /** The lift: signpost_asset_elevator's size in every lobby; its door is the hall's centre. */
 export const TOWER_LIFT = Object.freeze({ x: 0, w: 392, h: 422, art: 30, tower: { w: 392, h: 422 } });
-/** The plate left of the lift door (signpost_asset_elevator's own plate), from the lift's base. */
-export const TOWER_LIFT_PLATE = Object.freeze({ dx: -114, dy: 138 });
+/**
+ * The plate left of the lift door (signpost_asset_elevator's own plate), its centre from the lift's
+ * base: the art's plate is 117-212 x 562-696 of 784 x 844 drawn 392 x 422, so -114, -108 (G1153:
+ * it was 138, which put the number 30 px over the plate).
+ */
+export const TOWER_LIFT_PLATE = Object.freeze({ dx: -114, dy: 108 });
 export const TOWER_FLOOR_SIGNPOST = 'signpost_lift';
 export const TOWER_DEFAULT_DOORS = 8;
 export const TOWER_DEFAULT_NOTE = 'default layout, awaiting a panorama';
