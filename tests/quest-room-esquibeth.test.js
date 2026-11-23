@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 import * as kit from '../public/js/quest-rooms/kit.js?v=fc97e70f';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const mod = await import('../public/js/quest-rooms/esquibeth.js?v=74efa68e');
+const mod = await import('../public/js/quest-rooms/esquibeth.js?v=2a0cb1c8');
 
 // Avatar reach (game.js physics): jump 9.6 px/frame against 0.42 gravity peaks near 110 px
 // and carries about 200 px at run speed 4.4; keep margins.
@@ -321,5 +321,60 @@ describe('G962: the grottos and the climb are the Alakol mountaineering set tint
     assert.ok(BASALT.capRise > 0 && BASALT.capRise < 30);
     assert.match(src, /top - BASALT\.capRise/);
     assert.match(src, /l\.y - BASALT\.capRise/);
+  });
+});
+
+describe('G1161: the Eastern Grotto\'s far wall, mountains and mist (Snaps PIF210IIKF015FF_93299, PHVRLO0EBDC23R1_87410, PIF4UQ5VJM53UEO_92602)', () => {
+  const { HORIZON, stageLayout } = mod;
+  const FILE_H = { cliffside_1a_al1: 878, cliffside_1b_al1: 834, cliffside_1c_al1: 846 };
+  const FILE_W = { cliffside_1a_al1: 1336, cliffside_1b_al1: 974, cliffside_1c_al1: 620 };
+
+  /** Build a stage on the fake Pixi (tests/fake-scene.js), as g999-room-parallax-views does. */
+  async function buildStage(stage) {
+    const { fakePixi, FakeEl } = await import('./fake-scene.js');
+    const saved = { PIXI: globalThis.PIXI, document: globalThis.document };
+    globalThis.PIXI = fakePixi;
+    globalThis.document = { baseURI: 'https://groddle.localhost/', createElement: (t) => new FakeEl(t), head: new FakeEl('head'), body: new FakeEl('body'), getElementById: () => null, querySelector: () => null, querySelectorAll: () => [] };
+    try {
+      return mod.room.build({ PIXI: fakePixi, kit, data: {}, param: () => null, stage, questId: null, engine: {}, state: {} }, stage);
+    } finally {
+      globalThis.PIXI = saved.PIXI;
+      globalThis.document = saved.document;
+    }
+  }
+
+  it('only the open-sky Eastern Grotto has it', () => {
+    assert.equal(stageLayout('waterfall_01').horizon, true);
+    for (const s of ['waterfall_02', 'waterfall_03']) assert.ok(!stageLayout(s).horizon, s);
+  });
+
+  it('a long lavender wall of Alakol cliffsides, end to end across what the camera shows of its layer', async () => {
+    const scene = await buildStage('waterfall_01');
+    const wall = scene.background.children.find((c) => c.factor === HORIZON.wallFactor && c.zIndex === 0.75);
+    const peaks = scene.background.children.find((c) => c.factor === HORIZON.peakFactor);
+    assert.ok(wall && peaks, 'wall and mountain layers');
+    assert.ok(peaks.children.length >= 2, 'two mountain ridges');
+    const L = stageLayout('waterfall_01');
+    // A layer of factor f slides f * camX: a 1920 px window sees it from 0 to f * (width - 1920) + 1920.
+    // Each piece's middle 80 % (its ragged ends trimmed) overlaps the next: no sky between them.
+    const spans = HORIZON.wall.map(([x, name, scale]) => [x - FILE_W[name] * scale * 0.4, x + FILE_W[name] * scale * 0.4]).sort((a, b) => a[0] - b[0]);
+    assert.ok(spans[0][0] <= 0 && spans.at(-1)[1] >= HORIZON.wallFactor * (L.width - 1920) + 1920);
+    for (let i = 1; i < spans.length; i += 1) assert.ok(spans[i][0] <= spans[i - 1][1], `gap at ${Math.round(spans[i - 1][1])}`);
+    for (const [, name] of HORIZON.wall) assert.ok(existsSync(join(root, `public/assets/decos/groddle/${name}.webp`)), name);
+    const rgb = (c) => [(c >> 16) & 255, (c >> 8) & 255, c & 255];
+    for (const t of [HORIZON.wallTint, HORIZON.wallLowTint]) assert.ok(rgb(t)[2] > rgb(t)[0] && rgb(t)[0] > rgb(t)[1], 'lavender');
+    assert.ok(HORIZON.mist.length >= 2);
+  });
+
+  it('seen from the spawn in a 408 px view the wall tops out ~two avatar heights over the feet, the peaks over it', () => {
+    const feet = stageLayout('waterfall_01').spawn.y;
+    const view = kit.ROOM_LAYER_VIEW_H;
+    const camY = feet - 0.75 * view;
+    const overFeet = (y, f) => feet - camY - (y + kit.roomLayerOffset(f, 0, camY, view).y - camY);
+    const tops = HORIZON.wall.map(([, name, scale, bottom]) => overFeet(bottom - FILE_H[name] * scale, HORIZON.wallFactor));
+    const mean = tops.reduce((a, v) => a + v, 0) / tops.length;
+    assert.ok(mean > 170 && mean < 280, `wall top ${Math.round(mean)} px over the feet`);
+    const highest = Math.max(...HORIZON.peaks.map(([, top]) => overFeet(top, HORIZON.peakFactor)));
+    assert.ok(highest > mean && highest < Math.max(...tops) + 80, 'the summits show over the wall\'s lower stretches, not far above it');
   });
 });

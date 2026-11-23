@@ -231,6 +231,7 @@ export function stageLayout(stage) {
       spawn: { x: 2980, y: 640 },
       quoins: [{ x: 1630, y: 860 - 70, type: 'xp' }, { x: 3120, y: 640 - 70, type: 'mood' }],
       intro: true,
+      horizon: true,
     };
   }
   if (stage === 'waterfall_02') {
@@ -556,17 +557,91 @@ function skyStops(kind) {
 /** Far cliffs: recovered Alakol cliffside decos, tinted to the grottos' lavender basalt. */
 const FAR_CLIFFS = ['cliffside_1a_al1', 'cliffside_1b_al1', 'cliffside_1c_al1', 'cliffside_1d_al1', 'cliff_face_skirt_01a_al1'];
 
+/**
+ * G1161: the Eastern Grotto's open sky (Snaps PIF210IIKF015FF_93299, PHVRLO0EBDC23R1_87410,
+ * PIF4UQ5VJM53UEO_92602, round3-levels-2026-10-29, reference only): behind the terraces a long
+ * far wall of lavender basalt columns stands ~two avatar heights over the feet, a pale lavender
+ * mountain range shows over its lower stretches, and warm white mist rises out of the chasm at its
+ * foot. Layer-local y, placed as kit.ROOM_LAYER_VIEW_H views put them (G999): with the feet at
+ * 640 (the spawn) the wall's top stands ~230 px over them, the peaks ~250-300 px.
+ * `wall`: [x, piece, scale, bottom] of the Alakol cliffsides (factor 0.25), tinted from the Snaps'
+ * wall (rgb 122-152, 104-129, 130-163 over the art's grey-tan); `peaks`: [x, top] of each summit
+ * (factor 0.1, with half-widths), the range's foot at `foot`; `mist`: [x, y, w, h] glows at the wall's foot.
+ */
+export const HORIZON = Object.freeze({
+  wallFactor: 0.25,
+  peakFactor: 0.1,
+  wallTint: 0xb4a2d6,
+  wallLowTint: 0xa392c4,
+  wall: Object.freeze([
+    [-160, 'cliffside_1a_al1', 0.56, 650], [300, 'cliffside_1b_al1', 0.6, 660], [640, 'cliffside_1c_al1', 0.62, 650],
+    [960, 'cliffside_1a_al1', 0.54, 665], [1380, 'cliffside_1b_al1', 0.56, 670], [1700, 'cliffside_1c_al1', 0.58, 660],
+    [2020, 'cliffside_1a_al1', 0.5, 680], [2440, 'cliffside_1b_al1', 0.52, 690], [2740, 'cliffside_1c_al1', 0.5, 690],
+  ]),
+  peakColor: 0xa99bbd,
+  peakFarColor: 0xbcaecb,
+  foot: 420,
+  // [x, top, half-width]: broad rounded summits that show over the wall's lower stretches only.
+  peaks: Object.freeze([[-60, 165, 260], [380, 115, 330], [860, 170, 240], [1240, 110, 360], [1720, 150, 280], [2160, 100, 340], [2560, 155, 260]]),
+  mist: Object.freeze([[520, 430, 900, 260], [1350, 445, 760, 220], [2150, 455, 820, 230]]),
+});
+
+/**
+ * The far mountain range as one filled ridge (factor-0.1 layer): at each x the highest of the
+ * summits' rounded humps (a cosine bump `half` wide each side), sampled every 16 px.
+ */
+export function peakRidgeY(peaks, foot, x) {
+  let y = foot;
+  for (const [px, top, half] of peaks) {
+    const t = Math.abs(x - px) / half;
+    if (t < 1) y = Math.min(y, foot - (foot - top) * (0.5 + 0.5 * Math.cos(Math.PI * t)));
+  }
+  return y;
+}
+
+function drawPeaks(PIXI, layer, peaks, foot, color) {
+  const g = new PIXI.Graphics();
+  const x0 = Math.min(...peaks.map(([x, , h]) => x - h)) - 40;
+  const x1 = Math.max(...peaks.map(([x, , h]) => x + h)) + 40;
+  g.moveTo(x0, foot + 600);
+  for (let x = x0; x <= x1; x += 16) g.lineTo(x, Math.round(peakRidgeY(peaks, foot, x)));
+  g.lineTo(x1, foot + 600);
+  g.closePath();
+  g.fill(color);
+  layer.addChild(g);
+}
+
+/** G1161: the Eastern Grotto's far wall, mountains and chasm mist (HORIZON). */
+function drawHorizon(PIXI, kit, root) {
+  const peaks = root.layer(HORIZON.peakFactor, 0.5);
+  drawPeaks(PIXI, peaks, HORIZON.peaks.map(([x, t, h]) => [x + 200, t - 15, h * 0.9]), HORIZON.foot, HORIZON.peakFarColor);
+  drawPeaks(PIXI, peaks, HORIZON.peaks, HORIZON.foot + 40, HORIZON.peakColor);
+  const wall = root.layer(HORIZON.wallFactor, 0.75);
+  for (const [i, [x, name, scale, bottom]] of HORIZON.wall.entries()) {
+    wall.addChild(kit.deco(PIXI, name, x, bottom, { scale, tint: HORIZON.wallTint, flip: i % 2 === 1 }));
+    // A lower course under each, so the wall runs down behind the terraces into the chasm.
+    wall.addChild(kit.deco(PIXI, FAR_CLIFFS[(i + 1) % 3], x + 150, bottom + 320, { scale: scale * 0.95, tint: HORIZON.wallLowTint, flip: i % 2 === 0 }));
+  }
+  for (const [x, y, w, h] of HORIZON.mist) {
+    const m = radial(PIXI, 'rgba(255,246,222,0.85)', 'rgba(255,240,215,0)', w, h);
+    m.x = x;
+    m.y = y;
+    wall.addChild(m);
+  }
+}
+
 function buildGrotto(ctx, stage) {
   const { PIXI, kit } = ctx;
   const L = stageLayout(stage);
   const root = kit.sceneRoot(PIXI, L.width, L.height);
   const sky = root.layer(0, 0);
   sky.addChild(kit.gradient(PIXI, skyStops(L.sky), 960, 520));
+  if (L.horizon) drawHorizon(PIXI, kit, root);
   const far = root.layer(0.25, 1);
   const mid = root.layer(0.5, 2);
   // Parallax: a layer of factor f shows world y at screen y - f * camY, so the
   // mesas sit just above the terraces whichever level the camera is on.
-  const rows = L.climb ? [520, 900, 1280] : [760];
+  const rows = L.horizon ? [] : L.climb ? [520, 900, 1280] : [760];
   for (const [r, bottom] of rows.entries()) {
     for (let i = 0; i < 8; i++) {
       const name = FAR_CLIFFS[(i + r) % FAR_CLIFFS.length];
