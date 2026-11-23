@@ -2814,9 +2814,44 @@
   "deployed": "2026-11-23"
  },
  "git": {
-  "commits": 3214,
+  "commits": 3222,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "The start card's project tile keeps its browser data through the featured project's store and adds no request wait"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "improve",
+    "text": "A full bag gets a dark backdrop in the pack row, behind its accent bar"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "new",
+    "text": "The Projects panel can sort by region"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "new",
+    "text": "The start card shows the featured street project online, with See the project"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "improve",
+    "text": "Hell's Bartender says where a Drink Ticket comes from whenever he turns you away"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "improve",
+    "text": "A work step refused for a Fancy Pick says it won't do and that the step takes a Pick"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "It Takes Two's quest card shows who clicks Help dig, so the digger knows the count is theirs"
+   },
    {
     "date": "2026-11-23",
     "kind": "fix",
@@ -2901,41 +2936,6 @@
     "date": "2026-11-23",
     "kind": "fix",
     "text": "Rock walls, hills and wallpapers drawn far over their size are sharp again"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "Jethimadh's beehive hills, ferns and bog willows draw Tiny Speck's own art, not small blurry exports"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "Sharp copies of reworked decos and the For Sale houses are sealed too"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "Vector decos no longer show light hairlines where two colours meet"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "Clouds, mist and fog on brightened layers stay see-through, as in 2012"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "Firebog's bottletree huts, the Peatland Moors leg and the root columns show their wood grain again"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "The level builder's street picture draws its sky and far layers again"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "Street skies show the gradient where Glitch painted it, so ground level sees the lower colours"
    }
   ]
  },
