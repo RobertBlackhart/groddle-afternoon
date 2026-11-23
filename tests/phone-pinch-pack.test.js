@@ -11,10 +11,10 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { MIN_PACK_HEIGHT, PHONE_CLOSEST_SHARE, VIEW_FLOOR_H, VIEW_HOLD_H, phoneStage, phoneZoomSpan, stageFor } from '../public/js/location-view.js?v=7cd08a76';
+import { MIN_PACK_HEIGHT, PHONE_CLOSEST_SHARE, VIEW_FLOOR_H, VIEW_HOLD_H, phoneStage, phoneZoomSpan, stageFor } from '../public/js/location-view.js?v=9f1380d7';
 import { PHONE_ZOOM_DEFAULT, PHONE_ZOOM_STORAGE_KEY, ZOOM_DEFAULT, ZOOM_STORAGE_KEY, createWorldZoom, phoneZoomLabel } from '../public/js/world-zoom.js?v=38816228';
 import { TAP_SLOP_PX, isWorldTap, pinchLevel } from '../public/js/touch-pinch.js?v=5bdb5971';
-import { signpostBoardAt } from '../public/js/street-render.js?v=b5099313';
+import { signpostBoardAt } from '../public/js/street-render.js?v=993b200b';
 import { MENU_ROWS } from '../public/js/ui/topbar.js?v=24c9426d';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

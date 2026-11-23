@@ -20,9 +20,9 @@
 import { existsSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { DECO_TWINS } from '../../public/js/street-render.js?v=b5099313';
-import { HIRES_DECOS } from '../../public/js/deco-hires-list.js?v=9044816d';
-import { SHARP_DECOS } from '../../public/js/deco-sharp-list.js?v=2fdf46bd';
+import { DECO_TWINS } from '../../public/js/street-render.js?v=993b200b';
+import { HIRES_DECOS } from '../../public/js/deco-hires-list.js?v=8f207e5f';
+import { SHARP_DECOS } from '../../public/js/deco-sharp-list.js?v=33bf93b4';
 import { ANIM_DECOS } from '../../public/js/deco-anim-list.js?v=ecfee655';
 import { isZoneTsid } from '../../public/js/zone-streets.js?v=b40010d5';
 import { layerRole } from '../../public/js/builder/layer-role.js?v=e585f610';

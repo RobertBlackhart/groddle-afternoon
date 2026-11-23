@@ -20,7 +20,7 @@ import { HOME_LIMITS } from '../public/js/homes-catalog.js?v=f3fe838d';
 import { createCultivationState, homeStreetLayout } from '../public/js/home-cultivation.js?v=0fc0b231';
 import { EXTERIOR_STYLES, streetLook } from '../public/js/home-styles.js?v=ec5d2f69';
 import { NEIGHBOURS, neighbourLayout } from '../public/js/neighbours.js?v=13f35acd';
-import { SCENE_STYLES, propPlan } from '../public/js/features/neighbour-scene.js?v=24ad4156';
+import { SCENE_STYLES, propPlan } from '../public/js/features/neighbour-scene.js?v=ea1c8717';
 import {
   DOORWAY_GAP,
   HOUSE_STYLE_KEYS,
@@ -31,7 +31,7 @@ import {
   streetNearSkip,
   streetTrimSpots,
   towerDoorway,
-} from '../public/js/features/homes-feature.js?v=874d0e25';
+} from '../public/js/features/homes-feature.js?v=715bfb41';
 
 const read = (rel) => readFileSync(join(import.meta.dirname, '..', 'public', 'js', rel), 'utf8');
 const maxLeft = HOME_LIMITS.MAX_FRONTYARD_LEFT_SEGMENTS - HOME_LIMITS.START_FRONTYARD_LEFT_SEGMENTS;

@@ -54,9 +54,9 @@ const { createHellState, croak, resurrect } = await import('../public/js/hell.js
 const { normalizeHellTicketsState, remoteGraveVisit } = await import('../public/js/hell-tickets.js?v=635b4677');
 const { createQuestState } = await import('../public/js/quests.js?v=90a2ee3d');
 const { hellFeature } = await import('../public/js/features/hell-feature.js?v=0f649865');
-const { hellTicketsFeature } = await import('../public/js/features/hell-tickets-feature.js?v=94eec212');
-const { gravesMpFeature } = await import('../public/js/features/graves-mp-feature.js?v=78e5c8c9');
-const { FEATURES } = await import('../public/js/features/index.js?v=49aaf4d2');
+const { hellTicketsFeature } = await import('../public/js/features/hell-tickets-feature.js?v=83a36cbe');
+const { gravesMpFeature } = await import('../public/js/features/graves-mp-feature.js?v=23975acb');
+const { FEATURES } = await import('../public/js/features/index.js?v=5457d00e');
 
 const STREET = 'GLI2V0UN7RD1T2J';
 const HELL_ONE = 'GA5PPFP86NF2FOS';
