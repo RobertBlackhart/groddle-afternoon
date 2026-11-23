@@ -102,7 +102,7 @@ import {
   streetNoteSeeds,
   takePinnedNote,
   writePaperNote,
-} from '../street-furniture.js?v=c5b73821';
+} from '../street-furniture.js?v=071203fc';
 import {
   CHORES,
   NEIGHBOURS,
@@ -124,7 +124,7 @@ import {
 } from '../neighbours.js?v=13f35acd';
 import { buildNeighbourBackground, neighbourLoadingColors, neighbourPlatforms } from './neighbour-scene.js?v=23d09612';
 import { closeNoteView, noteViewOpen, openBoardView, openNotePicker, openNoteView, openReportView } from '../note-view.js?v=eca7de52';
-import { BOARD_MP_TEXT, boardByline } from '../boards-mp.js?v=1e7cae45';
+import { BOARD_MP_TEXT, boardByline } from '../boards-mp.js?v=ba766683';
 import { textureFromUrl } from '../textures.js?v=729b29ea';
 import { butlerApi } from './butler-feature.js?v=16aa72a7';
 import { neighboursMpApi } from './neighbours-mp-feature.js?v=155b3db6';

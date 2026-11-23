@@ -46,7 +46,7 @@ import { DROP_TABLES, applyDropResult, rollDropTable } from '../public/js/drop-t
 import { countItem, removeItem } from '../public/js/inventory.js?v=6414dbdc';
 import { canUseTool } from '../public/js/tools.js?v=4156bba8';
 import { MACHINE_EXTRA_WAIT_MS as MAKING_EXTRA_WAIT_MS, MAKING_TOOL_SKILLS, RECIPE_CATALOG, canCraft, craftRecipe, ensureMakingItems, loadRecipeCatalogFromFile } from '../public/js/making.js?v=d28b2a24';
-import { fixedFurniturePoints, furniturePlacementGroups } from '../public/js/street-furniture.js?v=c5b73821';
+import { fixedFurniturePoints, furniturePlacementGroups } from '../public/js/street-furniture.js?v=071203fc';
 import { worldToScreen } from '../public/js/street-model.js?v=a9a05f9d';
 import { nearestSurfaceY } from '../public/js/walk-surface.js?v=3c919d5b';
 import { platformsScreen } from '../public/js/street-model.js?v=a9a05f9d';

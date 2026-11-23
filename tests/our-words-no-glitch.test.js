@@ -24,7 +24,7 @@ import {
   noteContent,
   normalizeNote,
   refreshBoardPins,
-} from '../public/js/street-furniture.js?v=c5b73821';
+} from '../public/js/street-furniture.js?v=071203fc';
 import { UNNAMED_PLAYER, playerNameOr } from '../public/js/player-names.js?v=f9b78094';
 import { listPlayerTarget } from '../public/js/ui/player-menu.js?v=a6a2650c';
 import { BUDDY_TEXT, normalizeList } from '../public/js/buddies.js?v=16407f62';

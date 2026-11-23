@@ -25,7 +25,7 @@ import {
   isRemakeNote,
   pinNote,
   refreshBoardPins,
-} from '../public/js/street-furniture.js?v=c5b73821';
+} from '../public/js/street-furniture.js?v=071203fc';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const street = (tsid) => JSON.parse(readFileSync(join(root, 'assets/streets', `${tsid}.json`), 'utf8'));
@@ -107,7 +107,7 @@ describe('Hauki Seeks Manor hangs its board right of the lift (blog post 4837446
   const hauki = street('GA9H1V6OGRU2FSB');
 
   it('pins the board to the measured wall spot, in screen space', () => {
-    assert.deepEqual(Object.keys(BOARD_SPOTS), ['GA9H1V6OGRU2FSB']);
+    assert.deepEqual(Object.keys(BOARD_SPOTS), ['GA9H1V6OGRU2FSB', 'GIFI4FP9GRU2CC8']);
     const row = boardSpotRow({ [BOARD_CLASS]: 1, note: 2 }, hauki);
     const [p] = fixedFurniturePoints(row, BOARD_CLASS);
     assert.deepEqual({ x: p.x, y: p.y }, { x: 390 - hauki.bounds.l, y: -202 - hauki.bounds.t });
@@ -135,5 +135,20 @@ describe('Hauki Seeks Manor hangs its board right of the lift (blog post 4837446
     const own = { [BOARD_CLASS]: 1, at: { [BOARD_CLASS]: [{ x: 5, y: 6 }] } };
     assert.equal(boardSpotRow(own, hauki), own);
     assert.equal(boardSpotRow(null, hauki), null);
+  });
+});
+
+describe('Sabudana Drama Towers hangs its board right of the lift (johnexploresur post 40940170155, G1153)', () => {
+  const sabudana = street('GIFI4FP9GRU2CC8');
+
+  it('pins the board to the measured wall spot, right of the lift and clear of the doors', () => {
+    const row = boardSpotRow({ [BOARD_CLASS]: 1 }, sabudana);
+    const [p] = fixedFurniturePoints(row, BOARD_CLASS);
+    assert.deepEqual({ x: p.x, y: p.y }, { x: 349 - sabudana.bounds.l, y: -214 - sabudana.bounds.t });
+    const half = BOARD_ART.w / 2;
+    const [sign] = sabudana.signposts;
+    // The lift's door and plate end 59 px right of its foot (street-render.js SIGN_DECO_HIT).
+    assert.ok(p.x - half > sign.x - sabudana.bounds.l + 59, 'right of the lift door');
+    for (const door of sabudana.doors || []) assert.ok(Math.abs(door.x - p.x) > half + (door.w || 0) / 2, door.connect?.label);
   });
 });

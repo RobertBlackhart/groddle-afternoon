@@ -35,7 +35,7 @@ import {
   teleporterPhase,
 } from '../public/js/party-spaces.js?v=b026ad60';
 import { OWNED_STREETS } from '../public/js/location-events.js?v=44ee645e';
-import { populationForStreet } from '../public/js/street-ecology.js?v=1401a97c';
+import { populationForStreet } from '../public/js/street-ecology.js?v=9ca2d04e';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const publicDir = join(here, '../public');

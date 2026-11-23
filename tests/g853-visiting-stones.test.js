@@ -21,7 +21,7 @@ import {
   populationForStreet,
   setStreetEcologyCatalog,
   streetReservedSpots,
-} from '../public/js/street-ecology.js?v=1401a97c';
+} from '../public/js/street-ecology.js?v=9ca2d04e';
 import {
   FURNITURE_GROUPS,
   STONE_DEAD_END_PX,
@@ -31,7 +31,7 @@ import {
   measuredStones,
   stoneDeadEndZone,
   stoneSpotRow,
-} from '../public/js/street-furniture.js?v=c5b73821';
+} from '../public/js/street-furniture.js?v=071203fc';
 import { STONE_SPOTS } from '../public/js/stone-spots-data.js?v=3373caf6';
 import { STONE_SEAT_PX } from '../tools/snap-placements/stone-spots.mjs';
 import { creatureRequests, setCreatureEcology } from '../tools/build-realtime-objects.mjs';

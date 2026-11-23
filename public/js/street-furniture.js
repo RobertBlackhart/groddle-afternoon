@@ -792,10 +792,15 @@ export const RETIRED_PIN_REWORDS = Object.freeze({
  * Tribute Blog's lobby shot (post 48374460546, the whole 1500 px lobby at
  * 1280 px) has it on the wall right of the lift, its frame 884-1061 x
  * 254-367 in the shot, so centre x 390, frame foot at screen y 430 (the art's
- * frame ends 10 px above its anchor). Other boards keep the planner's spot.
+ * frame ends 10 px above its anchor). Sabudana Drama Towers (G1153): johnexploresur's
+ * Tumblr lobby shot (post 40940170155, the whole 1500 x 642 lobby at 1280 x 548,
+ * research/community-2026-11-22/tumblr/johnexploresur) has it on the wall right of the lift
+ * too, its frame 850-1026 x 246-357, so centre x 349, frame foot at screen y 418. Other boards
+ * keep the planner's spot.
  */
 export const BOARD_SPOTS = Object.freeze({
   GA9H1V6OGRU2FSB: Object.freeze([Object.freeze({ x: 390, y: -202 })]),
+  GIFI4FP9GRU2CC8: Object.freeze([Object.freeze({ x: 349, y: -214 })]),
 });
 
 /**

@@ -32,7 +32,7 @@ import {
   setStreetEcologyCatalog,
   streetReservedSpots,
   walkInScenery,
-} from '../public/js/street-ecology.js?v=1401a97c';
+} from '../public/js/street-ecology.js?v=9ca2d04e';
 import { getResourceNodeDef } from '../public/js/resource-nodes.js?v=cf9aae18';
 import { RESOURCE_PLACEMENT_CLEARANCE, resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=f612340f';
 import { placementRequests } from '../tools/build-realtime-objects.mjs';
