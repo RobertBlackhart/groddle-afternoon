@@ -39,6 +39,22 @@ describe('edge to edge on a phone', () => {
       assert.match(block, new RegExp(`--safe-${side[0]}: env\\(safe-area-inset-${side}, 0px\\);`));
     }
   });
+  // #595 follow-up (G1177): the installed iPhone app (iOS 26+) fades its status bar past the inset,
+  // over the pills. Not checkable without an iPhone: the rule's shape is.
+  it('the installed app upright on a phone takes 14 px more at the top, nothing else changes', () => {
+    const media = '@media (display-mode: standalone) and (orientation: portrait) {';
+    const i = block.indexOf(media);
+    assert.ok(i >= 0, 'a standalone, portrait rule');
+    const body = block.slice(i, block.indexOf('}\n}', i) + 3);
+    assert.match(body, /:root\.touch-phone \{ --safe-t: calc\(env\(safe-area-inset-top, 0px\) \+ min\(14px, env\(safe-area-inset-top, 0px\) \* 1000\)\); \}/);
+    assert.doesNotMatch(body, /--safe-[rbl]/, 'only the top inset grows');
+    // Outside that media rule --safe-t stays the plain inset (Safari, sideways, computers), and the
+    // dark strip under the status bar is as tall as --safe-t, so it grows with it.
+    const plain = block.slice(0, i);
+    assert.match(plain, /:root \{\n  --safe-t: env\(safe-area-inset-top, 0px\);/);
+    assert.equal((block.match(/--safe-t:/g) || []).length, 2, 'set in two places only');
+    assert.match(block, /:root\.touch-phone body::before \{[^}]*height: var\(--safe-t\);/);
+  });
   it('the top bar, the name, the drawer, the pack, the buffs and the route card keep inside it', () => {
     const bar = rule('html:not(.stage-pinned)[data-ui="modern"] #wrap > .top-bar');
     assert.match(bar, /top: calc\(var\(--space-1\) \+ var\(--safe-t\)\)/);
