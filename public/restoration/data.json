@@ -2814,9 +2814,14 @@
   "deployed": "2026-11-22"
  },
  "git": {
-  "commits": 3110,
+  "commits": 3113,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-22",
+    "kind": "fix",
+    "text": "Furniture saved before the depth change goes to the line nearest where it stood"
+   },
    {
     "date": "2026-11-22",
     "kind": "fix",
@@ -2931,11 +2936,6 @@
     "date": "2026-11-22",
     "kind": "fix",
     "text": "Saved homes move onto Glitch's own houses: Meadow to the Groddle Cottage, Firebog to the Firebog House, Uralia to the Tiny Hominid House"
-   },
-   {
-    "date": "2026-11-22",
-    "kind": "fix",
-    "text": "The \"!\" in a street project's bubble is sharp instead of blurry"
    }
   ]
  },
