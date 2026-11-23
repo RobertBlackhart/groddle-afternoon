@@ -2814,9 +2814,19 @@
   "deployed": "2026-11-23"
  },
  "git": {
-  "commits": 3233,
+  "commits": 3237,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-23",
+    "kind": "new",
+    "text": "Visitors see what the owner keeps on their house's shelves and floor and on their Tower floors"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "new",
+    "text": "Things dropped in a house, its back yard or on a Tower floor are seen and picked up by everyone there"
+   },
    {
     "date": "2026-11-23",
     "kind": "new",
@@ -2926,19 +2936,9 @@
     "date": "2026-11-23",
     "kind": "fix",
     "text": "The Bureaucracy clerks sell Card-Carrying Qualifications to badge holders too, for street projects"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "improve",
-    "text": "A start-card tip says the Calendar is found from the time in the top bar"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "improve",
-    "text": "The Good Neighbor Feat says each Butler you leave a package with is worth 2 points"
    }
   ]
  },
- "tests": 1300,
+ "tests": 1301,
  "generatedAt": "2026-11-23"
 }
