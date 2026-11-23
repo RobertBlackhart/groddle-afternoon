@@ -17,7 +17,7 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { HOME_LIMITS } from '../public/js/homes-catalog.js?v=cce7f5a7';
+import { HOME_LIMITS } from '../public/js/homes-catalog.js?v=f3fe838d';
 import {
   createBackYardState,
   createCultivationState,
@@ -28,7 +28,7 @@ import {
   listCultivationClasses,
   nearestFreeRx,
   placementCheck,
-} from '../public/js/home-cultivation.js?v=72615a1b';
+} from '../public/js/home-cultivation.js?v=0fc0b231';
 import { EXTERIOR_STYLES, INTERIOR_STYLES, streetLook, yardLook } from '../public/js/home-styles.js?v=ec5d2f69';
 import {
   FRINGE_CORE,
@@ -42,7 +42,7 @@ import {
   landscapeNearSpots,
   streetNearSkip,
   streetTrimSpots,
-} from '../public/js/features/homes-feature.js?v=b0820c6c';
+} from '../public/js/features/homes-feature.js?v=6b903d4f';
 
 const read = (rel) => readFileSync(join(import.meta.dirname, '..', 'public', 'js', rel), 'utf8');
 const RICH = { level: 60, imagination: 1e9 };

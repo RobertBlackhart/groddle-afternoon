@@ -97,6 +97,13 @@
   "foot": -21,
   "top": 1
  },
+ "furniture_door": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_door/furniture_door.swf",
+  "sha": "d41fc11acb2630a7",
+  "w": 118,
+  "h": 170,
+  "foot": -4
+ },
  "furniture_fireplace": {
   "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_fireplace/furniture_fireplace.swf",
   "sha": "234829d8158bbc6b",
@@ -105,6 +112,34 @@
   "foot": -24,
   "top": 7
  },
+ "furniture_floorlamp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_floorlamp/furniture_floorlamp.swf",
+  "sha": "f726b67237d5ff8f",
+  "w": 50,
+  "h": 176,
+  "foot": -15
+ },
+ "furniture_largebackfloordeco": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_largebackfloordeco/furniture_largebackfloordeco.swf",
+  "sha": "7876d6df88bb91ad",
+  "w": 119,
+  "h": 166,
+  "foot": -23
+ },
+ "furniture_largefrontfloordeco": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_largefrontfloordeco/furniture_largefrontfloordeco.swf",
+  "sha": "734642edb49712fc",
+  "w": 155,
+  "h": 143,
+  "foot": -9
+ },
+ "furniture_largetabledeco": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_largetabledeco/furniture_largetabledeco.swf",
+  "sha": "8b097227dce87149",
+  "w": 99,
+  "h": 83,
+  "foot": -11
+ },
  "furniture_loveseat": {
   "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_loveseat/furniture_loveseat.swf",
   "sha": "78ddcf8409809574",
@@ -112,6 +147,20 @@
   "h": 99,
   "foot": -22,
   "top": 0
+ },
+ "furniture_roomdeco": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_roomdeco/furniture_roomdeco.swf",
+  "sha": "8a3cf7f381fea38d",
+  "w": 119,
+  "h": 166,
+  "foot": -23
+ },
+ "furniture_rug": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_rug/furniture_rug.swf",
+  "sha": "35fc095f4604bd8e",
+  "w": 211,
+  "h": 65,
+  "foot": -24
  },
  "furniture_shelf": {
   "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_shelf/furniture_shelf.swf",
@@ -128,6 +177,27 @@
   "h": 54,
   "foot": -18,
   "top": 0
+ },
+ "furniture_smallbackfloordeco": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_smallbackfloordeco/furniture_smallbackfloordeco.swf",
+  "sha": "47b245e09905c717",
+  "w": 94,
+  "h": 86,
+  "foot": -18
+ },
+ "furniture_smallfrontfloordeco": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_smallfrontfloordeco/furniture_smallfrontfloordeco.swf",
+  "sha": "e44b76447efda8e6",
+  "w": 58,
+  "h": 93,
+  "foot": -11
+ },
+ "furniture_smalltabledeco": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_smalltabledeco/furniture_smalltabledeco.swf",
+  "sha": "ee4ce7416c6d738c",
+  "w": 49,
+  "h": 62,
+  "foot": -6
  },
  "furniture_sofa": {
   "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_sofa/furniture_sofa.swf",
@@ -152,5 +222,19 @@
   "h": 85,
   "foot": -25,
   "top": 1
+ },
+ "furniture_tabledeco": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_tabledeco/furniture_tabledeco.swf",
+  "sha": "2dd312d16480059a",
+  "w": 49,
+  "h": 62,
+  "foot": 0
+ },
+ "furniture_tablelamp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_tablelamp/furniture_tablelamp.swf",
+  "sha": "5591aa17d981390b",
+  "w": 39,
+  "h": 65,
+  "foot": 0
  }
 }

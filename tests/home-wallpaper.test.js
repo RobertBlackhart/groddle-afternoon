@@ -3,7 +3,7 @@ import { describe, it } from 'node:test';
 import { createHash } from 'node:crypto';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { HOME_TEXTURE_CONFIGS } from '../public/js/homes-catalog.js?v=cce7f5a7';
+import { HOME_TEXTURE_CONFIGS } from '../public/js/homes-catalog.js?v=f3fe838d';
 import { WALLPAPER_MAPS, WALLPAPER_PIECES } from '../public/js/home-wallpaper-art.js?v=129c514f';
 import {
   GRODDLE_FRAME,
@@ -29,7 +29,7 @@ import {
   normalizeHomeDecorState,
   setHomeTexture,
   wallSlots,
-} from '../public/js/home-decor.js?v=f6d82a18';
+} from '../public/js/home-decor.js?v=485ce3c3';
 import { TOWER_GEO } from '../public/js/home-tower.js?v=18889f7a';
 
 const root = join(import.meta.dirname, '..');

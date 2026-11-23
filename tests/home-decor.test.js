@@ -8,7 +8,7 @@ import {
   FURNITURE_STORE,
   HOME_LIMITS,
   HOME_TEXTURE_CONFIGS,
-} from '../public/js/homes-catalog.js?v=cce7f5a7';
+} from '../public/js/homes-catalog.js?v=f3fe838d';
 import {
   INTERIOR,
   SEGMENT_W,
@@ -31,7 +31,7 @@ import {
   restackFurniture,
   setHomeTexture,
   snapPlacement,
-} from '../public/js/home-decor.js?v=f6d82a18';
+} from '../public/js/home-decor.js?v=485ce3c3';
 
 const root = join(import.meta.dirname, '..', 'public');
 
@@ -121,7 +121,9 @@ describe('decorating the house', () => {
     const inv = { furniture_chair: 1, furniture_shelf: 1, furniture_ceilinglamp: 1, furniture_rug: 1 };
     const a = placeFurniture(state, inv, 'furniture_chair', { x: 400, y: 100 });
     assert.equal(a.from, 'storage');
-    assert.equal(a.item.y, INTERIOR.floorY);
+    // G1136: set down high up the room, a chair goes to the nearest of its plats, the back wall's base.
+    assert.equal(a.item.plat, 'bookshelf');
+    assert.equal(a.item.y, INTERIOR.floorY - 65 + 17);
     const b = placeFurniture(state, inv, 'furniture_chair', { x: 600 });
     assert.equal(b.from, 'pack');
     assert.equal(inv.furniture_chair, 0);
@@ -146,7 +148,7 @@ describe('decorating the house', () => {
     const table = placeFurniture(state, {}, 'furniture_table', { x: 500 }).item;
     const lamp = placeFurniture(state, {}, 'furniture_tablelamp', { x: 520 }).item;
     assert.equal(lamp.on, table.id);
-    assert.equal(lamp.y, INTERIOR.floorY - 68);
+    assert.equal(lamp.y, table.y - 68);
     moveFurniture(state, table.id, { x: 800 });
     assert.equal(lamp.x, 820);
     const order = renderOrder(state).map((row) => row.id);

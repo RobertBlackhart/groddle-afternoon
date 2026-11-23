@@ -111,7 +111,7 @@ import {
   CULTIVATION_CLASSES,
   FURNITURE_CATALOG,
   FURNITURE_STORE,
-} from '../homes-catalog.js?v=cce7f5a7';
+} from '../homes-catalog.js?v=f3fe838d';
 import {
   INTERIOR,
   arrangeStarterRoom,
@@ -152,7 +152,7 @@ import {
   textureConfig,
   unexpandInterior,
   UNEXPAND_TEXT,
-} from '../home-decor.js?v=f6d82a18';
+} from '../home-decor.js?v=485ce3c3';
 import { isTrophyDecor, placedTrophies } from '../home-trophies.js?v=4eb640c3';
 import { applyBonusUpgrade, applyUpgrade, bonusUpgradeLine, currantsText, hasUpgrades, pieceLabel, rollBonusUpgrade, upgradeRow, upgradeVerb, UPGRADE_TEXT } from '../furniture-upgrades.js?v=6cc0e2da';
 import { LONG_PRESS_MS, LONG_PRESS_SLOP, ECHO_MS, createContextMenu } from '../ui/context-menu.js?v=22c44bae';
@@ -211,7 +211,7 @@ import {
   quoteYardExpansion,
   removeCultivation,
   towerItem,
-} from '../home-cultivation.js?v=72615a1b';
+} from '../home-cultivation.js?v=0fc0b231';
 import { PROTO_DEPLETED_ART } from '../home-proto-art.js?v=9309e9f3';
 import { DISPATCHER_HALF, DISPATCHER_TEXT, MOVABLE_FIXTURES, MOVABLE_FIXTURE_IDS, dispatcherAway, fixtureFits, fixtureText, savedFixtureRx, signpostX } from '../home-street-fixtures.js?v=bad831a1';
 import { displayTopOf, itemstackOverlayPoint, overlayAlpha, overlayLifeMs, playPoofIn, trackOverlay } from '../overlay-art.js?v=95f23414';
@@ -293,7 +293,7 @@ import {
   quoteHouseExpansion,
   quoteHouseUnexpand,
   unexpandHouseFloors,
-} from '../home-floors.js?v=8ee8cfe9';
+} from '../home-floors.js?v=196c454e';
 import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import { anchorBottomCentre, standOnFeet } from '../sprite-feet.js?v=6ffaec43';
 import { autoplayLog } from '../autoplay-log.js?v=55bb4823';
@@ -4571,7 +4571,7 @@ function saveFurnitureUpgrade(engine, id, upgradeId) {
   engine.achievement?.(result.counter, 1);
   furnupLast = `${item.classTsid}:${item.upgradeId || 0}`;
   // Tabletop decor follows the new top (the source nudges what stood on the old plats).
-  moveFurniture(decor, item.id, { x: item.x, y: item.y });
+  moveFurniture(decor, item.id, { x: item.x, y: item.y, plat: item.plat });
   engine.playSound?.('ITEM_DROP', { volume: 0.4 });
   renderFurniture(engine);
   renderBar(engine);
@@ -4952,7 +4952,7 @@ function beginPlacing(engine, classTsid, from = null, style = null) {
   renderBar(engine);
 }
 
-function beginMove(engine, id) {
+function beginMove(engine, id, grab = null) {
   const item = placedItem(decor, id);
   if (!item) return;
   if (item.classTsid === DOOR_CLASS) {
@@ -4963,6 +4963,13 @@ function beginMove(engine, id) {
     }
   }
   placing = { kind: 'furniture', classTsid: item.classTsid, moveId: id, upgradeId: item.upgradeId || '' };
+  // G1136: HandOfDecorator.as 1280-1286 drags a piece by where it was grabbed (drag_offset_pt), so a
+  // piece picked up by its middle stays on its plat until it is pulled to another.
+  // `grab` is where a press on the piece began (world); else the pointer, when it is on the piece.
+  const b = furnitureBounds(item);
+  const at = grab || (pointer.inside ? pointer : null);
+  const onPiece = (p) => p.x - roomX0() >= b.x && p.x - roomX0() <= b.x + b.w && p.y >= b.y && p.y <= b.y + b.h;
+  if (at && item.slot === 'floor' && (grab || onPiece(at))) placing.grabDy = item.y - at.y;
   carryBy = 'pointer';
   setHover(engine, null);
   makeGhost(engine);
@@ -5337,11 +5344,17 @@ function makeGhost(engine) {
   updateGhost(engine);
 }
 
-/** Where what you carry is now (world x, y): the keys' point, the pointer, or at your feet. */
+/** The pointer as the carried piece's foot: offset by where a moved piece was grabbed (beginMove). */
+function grabbed(p) {
+  return placing?.grabDy ? { ...p, y: p.y + placing.grabDy } : p;
+}
+
+/** Where what you carry is now (world x, y): the keys' point, the pointer, or at your feet (a moved floor piece keeps its plat). */
 function carryAt(engine) {
   if (carryBy === 'keys' && keyCarry) return keyCarry;
-  if (carryBy !== 'avatar' && pointer.inside) return pointer;
-  return { x: engine.player?.x ?? 400, y: GROUND_Y - 120 };
+  if (carryBy !== 'avatar' && pointer.inside) return grabbed(pointer);
+  const moved = placing?.kind === 'furniture' && placing.moveId ? placedItem(decor, placing.moveId) : null;
+  return { x: engine.player?.x ?? 400, y: moved?.slot === 'floor' ? moved.y : GROUND_Y - 120 };
 }
 
 function updateGhost(engine) {
@@ -5462,7 +5475,7 @@ function carryWithKeys(engine, item = null) {
   carryBy = 'keys';
   const view = engine.camera;
   keyCarry = item
-    ? { x: item.x + roomX0(), y: item.slot === 'ceiling' ? item.y : item.y - 40 }
+    ? { x: item.x + roomX0(), y: item.slot === 'ceiling' || item.slot === 'floor' ? item.y : item.y - 40 }
     : { x: Math.round((view?.x || 0) + (view?.w || 960) / 2), y: furnitureDef(placing.classTsid)?.slot === 'wall' ? INTERIOR.wallTop + 160 : INTERIOR.floorY - 40 };
   updateGhost(engine);
   syncFloating(engine, true);
@@ -5524,7 +5537,7 @@ function endDrag(engine, e, { cancelled = false, overTray = false } = {}) {
     return cancelCarry(engine);
   }
   if (was.over !== 'room') return cancelCarry(engine);
-  const res = placeAtPointer(engine, placing.kind === 'furniture' ? toRoom(pointer) : pointer);
+  const res = placeAtPointer(engine, placing.kind === 'furniture' ? toRoom(grabbed(pointer)) : pointer);
   engine.setData('homeDropLast', res?.ok ? 'placed' : `refused:${res?.reason || ''}`);
   // Outside Decorate nothing stays selected: there is no bar to act on it.
   if (was.loose) {
@@ -6491,7 +6504,7 @@ function bindPointer(engine) {
         return;
       }
       if (press.kind === 'fixture') beginFixtureMove(engine, press.id);
-      else beginMove(engine, press.id);
+      else beginMove(engine, press.id, worldPoint(engine, { clientX: press.x, clientY: press.y }));
       if (!placing) {
         press = null;
         return;
@@ -6578,7 +6591,7 @@ function bindPointer(engine) {
       // Furniture takes room x; cultivations take world x.
       carryBy = 'pointer';
       updateGhost(engine);
-      const res = placeAtPointer(engine, placing.kind === 'furniture' ? toRoom(p) : p);
+      const res = placeAtPointer(engine, placing.kind === 'furniture' ? toRoom(grabbed(p)) : p);
       engine.setData('homeDropLast', res?.ok ? 'placed' : `refused:${res?.reason || ''}`);
       return;
     }
@@ -7250,7 +7263,7 @@ function demoSetup(engine) {
       },
       place: (classTsid, x) => {
         decor.storage[classTsid] = (decor.storage[classTsid] || 0) + 1;
-        const res = placeFurniture(decor, engine.inv, classTsid, { x, y: INTERIOR.floorY }, { from: 'storage' });
+        const res = placeFurniture(decor, engine.inv, classTsid, { x }, { from: 'storage' });
         setTimeout(() => engine.refreshHomeScene?.(), 0);
         return res.item?.id ?? null;
       },

@@ -75,7 +75,8 @@ describe('G369 a click stays a click', () => {
 describe('G369 the locks stay', () => {
   it('the drag goes through beginMove, with the Door\'s lift check', () => {
     const move = bind.slice(bind.indexOf('const onPressMove'), bind.indexOf('const endLoosePress'));
-    assert.match(move, /else beginMove\(engine, press\.id\);\n\s+if \(!placing\) \{/);
+    // G1136: carried by where the press began (HandOfDecorator drag_offset_pt).
+    assert.match(move, /else beginMove\(engine, press\.id, worldPoint\(engine, \{ clientX: press\.x, clientY: press\.y \}\)\);\n\s+if \(!placing\) \{/);
     assert.match(fn(homes, '\nfunction beginMove('), /doorLiftCheck\(floors, houseFloorHere\(\) \?\? -1, id, \{ inProgress: doorJobStarted\(\) \}\)/);
   });
 

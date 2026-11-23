@@ -1,24 +1,27 @@
 /**
- * G1136 / #612: a placed Door stands at the base of the back wall, 65 px
- * behind the walk line, on every floor (inc_homes.js homes_rebuild_floor
- * 749-750: doors at b - (108 + frame_height); the walk line, where every other
- * floor piece stands, at b - (43 + frame_height)). Saved Doors move there on
- * load, and a Door draws behind the room's other floor pieces.
+ * G1136 / #612: a placed Door stands at the base of the back wall, its point
+ * 65 px behind the walk line, on every floor (inc_homes.js homes_rebuild_floor
+ * 749-750: doors at b - (108 + frame_height); the walk line at b - (43 +
+ * frame_height)). The art's bottom is its base SWF's foot (4 px) under that.
+ * Saved Doors move there on load, and a Door draws behind the room's other
+ * floor pieces (CHASSIS). Every other floor piece's depth: g1136-furniture-depth.
  * Run: node --test tests/g1136-door-back-wall.test.js
  */
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { DOOR_CLASS, addFloor, createFloorsState } from '../public/js/home-floors.js?v=8ee8cfe9';
+import { DOOR_CLASS, addFloor, createFloorsState } from '../public/js/home-floors.js?v=196c454e';
 import {
   DOOR_FOOT_Y,
   INTERIOR,
+  PLAT_DEPTH,
   createHomeDecorState,
   floorRestY,
   moveFurniture,
   normalizeHomeDecorState,
   placeFurniture,
   renderOrder,
-} from '../public/js/home-decor.js?v=f6d82a18';
+  restY,
+} from '../public/js/home-decor.js?v=485ce3c3';
 
 function houseWithDoor(x = 600) {
   const ground = createHomeDecorState({ starterKit: true });
@@ -30,14 +33,16 @@ function houseWithDoor(x = 600) {
 }
 
 describe('G1136: the Door stands at the back wall', () => {
-  it('is 65 px behind the walk line; other floor pieces stay on it', () => {
-    assert.equal(DOOR_FOOT_Y, INTERIOR.floorY - 65);
+  it('stands on the bookshelf plat, 65 px behind the walk line; a chair on its own plat', () => {
+    assert.equal(PLAT_DEPTH.bookshelf, -65);
+    assert.equal(DOOR_FOOT_Y, INTERIOR.floorY - 65 + 4);
     assert.equal(floorRestY(DOOR_CLASS), DOOR_FOOT_Y);
-    assert.equal(floorRestY('furniture_chair'), INTERIOR.floorY);
     const { ground, door } = houseWithDoor();
     assert.equal(door.y, DOOR_FOOT_Y);
+    assert.equal(door.plat, 'bookshelf');
     const chair = placeFurniture(ground, {}, 'furniture_chair', { x: 300, y: INTERIOR.floorY });
-    assert.equal(chair.item.y, INTERIOR.floorY);
+    assert.equal(chair.item.plat, 'chair');
+    assert.equal(chair.item.y, restY('furniture_chair', 'chair'));
   });
 
   it('stays there when moved', () => {
@@ -56,7 +61,7 @@ describe('G1136: the Door stands at the back wall', () => {
     assert.equal(res.decor.placed.find((r) => r.id === res.link.down).y, DOOR_FOOT_Y);
   });
 
-  it('a saved Door on the walk line moves back on load; a saved chair does not', () => {
+  it('a saved Door on the walk line moves back on load, and a saved chair to its own plat', () => {
     const saved = {
       geo: 2,
       starterKit: true,
@@ -68,7 +73,7 @@ describe('G1136: the Door stands at the back wall', () => {
     };
     const state = normalizeHomeDecorState(saved);
     assert.equal(state.placed.find((r) => r.id === 1).y, DOOR_FOOT_Y);
-    assert.equal(state.placed.find((r) => r.id === 2).y, INTERIOR.floorY);
+    assert.equal(state.placed.find((r) => r.id === 2).y, restY('furniture_chair', 'chair'));
     // Back to front: the Door before the chair, though its z is higher.
     assert.deepEqual(renderOrder(state).map((r) => r.id), [1, 2]);
   });

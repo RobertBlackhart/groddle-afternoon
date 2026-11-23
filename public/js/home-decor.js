@@ -50,7 +50,7 @@ import {
   FURNITURE_STARTER_KIT,
   HOME_LIMITS,
   HOME_TEXTURE_CONFIGS,
-} from './homes-catalog.js?v=cce7f5a7';
+} from './homes-catalog.js?v=f3fe838d';
 import { cleanHistory, cleanUpgradeId, upgradeArt, upgradeRow } from './furniture-upgrades.js?v=6cc0e2da';
 import { SDB_COUNT_MAX, SDB_PRICE_MAX, isCabinetClass, normalizeContents, storagePickupLock } from './home-storage.js?v=b0225465';
 import { stackMaxOf } from './pack-slots.js?v=d9ab4a0b';
@@ -91,18 +91,72 @@ export const TOWER_ROOM = Object.freeze({
  */
 export const PLACEMENT_INSET = Object.freeze({ ceiling: 10, wall: 10, bookshelf: 0, chair: -10, rug: -42, front: -20 });
 /**
- * G1136 (#612): a Door stands at the base of the back wall, 65 px behind the
- * walk line (inc_homes.js homes_rebuild_floor 749-750: doors at b - (108 +
- * frame_height), the walk line at b - (43 + frame_height)). Every other floor
- * piece still stands on the walk line.
+ * G1136 (#612): the placement plats a floor or rug piece stands on, px from the walk line
+ * (inc_homes.js homes_rebuild_floor 1497-1563, tower.js 452-458 through inc_geo_builder.js
+ * geo_builder_room_plats 122-182): bookshelf at b - (108 + frame_height), chair at 73, rug at 43
+ * and front at 23, the walk line itself (the avatars' floor platform) at 43 (inc_homes.js 927-931,
+ * tower.js 273). Placed Doors go to the bookshelf line too (inc_homes.js 749-750). The original
+ * stood a piece's SWF stage bottom centre on its plat; the remake draws the art's own bottom, so a
+ * piece stands art.foot under the line (restY).
  */
-export const DOOR_FOOT_Y = INTERIOR.floorY - 65;
-const BACK_WALL_CLASSES = new Set(['furniture_door']);
+export const PLAT_DEPTH = Object.freeze({ bookshelf: -65, chair: -30, rug: 0, front: 20 });
+/** The standing sets back to front: the order the source pushes the plats, which wins a tie. */
+const STANDING_ORDER = Object.freeze(['bookshelf', 'chair', 'rug', 'front']);
+/** HandOfDecorator.as 102 plat_under_allowance: a plat this far over the pointer still counts as under it. */
+export const PLAT_UNDER_ALLOWANCE = 10;
 
-/** Where a floor-standing class's foot rests: the walk line, or the back wall's base for a Door. */
-export function floorRestY(classTsid) {
-  return BACK_WALL_CLASSES.has(classTsid) ? DOOR_FOOT_Y : INTERIOR.floorY;
+/** A standing set's plat line (world y). */
+export function platLineY(set) {
+  return INTERIOR.floorY + PLAT_DEPTH[set];
 }
+
+/**
+ * The plats a class may stand on, in its placement_set's order (the first is where a piece goes
+ * with no pointer to choose by). Empty for a floor piece with no set (a trophy: an ordinary item
+ * on the walk line) and for wall and ceiling pieces.
+ */
+export function standingSets(classTsid) {
+  const def = furnitureDef(classTsid);
+  if (!def || (def.slot !== 'floor' && def.slot !== 'rug')) return [];
+  return (def.placementSet || []).filter((set) => set in PLAT_DEPTH);
+}
+
+/** How far the piece's art reaches under its plat line (art.foot at the piece's scale, 0 unmeasured). */
+function footPx(classTsid, upgradeId = '') {
+  const foot = Number(pieceArt(classTsid, upgradeId)?.foot);
+  return Number.isFinite(foot) ? Math.round(foot * pieceScale(classTsid, upgradeId)) : 0;
+}
+
+/** Where a piece on `set` stands: its art's bottom, the plat line less its foot. */
+export function restY(classTsid, set, upgradeId = '') {
+  if (!(set in PLAT_DEPTH)) return INTERIOR.floorY;
+  return platLineY(set) - footPx(classTsid, upgradeId);
+}
+
+/**
+ * The plat a piece set down at `y` (where its art's bottom would go) stands on, as
+ * HandOfDecorator.calculateTargetPlatformLineForFurnitureFromPt chose it (1118-1127): of the
+ * class's plats, the nearest under the point (PLAT_UNDER_ALLOWANCE over it counts), else the
+ * nearest of all; the back one on a tie. With no y, the first of its placement_set.
+ */
+export function standSetAt(classTsid, y, upgradeId = '') {
+  const sets = standingSets(classTsid);
+  if (!sets.length) return null;
+  if (sets.length === 1 || y == null || !Number.isFinite(Number(y))) return sets[0];
+  const reg = Number(y) + footPx(classTsid, upgradeId);
+  const ordered = STANDING_ORDER.filter((set) => sets.includes(set));
+  const nearest = (list) => list.reduce((best, set) => (Math.abs(platLineY(set) - reg) < Math.abs(platLineY(best) - reg) ? set : best));
+  const under = ordered.filter((set) => platLineY(set) > reg - PLAT_UNDER_ALLOWANCE);
+  return nearest(under.length ? under : ordered);
+}
+
+/** Where a floor-standing class's foot rests with no pointer to choose by: its first plat (a Door, the back wall's base). */
+export function floorRestY(classTsid, upgradeId = '') {
+  const set = standingSets(classTsid)[0];
+  return set ? restY(classTsid, set, upgradeId) : INTERIOR.floorY;
+}
+/** A plain Door's foot (the bookshelf line, G1136). */
+export const DOOR_FOOT_Y = floorRestY('furniture_door');
 /** The plat a slot falls back to when a class names no known set. */
 const SLOT_PLAT = Object.freeze({ ceiling: 'ceiling', wall: 'wall', rug: 'rug', floor: 'bookshelf' });
 /** The pre-G7 geometry, for migrating old saves. */
@@ -256,6 +310,8 @@ function normalizePlaced(row) {
     z: Math.round(finite(row?.z, 0)),
     on: Number.isFinite(Number(row?.on)) && Number(row.on) > 0 ? Math.floor(Number(row.on)) : null,
   };
+  // G1136: the plat a floor piece stands on (fitPlacements puts it there, or on its first plat).
+  if (out.slot === 'floor' && !out.on && standingSets(classTsid).includes(row?.plat)) out.plat = row.plat;
   copyStyle(row, out);
   if (classTsid === 'bag_furniture_sdb' && row?.display?.classTsid) {
     const count = Math.max(0, Math.min(SDB_COUNT_MAX, Math.floor(finite(row.display.count, 0))));
@@ -392,9 +448,16 @@ function fitPlacements(state, legacy) {
   const moved = new Map();
   for (const row of hosts) {
     const before = { x: row.x, y: row.y };
-    row.x = horizontalClamp(state, row.classTsid, mapX(row.x), row.upgradeId);
+    // G1136: a floor or rug piece stands on its plat; a save from before plats (every piece on the
+    // walk line) puts it on its class's first plat.
+    const sets = standingSets(row.classTsid);
+    const set = sets.length ? (sets.includes(row.plat) ? row.plat : sets[0]) : null;
+    if (row.slot === 'floor' && row.on && !byId.has(row.on)) row.on = null;
+    if (row.slot === 'floor' && set) row.plat = set;
+    else delete row.plat;
+    row.x = horizontalClamp(state, row.classTsid, mapX(row.x), row.upgradeId, set);
     if (row.slot === 'ceiling') row.y = INTERIOR.ceilingY;
-    else if (BACK_WALL_CLASSES.has(row.classTsid)) row.y = DOOR_FOOT_Y;
+    else if (set) row.y = restY(row.classTsid, set, row.upgradeId);
     else if (row.slot === 'wall') {
       const h = furnitureSize(row.classTsid, row.upgradeId).h;
       const top = INTERIOR.wallTop + INTERIOR.wallMarginTop + h;
@@ -492,13 +555,13 @@ export function placementRoom(state) {
 }
 
 /**
- * Where a piece may stand: the widest of the plats its placement_set names
- * (the client looks for the closest plat that can hold the class).
+ * Where a piece may stand: on `set`, that plat's ends (HandOfDecorator clamps to the plat it
+ * chose); else the widest of the plats its placement_set names.
  */
-export function placementSpan(state, classTsid) {
+export function placementSpan(state, classTsid, set = null) {
   const room = placementRoom(state);
   const def = furnitureDef(classTsid);
-  const sets = (def?.placementSet || []).filter((set) => set in PLACEMENT_INSET);
+  const sets = set in PLACEMENT_INSET ? [set] : (def?.placementSet || []).filter((name) => name in PLACEMENT_INSET);
   if (!sets.length) sets.push(SLOT_PLAT[def?.slot] || 'bookshelf');
   return {
     left: Math.min(...sets.map((set) => room.start + PLACEMENT_INSET[set])),
@@ -506,8 +569,8 @@ export function placementSpan(state, classTsid) {
   };
 }
 
-function horizontalClamp(state, classTsid, x, upgradeId = '') {
-  const { left, right } = placementSpan(state, classTsid);
+function horizontalClamp(state, classTsid, x, upgradeId = '', set = null) {
+  const { left, right } = placementSpan(state, classTsid, set);
   // HandOfDecorator: half_width_it_takes = Math.ceil(width / 2).
   const half = Math.ceil(furnitureSize(classTsid, upgradeId).w / 2);
   return Math.round(Math.max(left + half, Math.min(right - half, finite(x, left + half))));
@@ -637,12 +700,16 @@ export function settleStacks(state, rows, x0 = 0) {
 /**
  * Snap a requested point to the slot rules. Positions are the foot point
  * (bottom-center) for floor, rug, tabletop and wall pieces, and the hanging
- * point (top-center) for ceiling pieces.
+ * point (top-center) for ceiling pieces. A floor or rug piece stands on one of
+ * its plats (G1136): `at.plat` when it names one of them, else the one
+ * standSetAt picks for `at.y`; the result carries it as `plat`.
  */
 export function snapPlacement(state, classTsid, at = {}, excludeId = null, upgradeId = '') {
   const def = furnitureDef(classTsid);
   if (!def) return null;
-  const x = horizontalClamp(state, classTsid, at.x, upgradeId);
+  const sets = standingSets(classTsid);
+  const set = sets.includes(at.plat) ? at.plat : standSetAt(classTsid, at.y, upgradeId);
+  const x = horizontalClamp(state, classTsid, at.x, upgradeId, set);
   const { h } = furnitureSize(classTsid, upgradeId);
   if (def.slot === 'wall') {
     const top = INTERIOR.wallTop + INTERIOR.wallMarginTop + h;
@@ -651,7 +718,7 @@ export function snapPlacement(state, classTsid, at = {}, excludeId = null, upgra
     return { x, y, slot: 'wall', on: null };
   }
   if (def.slot === 'ceiling') return { x, y: INTERIOR.ceilingY, slot: 'ceiling', on: null };
-  if (def.slot === 'rug') return { x, y: INTERIOR.floorY + 18, slot: 'rug', on: null };
+  if (def.slot === 'rug') return { x, y: restY(classTsid, set || 'rug', upgradeId), slot: 'rug', on: null };
   if (def.tabletop) {
     // Report #203: a trophy is an ordinary item (items/trophy_gem.js 179 is_trophy, 186-189 tags
     // trophy/no_trade, no no_shelf), set down by HandOfDecorator.as 2222-2223
@@ -668,7 +735,8 @@ export function snapPlacement(state, classTsid, at = {}, excludeId = null, upgra
       return { x, y: host.y - surfaceHeight(host.classTsid, host.upgradeId), slot: 'floor', on: host.id };
     }
   }
-  return { x, y: floorRestY(classTsid), slot: 'floor', on: null };
+  if (!set) return { x, y: INTERIOR.floorY, slot: 'floor', on: null };
+  return { x, y: restY(classTsid, set, upgradeId), slot: 'floor', on: null, plat: set };
 }
 
 function topZ(state) {
@@ -712,6 +780,7 @@ export function placeFurniture(state, inv, classTsid, at = {}, opts = {}) {
     z: topZ(state) + 1,
     on: snapped.on,
   };
+  if (snapped.plat) item.plat = snapped.plat;
   if (style) copyStyle(style, item);
   state.placed.push(item);
   return { ok: true, item, from };
@@ -741,6 +810,8 @@ export function moveFurniture(state, id, at = {}) {
   item.x = snapped.x;
   item.y = snapped.y;
   item.on = snapped.on;
+  if (snapped.plat) item.plat = snapped.plat;
+  else delete item.plat;
   for (const rider of riders(state, item.id)) {
     rider.x += dx;
     rider.y += dy;
@@ -964,18 +1035,48 @@ export function displayWithdraw(state, inv, id, qty = Infinity) {
   return { ok: true, classTsid, qty: n };
 }
 
-/** Back-to-front render order: rugs, then ceiling and wall, then a Door at the wall's base (G1136), then floor by z. */
+/**
+ * The holders the client drew room furniture in, back to front (glitch-client
+ * MiddleGroundRenderer.setupEndShapes 111-171; LocationRenderer.as 1440-1470 picks one by the
+ * plat a piece stands on): CHASSIS (a placed Door), WALL_FURN, RUG_FURN, BOOKSHELF_FURN and
+ * CHAIR_FURN under the avatars, then FG_FURN over them (front and ceiling pieces). A piece with no
+ * plat (a trophy on the walk line) goes with the chair pieces.
+ */
+export const FURNITURE_HOLDERS = Object.freeze(['chassis', 'wall', 'rug', 'bookshelf', 'chair', 'front']);
+
+/** The holder a placed piece (not a rider) draws in. */
+export function furnitureHolderOf(item) {
+  if (!item) return 'chair';
+  if (item.slot === 'ceiling') return 'front';
+  if (item.slot === 'wall') return 'wall';
+  if (item.slot === 'rug') return 'rug';
+  if (item.classTsid === 'furniture_door') return 'chassis';
+  return item.plat in PLAT_DEPTH ? item.plat : 'chair';
+}
+
+/**
+ * Back-to-front render order: by holder (FURNITURE_HOLDERS), then by z in each, as the client
+ * sorted a location's furniture (LocationRenderer.as 2254 sortOn z). Tabletop decor draws just
+ * above the piece it rests on (addItemJustAboveOtherItem), in that piece's holder.
+ */
 export function renderOrder(state) {
-  const rank = { rug: 0, ceiling: 1, wall: 2, floor: 3 };
-  const rankOf = (row) => (row.slot === 'floor' && BACK_WALL_CLASSES.has(row.classTsid) ? 2.5 : rank[row.slot]);
-  return [...state.placed].sort((a, b) => {
-    const r = rankOf(a) - rankOf(b);
-    if (r) return r;
-    // Tabletop decor always draws above the piece it rests on.
-    if (a.on === b.id) return 1;
-    if (b.on === a.id) return -1;
-    return a.z - b.z || a.id - b.id;
-  });
+  const rows = [...state.placed];
+  const ids = new Set(rows.map((row) => row.id));
+  const byZ = (a, b) => a.z - b.z || a.id - b.id;
+  const rank = (row) => FURNITURE_HOLDERS.indexOf(furnitureHolderOf(row));
+  const hosts = rows.filter((row) => !row.on || !ids.has(row.on)).sort((a, b) => rank(a) - rank(b) || byZ(a, b));
+  const out = [];
+  const seen = new Set();
+  const add = (row) => {
+    if (seen.has(row.id)) return;
+    seen.add(row.id);
+    out.push(row);
+    for (const rider of rows.filter((r) => r.on === row.id).sort(byZ)) add(rider);
+  };
+  hosts.forEach(add);
+  // A loop of riders (no host on the floor) still draws.
+  rows.filter((row) => !seen.has(row.id)).sort(byZ).forEach(add);
+  return out;
 }
 
 /**
@@ -983,15 +1084,14 @@ export function renderOrder(state) {
  * stack on a `front` or `ceiling` placement plat to addForegroundFurnitureItem, the FG_FURN holder
  * that MiddleGroundRenderer.setupEndShapes (111-171) adds after OTHER_AV, YOUR_AVATAR and
  * FOREMOST_ITEMS; every other set (wall, rug, bookshelf, chair) goes in under the item holders.
- * The three ceiling classes (furniture_ceilinglamp, furniture_lamp, furniture_ceilingdeco:
- * placement_set "ceiling") are the remake's: floor pieces always snap onto the floor plat
- * (snapPlacement), so nothing stands on the front plat yet.
+ * A floor piece stands on the front plat when it is set down in front of the walk line (G1136).
  */
 export const FRONT_FURNITURE_SLOTS = Object.freeze(['ceiling', 'front']);
 
-/** True when a placed piece draws over the avatars (FG_FURN). */
+/** True when a placed piece draws over the avatars (FG_FURN): a ceiling piece, or one on the front plat. */
 export function furnitureDrawsInFront(item) {
-  return FRONT_FURNITURE_SLOTS.includes(item?.slot);
+  if (FRONT_FURNITURE_SLOTS.includes(item?.slot)) return true;
+  return item?.slot === 'floor' && !item.on && item.plat === 'front';
 }
 
 /**
@@ -1014,7 +1114,7 @@ export function arrangeStarterRoom(state) {
   ];
   for (const [classTsid, x, y, extra] of plan) {
     if (!state.storage[classTsid]) continue;
-    placeFurniture(state, {}, classTsid, { x, y: y ?? INTERIOR.floorY }, extra || {});
+    placeFurniture(state, {}, classTsid, y == null ? { x } : { x, y }, extra || {});
   }
   return state;
 }
@@ -1023,7 +1123,7 @@ export function arrangeStarterRoom(state) {
 export function furnishDemoRoom(state) {
   const add = (classTsid, x, y = null, extra = {}) => {
     state.storage[classTsid] = (state.storage[classTsid] || 0) + 1;
-    const placed = placeFurniture(state, {}, classTsid, { x, y: y ?? INTERIOR.floorY }, extra);
+    const placed = placeFurniture(state, {}, classTsid, y == null ? { x } : { x, y }, extra);
     return placed.item;
   };
   add('furniture_rug', 420);

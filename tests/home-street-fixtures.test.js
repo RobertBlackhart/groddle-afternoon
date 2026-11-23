@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { HOME_LIMITS } from '../public/js/homes-catalog.js?v=cce7f5a7';
+import { HOME_LIMITS } from '../public/js/homes-catalog.js?v=f3fe838d';
 import {
   createCultivationState,
   cultivateDemoYard,
@@ -15,7 +15,7 @@ import {
   footprint,
   homeStreetLayout,
   placementCheck,
-} from '../public/js/home-cultivation.js?v=72615a1b';
+} from '../public/js/home-cultivation.js?v=0fc0b231';
 import {
   DISPATCHER_HALF,
   SIGNPOST,
@@ -24,7 +24,7 @@ import {
   signpostX,
   streetFixtures,
 } from '../public/js/home-street-fixtures.js?v=bad831a1';
-import { HOUSE_STYLE_KEYS, houseFixtureX, homesFeature } from '../public/js/features/homes-feature.js?v=b0820c6c';
+import { HOUSE_STYLE_KEYS, houseFixtureX, homesFeature } from '../public/js/features/homes-feature.js?v=6b903d4f';
 
 const root = join(import.meta.dirname, '..', 'public', 'js');
 const read = (rel) => readFileSync(join(root, rel), 'utf8');

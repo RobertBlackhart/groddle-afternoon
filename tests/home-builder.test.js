@@ -36,8 +36,8 @@ import {
   placeFurniture,
   stackSurfaceAt,
   surfaceHeight,
-} from '../public/js/home-decor.js?v=f6d82a18';
-import { FURNITURE_CATALOG } from '../public/js/homes-catalog.js?v=cce7f5a7';
+} from '../public/js/home-decor.js?v=485ce3c3';
+import { FURNITURE_CATALOG } from '../public/js/homes-catalog.js?v=f3fe838d';
 
 const root = join(import.meta.dirname, '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');
@@ -221,7 +221,7 @@ describe('drags go through the existing rules', () => {
     const homes = read('public/js/features/homes-feature.js');
     const end = homes.slice(homes.indexOf('function endDrag(engine, e,'));
     assert.match(end.slice(0, 1600), /selected = \{ kind: 'furniture', id \};\s+const res = runFurnitureAction\(engine, 'pickup'\);/);
-    assert.match(end.slice(0, 1600), /placeAtPointer\(engine, placing\.kind === 'furniture' \? toRoom\(pointer\) : pointer\)/);
+    assert.match(end.slice(0, 1600), /placeAtPointer\(engine, placing\.kind === 'furniture' \? toRoom\(grabbed\(pointer\)\) : pointer\)/);
     // runFurnitureAction's pickup holds the Door, for-sale and (ticket 51) box-income checks and pickUpFurniture.
     assert.match(homes, /: typeof sale === 'string' && sale \? \{ ok: false, reason: 'sale', msg: sale \}\s+: held \? \{ ok: false, reason: 'not_empty', msg: held \} : pickUpFurniture\(decor, id\);/);
   });

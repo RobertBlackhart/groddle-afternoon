@@ -179,13 +179,17 @@ const BASE_ART = join(root, 'tools/furniture-upgrades/base.json');
  * the base SWF's frame (height within 2 px, width 8: bag_furniture_largecabinet has no
  * base SWF), so its hand-set surface stands.
  */
-function baseSurface(classTsid, artW, artH) {
-  if (!LAYOUT[classTsid]?.surface) return {};
+function baseSurface(classTsid, artW, artH, slot = 'floor') {
+  // G1136: every floor and rug piece keeps its foot, so it stands on its placement plat the way the
+  // original stood the SWF stage's bottom centre there (js/home-decor.js restY).
+  const standing = slot === 'floor' || slot === 'rug';
+  if (!LAYOUT[classTsid]?.surface && !standing) return {};
   const base = existsSync(BASE_ART) ? JSON.parse(readFileSync(BASE_ART, 'utf8'))[classTsid] : null;
   const out = { art: {} };
   if (Number.isFinite(base?.top)) out.art.top = base.top;
   if (!base?.h || !Number.isFinite(base.foot) || Math.abs(base.w - artW) > 8 || Math.abs(base.h - artH) > 2) return out;
   out.art.foot = base.foot;
+  if (!LAYOUT[classTsid]?.surface) return out;
   const platY = surfaceFrom(basePlats(classTsid, GSJS));
   if (platY != null) out.platY = platY;
   return out;
@@ -254,7 +258,7 @@ function buildFurniture() {
     }
     const placementSet = String(row.classProps.placement_set || '').split(',').map((s) => s.trim()).filter(Boolean);
     const { w, h } = artSize(classTsid, art);
-    const rest = baseSurface(classTsid, w, h);
+    const rest = baseSurface(classTsid, w, h, slotFor(placementSet));
     const offer = store.offers.find((o) => o.classTsid === classTsid);
     catalog[classTsid] = {
       classTsid,

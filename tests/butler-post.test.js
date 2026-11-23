@@ -10,10 +10,10 @@ import { describe, it } from 'node:test';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { BUTLER, butlerPostRx, createButler, createButlerState, normalizeButlerState } from '../public/js/butler.js?v=52b4f74d';
-import { HOME_LIMITS } from '../public/js/homes-catalog.js?v=cce7f5a7';
-import { createCultivationState, homeStreetLayout } from '../public/js/home-cultivation.js?v=72615a1b';
+import { HOME_LIMITS } from '../public/js/homes-catalog.js?v=f3fe838d';
+import { createCultivationState, homeStreetLayout } from '../public/js/home-cultivation.js?v=0fc0b231';
 import { BUTLER_BOX, STREET_ROCK } from '../public/js/home-street-fixtures.js?v=bad831a1';
-import { HOUSE_STYLE_KEYS, houseDoorway } from '../public/js/features/homes-feature.js?v=b0820c6c';
+import { HOUSE_STYLE_KEYS, houseDoorway } from '../public/js/features/homes-feature.js?v=6b903d4f';
 
 const ROOT = join(import.meta.dirname, '..');
 const read = (rel) => readFileSync(join(ROOT, 'public', 'js', rel), 'utf8');
