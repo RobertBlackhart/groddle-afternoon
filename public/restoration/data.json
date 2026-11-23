@@ -2814,9 +2814,24 @@
   "deployed": "2026-11-23"
  },
  "git": {
-  "commits": 3189,
+  "commits": 3195,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-23",
+    "kind": "improve",
+    "text": "A start-card tip says the Calendar is found from the time in the top bar"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "improve",
+    "text": "The Good Neighbor Feat says each Butler you leave a package with is worth 2 points"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "Streets being built are a blue road with a road-works sign on the Map, so they no longer look like streets you have not visited"
+   },
    {
     "date": "2026-11-23",
     "kind": "fix",
@@ -2921,21 +2936,6 @@
     "date": "2026-11-22",
     "kind": "fix",
     "text": "The missing floor and Symphonious Maximus put each deco on a layer Tiny Speck used it on"
-   },
-   {
-    "date": "2026-11-22",
-    "kind": "fix",
-    "text": "The sharp-deco SVG check runs on machines without Playwright's own Chromium"
-   },
-   {
-    "date": "2026-11-22",
-    "kind": "fix",
-    "text": "Symphonious Maximus is its real size and layout: 4000 x 1500 with the star arcs, eight craters, the ladder and a lower tier of ground chunks"
-   },
-   {
-    "date": "2026-11-22",
-    "kind": "fix",
-    "text": "The missing floor looks as it did in 2012: night windows with the moon, bulbs on two ropes, filing cabinets and a painted EXIT arrow"
    }
   ]
  },
