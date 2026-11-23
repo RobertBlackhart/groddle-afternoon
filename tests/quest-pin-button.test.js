@@ -15,7 +15,7 @@ import { fileURLToPath } from 'node:url';
 import { FakeEl } from './social-fake-dom.js';
 import { createQuestPinButton, phonePins, pinButtonFace, pinStepKey, pinStepLine, PIN_LINE_MS } from '../public/js/ui/quest-pin-button.js?v=95cabfe3';
 import { createQuestTracker } from '../public/js/ui/quest-tracker.js?v=50410a7c';
-import { failedQuestPin } from '../public/js/ui/quest-sheet.js?v=31736234';
+import { failedQuestPin } from '../public/js/ui/quest-sheet.js?v=b612c898';
 
 const PUBLIC = join(dirname(fileURLToPath(import.meta.url)), '../public');
 const read = (p) => readFileSync(join(PUBLIC, p), 'utf8');

@@ -30,7 +30,7 @@ export const IT_TAKES_TWO_QUEST = 'soilappreciation_help_digging';
  * thought the helper got the count; dirt_pile.js 481-483 counts helped_dig for the digger who was
  * helped, so the friend is the one who clicks Help dig.
  */
-export const IT_TAKES_TWO_HINT = 'Hint: you dig a Dirt Pile, and while your dig runs a friend clicks Help dig on the same pile. The dig counts for you, the one helped. To count for your friend, swap.';
+export const IT_TAKES_TWO_HINT = 'Hint: you dig, a friend clicks Help dig on the same Dirt Pile while your dig runs. The dig counts for you, the one helped, not for the friend. To count for your friend, swap.';
 
 /** dirt_pile.js getVerbLabel 278. */
 export const HELP_DIG_LABEL = 'Help dig';

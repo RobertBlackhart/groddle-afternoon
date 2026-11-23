@@ -137,7 +137,7 @@ import { swfFeature } from './swf-feature.js?v=c524d210'; FEATURES.push(swfFeatu
 import { machineArtFeature } from './machine-art-feature.js?v=96ac7196'; FEATURES.push(machineArtFeature);
 import { conversationsFeature } from './conversations-feature.js?v=fff2df06'; FEATURES.push(conversationsFeature);
 import { quoinShardsFeature } from './quoin-shards-feature.js?v=5d71a1eb'; FEATURES.push(quoinShardsFeature);
-import { helpMineFeature } from './help-mine-feature.js?v=576c7a70'; FEATURES.push(helpMineFeature);
+import { helpMineFeature } from './help-mine-feature.js?v=abcf43ec'; FEATURES.push(helpMineFeature);
 import { familiarDialogFeature } from './familiar-dialog-feature.js?v=bf5413ed'; FEATURES.push(familiarDialogFeature);
 import { spiritLonelinessFeature } from './spirit-loneliness-feature.js?v=f452cfc8'; FEATURES.push(spiritLonelinessFeature);
 import { funpickleFeature } from './funpickle-feature.js?v=516ed7ae'; FEATURES.push(funpickleFeature);
@@ -212,6 +212,6 @@ import { potLuckFeastFeature } from './pot-luck-feast-feature.js?v=c3410362'; FE
 // G1009 Thanksgiving Day's feast: eat-in-place piles of the week's table food (asks pot-luck-feast for its counts).
 import { feastDayFeature } from './feast-day-feature.js?v=51e6ac11'; FEATURES.push(feastDayFeature);
 import { calendarFeature } from './calendar-feature.js?v=48e2a61e'; FEATURES.push(calendarFeature);
-import { streetObjectsFeature } from './street-objects-feature.js?v=18be8588'; FEATURES.push(streetObjectsFeature);
+import { streetObjectsFeature } from './street-objects-feature.js?v=86c2bf26'; FEATURES.push(streetObjectsFeature);
 import { realtimeFeature } from './realtime-feature.js?v=ce1f8176'; FEATURES.push(realtimeFeature);
 import { accountBackupFeature } from './account-backup-feature.js?v=55b0dbfb'; FEATURES.push(accountBackupFeature);

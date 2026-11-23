@@ -17,7 +17,7 @@ import { FakeEl } from './social-fake-dom.js';
 import { parseSeasonDate, seasonYearKey } from '../public/js/seasons.js?v=64c72251';
 import { FEAST_SEASON, QUEST, QUEST_ID, questPinInfo } from '../public/js/pot-luck-feast.js?v=971888be';
 import { questPinsFeature, resolveQuestPins } from '../public/js/features/quest-pins-feature.js?v=0e07d9a1';
-import { questStep } from '../public/js/ui/quest-sheet.js?v=31736234';
+import { questStep } from '../public/js/ui/quest-sheet.js?v=b612c898';
 
 const PUBLIC = join(dirname(fileURLToPath(import.meta.url)), '../public');
 const game = readFileSync(join(PUBLIC, 'game.js'), 'utf8');

@@ -8,9 +8,9 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { MIN_ROWS_BOX, menuRowsCap, placeVerbMenu, plainWords, verbRowKeys, verbRowInner, verbRowAttrs } from '../public/js/ui/verb-menu.js?v=424b9a35';
-import { questCardTab, questRewardChips, questStep } from '../public/js/ui/quest-sheet.js?v=31736234';
+import { questCardTab, questRewardChips, questStep } from '../public/js/ui/quest-sheet.js?v=b612c898';
 import { MAX_QUEST_PINS, normalizeQuestPins, questPinsFeature } from '../public/js/features/quest-pins-feature.js?v=0e07d9a1';
-import { FEATURES } from '../public/js/features/index.js?v=4896e2ea';
+import { FEATURES } from '../public/js/features/index.js?v=c14b3fe8';
 
 const PUBLIC = join(dirname(fileURLToPath(import.meta.url)), '../public');
 const read = (p) => readFileSync(join(PUBLIC, p), 'utf8');

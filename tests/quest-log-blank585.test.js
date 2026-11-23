@@ -15,7 +15,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
 import { createQuestState, getQuestProgress, listQuestLogNewestFirst, listQuests } from '../public/js/quests.js?v=90a2ee3d';
-import { createQuestSheet, questLogNeedsSwap, questProgress, questStep, visibleRowCount, styledOutRowCount, QUEST_STYLED_OUT_TEXT } from '../public/js/ui/quest-sheet.js?v=31736234';
+import { createQuestSheet, questLogNeedsSwap, questProgress, questStep, visibleRowCount, styledOutRowCount, QUEST_STYLED_OUT_TEXT } from '../public/js/ui/quest-sheet.js?v=b612c898';
 import { questLogDetail } from '../public/js/features/bug-report-feature.js?v=054c5abb';
 import { FakeEl, matches } from './social-fake-dom.js';
 

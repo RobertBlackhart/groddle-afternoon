@@ -23,7 +23,7 @@ import {
   QUEST_SEARCH_MIN,
   QUEST_SORT_KEY,
   QUEST_SORTS,
-} from '../public/js/ui/quest-sheet.js?v=31736234';
+} from '../public/js/ui/quest-sheet.js?v=b612c898';
 import { makeVerbRow } from '../public/js/ui/verb-menu.js?v=424b9a35';
 
 const pub = join(import.meta.dirname, '../public');
@@ -377,5 +377,31 @@ describe('the wiring (both interfaces)', () => {
       assert.ok(classic.includes(`:root[data-ui="classic"] #game-root ${sel}`), sel);
     }
     assert.match(classic, /#quest-panel \.qc-search \{[^}]*border: 1px solid var\(--c-classic-input-border\);[^}]*background: var\(--c-classic-input\);/);
+  });
+});
+
+describe('G1184: a hint under a one-step quest stays on its card', () => {
+  it('only the step row and its bar move to the head; the hint and other lines stay in the body', () => {
+    const card = new El('div');
+    card.className = 'q-card';
+    card.dataset.quest = 'soilappreciation_help_digging';
+    const parts = [['q-title', 'It Takes Two'], ['q-req', 'Get help from players to dig three Dirt Piles. (1/3)'], ['q-bar', ''], ['q-req q-hint', 'Hint: you dig, a friend clicks Help dig'], ['q-req', 'Cold spots: Somewhere']];
+    for (const [cls, text] of parts) {
+      const n = new El('div');
+      n.className = cls;
+      n.textContent = text;
+      card.append(n);
+    }
+    const box = new El('div');
+    box.append(card);
+    const sheet = createQuestSheet({ document: doc, questInfo: () => ({ requirements: [{ desc: 'Get help from players to dig three Dirt Piles.', current: 1, num: 3 }] }), storage: memoryStore() });
+    sheet.arrange(box);
+    const body = card.querySelector(':scope > .qc-body');
+    const lines = body.children.map((n) => n.textContent);
+    assert.ok(lines.includes('Hint: you dig, a friend clicks Help dig'), 'the hint is on the card');
+    assert.ok(lines.includes('Cold spots: Somewhere'), 'a quest\'s own line under its step stays too');
+    assert.ok(!lines.some((t) => t.startsWith('Get help from players')), 'the step row is the head\'s');
+    assert.equal(body.children.filter((n) => n.className === 'q-bar').length, 0, 'the step bar is the head\'s');
+    assert.match(card.querySelector('.qc-step').textContent, /Get help from players/);
   });
 });

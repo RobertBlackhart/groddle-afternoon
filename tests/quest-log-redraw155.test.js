@@ -6,7 +6,7 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { questLogNeedsSwap } from '../public/js/ui/quest-sheet.js?v=31736234';
+import { questLogNeedsSwap } from '../public/js/ui/quest-sheet.js?v=b612c898';
 import { openPanels, questLogDetail } from '../public/js/features/bug-report-feature.js?v=054c5abb';
 
 const root = join(import.meta.dirname, '..');

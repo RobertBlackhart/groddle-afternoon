@@ -392,11 +392,15 @@ export function createQuestSheet({ document: doc = globalThis.document, questInf
       renderText(desc, info.desc);
       body.appendChild(desc);
     }
-    // One step: its row is the head's; several: every step with its own bar stays in the body.
-    const reqRows = rest.filter((n) => n.nodeType === 1 && (n.classList.contains('q-req') || n.classList.contains('q-bar')));
-    const single = info && (Array.isArray(info.requirements) ? info.requirements : []).length <= 1;
+    // One step: its row and bar are the head's; several: every step with its own bar stays in the body.
+    // G1184: only the step's own row and bar move. A hint drawn under the step (It Takes Two's "you
+    // dig, a friend clicks Help dig") is a q-req too and used to vanish with it, so the card never showed it.
+    const single = info && (Array.isArray(info.requirements) ? info.requirements : []).length === 1;
+    const el = (n) => n.nodeType === 1;
+    const stepRow = single ? rest.find((n) => el(n) && n.classList.contains('q-req') && !n.classList.contains('q-hint')) : null;
+    const stepBar = stepRow ? rest.find((n) => el(n) && n.classList.contains('q-bar')) : null;
     for (const n of rest) {
-      if (single && reqRows.includes(n)) continue;
+      if (n === stepRow || n === stepBar) continue;
       body.appendChild(n);
     }
     const chips = info ? questRewardChips(info.rewards) : [];

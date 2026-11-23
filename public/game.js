@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=e517a49b';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=4896e2ea';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=c14b3fe8';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE, playerClickBox } from './js/reach.js?v=456da8a8';
@@ -1108,7 +1108,7 @@ import {
 import { energyMax, forceMetabolic, gainMetabolic, loseMood, moodMax, setMetabolicGainGate, setMetabolicLossGate, setMoodLossNotice } from './js/metabolics.js?v=48f784bf';
 import { MOOD_DECAY_TEXT } from './js/mood-decay.js?v=49175993';
 import { installHiresIcons } from './js/icon-hires.js?v=fb952dde';
-import { IT_TAKES_TWO_HINT, IT_TAKES_TWO_QUEST } from './js/help-dig.js?v=ca0cc848';
+import { IT_TAKES_TWO_HINT, IT_TAKES_TWO_QUEST } from './js/help-dig.js?v=7a854b00';
 import { MEDITATE_TOGETHER_HINT, MEDITATE_TOGETHER_QUEST } from './js/quests-mp.js?v=e697cec3';
 import { installHiresDecos, maxTextureSizeOf } from './js/deco-hires.js?v=34f36d77';
 import { loadAudioLevels, loadMutedPreference, loadOtherMusic, saveAudioLevel, saveMutedPreference, saveOtherMusic } from './js/audio-pref.js?v=80d433c3';
@@ -1130,7 +1130,7 @@ import { mountNotifyView } from './js/notify-view.js?v=04a5ceeb';
 import { mountSocialDrawer } from './js/ui/social-drawer.js?v=d5309803';
 import { bindChatLinks } from './js/chat-links.js?v=b717fac7';
 import { SIDE_SHEET_IDS, bindTabs, inSideSheet, mountPanelShell, sheetKeyToWorld } from './js/ui/panel-shell.js?v=06a0d3fe';
-import { createQuestSheet, failedQuestPin, questLogNeedsSwap, questStep, visibleRowCount } from './js/ui/quest-sheet.js?v=31736234';
+import { createQuestSheet, failedQuestPin, questLogNeedsSwap, questStep, visibleRowCount } from './js/ui/quest-sheet.js?v=b612c898';
 import { resolveQuestPins } from './js/features/quest-pins-feature.js?v=0e07d9a1';
 import { createQuestTracker } from './js/ui/quest-tracker.js?v=50410a7c';
 import { bindContextTrigger, createContextMenu, isContextMenuKey as isMenuKey, MORE_KEYS_LABEL } from './js/ui/context-menu.js?v=dee0ecde';

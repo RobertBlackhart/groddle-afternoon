@@ -162,7 +162,7 @@ import { quoteWoodTreeHarvest } from '../woodcutting.js?v=9e9af511';
 import { highestLightGreenThumbRank, quoteTrantCare } from '../trant-care.js?v=cb7f539b';
 import { animalStatusLabel, pickerMaxCount } from '../animals.js?v=354bc506';
 import { highestAnimalKinshipRank, quoteAnimalKinship } from '../animal-kinship.js?v=75d3cb34';
-import { CREW_NODES } from '../help-dig.js?v=ca0cc848';
+import { CREW_NODES } from '../help-dig.js?v=7a854b00';
 import { animalPatrolRange, ANIMAL_BODY, TREE_FOOTPRINT } from '../street-ecology.js?v=ff90efe4';
 import { INCUBATION, PIGGY_FEED, itemBaseCost, namedAnimalLabel, resetIncubation } from '../animal-husbandry.js?v=53debb87';
 import {
