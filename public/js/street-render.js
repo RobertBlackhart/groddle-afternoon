@@ -772,11 +772,138 @@ export function glitchLayerMatrix(f = {}) {
   return m;
 }
 
-function colourFilter(PIXI, filters) {
+/**
+ * PURE: one pixel through Flash's ColorMatrixFilter, premultiplied in and out (channels 0-1, the
+ * matrix's offset column in 0-1 units, as glitchLayerMatrix returns it). The AS3 reference: "The
+ * calculations are performed on unmultiplied color values", each result is
+ * `a[0]*srcR + a[1]*srcG + a[2]*srcB + a[3]*srcA + a[4]` with the offset in -255..255 on 0-255
+ * channels, and Flash keeps every channel in a byte, so each result is clamped to 0-1 before the
+ * colour is multiplied by its alpha again (G1171). The flashColorMatrixFilter shaders do the same.
+ * @param {number[]} m 4x5 row-major matrix
+ * @param {number[]} px premultiplied [r, g, b, a], 0-1
+ * @returns {number[]} premultiplied [r, g, b, a], 0-1
+ */
+export function flashColorMatrixPixel(m, px) {
+  let [r, g, b, a] = px;
+  if (a > 0) {
+    r /= a;
+    g /= a;
+    b /= a;
+  }
+  const out = [0, 5, 10, 15].map((i) => Math.min(1, Math.max(0, m[i] * r + m[i + 1] * g + m[i + 2] * b + m[i + 3] * a + m[i + 4])));
+  return [out[0] * out[3], out[1] * out[3], out[2] * out[3], out[3]];
+}
+
+const COLOUR_MATRIX_GL = `in vec2 vTextureCoord;
+out vec4 finalColor;
+uniform sampler2D uTexture;
+uniform float uColorMatrix[20];
+void main(void) {
+  vec4 c = texture(uTexture, vTextureCoord);
+  if (c.a > 0.0) {
+    c.rgb /= c.a;
+  }
+  vec4 result;
+  result.r = uColorMatrix[0] * c.r + uColorMatrix[1] * c.g + uColorMatrix[2] * c.b + uColorMatrix[3] * c.a + uColorMatrix[4];
+  result.g = uColorMatrix[5] * c.r + uColorMatrix[6] * c.g + uColorMatrix[7] * c.b + uColorMatrix[8] * c.a + uColorMatrix[9];
+  result.b = uColorMatrix[10] * c.r + uColorMatrix[11] * c.g + uColorMatrix[12] * c.b + uColorMatrix[13] * c.a + uColorMatrix[14];
+  result.a = uColorMatrix[15] * c.r + uColorMatrix[16] * c.g + uColorMatrix[17] * c.b + uColorMatrix[18] * c.a + uColorMatrix[19];
+  result = clamp(result, 0.0, 1.0);
+  finalColor = vec4(result.rgb * result.a, result.a);
+}`;
+
+const COLOUR_MATRIX_WGSL = `struct GlobalFilterUniforms {
+  uInputSize:vec4<f32>,
+  uInputPixel:vec4<f32>,
+  uInputClamp:vec4<f32>,
+  uOutputFrame:vec4<f32>,
+  uGlobalFrame:vec4<f32>,
+  uOutputTexture:vec4<f32>,
+};
+struct ColorMatrixUniforms {
+  uColorMatrix:array<vec4<f32>, 5>,
+};
+@group(0) @binding(0) var<uniform> gfu: GlobalFilterUniforms;
+@group(0) @binding(1) var uTexture: texture_2d<f32>;
+@group(0) @binding(2) var uSampler: sampler;
+@group(1) @binding(0) var<uniform> colorMatrixUniforms: ColorMatrixUniforms;
+struct VSOutput {
+  @builtin(position) position: vec4<f32>,
+  @location(0) uv: vec2<f32>,
+};
+fn filterVertexPosition(aPosition: vec2<f32>) -> vec4<f32> {
+  var position = aPosition * gfu.uOutputFrame.zw + gfu.uOutputFrame.xy;
+  position.x = position.x * (2.0 / gfu.uOutputTexture.x) - 1.0;
+  position.y = position.y * (2.0 * gfu.uOutputTexture.z / gfu.uOutputTexture.y) - gfu.uOutputTexture.z;
+  return vec4(position, 0.0, 1.0);
+}
+@vertex
+fn mainVertex(@location(0) aPosition: vec2<f32>) -> VSOutput {
+  return VSOutput(filterVertexPosition(aPosition), aPosition * (gfu.uOutputFrame.zw * gfu.uInputSize.zw));
+}
+@fragment
+fn mainFragment(@location(0) uv: vec2<f32>) -> @location(0) vec4<f32> {
+  var c = textureSample(uTexture, uSampler, uv);
+  if (c.a > 0.0) {
+    c = vec4<f32>(c.rgb / c.a, c.a);
+  }
+  let cm = colorMatrixUniforms.uColorMatrix;
+  var result = vec4<f32>(
+    cm[0][0] * c.r + cm[0][1] * c.g + cm[0][2] * c.b + cm[0][3] * c.a + cm[1][0],
+    cm[1][1] * c.r + cm[1][2] * c.g + cm[1][3] * c.b + cm[2][0] * c.a + cm[2][1],
+    cm[2][2] * c.r + cm[2][3] * c.g + cm[3][0] * c.b + cm[3][1] * c.a + cm[3][2],
+    cm[3][3] * c.r + cm[4][0] * c.g + cm[4][1] * c.b + cm[4][2] * c.a + cm[4][3],
+  );
+  result = clamp(result, vec4<f32>(0.0), vec4<f32>(1.0));
+  return vec4<f32>(result.rgb * result.a, result.a);
+}`;
+
+let colourMatrixPrograms = null;
+/**
+ * Flash's ColorMatrixFilter (flashColorMatrixPixel) as a Pixi filter, for every layer colour:
+ * the street layers, their recolour and blur bakes, signposts, the avatars and entities under the
+ * middleground's filter. Pixi 8's ColorMatrixFilter re-applies alpha to the unclamped colour, so a
+ * see-through cloud a brightening layer pushes past white kept the overshoot and drew whiter and
+ * more solid than in 2012 (G1171: Gummadi Gad's clouds 241,255,255 against the template's
+ * 208,224,255). Opaque art is unchanged (the render target clamps it the same). `matrix` reads
+ * and sets the 20 numbers, as on Pixi's filter.
+ * @param {any} PIXI
+ * @param {number[]} matrix 4x5, offsets 0-1
+ */
+export function flashColorMatrixFilter(PIXI, matrix) {
+  if (!colourMatrixPrograms || colourMatrixPrograms.PIXI !== PIXI) {
+    colourMatrixPrograms = {
+      PIXI,
+      gl: PIXI.GlProgram.from({ vertex: PIXI.defaultFilterVert, fragment: COLOUR_MATRIX_GL, name: 'flash-color-matrix' }),
+      gpu: PIXI.GpuProgram.from({ vertex: { source: COLOUR_MATRIX_WGSL, entryPoint: 'mainVertex' }, fragment: { source: COLOUR_MATRIX_WGSL, entryPoint: 'mainFragment' } }),
+    };
+  }
+  const uniforms = new PIXI.UniformGroup({ uColorMatrix: { value: IDENTITY.slice(), type: 'f32', size: 20 } });
+  const filter = new PIXI.Filter({
+    glProgram: colourMatrixPrograms.gl,
+    gpuProgram: colourMatrixPrograms.gpu,
+    resources: { colorMatrixUniforms: uniforms },
+  });
+  Object.defineProperty(filter, 'matrix', {
+    get: () => uniforms.uniforms.uColorMatrix,
+    set: (m) => {
+      uniforms.uniforms.uColorMatrix = Array.from(m);
+      uniforms.update();
+    },
+  });
+  filter.flashColorMatrix = true;
+  if (matrix) filter.matrix = matrix;
+  return filter;
+}
+
+/**
+ * A layer's colour filter (Layer.filtersA, ColorMatrix.getFilter): Flash's colour matrix with the
+ * layer's `filters`, or null when they leave the colour alone.
+ */
+export function colourFilter(PIXI, filters) {
   const matrix = filters ? glitchLayerMatrix(filters) : null;
   if (!matrix) return null;
-  const cm = new PIXI.ColorMatrixFilter();
-  cm.matrix = matrix;
+  const cm = flashColorMatrixFilter(PIXI, matrix);
   cm.glitchFilters = filters;
   return cm;
 }

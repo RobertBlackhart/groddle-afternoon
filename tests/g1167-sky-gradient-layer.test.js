@@ -21,7 +21,7 @@ import {
   skyColourAt,
   skyGradientLayerIndex,
   skyGradientPlacement,
-} from '../public/js/street-render.js?v=9554b635';
+} from '../public/js/street-render.js?v=b5099313';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const read = (rel) => readFileSync(join(here, '..', rel), 'utf8');
@@ -80,7 +80,12 @@ function fakePixi() {
   }
   const Texture = { WHITE: { white: true }, from: (canvas) => ({ canvas }) };
   class ColorMatrixFilter {}
-  return { Container, Graphics, Sprite, Texture, ColorMatrixFilter };
+  // The layer colours are flashColorMatrixFilter (G1171): a Filter with its own programs.
+  class Filter { constructor(o) { Object.assign(this, o); } }
+  class UniformGroup { constructor(u) { this.uniforms = {}; for (const k in u) this.uniforms[k] = u[k].value; } update() {} }
+  const GlProgram = { from: (o) => o };
+  const GpuProgram = { from: (o) => o };
+  return { Container, Graphics, Sprite, Texture, ColorMatrixFilter, Filter, UniformGroup, GlProgram, GpuProgram };
 }
 
 /** The gradient canvas (gradientTexture) needs a document; a stub is enough here. */

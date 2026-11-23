@@ -11,7 +11,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { buildStreetView, layerDrawsInFront, layerIsDrawn } from '../public/js/street-render.js?v=9554b635';
+import { buildStreetView, layerDrawsInFront, layerIsDrawn } from '../public/js/street-render.js?v=b5099313';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const read = (rel) => readFileSync(join(here, '..', rel), 'utf8');
@@ -64,7 +64,12 @@ function fakePixi() {
     };
   }
   class ColorMatrixFilter {}
-  return { Container, Graphics, ColorMatrixFilter };
+  // The layer colours are flashColorMatrixFilter (G1171): a Filter with its own programs.
+  class Filter { constructor(o) { Object.assign(this, o); } }
+  class UniformGroup { constructor(u) { this.uniforms = {}; for (const k in u) this.uniforms[k] = u[k].value; } update() {} }
+  const GlProgram = { from: (o) => o };
+  const GpuProgram = { from: (o) => o };
+  return { Container, Graphics, ColorMatrixFilter, Filter, UniformGroup, GlProgram, GpuProgram };
 }
 
 describe('which layers draw in front (client layer order)', () => {

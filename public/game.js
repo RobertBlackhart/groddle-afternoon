@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=92f87e00';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=bf30d310';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=49aaf4d2';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE, playerClickBox } from './js/reach.js?v=456da8a8';
@@ -734,7 +734,7 @@ import {
   ensureStreetIndex,
   resolveIndexTsid,
 } from './js/street-loader.js?v=10376267';
-import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=5635e102';
+import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=a5290b0c';
 import {
   ladderTopDeck,
   groundBeneath,
@@ -757,6 +757,7 @@ import { STUCK_ARRIVAL_WAYS, defaultArrival, groundAt, loadStreetArrivals, stuck
 import {
   buildStreetView,
   glitchLayerMatrix,
+  flashColorMatrixFilter,
   signpostNear,
   pickConnection,
   loadDecoManifest,
@@ -765,7 +766,7 @@ import {
   setSignpostHover,
   setSignpostKeys,
   signpostBoardAt,
-} from './js/street-render.js?v=9554b635';
+} from './js/street-render.js?v=b5099313';
 import {
   GAME_DAY_MS,
   shouldFireNewDay,
@@ -13759,7 +13760,7 @@ const engine = {
   get streetTsid() {
     return currentStreetTsid;
   },
-  /** The location's avatar filter (a ColorMatrixFilter) or null: setAvatarTone. */
+  /** The location's avatar filter (flashColorMatrixFilter) or null: setAvatarTone. */
   get avatarTone() {
     return avatarTone;
   },
@@ -20889,9 +20890,8 @@ const SUMMERS_DAY_ENTITY_LIGHT = Object.freeze({ contrast: -100, tintAmount: 100
 const SUMMERS_DAY_ANNEX_SURROUND = 0xe9eeee;
 
 function summersDayLightFilter(filters) {
-  const filter = new PIXI.ColorMatrixFilter();
-  filter.matrix = glitchLayerMatrix(filters);
-  return filter;
+  // G1171: Flash's colour matrix (clamped before alpha), as the layers draw it.
+  return flashColorMatrixFilter(PIXI, glitchLayerMatrix(filters));
 }
 
 /** A Tiny Speck deco from assets/decos/groddle, anchored at its foot centre, sized w x h. */
@@ -26378,9 +26378,8 @@ function setAvatarTone(filters) {
     player.filters = left.length ? left : null;
   }
   avatarTone = null;
-  if (!matrix || !globalThis.PIXI?.ColorMatrixFilter) return;
-  avatarTone = new PIXI.ColorMatrixFilter();
-  avatarTone.matrix = matrix;
+  if (!matrix || !globalThis.PIXI?.Filter) return;
+  avatarTone = flashColorMatrixFilter(PIXI, matrix);
   avatarTone.glitchFilters = filters;
   if (player) player.filters = [...(player.filters || []), avatarTone];
 }
@@ -26597,9 +26596,8 @@ async function enterStreet(tsid, opts = {}) {
   streetWalls = wallsScreen(data);
   if (entityLayer) {
     if (bgLayer.middlegroundMatrix) {
-      const middlegroundColour = new PIXI.ColorMatrixFilter();
-      middlegroundColour.matrix = bgLayer.middlegroundMatrix;
-      entityLayer.filters = [middlegroundColour];
+      // G1171: the middleground's Flash colour matrix, as on its decos.
+      entityLayer.filters = [flashColorMatrixFilter(PIXI, bgLayer.middlegroundMatrix)];
     } else {
       entityLayer.filters = null;
     }

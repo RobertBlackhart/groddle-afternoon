@@ -32,7 +32,7 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { glitchLayerMatrix, DECO_TWINS } from '../../public/js/street-render.js?v=9554b635';
+import { glitchLayerMatrix, DECO_TWINS } from '../../public/js/street-render.js?v=b5099313';
 import { layerRole } from '../../public/js/builder/layer-role.js?v=e585f610';
 import { isZoneTsid } from '../../public/js/zone-streets.js?v=b40010d5';
 import { platformsScreen, isStandable, worldToScreen } from '../../public/js/street-model.js?v=a9a05f9d';

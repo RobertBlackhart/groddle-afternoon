@@ -20,10 +20,10 @@ import {
 } from '../public/js/home-layout.js?v=99e52314';
 import { collectHomeLayout, walkHomeScene } from '../public/js/home-layout-scene.js?v=ee5859e8';
 import { phoneStage, stageFor } from '../public/js/location-view.js?v=7cd08a76';
-import { STREET_WORLD_H } from '../public/js/features/homes-feature.js?v=b710b2c1';
+import { STREET_WORLD_H } from '../public/js/features/homes-feature.js?v=874d0e25';
 import { AVATAR_STILL, homeKeyOf } from '../public/js/profiles.js?v=054ca723';
 import { HIRES_SPRITES, SPLIT_SPRITES } from '../public/js/sprite-hires.js?v=ad1e46a9';
-import { HOUSE_STYLE_KEYS } from '../public/js/features/homes-feature.js?v=b710b2c1';
+import { HOUSE_STYLE_KEYS } from '../public/js/features/homes-feature.js?v=874d0e25';
 import { SITE_DIR, skipWithoutSite } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');
