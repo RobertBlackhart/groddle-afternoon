@@ -2814,9 +2814,34 @@
   "deployed": "2026-11-23"
  },
  "git": {
-  "commits": 3129,
+  "commits": 3136,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-22",
+    "kind": "fix",
+    "text": "Winter Walk's front snow uses patches Tiny Speck laid on front layers"
+   },
+   {
+    "date": "2026-11-22",
+    "kind": "improve",
+    "text": "Winter Walk's ground is warm tan mottled with snow right to the bottom of the view"
+   },
+   {
+    "date": "2026-11-22",
+    "kind": "improve",
+    "text": "The Eastern Grotto has its far lavender cliff wall, distant mountains and chasm mist"
+   },
+   {
+    "date": "2026-11-22",
+    "kind": "fix",
+    "text": "An Autumn Day's black ground runs to the bottom of the view, no light-blue band under it"
+   },
+   {
+    "date": "2026-11-22",
+    "kind": "fix",
+    "text": "The Hall of Rejected Concepts has its deep dark floor and light shafts on the exhibits"
+   },
    {
     "date": "2026-11-22",
     "kind": "fix",
@@ -2911,31 +2936,6 @@
     "date": "2026-11-22",
     "kind": "fix",
     "text": "Wardrobe colour chips show what sets each colourway apart, so the Rook headpiece's black one shows black"
-   },
-   {
-    "date": "2026-11-22",
-    "kind": "fix",
-    "text": "The Harvest Table says whether a dish counted for Pot's Empty Table, and Feast Bringer names its quest"
-   },
-   {
-    "date": "2026-11-22",
-    "kind": "fix",
-    "text": "The Smuggler's cell is rock to the top on an upright phone, and the Smuggler goes down the hole in front of it"
-   },
-   {
-    "date": "2026-11-22",
-    "kind": "new",
-    "text": "A Door can be restyled: the 32 Door styles, Upgrade and Change Style on a placed Door"
-   },
-   {
-    "date": "2026-11-22",
-    "kind": "fix",
-    "text": "The Mailbox steps aside instead of standing on a garden after a house change"
-   },
-   {
-    "date": "2026-11-22",
-    "kind": "fix",
-    "text": "A placed Door stands against the back wall, not in the middle of the room"
    }
   ]
  },
