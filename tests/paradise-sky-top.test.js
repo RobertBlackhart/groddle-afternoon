@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
-import { shortSceneBand } from '../public/js/location-view.js?v=958f2016';
+import { shortSceneBand } from '../public/js/location-view.js?v=ded0e52b';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const game = readFileSync(join(ROOT, 'game.js'), 'utf8');

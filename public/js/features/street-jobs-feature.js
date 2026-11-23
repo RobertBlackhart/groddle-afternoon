@@ -54,7 +54,7 @@ import { ITEM_CATALOG, addItem, countItem, ensureItem, itemIcon, packStamp, remo
 import { canUseTool, useToolCondition, workStepCost } from '../tools.js?v=4156bba8';
 import { ecologyForStreet } from '../street-ecology.js?v=ff90efe4';
 import { worldToScreen } from '../street-model.js?v=a9a05f9d';
-import { signArmWidth } from '../street-render.js?v=c3b6187d';
+import { signArmWidth } from '../street-render.js?v=1b8daeed';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 import { getSkillCatalog } from '../content-catalogs.js?v=10b118dd';
 import { listRecipesProducing } from '../making.js?v=5a718e7f';
@@ -150,7 +150,7 @@ import {
   leaderboard,
 } from '../street-jobs-mp.js?v=02f5be0a';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
-import { createMinnAccount } from '../minn-account.js?v=ab7fbd48';
+import { createMinnAccount } from '../minn-account.js?v=83127c18';
 import { normalizeGroups } from '../groups.js?v=d5a70dca';
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=729b29ea';
 import { createJobIndicator, jobIndicatorTip, jobIndicatorView, jobPerc } from '../job-indicator.js?v=8bea518d';

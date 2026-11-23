@@ -23,10 +23,10 @@ import { anchorBottomCentre } from '../sprite-feet.js?v=6ffaec43';
 import { doorSaleArt } from '../door-sign-art.js?v=69daffff';
 import { textureFromUrl, isLoaded, onLoaded } from '../textures.js?v=729b29ea';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
-import { createMinnAccount } from '../minn-account.js?v=3b00b62e';
+import { createMinnAccount } from '../minn-account.js?v=83127c18';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import { houseLot } from '../home-house.js?v=3c88c47c';
-import { houseContainer, houseOf } from './homes-feature.js?v=cf85caf1';
+import { houseContainer, houseOf } from './homes-feature.js?v=cbc5947a';
 import {
   QUARTER_TEXT,
   isQuarterLot,

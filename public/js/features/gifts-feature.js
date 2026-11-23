@@ -38,10 +38,10 @@ import { TOOL_CONDITION_CATALOG, copyTag, copyTagKind, leavingCopyTag, leavingTo
 import { scriptFromTag, scriptLabel } from '../teleportation.js?v=1bbe1ab3';
 import { copyPicks, copyWire, markLeaving, packPicks, takeCopies } from '../copy-picks.js?v=01de4c58';
 import { unitRankAt } from '../pack-slots.js?v=d9ab4a0b';
-import { createMinnAccount } from '../minn-account.js?v=ab7fbd48';
+import { createMinnAccount } from '../minn-account.js?v=83127c18';
 import { createItemPicker } from '../ui/item-picker.js?v=53afad10';
 // The same key as features/index.js: one module instance holds the carried notes.
-import { giveCarriedNote, takeCarriedNote, writtenCarriedNotes } from './street-furniture-feature.js?v=df7e7639';
+import { giveCarriedNote, takeCarriedNote, writtenCarriedNotes } from './street-furniture-feature.js?v=1ab5a0e1';
 import {
   BOX_KEEP,
   BOX_SLOTS,

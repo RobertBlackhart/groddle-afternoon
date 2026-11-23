@@ -25,10 +25,10 @@ import {
   shakeElement,
   shakePouch,
 } from '../public/js/elemental-pouch.js?v=42702eda';
-import { bagsFeature } from '../public/js/features/bags-feature.js?v=796da65f';
+import { bagsFeature } from '../public/js/features/bags-feature.js?v=c5cfe8e1';
 import { runMoreVerb } from '../public/js/features/item-verbs-more-feature.js?v=fe86a5b4';
 import { pouchFeature } from '../public/js/features/elemental-pouch-feature.js?v=0a529746';
-import { FEATURES } from '../public/js/features/index.js?v=4dce47f5';
+import { FEATURES } from '../public/js/features/index.js?v=a1e2a94a';
 import { ITEM_CATALOG, countItem, createInventory } from '../public/js/inventory.js?v=6414dbdc';
 import { STORE_CATALOG } from '../public/js/store-catalog.js?v=c6ebb2bd';
 import { VENDOR_PROFILES, vendorBuy } from '../public/js/vendor.js?v=b9233f20';
