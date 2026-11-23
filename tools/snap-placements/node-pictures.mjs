@@ -8,7 +8,7 @@
  * (PLANNED_NODE_CAPS seats at most 3 planned bogs), though both pictures show four.
  *
  * Evidence and method: node-pictures.json (hand-kept: each street's pictures and the spots read off
- * them by matching our own CC0 art, as tools/snap-placements/nodes.py does on snaps). This tool checks
+ * them by matching the shipped CC0 art, as tools/snap-placements/nodes.py does on snaps). This tool checks
  * each street (its file names at least that many of the class, and no snap already measures it),
  * seats a Peat Bog or Dirt Pile that hangs more than SEAT_HANG px over its floor onto it (nodes.py's
  * rule, #303: the frame cell's bottom centre on the line; trees stay as read, their trunk's foot
