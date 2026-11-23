@@ -20,8 +20,9 @@ worst case R = 4. ratio = w x R / texels of the file loaded there (3x where it h
 both axes. Candidates: ratio >= `ratio_min`, or ratio >= `front_min` on a layer that draws over the
 avatars, with hard edges in the shipped file (`edge` >= `edge_min`: 99th percentile neighbour step,
 0-255; skies, glows and gradients score under 20 and look the same magnified), or, drawn well above
-their size (ratio >= `outline_ratio`), a hard outline (`outline`: the 99.9th percentile, which a big
-flat deco's crisp outline reaches though its inside has no steps: G1172). Decos with no SWF
+their size on a near or home placement (ratio >= `outline_ratio`), a hard outline (`outline`: the
+99.9th percentile, which a big flat deco's crisp outline reaches though its inside has no steps:
+G1172; far and blurred placements keep the edge rule but for SEALED_OUTLINE). Decos with no SWF
 or a kept PNG (build.py mode png) are listed as skipped.
 
 Format, decided per deco by measurement against FFDec's raster render:
@@ -377,6 +378,28 @@ def edge_score(path):
     return round(float(np.percentile(v, 99)), 1), round(float(np.percentile(v, 99.9)), 1)
 
 
+# Decos that had sharp copies until their seams were sealed (G1162: the seams were their only
+# steps at the 99th percentile). Their outline counts on every placement, far and blurred ones
+# included, once one draws them outline_ratio times their file (G1172), as their copies did
+# before; street far budgets (FAR_SHARP_BUDGET_BYTES, tests/far-sharp-slack.test.js) were set
+# with them in. Any other deco's outline counts on near and home placements only: far layers
+# share one budget per street, and Ilmenskie's distant hills alone would take half of it.
+SEALED_OUTLINE = {
+    'apartment_hall_floor_piece_1', 'apartment_hall_floor_piece_2', 'apartment_hall_wall_piece_2',
+    'bck_hill_6', 'cliff_cover_1', 'cliff_cover_3', 'cliff_cover_4', 'cliff_cover_5',
+    'cliff_cover_door_1', 'cliff_cover_door_offside_g1', 'cliff_face_mountaineering_01b_al1',
+    'cliffside_1b_al1', 'cliffside_1c_al1', 'cliffside_patch_1a_al1',
+    'clouds_bg_middleplus_01a_newxp', 'crosssection_patch', 'dirt_mountain_1',
+    'door_asset_alakol_door', 'door_asset_elevator_door', 'ground_back_top_04',
+    'ground_frontNew_top_04', 'ground_grass_patch_1', 'ground_mid_top_04', 'heights_face_1',
+    'heights_mound_2', 'heights_mound_3', 'heights_platform_lip_1', 'heights_platform_rock_2',
+    'hill_11', 'jethimadh_frame_wall', 'mound_dirt_3', 'mound_dirt_4', 'penaltybox_cell_background',
+    'platform_icy_1b_al1', 'subway_platform_1', 'tree_background_tile_01a_et1',
+    'treehouse_trunk_base', 'ug_wall_heights', 'wall_1', 'wallpaper_tree_short_1',
+    'wallpaper_tree_short_2',
+}
+
+
 def measure(plan, old=None):
     """Ranked per-sprite report (worst ratio first). Three kinds of placement, each with its own
     need in texels per view px at R:
@@ -387,9 +410,11 @@ def measure(plan, old=None):
       2, 1 or 0.5), since the bake keeps nothing finer, against the file loaded there.
     Far and blurred placements count at ratio_min and only where the art's edge survives the
     layer's colour matrix (edge x matrix_gain >= edge_min): washed-out hills look the same
-    magnified. Hard edges: the edge score (99th percentile step) at edge_min, or, for a deco drawn
-    well above its size (ratio >= outline_ratio), its outline score (99.9th) at edge_min: a big
-    flat deco's crisp outline stair-steps when magnified though its inside has no steps (G1172). s, sf and sb are the largest view px per logical px over the near placements, and
+    magnified. Hard edges: the edge score (99th percentile step) at edge_min, or, on near and
+    home placements of a deco one of them draws well above its size (ratio >= outline_ratio), its
+    outline score (99.9th) at edge_min: a big flat deco's crisp outline stair-steps when magnified
+    though its inside has no steps (G1172). SEALED_OUTLINE decos count by the outline on far and
+    blurred placements too. s, sf and sb are the largest view px per logical px over the near placements, and
     over the far and blurred placements that count."""
     S = SETTINGS
     old_edges = {r['name']: r for r in ((old or {}).get('decos') or []) + ((old or {}).get('skipped') or []) + ((old or {}).get('soft') or [])}
@@ -420,13 +445,18 @@ def measure(plan, old=None):
         o = old_edges.get(sp)
         edge, outline = (o['edge'], o['outline']) if o and o.get('edge_of') == fsha and 'outline' in o else edge_score(path)
 
-        # The outline counts for the deco as a whole once some placement draws it outline_ratio
-        # times its file: then its every blurry placement is judged by it, as by the edge score.
-        top = max(p['ratio'] for p in ps)
+        # The outline counts on near and home placements once one of them draws the deco
+        # outline_ratio times its file; far and blurred placements are judged by the edge score
+        # alone, except for the SEALED_OUTLINE decos (judged by it everywhere once any placement
+        # reaches outline_ratio).
+        sealed = sp in SEALED_OUTLINE
+        top = max([p['ratio'] for p in (ps if sealed else near + home)] or [0])
 
-        def hard(gain=1.0):
-            return edge * gain >= S['edge_min'] or (top >= S['outline_ratio'] and outline * gain >= S['edge_min'])
-        counted = [p for p in other if hard(p['gain'])]
+        def hard(gain=1.0, far=False):
+            if edge * gain >= S['edge_min']:
+                return True
+            return (sealed or not far) and top >= S['outline_ratio'] and outline * gain >= S['edge_min']
+        counted = [p for p in other if hard(p['gain'], far=True)]
         near_hard = near_blurry and hard()
         if near_hard:
             counted += near

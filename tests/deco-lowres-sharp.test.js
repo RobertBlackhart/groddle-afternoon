@@ -10,9 +10,11 @@
  *   2012 Tuntsa Coze template has yellow and orange lights with a yellow glow; the old PNGs of
  *   _2 and _3 had green lights, and _1 (already from the SWF) had the black halo.
  * - Sealing FFDec's seams (G1162) took 49 decos off the sharp list: their seams had been their
- *   only steps at the 99th percentile. A deco drawn at least `outline_ratio` times its file now
- *   also counts by its outline (99.9th percentile step), so the big flat rock walls, hills and
- *   wallpapers drawn far over their size have sharp copies again.
+ *   only steps at the 99th percentile. A deco a near placement draws at least `outline_ratio`
+ *   times its file now also counts by its outline (99.9th percentile step); the 41 that had
+ *   copies before (sharp.py SEALED_OUTLINE) count by it on far layers too, so the big flat rock
+ *   walls, hills and wallpapers drawn far over their size have sharp copies again. Other far-only
+ *   decos keep the edge rule, which keeps each street's far budget.
  * Pixels come from `dwebp -pam`; the pixel checks skip where it is not installed.
  * Run: node --test tests/deco-lowres-sharp.test.js
  */
@@ -130,6 +132,20 @@ describe('G1172: decos drawn far over their size count by their outline', () => 
       assert.ok(s.ratio >= sharpPlan.settings.outline_ratio, `${name} ratio ${s.ratio}`);
       assert.ok(s.outline >= sharpPlan.settings.edge_min, `${name} outline ${s.outline}`);
       assert.ok(s.seam <= 0.2, `${name} seam ${s.seam}`);
+    }
+  });
+
+  it("far-only decos keep the edge rule: Ilmenskie's distant hills stay within its far budget", () => {
+    // bck_hill_13 (Ilmenskie, far only, edge 16, outline 177): an outline copy would take 18 MB of
+    // the street's 96 MB far budget (tests/far-sharp-slack.test.js).
+    const py = readFileSync(join(root, 'tools/deco-pipeline/sharp.py'), 'utf8');
+    for (const name of ['bck_hill_13', 'bck_hill_9', 'hill_5', 'hill_8']) {
+      assert.ok(!sharp.has(name), `${name} has no sharp copy`);
+      assert.ok(!py.includes(`'${name}'`), `${name} not in SEALED_OUTLINE`);
+    }
+    for (const name of ['wallpaper_tree_short_1', 'wallpaper_tree_short_2', 'bck_hill_6', 'dirt_mountain_1']) {
+      assert.ok(py.includes(`'${name}'`), `${name} in SEALED_OUTLINE`);
+      assert.equal(sharp.get(name)?.s, 0, `${name} is far only`);
     }
   });
 
