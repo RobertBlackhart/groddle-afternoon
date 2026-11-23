@@ -728,6 +728,16 @@ export function crushOre(inv, pc, oreId, opts = {}) {
 }
 
 /** Status line for verb menu / subtitle. */
+/**
+ * PURE (#642): whether a rock is on the street at all. Glitch drew a mined-out rock as nothing
+ * (include/mining.js 3-6 buildState: 'visible:false' while !isUseable, chunks_remaining <= 0) until
+ * onRespawn (143-171) gave it 50 or 150 chunks again; there was no faded or rubble state. The
+ * remake drew it at 35% (a ghost of the rock), a look of its own.
+ */
+export function rockShown(rock) {
+  return Boolean(rock) && !rock.depleted;
+}
+
 export function rockStatusLabel(rock) {
   if (!rock) return '';
   if (rock.depleted) {

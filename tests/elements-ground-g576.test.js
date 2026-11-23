@@ -15,7 +15,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PACK_COPY, roomFor } from '../public/js/pack-slots.js?v=d9ab4a0b';
-import { getVerbsFor } from '../public/content.js?v=2a4e3b9f';
+import { getVerbsFor } from '../public/content.js?v=0c9f7fdf';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
 import { itemVerbsMoreFeature, disperseGroundElements } from '../public/js/features/item-verbs-more-feature.js?v=fe86a5b4';
 

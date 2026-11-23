@@ -17,7 +17,7 @@ import { join } from 'node:path';
 import { addItem } from '../public/js/inventory.js?v=6414dbdc';
 import { layoutPack, saleBags } from '../public/js/pack-slots.js?v=d9ab4a0b';
 import { bagsFeature } from '../public/js/features/bags-feature.js?v=796da65f';
-import { VENDOR_BAG_HOLDS, createVendorSellQuote, vendorSell } from '../public/js/vendor.js?v=b969190e';
+import { VENDOR_BAG_HOLDS, createVendorSellQuote, vendorSell } from '../public/js/vendor.js?v=b9233f20';
 import { TRADE_TEXT } from '../public/js/trade.js?v=5fb43d2f';
 
 const root = join(import.meta.dirname, '..');

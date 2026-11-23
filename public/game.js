@@ -2,9 +2,9 @@
  * Groddle Afternoon — original street geometry + layered decos
  * PixiJS 8 · locations-xml streets · CoU PNG decos · quests/items
  */
-import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=2a4e3b9f';
+import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=0c9f7fdf';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=8799bb42';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=4dce47f5';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE, playerClickBox } from './js/reach.js?v=456da8a8';
@@ -17,7 +17,7 @@ import {
   createTimedAction,
   advanceTimedAction,
   cancelTimedAction,
-} from './js/action-timing.js?v=bb0eaec8';
+} from './js/action-timing.js?v=01a5ab81';
 import { createWordProgressView, wordAnchor, heldActionDelta, MAX_PUSH_DOWN } from './js/word-progress.js?v=98366023';
 // G374/G375/G378: Tiny Speck's quoin-limit and super-harvest rainbows and the musicblock notes.
 import { OVERLAY_USES, playCountdownArt, playOverlay, rainbowSound, showRainbow } from './js/overlays.js?v=1f5027a3';
@@ -719,6 +719,7 @@ import {
   createMineRock,
   tickMineRock,
   rockStatusLabel,
+  rockShown,
   rockFrameIndex,
   rockSceneIndex,
   ensureMiningItems,
@@ -726,7 +727,7 @@ import {
   STARTER_MINING_SKILLS,
   findWorkingPick,
   miningToolWear,
-} from './js/mining.js?v=8463f2ac';
+} from './js/mining.js?v=9eabaaf1';
 import { PICK_SHEETS, mineStandX, nodeToolOverlay } from './js/node-tools.js?v=47a93d54';
 import {
   loadStreetData,
@@ -936,7 +937,7 @@ import {
   vendorSellUnitPrice,
   vendorBuyUnitPrice,
   VENDOR_BAG_HOLDS,
-} from './js/vendor.js?v=b969190e';
+} from './js/vendor.js?v=b9233f20';
 import {
   createAnimalState,
   resetAnimalDay,
@@ -8307,7 +8308,7 @@ function pickInteractableAt(worldX, worldY) {
   /** @type {{ t: any, area: number }[]} */
   const hits = [];
   for (const t of interactables) {
-    if (!t.sprite || t.sprite.destroyed) continue;
+    if (!t.sprite || t.sprite.destroyed || t.absent) continue;
     // G1164: a player's box is Glitch's own hit box (js/reach.js AVATAR_HIT_BOX), clicked as drawn, with no pad.
     const box = spriteWorldHitBox(t.sprite, t.sprite._worldHitExact ? 0 : t.airborne ? 14 : 8);
     if (pointInHitBox(box, worldX, worldY)) {
@@ -11383,7 +11384,7 @@ function withinReach(t, maxD) {
 
 /** Weighted reach used by Enter (nearest pick and the G206 chooser alike). */
 function interactReach(t) {
-  if (!t?.sprite || t.sprite.destroyed) return Infinity;
+  if (!t?.sprite || t.sprite.destroyed || t.absent) return Infinity;
   let d = interactDistance(t, player.x, player.y);
   // ENTERSHELF (js/reach.js bodyReachDistance): food on a counter at head height is in reach.
   if (!t.airborne) d = Math.min(d, enterBodyDistance(t));
@@ -33278,7 +33279,10 @@ function refreshMineRockVisual(target) {
   } else if (isLoaded(base?.source)) {
     root.rockSprite.texture = frameTexture(base.source || base, new PIXI.Rectangle(fi * fw, 0, fw, fh));
   }
-  root.rockSprite.alpha = rock.depleted ? 0.35 : 1;
+  // #642: a mined-out rock is gone until it reforms (rockShown), not a ghost; nothing to point at or reach.
+  root.visible = rockShown(rock);
+  root.rockSprite.alpha = 1;
+  target.absent = !root.visible; // interactReach and pickInteractableAt skip it
   target.subtitle = rockStatusLabel(rock);
   target.label = ROCK_CATALOG[rock.classTsid]?.label || target.label;
 }

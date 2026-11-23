@@ -26,7 +26,7 @@
  * last one drawn over another player: <id>:<overlay or item>).
  */
 
-import { actionDurationFor } from '../action-timing.js?v=bb0eaec8';
+import { actionDurationFor } from '../action-timing.js?v=01a5ab81';
 import {
   SKILL_BUBBLE_OFF,
   itemBubbleWord,
@@ -37,7 +37,7 @@ import {
   skillBubbleWord,
   skillToolClass,
   skillToolFor,
-} from '../skill-bubbles.js?v=43891bc4';
+} from '../skill-bubbles.js?v=8f4831e8';
 
 export const SKILL_BUBBLES_FEATURE_ID = 'skill-bubbles';
 

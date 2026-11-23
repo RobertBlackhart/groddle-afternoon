@@ -25,7 +25,7 @@ import {
 } from '../public/js/machines.js?v=5d749d26';
 import { runTransform, listTransformVerbs, transformCountMax, transformEdges, transformVerbCount } from '../public/js/item-transforms.js?v=3a1b5812';
 import { RECIPE_CATALOG, craftRecipe, loadRecipeCatalogFromFile } from '../public/js/making.js?v=5a718e7f';
-import { VENDOR_PROFILES } from '../public/js/vendor.js?v=b969190e';
+import { VENDOR_PROFILES } from '../public/js/vendor.js?v=b9233f20';
 import { SEED_CATALOG } from '../public/js/garden.js?v=765c6ddf';
 import { obtainableItems } from '../tools/job-obtainable.mjs';
 import { supplyReport } from '../tools/supply-report.mjs';
