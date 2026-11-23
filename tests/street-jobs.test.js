@@ -45,7 +45,7 @@ import { createAchievementState, applyAchievementProgress } from '../public/js/a
 import { applyRewards } from '../public/js/quests.js?v=90a2ee3d';
 import { loadContentCatalogsFromDir, resetContentCatalogs } from '../public/js/content-catalogs.js?v=10b118dd';
 import { addItem, countItem } from '../public/js/inventory.js?v=6414dbdc';
-import { obtainableItems } from '../tools/job-obtainable.mjs';
+import { ALLOWED_SHORTFALLS, gatedShortfalls, obtainableItems } from '../tools/job-obtainable.mjs';
 import { TROPHY_WHERE_TEXT } from '../public/js/home-trophies.js?v=4eb640c3';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
@@ -117,6 +117,37 @@ describe('street jobs catalog', () => {
     for (const def of Object.values(catalog.classes)) {
       for (const r of def.requirements) if (r.type === 'item') assert.ok(items.has(r.classId), `${r.classId} obtainable`);
     }
+  });
+
+  it('G1180: a source sold only until a badge is gated, and the phases asking for more than that are named', async () => {
+    const { items, limits, sources } = await obtainableItems();
+    // The clerk sells the card only to players without its badge (bureaucracy.js untilBadge, npc_bureaucrat.js 257).
+    assert.ok(items.has('card_carrying_qualification'), 'someone can still get one');
+    assert.deepEqual({ ...limits.card_carrying_qualification }, { kind: 'until-badge', badge: 'card_carrying_qualification', after: 0, source: 'vendor:bureaucracy' });
+    // Papers and the permit have no badge gate: ordinary supplies.
+    for (const id of ['your_papers', 'general_building_permit']) {
+      assert.equal(limits[id], undefined, id);
+      assert.equal(sources[id], 'vendor:bureaucracy');
+    }
+    const rows = gatedShortfalls(catalog, limits);
+    assert.deepEqual(rows.map((r) => r.label).sort(), ['Anrasan Glance', 'Kolan Presence', 'Tharon Spelunk']);
+    for (const r of rows) assert.deepEqual([r.classTsid, r.reqId, r.classId, r.num, r.after], ['job_street_ph4_02c', 'r553', 'card_carrying_qualification', 250, 0]);
+    // The check passes only because Austin is deciding G1180; anything else gated fails it.
+    assert.equal(ALLOWED_SHORTFALLS['job_street_ph4_02c:card_carrying_qualification'], 'G1180');
+    assert.deepEqual(rows.filter((r) => !r.allowed), [], 'no gated shortfall outside the allowed list');
+    assert.equal(gatedShortfalls(catalog, limits, {}).filter((r) => !r.allowed).length, 3, 'without the exception the check flags all three');
+  });
+
+  it('G1180: gatedShortfalls counts only items whose every source is gated, beyond what is left after the gate', () => {
+    const cat = {
+      jobs: { 1: { label: 'A Street', phases: [{ classTsid: 'p1' }, { classTsid: 'p2' }] } },
+      classes: {
+        p1: { requirements: [{ id: 'r1', type: 'item', classId: 'once', num: 2 }, { id: 'r2', type: 'item', classId: 'free', num: 99 }] },
+        p2: { requirements: [{ id: 'r3', type: 'item', classId: 'once', num: 1 }, { id: 'r4', type: 'currants', num: 5 }] },
+      },
+    };
+    const rows = gatedShortfalls(cat, { once: { kind: 'once', after: 1, source: 'quest' } }, {});
+    assert.deepEqual(rows.map((r) => [r.phase, r.reqId, r.num, r.after]), [[1, 'r1', 2, 1]]);
   });
 
   it('recovers the performance drop tables and reward item art', () => {

@@ -25,11 +25,24 @@
  *    run while their event is on)
  *
  * A tool counts as held only when one of those sources gives it.
+ *
+ * Gated sources (G1180): a source that stops for a player is not an unlimited supply. The
+ * Bureaucracy clerk sells a row with `untilBadge` only to players without that badge
+ * (bureaucracy.js BUREAUCRACY_ITEMS, npc_bureaucrat.js getItems 257: the Card-Carrying
+ * Qualification, whose badge Legalize It grants), so a player holding the badge can get none. An
+ * item whose only sources are gated lands in `limits` ({ kind, badge, after, source }: `after`
+ * is how many a player can still get once the gate has shut); any ungated source lifts it.
+ * gatedShortfalls() lists the street project phases that ask for more of a gated item than that.
+ *
  * Node only (reads recipes.json from disk).
+ *
+ *   node tools/job-obtainable.mjs --check    list the gated shortfalls; exit 1 on one not in
+ *                                            ALLOWED_SHORTFALLS (each names its register row)
  */
 
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
+import { readFileSync } from 'node:fs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const js = (name) => join(root, 'js', name);
@@ -111,10 +124,26 @@ export async function obtainableItems() {
 
   const have = new Set();
   const sources = {};
+  /** G1180: items whose every source so far is gated (see the header). */
+  const limits = {};
   const add = (id, source) => {
+    if (!id) return false;
+    // Any ungated source makes it an ordinary supply again.
+    if (limits[id]) {
+      delete limits[id];
+      sources[id] = source;
+    }
+    if (have.has(id)) return false;
+    have.add(id);
+    sources[id] = source;
+    return true;
+  };
+  /** A gated source: obtainable (someone can get it), but `after` is all a player gets once it shuts. */
+  const addGated = (id, source, limit) => {
     if (!id || have.has(id)) return false;
     have.add(id);
     sources[id] = source;
+    limits[id] = Object.freeze({ ...limit, source });
     return true;
   };
 
@@ -122,8 +151,12 @@ export async function obtainableItems() {
     for (const offer of profile.offers || []) add(offer.classTsid, `vendor:${profile.key}`);
   }
   for (const item of foxes.FOX_RANGER_STORE.items) add(item.classTsid, 'vendor:fox_ranger');
-  // Bureaucratic Hall clerks (supply feature), after the Legalize It card.
-  for (const id of Object.keys(bureaucracy.BUREAUCRACY_ITEMS)) add(id, 'vendor:bureaucracy');
+  // Bureaucratic Hall clerks (supply feature), after the Legalize It card. A row sold only until a
+  // badge (the card itself) is gated: none once you hold the badge (G1180).
+  for (const [id, def] of Object.entries(bureaucracy.BUREAUCRACY_ITEMS)) {
+    if (def.untilBadge) addGated(id, 'vendor:bureaucracy', { kind: 'until-badge', badge: def.untilBadge, after: 0 });
+    else add(id, 'vendor:bureaucracy');
+  }
   // Holiday-only sources (js/seasons.js): Jack-O-Lantern treats, Glitchmas stock and quest, Egg Hunt eggs.
   const seasons = await import(js('seasons.js'));
   for (const [id, source] of seasons.seasonalSources()) add(id, source);
@@ -182,5 +215,64 @@ export async function obtainableItems() {
     'still',
   ]);
   const heldTools = new Set([...toolIds].filter((id) => have.has(id)));
-  return { items: have, sources, tools: heldTools };
+  return { items: have, sources, tools: heldTools, limits };
+}
+
+/**
+ * Known gated shortfalls, each with the register row that holds the decision, so the check passes
+ * while Austin decides. Keyed `<phase class>:<item>`.
+ */
+export const ALLOWED_SHORTFALLS = Object.freeze({
+  // #627: job_street_ph4_02c asks for 250 Card-Carrying Qualifications, as Glitch did
+  // (quests/job_street_ph4_02c.js 106-112), but the clerk sells them only before the badge.
+  'job_street_ph4_02c:card_carrying_qualification': 'G1180',
+});
+
+/**
+ * PURE: the street project phases asking for more of a gated item than a player can get once its
+ * gate has shut. `catalog` is assets/content/street-jobs.json, `limits` obtainableItems().limits.
+ * One row per job and requirement: { jobId, label, phase, classTsid, reqId, classId, num, after,
+ * badge, kind, allowed } (`allowed`: the register row from `allowed`, or '').
+ */
+export function gatedShortfalls(catalog, limits, allowed = ALLOWED_SHORTFALLS) {
+  const out = [];
+  for (const [jobId, job] of Object.entries(catalog?.jobs || {})) {
+    (job.phases || []).forEach((phase, i) => {
+      for (const r of catalog.classes?.[phase.classTsid]?.requirements || []) {
+        const limit = r.type === 'item' ? limits?.[r.classId] : null;
+        if (!limit || !(Number(r.num) > limit.after)) continue;
+        out.push({
+          jobId,
+          label: job.label || '',
+          phase: i + 1,
+          classTsid: phase.classTsid,
+          reqId: r.id,
+          classId: r.classId,
+          num: Number(r.num),
+          after: limit.after,
+          badge: limit.badge || '',
+          kind: limit.kind,
+          allowed: allowed[`${phase.classTsid}:${r.classId}`] || '',
+        });
+      }
+    });
+  }
+  return out;
+}
+
+/** The street-jobs catalog from disk. */
+export function readStreetJobs() {
+  return JSON.parse(readFileSync(join(root, 'assets/content/street-jobs.json'), 'utf8'));
+}
+
+if (process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1]) {
+  const { limits } = await obtainableItems();
+  const rows = gatedShortfalls(readStreetJobs(), limits);
+  for (const id of Object.keys(limits)) console.log(`gated: ${id} (${limits[id].kind}${limits[id].badge ? ` ${limits[id].badge}` : ''}, ${limits[id].after} after, ${limits[id].source})`);
+  for (const r of rows) {
+    console.log(`${r.allowed ? `allowed ${r.allowed}` : 'SHORTFALL'}: ${r.label || r.jobId} (job ${r.jobId}) phase ${r.phase} ${r.classTsid} ${r.reqId} asks for ${r.num} ${r.classId}; a player holding ${r.badge || 'the gate'} can get ${r.after}`);
+  }
+  const bad = rows.filter((r) => !r.allowed);
+  console.log(`${rows.length} gated shortfall(s), ${bad.length} not allowed`);
+  if (process.argv.includes('--check') && bad.length) process.exit(1);
 }
