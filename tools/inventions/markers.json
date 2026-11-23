@@ -675,6 +675,10 @@
     "ours: `${name} made something at your ${label}.`, // ours": "remake-copy",
     "ours: your Tower) or in a Community Machine Room.', // ours": "remake-copy"
   },
+  "public/js/home-stack-marks.js": {
+    "invented: and which are freebies\"). The remake's own UI (inventions": "home-stack-marks",
+    "remake-own: set as decoration and which are freebies\"). The remake's own UI (inventions": "home-stack-marks"
+  },
   "public/js/home-storage.js": {
     "ours: ${total === 1 ? 'currant' : 'currants'}.`, // ours": "remake-copy",
     "ours: 'That did not work. Try again in a moment.', // ours": "remake-copy",

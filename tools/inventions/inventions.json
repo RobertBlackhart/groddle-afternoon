@@ -5667,6 +5667,29 @@
    "rows": [
     "G1186"
    ]
+  },
+  {
+   "id": "home-stack-marks",
+   "title": "Decoration Mode marks: at your own home online, a small lock pip on the stacks only you can pick up (on hover or tap, and on all of them in Decoration Mode), and an \"Anyone here can pick this up\" line in a dropped stack's menu header (Glitch showed the owner no difference)",
+   "kind": "UI",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/home-stack-marks.js"
+    },
+    {
+     "file": "public/game.js"
+    },
+    {
+     "file": "public/js/features/drops-mp-feature.js"
+    },
+    {
+     "file": "public/style.css"
+    }
+   ],
+   "why": "G1190 made dropped things in a house, yard or Tower shared while what the owner sets in Decoration Mode stays theirs; the two look the same on the floor.",
+   "ruling": "Austin 2026-11-23 (the day's calls): asked for a way for owners to tell decor from freebies; built as a proposal",
+   "rows": []
   }
  ]
 }

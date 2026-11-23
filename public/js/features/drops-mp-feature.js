@@ -420,6 +420,7 @@ function createSession(engine, client) {
     pickup,
     list,
     wouldShare,
+    here,
     sync,
     tick(now) {
       // A street change empties the list until the server's ground_state for the new one.
@@ -473,6 +474,17 @@ export const dropsMpFeature = {
   sharedDropPrompt(classTsid, engine) {
     if (!multiplayer || engine?.mode !== 'multiplayer') return null;
     return ensure(engine)?.wouldShare(classTsid) ? DROP_TEXT.prompt : null;
+  },
+
+  /**
+   * Decoration Mode marks (game.js refreshDroppedWorldItems, js/home-stack-marks.js): true while I
+   * stand at my own home online (house, back yard, Tower floor, home street), where my own stacks
+   * are mine alone and the server's are anyone's there.
+   */
+  homeStackMarks(engine) {
+    if (!multiplayer || !session || engine?.mode !== 'multiplayer') return null;
+    const p = session.here();
+    return p?.ownHome === true && homePlaceOf(p.street) != null ? true : null;
   },
 
   /** game.js refreshDroppedWorldItems: the shared stacks to draw with the player's own. */

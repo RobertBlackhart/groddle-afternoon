@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=9e8197df';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=21dd7451';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=6c37d20a';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE, playerClickBox } from './js/reach.js?v=456da8a8';
@@ -1151,6 +1151,7 @@ import { isOneClickDoor, oneClickChoice, signpostArmRows, worldContextAction } f
 import { blockedPlayerVerbs, listPlayerTarget, opensPlayerMenu, playerMenuRows } from './js/ui/player-menu.js?v=81422c70';
 import { forgetTexture, frameTexture, isFailed, isLoaded, onFailed, onLoaded, textureFromUrl, whenLoaded } from './js/textures.js?v=729b29ea';
 import { FALLBACK_MAX as WORLD_ART_FALLBACK_MAX, worldArtFor } from './js/world-art.js?v=2b3cf8d5';
+import { HOME_PIP_PX, drawLockPip, homeMarkNote, homePipShown, homeStackMark } from './js/home-stack-marks.js?v=0ff4c29f';
 import { sceneAnim, syncAnim } from './js/deco-anim.js?v=5e2bfba2';
 import { revealStartCard, whenSceneDrawn } from './js/start-backdrop.js?v=8510d51e';
 import { cancelAllOverlays, displayTopOf, itemstackOverlayPoint, playPoofIn, setOverlayResolution } from './js/overlay-art.js?v=95f23414';
@@ -9415,6 +9416,17 @@ function renderVerbMenu(target, verbs, level = null) {
   bindVerbMenu(menu);
   title.textContent = target.label || target.classId;
   sub.textContent = level ? level.title : target.subtitle || 'What do you want to do?';
+  // Decoration Mode marks (js/home-stack-marks.js): at your own home, who may pick this stack up.
+  let note = document.getElementById('verb-menu-note');
+  if (!note && sub.parentNode) {
+    note = Object.assign(document.createElement('p'), { id: 'verb-menu-note', className: 'verb-menu-note' });
+    sub.after(note);
+  }
+  if (note) {
+    note.textContent = level ? '' : target.homeNote || '';
+    note.hidden = !note.textContent;
+    note.dataset.mark = level ? '' : target.homeMark || '';
+  }
   // A thing that is also an item (a stack on the ground) shows its icon.
   const iconUrl = ITEM_CATALOG[target.classId] ? itemIconUrl(target.classId) : '';
   // #601: a new picture waits unseen until it loads, never the last thing's for a moment.
@@ -15771,17 +15783,44 @@ function sizeDroppedItemSprite(spr) {
   placeDroppedCount(spr, width * scale, height * scale);
 }
 
-/** A stack's count badge at its art's top right corner (sprite-local units). */
+/** A stack's count badge at its art's top right corner, its lock pip at the top left (sprite-local units). */
 function placeDroppedCount(spr, w, h) {
+  const s = spr.scale.x || 1;
+  const pip = spr.homePip;
+  if (pip && !pip.destroyed) {
+    pip.position.set((-w / 2 + HOME_PIP_PX / 2 - 2) / s, (-h + HOME_PIP_PX / 2 - 2) / s);
+    pip.scale.set(1 / s);
+  }
   const badge = spr.countBadge;
   if (!badge || badge.destroyed) return;
-  const s = spr.scale.x || 1;
   badge.position.set((w / 2 + 2) / s, (-h + 2) / s);
   badge.scale.set(1 / s);
 }
 
-/** Render one persistent street stack using its official iconic item art. */
-function spawnDroppedItemStack(stack) {
+/**
+ * Decoration Mode marks (js/home-stack-marks.js): each decor stack's lock pip shows in Decoration
+ * Mode, or while the pointer is on it or its menu is open. Canvas data homeLockPips: shown/marked.
+ */
+function updateHomeStackPips() {
+  let marked = 0;
+  let shown = 0;
+  const decorating = features.query('homeEditMode', engine) === 'decorate';
+  for (const spr of droppedItemSprites) {
+    const pip = spr?.homePip;
+    if (!pip || pip.destroyed) continue;
+    marked += 1;
+    pip.visible = homePipShown(spr.homeMark, { decorating, hovered: hoverTarget?.sprite === spr, menuOpen: menuTarget?.sprite === spr });
+    if (pip.visible) shown += 1;
+  }
+  const line = marked ? `${shown}/${marked}` : '';
+  if (app?.canvas && app.canvas.dataset.homeLockPips !== line) app.canvas.dataset.homeLockPips = line;
+}
+
+/**
+ * Render one persistent street stack using its official iconic item art. `mark`: its Decoration
+ * Mode mark at your own home ('decor': a lock pip; 'shared': plain; js/home-stack-marks.js).
+ */
+function spawnDroppedItemStack(stack, mark = '') {
   const item = ITEM_CATALOG[stack.classTsid] || {
     label: stack.classTsid.replace(/_/g, ' '),
     icon: `assets/sprites/icons/${stack.classTsid}.webp`,
@@ -15809,6 +15848,12 @@ function spawnDroppedItemStack(stack) {
     badge.addChild(ring, count);
     spr.countBadge = badge;
     spr.addChild(badge);
+  }
+  spr.homeMark = mark;
+  if (mark === 'decor') {
+    spr.homePip = drawLockPip(PIXI);
+    spr.homePip.visible = false;
+    spr.addChild(spr.homePip);
   }
   sizeDroppedItemSprite(spr);
   if (!isLoaded(spr.texture?.source)) {
@@ -15849,6 +15894,7 @@ function spawnDroppedItemStack(stack) {
       ...(stack.shared ? { shared: true } : {}),
     },
     worldItemId: stack.id,
+    ...(mark ? { homeMark: mark, homeNote: homeMarkNote(mark) } : {}),
   });
   return spr;
 }
@@ -15865,6 +15911,9 @@ function restingStackY(x, y) {
   if (/^MPH_\d+(?:_IN|_T\d+)$/.test(String(currentStreetTsid || ''))) return y;
   return stackRestY(streetPlatforms, x, y) ?? y;
 }
+
+/** QA (js/home-stack-marks.js): &homemarks=demo shows the Decoration Mode marks in solo. */
+const HOME_MARKS_DEMO = new URLSearchParams(location.search).get('homemarks') === 'demo';
 
 /** G226: where this place's dropped stacks are kept (homes-feature dropTsid: a Tower floor's own key). */
 function droppedStacksTsid() {
@@ -15889,9 +15938,14 @@ function refreshDroppedWorldItems() {
   app.canvas.dataset.droppedStootDolls = String(
     streetStacks.filter((stack) => stack.classTsid === STOOT_DOLL_ID).length
   );
-  for (const stack of [...streetStacks, ...sharedStacks]) {
-    spawnDroppedItemStack(stack);
-  }
+  // Decoration Mode marks: online at your own home, your own stacks (set in Decoration Mode) carry
+  // a lock pip and the shared ones a line saying anyone may take them (js/home-stack-marks.js).
+  // QA: &homemarks=demo marks them in solo at your own home too, every second one of your own drawn as shared.
+  const demo = HOME_MARKS_DEMO && (({ inHome, owned }) => Boolean(inHome && owned))(engine.homeContext());
+  const ownHome = demo || features.query('homeStackMarks', engine) === true;
+  streetStacks.forEach((stack, i) => spawnDroppedItemStack(stack, homeStackMark({ ownHome, fromSave: !(demo && i % 2), shared: true })));
+  for (const stack of sharedStacks) spawnDroppedItemStack(stack, homeStackMark({ ownHome, shared: stack.shared === true }));
+  updateHomeStackPips();
 }
 
 /** Pack action: place a chosen stack at the player's feet, merging nearby matches. */
@@ -36555,6 +36609,7 @@ async function main() {
     run('ilmenskie autoplay', updateIlmenskieAutoplay);
     run('spinning wheel', updateSpinningWheel);
     run('features', () => features.tick(ms, Date.now(), engine));
+    run('home lock pips', updateHomeStackPips);
     run('held dialog', releaseHeldScriptedDialog);
     run('street view', drawStreetFrame);
 
