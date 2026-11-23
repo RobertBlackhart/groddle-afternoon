@@ -124,7 +124,7 @@ describe('game.js: every arrival with no spot takes the default arrival', () => 
     assert.match(game, /: savedLoc\s*\? \{ spawnX: savedLoc\.x, spawnY: savedLoc\.y, quiet: true \}\s*: \{\};/);
     // Skip to Ur on the start card starts on that same boot street; the in-game skip enters it with no spot.
     assert.match(newxp, /await engine\.enter\(DEFAULT_START, \{ quiet: true, bypassFeatureGates: true \}\);/);
-    assert.match(game, /await enterStreet\(STREET_INDEX\.default\);/);
+    assert.match(game, /await streetMove\.run\(\(\) => enterStreet\(STREET_INDEX\.default\)\);/);
   });
 });
 

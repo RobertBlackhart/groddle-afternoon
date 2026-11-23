@@ -133,3 +133,31 @@ export function createStreetMove({ timers = globalThis, maxWaitMs = MAX_QUEUE_WA
     },
   };
 }
+
+/**
+ * G1208 (#590): one street load builds the scene at a time. enterStreet sets the street (its label
+ * in the top bar, its signposts' hit areas) before it awaits the deco manifest, the signpost art,
+ * the arrivals table and the shrine's art, and builds the scene after; two loads that overlapped
+ * (a reload's own load and a trip sent meanwhile, or two quest flows) each did half, and the top
+ * bar named one street while the other's scene and signposts showed. Glitch built one location at
+ * a time (NetController.as 352-358 refused a move while one ran; LocationRenderer swapped the whole
+ * location on move end).
+ *
+ * Each load takes a turn (begin); a newer load makes every older one stale, and a stale load stops
+ * at its next step without touching the scene, so the street named and the street drawn are always
+ * the newest load's. Anything else that replaces the scene (a home's scene) takes a turn too.
+ */
+export function createLoadTurns() {
+  let turn = 0;
+  return {
+    /** A new load: { stale() } says whether a newer one has begun since. */
+    begin() {
+      turn += 1;
+      const mine = turn;
+      return { stale: () => mine !== turn };
+    },
+    get turn() {
+      return turn;
+    },
+  };
+}

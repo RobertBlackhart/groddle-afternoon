@@ -67,7 +67,7 @@ describe('#284: the street left behind leaves the GPU when the next one is built
   it('enterStreet unloads the old street art right after destroying its view', () => {
     assert.match(
       game,
-      /bgLayer\.destroy\(\{ children: true \}\);\n\s*\/\/ #284[^\n]*\n\s*textureUrls\.unloadGpuCopies\(\{ match: STREET_ART_URL, managed: app\?\.renderer\?\.texture\?\.managedTextures \}\);\n\s*\}\n\s*const available = await loadDecoManifest\(\);/
+      /bgLayer\.destroy\(\{ children: true \}\);\n\s*\/\/ #284[^\n]*\n\s*textureUrls\.unloadGpuCopies\(\{ match: STREET_ART_URL, managed: app\?\.renderer\?\.texture\?\.managedTextures \}\);\n\s*\}\n\s*bgLayer = buildStreetView\(data, PIXI, \{/
     );
   });
 });

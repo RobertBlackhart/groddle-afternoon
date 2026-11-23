@@ -1177,7 +1177,7 @@ import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=042d8f
 import { standOnFeet, anchorBottomCentre } from './js/sprite-feet.js?v=6ffaec43';
 import { markLeaving, packPicks, takeCopies } from './js/copy-picks.js?v=01de4c58';
 import { holdKeepsBusy } from './js/instance-holds.js?v=ff3a63a3';
-import { createStreetMove, travelTurn } from './js/street-move.js?v=8b87fd56';
+import { createLoadTurns, createStreetMove, travelTurn } from './js/street-move.js?v=1c4431bf';
 import { enterResult, tripFailedLine, tripWithRetry } from './js/street-trip.js?v=89addd51';
 
 /** @type {object|null} assets/maps/index.json */
@@ -3542,6 +3542,8 @@ let hubColorCache = {};
  * ask for mid-move is refused (travelTo), one the game sends you on waits for the first to end.
  */
 const streetMove = createStreetMove();
+/** G1208 (#590): the newest street load is the one the scene shows (js/street-move.js createLoadTurns). */
+const streetLoads = createLoadTurns();
 
 /**
  * G1129: a street change is under way: a trip, a loading card up (a home's card too), or a scene's
@@ -26096,6 +26098,8 @@ function spawnHomeSceneTargets(room) {
 }
 
 async function renderHomeScene(room = homeState.room || 'street', opts = {}) {
+  // G1208: a street load still under way stops; the home's scene is the newest.
+  streetLoads.begin();
   const targetTsid = room === 'interior' ? HOME_INTERIOR_TSID : HOME_STREET_TSID;
   clearWorldEntities({ keepWindows: opts.inPlace === true });
   if (bgLayer && world) {
@@ -26595,7 +26599,10 @@ async function enterStreet(tsid, opts = {}) {
   }
   // G913: an arrival with no spot of its own stands on the street's incoming arrival (js/street-arrival.js).
   const arrivalsTable = Number.isFinite(opts.spawnX) ? null : loadStreetArrivals();
+  // G1208 (#590): a load begun after this one owns the scene; this one stops at its next step.
+  const load = streetLoads.begin();
   const data = await loadStreetData(tsid);
+  if (load.stale()) return null;
   assertStreetGeometry(data);
   if (LAST_FEAT_STREET_LABELS[data.tsid]) {
     // The archived XML carries its internal template label; production map
@@ -26616,14 +26623,17 @@ async function enterStreet(tsid, opts = {}) {
   WORLD_W = streetWidth(data);
   clearWorldEntities();
 
+  const available = await loadDecoManifest();
+  await loadSignpostTextures(PIXI);
+  if (load.stale()) return null;
+  // G1208: the scene shown goes only now, right before this street's is built, so a load that
+  // overlapped can never leave two scenes in the world (the older one drawn over the newer).
   if (bgLayer && world) {
     world.removeChild(bgLayer);
     bgLayer.destroy({ children: true });
     // #284: the street left behind leaves the GPU now, not 20 s into the next (js/textures.js).
     textureUrls.unloadGpuCopies({ match: STREET_ART_URL, managed: app?.renderer?.texture?.managedTextures });
   }
-  const available = await loadDecoManifest();
-  await loadSignpostTextures(PIXI);
   bgLayer = buildStreetView(data, PIXI, {
     renderer: app.renderer,
     available,
@@ -26693,6 +26703,7 @@ async function enterStreet(tsid, opts = {}) {
   const entry = arrivalsTable && data.tsid !== STOOT_MEMORIAL_STREET_ID
     ? defaultArrival(data, await arrivalsTable, { worldW: WORLD_W, closed: features.query('closedRoads', engine) || [] })
     : null;
+  if (load.stale()) return null;
   // G920: a spot given as x only (a demo link's streetx, a feature's trip naming an x) stands on the
   // street's ground at that x, not at the planner's spot's height, which can be a canopy.
   if (Number.isFinite(opts.spawnX) && !Number.isFinite(opts.spawnY)) {
@@ -26785,7 +26796,8 @@ async function enterStreet(tsid, opts = {}) {
   // Signposts are manually hit-tested by individual destination board.
   portalSprites = bgLayer.signViews || [];
   if (currentStreetPopulation.vendor) spawnVendorNpc(placement('vendor')[0]);
-  if (currentStreetPopulation.shrine) await spawnShrine(placement('shrine')[0]);
+  if (currentStreetPopulation.shrine) await spawnShrine(placement('shrine')[0], { stale: load.stale });
+  if (load.stale()) return null;
   refreshDroppedWorldItems();
   // G940 (#469): each bed its snap's size, kind and art where it shows it; planned beds crops on the
   // 2012 crop-garden streets, else the crop then the herb bed (report 188; garden.js streetGardenBeds).
@@ -32508,12 +32520,14 @@ function playShrineDonation(target) {
   };
 }
 
-async function spawnShrine(placement = null) {
+async function spawnShrine(placement = null, { stale = () => false } = {}) {
   if (!entityLayer || !currentStreet) return null;
   const giant = giantForStreet(currentStreet);
   // The street's regional shrine (js/shrine-variants.js; QA &shrineregion=base|firebog|ix|uralia).
   const variant = shrineVariantFor(currentStreet, giant.id, engine.param('shrineregion') || '');
   await ensureShrineTextures(giant.id, variant.region);
+  // G1208: the street it was for was replaced while its art loaded.
+  if (stale()) return null;
   const frames = textures[shrineTextureKey(giant.id, 'open', variant.region)]?.frames;
   if (!frames?.length) return null;
   const points = placement ? [] : samplePlatformPoints(10);
@@ -34004,7 +34018,10 @@ async function main() {
     assignQuest(questState, greedyQuestId, { ignorePrereq: greedyDemoRepeat });
   }
   try {
-    await enterStreet(startTsid, startOpts);
+    // G1208 (#590): the first street is a trip like any other (js/street-move.js): a trip the game
+    // sends you on meanwhile (being followed, a feature's way on) waits for it instead of loading
+    // beside it, so the street named and the scene drawn are the same street.
+    await streetMove.run(() => enterStreet(startTsid, startOpts));
     if (resumeHomeAtBoot || resumeHomeAt || ['home', 'interior', 'decorate', 'cultivate'].includes(homeDemo)) {
       if (resumeHomeAt) homeState.room = resumeHomeAt === HOME_INTERIOR_TSID ? 'interior' : 'street';
       if (!homeState.returnLocation) {
@@ -34033,7 +34050,7 @@ async function main() {
     }
   } catch (err) {
     console.warn('saved location failed, using default', err);
-    await enterStreet(STREET_INDEX.default);
+    await streetMove.run(() => enterStreet(STREET_INDEX.default));
   }
   if (questDemo === 'hoghaul' || questDemo === 'hog' || questDemo === 'race') {
     await startHogHaulRace({

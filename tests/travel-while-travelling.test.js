@@ -13,7 +13,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createStreetMove, travelTurn, GAME_SENT_VIAS } from '../public/js/street-move.js?v=8b87fd56';
+import { createStreetMove, travelTurn, GAME_SENT_VIAS } from '../public/js/street-move.js?v=1c4431bf';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const game = readFileSync(join(root, 'public/game.js'), 'utf8');
