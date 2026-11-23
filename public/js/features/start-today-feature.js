@@ -22,7 +22,7 @@
  * QA: &todaytip=<n> picks the tip.
  */
 
-import { androidBrowser, badgeCandidates, featTile, pickNudge, pickTip, skillTile, START_TIPS, tipText } from '../start-today.js?v=d2df732c';
+import { androidBrowser, badgeCandidates, featTile, pickNudge, pickTip, skillTile, START_TIPS, tipText } from '../start-today.js?v=1f6916fd';
 import { listQuestTracker } from '../quests.js?v=90a2ee3d';
 import { skillArtFor } from '../familiar.js?v=b9597cd3';
 import { CARD_ART_LAYERS } from '../imagination-data.js?v=4a85e7fe';

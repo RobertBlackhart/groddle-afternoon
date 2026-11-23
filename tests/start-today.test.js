@@ -11,7 +11,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { androidBrowser, badgeCandidates, featTile, pickNudge, pickTip, skillTile, START_TIPS, studyLeft, tipText } from '../public/js/start-today.js?v=d2df732c';
+import { androidBrowser, badgeCandidates, featTile, pickNudge, pickTip, skillTile, START_TIPS, studyLeft, tipText } from '../public/js/start-today.js?v=1f6916fd';
 import { runAt } from '../public/js/feats-mp.js?v=809b0452';
 import { FEAT_BY_ID } from '../public/js/solo-feats.js?v=ed1492fc';
 
@@ -105,6 +105,20 @@ describe('the tiles', () => {
     assert.equal(androidBrowser('Mozilla/5.0 (Linux; Android 14; Pixel 8) Chrome/131.0 Mobile Safari/537.36'), true);
     assert.equal(androidBrowser('Mozilla/5.0 (Linux; Android 14; Pixel 8) Chrome/131.0 Mobile Safari/537.36', true), false, 'already installed');
     assert.equal(androidBrowser('Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) Safari/604.1'), false);
+  });
+
+  it('#618: the Calendar tip names the time in the top bar, true solo and online', () => {
+    const tip = 'Click the time in the top bar to find the Calendar.';
+    assert.ok(START_TIPS.includes(tip));
+    assert.equal(tipText(tip, { touch: true }), 'Tap the time in the top bar to find the Calendar.');
+    assert.ok([...new Set(Array.from({ length: 400 }, (_, i) => pickTip(() => i / 400, { touch: true })))].includes(tip), 'phones get it too');
+    // Solo the clock opens the Calendar; online it opens the hi sign board, which has a Calendar button.
+    const cal = read('public/js/features/calendar-feature.js');
+    assert.match(cal, /engine\?\.mode === 'multiplayer'\) return;\n  const clock = document\.getElementById\('dametime-clock'\);/);
+    assert.match(cal, /clock\.addEventListener\('click', toggle\);/);
+    const hi = read('public/js/features/hi-signs-feature.js');
+    assert.match(hi, /el\('button', 'hi-calendar', 'Calendar'\)/);
+    assert.match(hi, /window\.dispatchEvent\(new CustomEvent\('groddle:calendar'\)\)/);
   });
 
   it('a tip each visit; a phone gets only the ones that name no key', () => {

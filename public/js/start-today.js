@@ -40,6 +40,10 @@ export const START_TIPS = Object.freeze([
   // speed one up); a shrine takes favor, not emblems.
   'After 20 skills, each skill you know or have started (paused ones too) makes learning a little slower.',
   'Spend an emblem from your pack (its Spend verb) to unlock a skill or learn one faster. Shrines do not take emblems.',
+  // #618: the Calendar is behind the time in the top bar. Solo, a click on it opens the Calendar
+  // (calendar-feature.js bindClock); online it opens the hi sign board, whose Calendar button opens it
+  // (hi-signs-feature.js bindClock, DateTimeDialog.as 131-160). "find" is true of both.
+  'Click the time in the top bar to find the Calendar.',
 ]);
 
 /** The tips that only make sense in an Android browser. */

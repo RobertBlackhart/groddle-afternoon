@@ -202,7 +202,7 @@ import { skillBubblesFeature } from './skill-bubbles-feature.js?v=4b26af25'; FEA
 // G947 (M3): crews on a home street (help mine, help dig); answers help-mine-feature's queries there.
 import { homeCrewMpFeature } from './home-crew-mp-feature.js?v=126783df'; FEATURES.push(homeCrewMpFeature);
 // TODAYCARD: the start card's Today panel and nudge for a returning player (asks solo-feats for startCardFeat).
-import { startTodayFeature } from './start-today-feature.js?v=d87b06d9'; FEATURES.push(startTodayFeature);
+import { startTodayFeature } from './start-today-feature.js?v=1a1a2da7'; FEATURES.push(startTodayFeature);
 import { chickenScareFeature } from './chicken-scare-feature.js?v=97cb1752'; FEATURES.push(chickenScareFeature);
 import { gameTeleporterFeature } from './game-teleporter-feature.js?v=e51c84da'; FEATURES.push(gameTeleporterFeature);
 import { levelUpMpFeature } from './level-up-mp-feature.js?v=22659e6d'; FEATURES.push(levelUpMpFeature);
