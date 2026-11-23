@@ -9,9 +9,9 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { STATION_MARK, markHasMenu, stationMarks, tipFor } from '../public/js/ui/street-minimap.js?v=ad22dde6';
-import { phoneSignRows } from '../public/js/features/street-minimap-feature.js?v=c6a7d13c';
-import { subwayFeature } from '../public/js/features/subway-feature.js?v=21ad0840';
+import { STATION_MARK, markHasMenu, stationMarks, tipFor } from '../public/js/ui/street-minimap.js?v=64743ba0';
+import { phoneSignRows } from '../public/js/features/street-minimap-feature.js?v=66901693';
+import { subwayFeature } from '../public/js/features/subway-feature.js?v=fbcb73ce';
 import { STATIONS } from '../public/js/subway.js?v=0a87a908';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

@@ -85,7 +85,7 @@
 import { createReportsApi, REPORT_PICTURE, REPORT_TEXT, UNREAD_POLL_MS, base64Size, isPictureKey, pictureSize, reportFromHash } from '../reports.js?v=08604732';
 import { mountReportsSheet } from '../ui/reports-sheet.js?v=1ab76733';
 import { PICTURE_TEXT } from '../report-pictures.js?v=4eb43496';
-import { canvasTransparent } from '../render-probe.js?v=476b7fdf';
+import { canvasTransparent } from '../render-probe.js?v=ac5e3810';
 import { marksLine, startBaitCheck } from '../extension-marks.js?v=36c70f4b';
 
 export const BUG_REPORT_FEATURE_ID = 'bug-report';

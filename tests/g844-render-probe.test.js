@@ -11,10 +11,10 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { canvasTransparent, configureReadback, ensureDepthStencil, pixelsTransparent, probeRenderTexture, renderProbeLine } from '../public/js/render-probe.js?v=476b7fdf';
-import { snapshotEmpty, snapshotStreetView } from '../public/js/ui/street-minimap.js?v=ad22dde6';
-import { SKIRT_DEEP_SHADE, shadeColour, skirtFadeColour } from '../public/js/street-render.js?v=073c8455';
-import { captureFrame, reportContext } from '../public/js/features/bug-report-feature.js?v=755096fc';
+import { canvasTransparent, configureReadback, ensureDepthStencil, pixelsTransparent, probeRenderTexture, renderProbeLine } from '../public/js/render-probe.js?v=ac5e3810';
+import { snapshotEmpty, snapshotStreetView } from '../public/js/ui/street-minimap.js?v=64743ba0';
+import { SKIRT_DEEP_SHADE, shadeColour, skirtFadeColour } from '../public/js/street-render.js?v=e1519623';
+import { captureFrame, reportContext } from '../public/js/features/bug-report-feature.js?v=293be74f';
 
 const PUBLIC = join(import.meta.dirname, '..', 'public');
 const read = (p) => readFileSync(join(PUBLIC, p), 'utf8');

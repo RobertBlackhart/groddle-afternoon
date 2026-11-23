@@ -12,9 +12,9 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { redrawCachedTextures } from '../public/js/pixi-fixes.js?v=4dcac864';
-import { renderProbeLine } from '../public/js/render-probe.js?v=476b7fdf';
-import { reportContext } from '../public/js/features/bug-report-feature.js?v=755096fc';
+import { redrawCachedTextures } from '../public/js/pixi-fixes.js?v=0f42b75e';
+import { renderProbeLine } from '../public/js/render-probe.js?v=ac5e3810';
+import { reportContext } from '../public/js/features/bug-report-feature.js?v=293be74f';
 
 const PUBLIC = join(import.meta.dirname, '..', 'public');
 const read = (p) => readFileSync(join(PUBLIC, p), 'utf8');

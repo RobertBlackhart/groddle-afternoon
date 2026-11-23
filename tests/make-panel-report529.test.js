@@ -10,8 +10,8 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { markFormState, restoreFormState } from '../public/js/features/bug-report-feature.js?v=755096fc';
-import { renderProbeLine } from '../public/js/render-probe.js?v=476b7fdf';
+import { markFormState, restoreFormState } from '../public/js/features/bug-report-feature.js?v=293be74f';
+import { renderProbeLine } from '../public/js/render-probe.js?v=ac5e3810';
 
 const root = join(import.meta.dirname, '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

@@ -12,7 +12,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import vm from 'node:vm';
-import { guardDestroyedSources } from '../public/js/pixi-fixes.js?v=4dcac864';
+import { guardDestroyedSources } from '../public/js/pixi-fixes.js?v=0f42b75e';
 import { installHiresFirstDraw } from '../public/js/sprite-hires.js?v=ad1e46a9';
 
 const ROOT = join(import.meta.dirname, '..');

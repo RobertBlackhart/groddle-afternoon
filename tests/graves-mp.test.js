@@ -36,7 +36,7 @@ class FakeImage {
 const PIXI = loadPixi();
 globalThis.PIXI = PIXI;
 globalThis.Image = FakeImage;
-const { installPixiFixes } = await import('../public/js/pixi-fixes.js?v=4dcac864');
+const { installPixiFixes } = await import('../public/js/pixi-fixes.js?v=0f42b75e');
 installPixiFixes(PIXI);
 
 const {
@@ -54,9 +54,9 @@ const { createHellState, croak, resurrect } = await import('../public/js/hell.js
 const { normalizeHellTicketsState, remoteGraveVisit } = await import('../public/js/hell-tickets.js?v=635b4677');
 const { createQuestState } = await import('../public/js/quests.js?v=90a2ee3d');
 const { hellFeature } = await import('../public/js/features/hell-feature.js?v=0f649865');
-const { hellTicketsFeature } = await import('../public/js/features/hell-tickets-feature.js?v=134cc4ce');
-const { gravesMpFeature } = await import('../public/js/features/graves-mp-feature.js?v=ab1c4b36');
-const { FEATURES } = await import('../public/js/features/index.js?v=fe62990a');
+const { hellTicketsFeature } = await import('../public/js/features/hell-tickets-feature.js?v=48a7e14c');
+const { gravesMpFeature } = await import('../public/js/features/graves-mp-feature.js?v=a45a065a');
+const { FEATURES } = await import('../public/js/features/index.js?v=65be435c');
 
 const STREET = 'GLI2V0UN7RD1T2J';
 const HELL_ONE = 'GA5PPFP86NF2FOS';

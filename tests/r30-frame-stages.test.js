@@ -12,7 +12,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import vm from 'node:vm';
 import { createFrameStages } from '../public/js/feature-host.js?v=b87e2cbc';
-import { guardTickerRender } from '../public/js/pixi-fixes.js?v=4dcac864';
+import { guardTickerRender } from '../public/js/pixi-fixes.js?v=0f42b75e';
 
 const game = readFileSync(join(import.meta.dirname, '..', 'public/game.js'), 'utf8');
 

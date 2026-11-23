@@ -10,7 +10,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { resolveUiMode, createUiMode, UI_STORAGE_KEY, UI_SIZE_KEY, UI_MODE_EVENT } from '../public/js/classic/ui-mode.js?v=409f6aa6';
-import { interfaceMenuLabel, isPreferencesKey, PREFS_TITLE } from '../public/js/classic/classic-prefs.js?v=6d6f2c67';
+import { interfaceMenuLabel, isPreferencesKey, PREFS_TITLE } from '../public/js/classic/classic-prefs.js?v=5cfc7d53';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

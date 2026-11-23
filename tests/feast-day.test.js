@@ -34,7 +34,7 @@ class FakeImage {
 const PIXI = loadPixi();
 globalThis.PIXI = PIXI;
 globalThis.Image = FakeImage;
-const { installPixiFixes } = await import('../public/js/pixi-fixes.js?v=4dcac864');
+const { installPixiFixes } = await import('../public/js/pixi-fixes.js?v=0f42b75e');
 installPixiFixes(PIXI);
 
 const {

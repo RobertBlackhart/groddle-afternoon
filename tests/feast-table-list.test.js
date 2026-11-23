@@ -37,7 +37,7 @@ globalThis.PIXI = PIXI;
 // Icons never arrive here: the list reads the table, not the drawn sprites.
 globalThis.Image = class { constructor() { this.naturalWidth = 40; this.naturalHeight = 40; } };
 
-const { installPixiFixes } = await import('../public/js/pixi-fixes.js?v=4dcac864');
+const { installPixiFixes } = await import('../public/js/pixi-fixes.js?v=0f42b75e');
 installPixiFixes(PIXI);
 const { addItem } = await import('../public/js/inventory.js?v=6414dbdc');
 const { TABLE_LINES, TABLE_RULES, TABLE_STREET, HARVEST_DISHES, tableList, createTableState, layOffering } = await import('../public/js/pot-luck-feast.js?v=4e3b1e03');

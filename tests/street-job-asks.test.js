@@ -14,7 +14,7 @@ import { join } from 'node:path';
 import { normalizeStreetJobState, phaseRequirements } from '../public/js/street-jobs.js?v=692d65c4';
 import { ITEM_GET_ANCHOR, JOB_ASK_TEXT, itemAskSubject, itemGetHref, showAskRule, workSkillMissing, workSkillNote } from '../public/js/street-job-asks.js?v=5b3e6bd0';
 
-import { streetJobsFeature, projectApi } from '../public/js/features/street-jobs-feature.js?v=35d4075a';
+import { streetJobsFeature, projectApi } from '../public/js/features/street-jobs-feature.js?v=c69f4474';
 import { createToolConditionState } from '../public/js/tools.js?v=4156bba8';
 import { Display, FakeEl, fakePixi } from './fake-scene.js';
 
