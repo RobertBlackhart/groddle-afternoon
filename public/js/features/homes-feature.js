@@ -155,7 +155,7 @@ import {
 } from '../home-decor.js?v=b51e16a6';
 import { isTrophyDecor, placedTrophies } from '../home-trophies.js?v=4eb640c3';
 import { applyBonusUpgrade, applyUpgrade, bonusUpgradeLine, currantsText, hasUpgrades, pieceLabel, rollBonusUpgrade, upgradeRow, upgradeVerb, UPGRADE_TEXT } from '../furniture-upgrades.js?v=6cc0e2da';
-import { LONG_PRESS_MS, LONG_PRESS_SLOP, ECHO_MS, createContextMenu } from '../ui/context-menu.js?v=22c44bae';
+import { LONG_PRESS_MS, LONG_PRESS_SLOP, ECHO_MS, createContextMenu } from '../ui/context-menu.js?v=dee0ecde';
 import { DOCK_GAP, DOCK_W, chooseUpgrade, closeUpgradePicker, openUpgradePicker, placeUpgradePicker, saveUpgrade, upgradePickerOpen, upgradePickerState } from '../furniture-upgrade-picker.js?v=8cfd5db7';
 import {
   BUILDER_TEXT,

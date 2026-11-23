@@ -69,7 +69,7 @@
  * refused). QA: &streetmapexpand=1 expands it on each street.
  */
 
-import { createPictureCache, createStreetMinimap, minimapVisibility, onStreetMapChange, sceneSignMarks, setStreetMap, signpostMarks, snapshotStreetView, snapsWithScene, stationMarks, streetMapOn } from '../ui/street-minimap.js?v=64743ba0';
+import { createPictureCache, createStreetMinimap, minimapVisibility, onStreetMapChange, sceneSignMarks, setStreetMap, signpostMarks, snapshotStreetView, snapsWithScene, stationMarks, streetMapOn } from '../ui/street-minimap.js?v=86d4a812';
 import { classicArtUrl } from '../classic/classic-art.js?v=5f713e7d';
 import { onUiModeChange } from '../classic/ui-mode.js?v=384e19e8';
 import { focusBack } from '../ui/focus-return.js?v=da190597';

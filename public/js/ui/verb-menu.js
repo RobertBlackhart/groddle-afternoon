@@ -155,6 +155,46 @@ export function pickGridCols(n) {
 }
 
 /**
+ * #630: the picture grid's columns capped to the room. Glitch's formula (pickGridCols) made a menu
+ * as wide as its grid, which a 960 px stage always held; 33 choices in 9 columns is a 492 px card,
+ * wider than an upright phone. A card `cardW` px wide in a room `roomW` px wide loses as many
+ * columns of `pitch` px (a tile and its gap) as it overflows by; one that fits keeps Glitch's.
+ * @param {number} cols the grid's columns (pickGridCols) @param {number} roomW @param {number} cardW @param {number} pitch
+ */
+export function fitPickGridCols(cols, roomW, cardW, pitch) {
+  const c = Math.max(1, Math.floor(Number(cols) || 1));
+  if (!(roomW > 0) || !(pitch > 0) || !(cardW > roomW)) return c;
+  return Math.max(1, c - Math.ceil((cardW - roomW) / pitch));
+}
+
+/**
+ * Fit an open picture level (`menu` holding a .vm-picks grid) into `roomW` px: back to Glitch's
+ * columns first (so turning a phone sideways gives them back), then fewer when the card overflows.
+ * Both skins size the card from --vm-pick-cols; arrow keys read the grid's data-cols. Returns the
+ * columns, or 0 when the menu has no picture grid.
+ * @param {HTMLElement} menu @param {number} roomW
+ */
+export function fitPickGrid(menu, roomW) {
+  const grid = menu?.querySelector?.('.vm-picks');
+  if (!grid) return 0;
+  const base = Number(grid.dataset.baseCols) || Number(grid.dataset.cols) || 1;
+  grid.dataset.baseCols = String(base);
+  const set = (c) => {
+    grid.dataset.cols = String(c);
+    menu.style.setProperty('--vm-pick-cols', String(c));
+    menu.dataset.vmPicks = String(c);
+  };
+  set(base);
+  const card = menu.querySelector('.verb-menu-card') || menu;
+  const tile = grid.querySelector('.vm-pick');
+  const gap = parseFloat(getComputedStyle(grid).columnGap) || 0;
+  const pitch = (tile?.offsetWidth || 50) + gap;
+  const cols = fitPickGridCols(base, roomW, Math.max(card.offsetWidth, card.scrollWidth), pitch);
+  if (cols !== base) set(cols);
+  return cols;
+}
+
+/**
  * Where an arrow goes in the picture grid, the client's way (InteractionMenu.as focusLeftChoice,
  * focusRightChoice, focusUpChoice, focusDownChoice 2031-2098): Left and Right wrap inside the row,
  * Up and Down wrap inside the column. `i` is the tile's index among `n` tiles. Returns the new

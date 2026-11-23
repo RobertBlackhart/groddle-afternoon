@@ -119,7 +119,7 @@ import { PICTURE_TEXT as P, REPORT_PICTURES, convertPicture, dragHasFiles, files
 import { focusBack } from './focus-return.js?v=da190597';
 import { lightboxLink } from './picture-lightbox.js?v=bd2ae70d';
 import { MARK_TEXT, bakeMarks, createMarkBook } from './picture-marks.js?v=c53dc0fc';
-import { REPORT_MENU_TEXT, bindReportRowMenu, copyText, reportLink } from './report-row-menu.js?v=063d70a3';
+import { REPORT_MENU_TEXT, bindReportRowMenu, copyText, reportLink } from './report-row-menu.js?v=56f236a7';
 
 /** How long Send waits for a picture still drawing before it sends the world-only one (ms). */
 export const PICTURE_WAIT_MS = 6000;

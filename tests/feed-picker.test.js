@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url';
 
 import { getVerbsFor, runVerb } from '../public/content.js?v=92f87e00';
 import { createAnimalState, listAnimalFeedOptions } from '../public/js/animals.js?v=6212bb90';
-import { centerVerbMenu, makePickTile, menuRowsCap, pickGridCols, pickGridStep, placeVerbMenu } from '../public/js/ui/verb-menu.js?v=ba740394';
+import { centerVerbMenu, fitPickGridCols, makePickTile, menuRowsCap, pickGridCols, pickGridStep, placeVerbMenu } from '../public/js/ui/verb-menu.js?v=424b9a35';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const publicDir = join(here, '../public');
@@ -97,6 +97,21 @@ describe('original-style target-item feed picker', () => {
     assert.equal(pickGridStep(5, 11, 7, 'down'), -1, 'no tile under it: Back');
     assert.equal(pickGridStep(9, 11, 7, 'up'), 2);
     assert.equal(pickGridStep(3, 11, 7, 'up'), -1, 'up off the top row: Back');
+  });
+
+  // #630: the Harvest Table's Lay what? (33 choices, 9 columns, a 492 px card) ran off an upright phone.
+  it('caps the picture grid to the room on a phone and keeps Glitch\'s columns on the stage', () => {
+    const modernCard = (cols) => Math.max(240, cols * 52 + 24);
+    const cols = pickGridCols(33);
+    assert.equal(cols, 9);
+    assert.equal(fitPickGridCols(cols, 960 - 16, modernCard(cols), 52), 9, 'the desktop stage holds it');
+    const phone = 402 - 16;
+    const fit = fitPickGridCols(cols, phone, modernCard(cols), 52);
+    assert.equal(fit, 6);
+    assert.ok(modernCard(fit) <= phone, `the card fits the room: ${modernCard(fit)} <= ${phone}`);
+    assert.equal(fitPickGridCols(cols, 812 - 16, modernCard(cols), 52), 9, 'sideways it fits again');
+    assert.equal(fitPickGridCols(3, 100, 400, 52), 1, 'never under one column');
+    assert.equal(fitPickGridCols(6, 0, 400, 52), 6, 'no room measured yet: unchanged');
   });
 
   it('draws a choice as its picture with the pack count, the name for the tooltip and screen readers', () => {

@@ -14,7 +14,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { actVerbMenu, dropVerbMenuActs, focusVerbRow, makeVerbRow, settleVerbMenu, verbMenuWaiting, verbRowAttrs } from '../public/js/ui/verb-menu.js?v=ba740394';
+import { actVerbMenu, dropVerbMenuActs, focusVerbRow, makeVerbRow, settleVerbMenu, verbMenuWaiting, verbRowAttrs } from '../public/js/ui/verb-menu.js?v=424b9a35';
 import { greyWaitingVerbs } from '../public/js/street-objects.js?v=f3732154';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

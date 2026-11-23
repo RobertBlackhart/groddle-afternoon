@@ -22,7 +22,7 @@
  * ("quest-pin:<id>").
  */
 
-import { createContextMenu, isContextMenuKey, LONG_PRESS_MS, LONG_PRESS_SLOP, placeContextMenu } from './context-menu.js?v=22c44bae';
+import { createContextMenu, isContextMenuKey, LONG_PRESS_MS, LONG_PRESS_SLOP, placeContextMenu } from './context-menu.js?v=dee0ecde';
 
 /** How long a finger holds a row before the menu opens, and how far it may drift. */
 export { LONG_PRESS_MS, LONG_PRESS_SLOP };
