@@ -42,7 +42,7 @@ import {
   sentenceSlots,
   slotCorrect,
   touchesToSolve,
-} from '../public/js/quest-rooms/an-autumn-day.js?v=4ac73832';
+} from '../public/js/quest-rooms/an-autumn-day.js?v=cbfd284b';
 import {
   setAmbientMusicConfig,
   resolveAmbientTheme,
@@ -259,7 +259,7 @@ describe('An Autumn Day: the look of the Snaps (G75)', () => {
     const { fileURLToPath } = await import('node:url');
     const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
     const { AN_AUTUMN_DAY_FILES } = await import('../public/js/an-autumn-day-art.js?v=d6b2601b');
-    const mod = await import('../public/js/quest-rooms/an-autumn-day.js?v=4ac73832');
+    const mod = await import('../public/js/quest-rooms/an-autumn-day.js?v=cbfd284b');
     const plan = JSON.parse(readFileSync(join(spike, 'tools/room-art/an_autumn_day.json'), 'utf8'));
     assert.match(plan.source, /glitch-locations limbo1\.swf \(CC0\)/);
     assert.deepEqual(Object.keys(plan.pieces).sort(), Object.keys(AN_AUTUMN_DAY_FILES).sort());
@@ -292,5 +292,43 @@ describe('An Autumn Day: the look of the Snaps (G75)', () => {
     const fences = [...src.matchAll(/drawFence\(g, (\d+), (\d+), FLOOR\)/g)].map((m) => [+m[1], +m[2]]);
     assert.deepEqual(fences, [[4250, 4380], [1260, 1390]]);
     assert.doesNotMatch(src, /drawWoodTree|heights_tree_bare/);
+  });
+});
+
+describe('G1159: the black ground runs to the bottom of every view', () => {
+  /** A fake Pixi whose Graphics remember the deepest point each path reaches. */
+  async function deepestGround(stage) {
+    const { Display, fakePixi, FakeEl } = await import('./fake-scene.js');
+    let deepest = -Infinity;
+    class Graphics extends Display {
+      constructor() {
+        super();
+        const self = this;
+        const track = (x, y) => { if (Number.isFinite(y)) deepest = Math.max(deepest, y); return self.proxy; };
+        return (this.proxy = new Proxy(this, { get: (t, k) => (k === 'lineTo' || k === 'moveTo' ? track : Reflect.get(t, k)) }));
+      }
+    }
+    const PIXI = new Proxy({ ...fakePixi, Graphics }, { get: (t, k) => (k === 'Graphics' ? Graphics : fakePixi[k]) });
+    const saved = { PIXI: globalThis.PIXI, document: globalThis.document };
+    globalThis.PIXI = PIXI;
+    globalThis.document = { baseURI: 'https://groddle.localhost/', createElement: (t) => new FakeEl(t), head: new FakeEl('head'), body: new FakeEl('body'), getElementById: () => null, querySelector: () => null, querySelectorAll: () => [] };
+    try {
+      const scene = room.build({ PIXI, kit, data: {}, param: () => null, stage, questId: null, engine: {}, state: {} }, stage);
+      return { scene, deepest };
+    } finally {
+      globalThis.PIXI = saved.PIXI;
+      globalThis.document = saved.document;
+    }
+  }
+
+  it('the main wood keeps ~a third of a window of ground under its floor (footage)', () => {
+    assert.ok(MAIN.H - MAIN.FLOOR >= 250, `${MAIN.H - MAIN.FLOOR} px under the floor`);
+  });
+
+  it('the ground is drawn far past the bottom of the wood and of each feeling room', async () => {
+    for (const stage of ['main', ...FEELINGS]) {
+      const { scene, deepest } = await deepestGround(stage);
+      assert.ok(deepest >= scene.height + 600, `${stage}: ground ends at ${deepest}, room bottom ${scene.height}`);
+    }
   });
 });

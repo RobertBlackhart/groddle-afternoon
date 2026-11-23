@@ -115,7 +115,7 @@ describe('FOOTWORDS: footage words', () => {
   it("An Autumn Day says GSJS's own words", { skip: !haveGsjs && 'no GSJS' }, async () => {
     const lines = gsjs('inc_data_maps_prod.js').split('\n');
     assert.match(lines[17951], /"LUVCL0STDIB37HE"\s*: "This feeling of …",/);
-    const mod = await import('../public/js/quest-rooms/an-autumn-day.js?v=4ac73832');
+    const mod = await import('../public/js/quest-rooms/an-autumn-day.js?v=cbfd284b');
     assert.equal(mod.CAPTION, 'This feeling of …');
     assert.equal(mod.feelingCaption('comfort'), 'This feeling of comfort.');
     assert.ok(mod.sentenceReady([...mod.SENTENCE, 'comfort.']));

@@ -97,7 +97,13 @@ export const MUSIC_FILE = 'AUTUMN_DAY';
 /* Geometry                                                             */
 /* ------------------------------------------------------------------ */
 
-export const MAIN = Object.freeze({ W: 4400, H: 1320, FLOOR: 1200 });
+/**
+ * G1159: the footage keeps black ground from the walking line to the bottom of the frame, about a
+ * third of the view, so the main wood runs 280 px under its floor; the ground is drawn GROUND_RUN
+ * past each room's bottom too, so a view that reaches below the room still shows ground there.
+ */
+export const MAIN = Object.freeze({ W: 4400, H: 1480, FLOOR: 1200 });
+export const GROUND_RUN = 1200;
 export const ROOM = Object.freeze({ W: 1400, H: 780, FLOOR: 660 });
 /** Avatar body used for overlaps (feet .. feet - BODY_H), like the other rooms. */
 export const BODY_H = 70;
@@ -458,8 +464,8 @@ function tufts(g, x1, x2, y, step = 14) {
 function drawGround(g, W, H, floor) {
   g.moveTo(0, floor + 2);
   for (let x = 0; x <= W; x += 120) g.lineTo(x, floor + 2 - ((x / 120) % 3 === 1 ? 4 : 0));
-  g.lineTo(W, H);
-  g.lineTo(0, H);
+  g.lineTo(W, H + GROUND_RUN);
+  g.lineTo(0, H + GROUND_RUN);
   g.closePath();
   g.fill(INK);
   tufts(g, 0, W, floor + 2, 11);

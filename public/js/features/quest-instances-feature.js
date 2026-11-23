@@ -220,7 +220,7 @@ const ROOM_MODULES = {
   juju_camp: () => import('../quest-rooms/juju-camp.js?v=23be01bf'),
   picto_pattern: () => import('../quest-rooms/picto-pattern.js?v=f47d0b86'),
   radiant_glare: () => import('../quest-rooms/radiant-glare.js?v=2d7e7164'),
-  an_autumn_day: () => import('../quest-rooms/an-autumn-day.js?v=4ac73832'),
+  an_autumn_day: () => import('../quest-rooms/an-autumn-day.js?v=cbfd284b'),
   being_watched: () => import('../quest-rooms/being-watched.js?v=178f4f36'),
   back_alley: () => import('../quest-rooms/back-alley.js?v=d19a077e'),
   clubhouse: () => import('../quest-rooms/clubhouse.js?v=6568fd5a'),
