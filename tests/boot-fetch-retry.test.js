@@ -13,7 +13,7 @@ import { after, before, describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { loadDecoManifest } from '../public/js/street-render.js?v=0b167cb9';
+import { loadDecoManifest } from '../public/js/street-render.js?v=27e80c50';
 import { NEW_DECOS } from '../public/js/deco-hires.js?v=196ca767';
 import { streetJobsFeature, projectApi } from '../public/js/features/street-jobs-feature.js?v=962ee9b6';
 import { createToolConditionState } from '../public/js/tools.js?v=4156bba8';

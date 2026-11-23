@@ -725,7 +725,7 @@ import {
   ensureStreetIndex,
   resolveIndexTsid,
 } from './js/street-loader.js?v=10376267';
-import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=0fec93fc';
+import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=d0662faa';
 import {
   ladderTopDeck,
   groundBeneath,
@@ -756,7 +756,7 @@ import {
   setSignpostHover,
   setSignpostKeys,
   signpostBoardAt,
-} from './js/street-render.js?v=0b167cb9';
+} from './js/street-render.js?v=27e80c50';
 import {
   GAME_DAY_MS,
   shouldFireNewDay,

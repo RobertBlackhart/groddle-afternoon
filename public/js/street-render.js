@@ -485,6 +485,35 @@ export function signDecoDrawn(street, signpost) {
   return (layer?.decos || []).some((d) => art(d.sprite) === art(want) && Math.abs(d.x - signpost.x) <= 4 && Math.abs(d.y - signpost.y) <= 4);
 }
 
+/**
+ * G1154: a signpost's wood takes its layer's colour filter (`colour`: colourFilter of the
+ * middleground's filters, null for none), as the client's posts, children of the middleground,
+ * took that layer's filters: on a dark street (Lotha Harte, Kristel Kaos) the post and arms are
+ * near black. The words stay as they are (the 2012 Lotha Harte street template shows white words
+ * on the dark arms), and so do the hover and route glows. A lift drawn as its deco takes it on
+ * its art and plate. One filter, shared by the parts.
+ * @param {PIXI.Container} g  a view from buildSignpostSprite or buildSignDecoView
+ * @param {any} colour
+ * @returns {number} how many parts took it
+ */
+export function colourSignpost(g, colour) {
+  if (!g || !colour) return 0;
+  let n = 0;
+  const walk = (node) => {
+    for (const child of node.children || []) {
+      if (SIGN_WOOD.has(child.label)) {
+        child.filters = [colour];
+        n += 1;
+      } else if (child.children?.length) walk(child);
+    }
+  };
+  walk(g);
+  g.signColour = colour;
+  return n;
+}
+/** The parts of a signpost that are painted wood (colourSignpost). */
+const SIGN_WOOD = new Set(['sign-shadow', 'sign-post', 'sign-arm', 'sign-deco-art', 'sign-deco-plate']);
+
 /** The most arms a post draws: one for each number key. */
 export const SIGN_MAX_ARMS = 9;
 /** An arm's key cap, in holder units: its size and its gap from the arm's tip. */
@@ -3339,9 +3368,12 @@ export function buildStreetView(street, PIXI, opts = {}) {
     return pick ? sharpTexture(pick) : textureFromUrl(url);
   };
   const signViews = [];
+  // G1154: the posts stand in the middleground and take its colour filter.
+  const signColour = colourFilter(PIXI, (street.layers || []).find((l) => l.id === 'middleground' || l.name === 'middleground')?.filters);
   for (const s of street.signposts || []) {
     const pos = worldToScreen(street, s.x, s.y);
     const g = s.deco?.sprite ? buildSignDecoView(PIXI, s, pos, { art: signDecoArt(s), plate: s.plate || '' }) : buildSignpostSprite(PIXI, s, pos);
+    colourSignpost(g, signColour);
     g.nav = pickConnection(s, availableStreetTsids());
     root.addChild(g);
     signViews.push(g);
