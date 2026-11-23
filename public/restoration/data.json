@@ -2814,9 +2814,19 @@
   "deployed": "2026-11-23"
  },
  "git": {
-  "commits": 3136,
+  "commits": 3140,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-22",
+    "kind": "improve",
+    "text": "Cloud Rings' rings are tall lavender cloud hoops that turn gold"
+   },
+   {
+    "date": "2026-11-22",
+    "kind": "improve",
+    "text": "Each Ticket to Paradise course has its own sky from its snaps"
+   },
    {
     "date": "2026-11-22",
     "kind": "fix",
@@ -2926,19 +2936,9 @@
     "date": "2026-11-22",
     "kind": "fix",
     "text": "A trip that fails to load tries once more, then leaves you where you were and says so"
-   },
-   {
-    "date": "2026-11-22",
-    "kind": "fix",
-    "text": "An upright iPhone shows the game's dark in the status bar, not a light fog"
-   },
-   {
-    "date": "2026-11-22",
-    "kind": "fix",
-    "text": "Wardrobe colour chips show what sets each colourway apart, so the Rook headpiece's black one shows black"
    }
   ]
  },
- "tests": 1283,
+ "tests": 1284,
  "generatedAt": "2026-11-22"
 }
