@@ -1,7 +1,7 @@
 /**
- * Stacks dropped on a public street, or on a player's home street (report
- * #173), are everyone's in multiplayer (register
- * G332): a drop goes through the realtime server
+ * Stacks dropped on a public street, or at a player's home (their home
+ * street, report #173; their house with its back yard and their Tower's
+ * floors, G1190), are everyone's in multiplayer (register G332): a drop goes through the realtime server
  * (groddle-afternoon-server/drops.go, whose header lists the messages and
  * the source rules) to the site's ledger (src/LedgerDrop.php), every player
  * on the street sees the stack, and the first pickup wins. The pure rules
@@ -9,8 +9,8 @@
  *
  * Multiplayer only (engine.mode and engine.query('realtimeClient')). In solo
  * this feature answers nothing, so every drop is the player's own as always.
- * In multiplayer the same holds for a private place (a house, a tower floor,
- * a party space, a race), for food the owner drops on their own home street
+ * In multiplayer the same holds for a private place (a party space, a race,
+ * an upper floor of the house), for food the owner drops on their own home street
  * (their animals there eat it from their own stacks: js/drops-mp.js), for a class the ledger does not carry, a note
  * (its writing would not travel), and whenever the server is out of reach: game.js drops those as it
  * always did.
@@ -47,7 +47,7 @@ import { ITEM_CATALOG, addItem, countItem, removeItem } from '../inventory.js?v=
 import { TOOL_CONDITION_CATALOG, leavingCopyTag, leavingToolWear, receiveToolCopy, takeToolCopy } from '../tools.js?v=4156bba8';
 import { createMinnAccount } from '../minn-account.js?v=edf182bb';
 import { saveStore, savedThrough } from '../save-store.js?v=4e720735';
-import { DROP_OP, DROP_TEXT, dropEffect, eatenStack, groundFrom, homeStreetOwner, isPublicStreet, normalizeGroundStack, normalizeMine, pickupAsk, pigAnimalKey, shareReason, stackAt, stackLeft } from '../drops-mp.js?v=ad34ae0a';
+import { DROP_OP, DROP_TEXT, dropEffect, eatenStack, groundFrom, homePlaceOf, isPublicStreet, normalizeGroundStack, normalizeMine, pickupAsk, pigAnimalKey, shareReason, stackAt, stackLeft } from '../drops-mp.js?v=136e4dbf';
 
 export const DROPS_MP_FEATURE_ID = 'drops-mp';
 const TABLE_URL = 'assets/content/trade-items.json';
@@ -117,21 +117,25 @@ function createSession(engine, client) {
 
   /**
    * Where drops are everyone's now, or null (a private place, not joined): { street: the realtime
-   * street, key: the game's own name for it, ox: the x the server's stack positions start from,
-   * ownHome }. A public street is itself; a home street (report #173) is HOME_<owner> on the server,
-   * RH_HOME_EXT or MPH_<owner> in the game, with x kept from the house (home-street-mp-feature
-   * homeStreetOrigin).
+   * street, key: the game's own name for its stacks (engine.dropTsid), ox: the x the server's stack
+   * positions start from, ownHome }. A public street is itself. A home place (report #173, G1190) is
+   * HOME_<owner>, HOUSE_<owner> or TOWER_<owner>_<floor> on the server and the game's own scene for
+   * it (RH_HOME_EXT, RH_HOME_INT, a Tower floor's RH_HOME_TOWER_<n>, or a visit's MPH_<owner>...),
+   * as home-street-mp-feature homeDropOrigin says which home, room and floor that scene is: x from
+   * the house on the home street and in the house, a Tower floor's own.
    */
   function here() {
     const s = String(client.street || '');
     const scene = String(engine.streetTsid || '');
     if (client.state !== 'online' || !s || !scene) return null;
     if (isPublicStreet(s)) return s === scene ? { street: s, key: s, ox: 0, ownHome: false } : null;
-    const owner = homeStreetOwner(s);
-    if (!owner) return null;
-    const o = engine.query?.('homeStreetOrigin', engine);
-    if (!o || Number(o.owner) !== owner || !Number.isFinite(Number(o.houseX))) return null;
-    return { street: s, key: scene, ox: Math.round(Number(o.houseX)), ownHome: o.own === true };
+    const place = homePlaceOf(s);
+    if (!place) return null;
+    const o = engine.query?.('homeDropOrigin', engine);
+    if (!o || Number(o.owner) !== place.owner || o.room !== place.room || (place.room === 'tower' && Number(o.floor) !== place.floor)) return null;
+    const ox = place.room === 'tower' ? 0 : Number(o.houseX);
+    if (!Number.isFinite(ox)) return null;
+    return { street: s, key: String(engine.dropTsid || scene), ox: Math.round(ox), ownHome: o.own === true };
   }
 
   /**
@@ -139,7 +143,7 @@ function createSession(engine, client) {
    * is the trade table's (include/food.js, what the original's Piggies ate from the ground).
    */
   function reasonAt(p, c) {
-    return shareReason(c, table, { street: p.street, sceneKey: p.key, dropKey: String(engine.dropTsid || p.key), ownHome: p.ownHome, herdFood: p.ownHome && table?.items?.[c]?.food === true });
+    return shareReason(c, table, { street: p.street, ownHome: p.ownHome, herdFood: p.ownHome && table?.items?.[c]?.food === true });
   }
 
   /** A stack of the server's, where this game draws it. */

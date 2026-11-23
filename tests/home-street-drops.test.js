@@ -10,18 +10,18 @@
  *
  * Ours: the stack's x is kept from the house (the remake's home street grows
  * to the left and moves the house), the site keeps the street as HOME-<owner>
- * (its street names take no "_"), food the owner drops on their own home
- * street stays their own (their animals there eat from their own stacks), and
- * the house, its back yard and the Tower's floors stay each player's own.
- * The server's side is drops_test.go.
+ * (its street names take no "_"), and food the owner drops on their own home
+ * street stays their own (their animals there eat from their own stacks).
+ * The house, its back yard and the Tower's floors are shared too since G1190
+ * (tests/house-drops.test.js). The server's side is drops_test.go.
  */
 import { after, before, describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
-import { homeStreetOwner, isPublicStreet, isSharedStreet, normalizeGroundStack, shareReason, stackAt } from '../public/js/drops-mp.js?v=ad34ae0a';
+import { homeStreetOwner, isPublicStreet, isSharedStreet, normalizeGroundStack, shareReason, stackAt } from '../public/js/drops-mp.js?v=136e4dbf';
 import { dropsMpFeature } from '../public/js/features/drops-mp-feature.js?fresh=homedrops';
-import { homeStreetMpFeature } from '../public/js/features/home-street-mp-feature.js?v=7bd09b0f';
+import { homeStreetMpFeature } from '../public/js/features/home-street-mp-feature.js?v=40244bfa';
 import { sharedHomeStreet } from '../public/js/neighbours-mp.js?v=cb0c9e26';
 import { HAS_SERVER, HAS_SITE, SITE_DIR, serverPath } from '../tools/repos.mjs';
 
@@ -30,13 +30,13 @@ const OP2 = 'drop-00000000000000a2';
 const TABLE = { items: { cherry: { food: true }, musicblock_d_green_01: {}, note: {} }, untradeable: {} };
 
 describe('where a drop is everyone\'s', () => {
-  it('a home street is, beside public streets; a house, a Tower floor and the rest are not', () => {
+  it('a home street is, beside public streets; a party space, a race and the rest are not', () => {
     assert.equal(homeStreetOwner('HOME_7'), 7);
     for (const s of ['', 'LA5101HF7F429V', 'HOUSE_7', 'TOWER_7_0', 'HOME_0', 'HOME_7_x', 'XHOME_7', 'HOME_', 'PARTY_12', 'RACE_ab', 'CROWNS_1', 'MPH_7']) assert.equal(homeStreetOwner(s), 0, s);
     assert.equal(isSharedStreet('HOME_7'), true);
     assert.equal(isSharedStreet('LA5101HF7F429V'), true);
     assert.equal(isPublicStreet('HOME_7'), false, 'a home street is still no public street to anything else');
-    for (const s of ['', 'HOUSE_7', 'TOWER_7_0', 'PARTY_12', 'RACE_ab']) assert.equal(isSharedStreet(s), false, s);
+    for (const s of ['', 'PARTY_12', 'RACE_ab', 'MPH_7']) assert.equal(isSharedStreet(s), false, s);
   });
 
   it('the realtime street of a home street is HOME_<owner> for the owner and a visitor alike', () => {
@@ -48,8 +48,6 @@ describe('where a drop is everyone\'s', () => {
   it('shares a stack there under the game\'s own name for the place', () => {
     assert.equal(shareReason('musicblock_d_green_01', TABLE, { street: 'HOME_7', sceneKey: 'MPH_7', dropKey: 'MPH_7' }), '', 'a visitor');
     assert.equal(shareReason('musicblock_d_green_01', TABLE, { street: 'HOME_7', sceneKey: 'RH_HOME_EXT', dropKey: 'RH_HOME_EXT', ownHome: true }), '', 'the owner');
-    assert.equal(shareReason('musicblock_d_green_01', TABLE, { street: 'HOUSE_7', sceneKey: 'MPH_7_IN', dropKey: 'MPH_7_IN' }), 'private', 'the house');
-    assert.equal(shareReason('musicblock_d_green_01', TABLE, { street: 'TOWER_7_0', sceneKey: 'RH_HOME_INT', dropKey: 'RH_HOME_TOWER_0' }), 'private', 'a Tower floor');
     assert.equal(shareReason('note', TABLE, { street: 'HOME_7', sceneKey: 'MPH_7', dropKey: 'MPH_7' }), 'note');
     assert.equal(shareReason('trophy_egg_hunt', TABLE, { street: 'HOME_7', sceneKey: 'RH_HOME_EXT', dropKey: 'RH_HOME_EXT', ownHome: true }), 'type', 'a trophy set out at home stays the owner\'s own');
   });
@@ -102,7 +100,7 @@ describe('the feature on a home street', () => {
     player: { x: 700, y: 870 },
     query(hook, op) {
       if (hook === 'realtimeClient') return client;
-      if (hook === 'homeStreetOrigin') return origin;
+      if (hook === 'homeDropOrigin') return origin && { room: 'street', floor: 0, ...origin };
       if (hook === 'ledgerReceipt') {
         if (applied.has(op)) return false;
         applied.add(op);
@@ -209,15 +207,7 @@ describe('the feature on a home street', () => {
     assert.equal(dropsMpFeature.sharedDroppedStacks('RH_HOME_EXT', engine).some((s) => s.id === OP2), true, 'the owner sees the visitor\'s stack');
   });
 
-  it('nothing is shared in the house, on a Tower floor, or on someone else\'s home by mistake', () => {
-    client.street = 'HOUSE_7';
-    engine.streetTsid = 'RH_HOME_INT';
-    engine.dropTsid = 'RH_HOME_INT';
-    assert.equal(dropsMpFeature.sharedDrop({ classTsid: 'musicblock_d_green_01', count: 1, x: 0, y: 0 }, engine), null);
-    assert.equal(dropsMpFeature.sharedDroppedStacks('RH_HOME_INT', engine), null);
-    client.street = 'TOWER_7_0';
-    engine.dropTsid = 'RH_HOME_TOWER_0';
-    assert.equal(dropsMpFeature.sharedDrop({ classTsid: 'musicblock_d_green_01', count: 1, x: 0, y: 0 }, engine), null);
+  it('nothing is shared on someone else\'s home by mistake', () => {
     // The server's street and the scene must be the same home.
     client.street = 'HOME_8';
     engine.streetTsid = 'MPH_7';
@@ -239,7 +229,7 @@ describe('solo', () => {
 describe('the server and the site', () => {
   it('drops.go shares HOME_<owner> and keeps the rest private', { skip: HAS_SERVER ? false : 'no server checkout' }, () => {
     const go = readFileSync(serverPath('drops.go'), 'utf8');
-    assert.match(go, /dropHomeRe\s+= regexp\.MustCompile\(`\^HOME_\(\[1-9\]\[0-9\]\{0,17\}\)\$`\)/);
+    assert.match(go, /dropHomeSiteRe\s+= regexp\.MustCompile\(`\^\(HOME\|HOUSE\)-\(\[1-9\]\[0-9\]\{0,17\}\)\$`\)/);
     assert.match(go, /func dropShared\(street string\) bool \{ return !followPrivate\(street\) \|\| dropHomeOwner\(street\) > 0 \}/);
     assert.match(go, /dropHomeOwner\(s\.Street\) != s\.By/, 'the owner\'s own stacks stay on their home street');
   });

@@ -1365,6 +1365,28 @@ function createSession(engine, client) {
       if (w === 'visit' && visit.room === 'street' && readVisitScene(engine.streetTsid)?.room === 'street') return { owner: visit.owner, houseX: visit.houseX, own: false };
       return null;
     },
+    /**
+     * G1190: the home place I stand in, mine or one I visit, for drops-mp-feature: { owner, room
+     * ('street' | 'interior' | 'tower'), floor, houseX (the house's x as drawn here: on the street,
+     * or the house's left end indoors), own }, or null (an upper floor of the house, anywhere else).
+     */
+    dropOrigin() {
+      const w = where();
+      if (w === 'street') return { owner: me(), room: 'street', floor: 0, houseX: ownGeometry().street.houseX, own: true };
+      if (w === 'house') return { owner: me(), room: 'interior', floor: 0, houseX: ownGeometry().house.roomX, own: true };
+      const seen = readVisitScene(engine.streetTsid);
+      if (seen?.room === 'tower') return { owner: seen.owner, room: 'tower', floor: seen.floor, houseX: 0, own: false };
+      if (w === 'visit') {
+        if (visit.room === 'street' && seen?.room === 'street') return { owner: visit.owner, room: 'street', floor: 0, houseX: visit.houseX, own: false };
+        if (visit.room === 'interior' && seen?.room === 'interior') return { owner: visit.owner, room: 'interior', floor: 0, houseX: visit.roomX, own: false };
+        return null;
+      }
+      // My own Tower floor (the homes feature's scene: a room with a tower floor).
+      const home = engine.homeContext?.() || {};
+      const scene = homesFeature._state?.()?.scene;
+      if (home.inHome && scene?.room === 'interior' && Number.isInteger(scene.tower) && scene.tower >= 0) return { owner: me(), room: 'tower', floor: scene.tower, houseX: 0, own: true };
+      return null;
+    },
     saleLock(decor, id) {
       const st = homesFeature._state?.();
       if (!st || decor !== st.houseDecor) return null;
@@ -1506,6 +1528,12 @@ export const homeStreetMpFeature = {
   homeStreetOrigin(engine) {
     if (engine?.mode !== 'multiplayer') return null;
     return ensure(engine)?.streetOrigin() || null;
+  },
+
+  /** G1190, drops-mp-feature: the home place stood in (home street, house, Tower floor), or null. */
+  homeDropOrigin(engine) {
+    if (engine?.mode !== 'multiplayer') return null;
+    return ensure(engine)?.dropOrigin() || null;
   },
 
   /** homes-feature registerRestore: the realtime server's id for my restoration (multiplayer only). */

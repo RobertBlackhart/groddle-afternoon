@@ -296,8 +296,9 @@
   "public/js/drops-mp.js": {
     "ours: ${label}, so it came back to your pack.`, // ours": "remake-copy",
     "ours: * Ours: a class the ledger does not carry (the trade": "ours-drops",
+    "ours: * there. Ours there: a stack's x is kept from the house (the": "ours-drops",
     "ours: by: (name) => `Dropped by ${name}`, // ours": "remake-copy",
-    "ours: sets on furniture inside the house or Tower). Ours": "ours-drops"
+    "remake-own: * remake's own with no visitors, and stays": "ours-drops"
   },
   "public/js/eat-pick.js": {
     "remake-own: * list none); F was the remake's own and ate an apple. Now F opens the": "hotkeys-of-ours"

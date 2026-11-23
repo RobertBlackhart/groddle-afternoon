@@ -20,7 +20,7 @@ import { resolveTokens } from './css-tokens.js';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { accountBackupFeature } from '../public/js/features/account-backup-feature.js?v=5937defa';
-import { homeStreetMpFeature } from '../public/js/features/home-street-mp-feature.js?v=7bd09b0f';
+import { homeStreetMpFeature } from '../public/js/features/home-street-mp-feature.js?v=40244bfa';
 import { yardVerbsMpFeature } from '../public/js/features/yard-verbs-mp-feature.js?v=219248d6';
 import { homePoolMpFeature } from '../public/js/features/home-pool-mp-feature.js?v=eda3419c';
 import { qurazyFeature, resetQurazyFeatureForTests } from '../public/js/features/qurazy-feature.js?v=d7430469';

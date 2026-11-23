@@ -1,6 +1,7 @@
 /**
- * Stacks dropped on a public street, or on a player's home street, for
- * everyone in multiplayer (register G332; home streets: report #173): the
+ * Stacks dropped on a public street, or at a player's home (their home street,
+ * house and Tower floors), for everyone in multiplayer (register G332; home
+ * streets: report #173; house and Tower: G1190): the
  * pure rules and words. features/drops-mp-feature.js talks to the
  * realtime server (groddle-afternoon-server drops.go, whose header lists the
  * messages and the source rules) and draws the stacks through game.js's own
@@ -20,20 +21,35 @@
  * A home street (report #173, Austin 2026-11-10: "visitors' and owners' drops
  * are seen by everyone there, as on public streets"): in the original a home
  * street was a location like any other, so the same drop and pickup rules ran
- * there (the one home rule, house_lock at takeable.js 34-36 and 179-198, is
- * for what the owner sets on furniture inside the house or Tower). Ours there:
- * a stack's x is kept from the house (the remake's home street grows to the
- * left and moves the house; drops.go "A home street"), and food (the trade
- * table's "food", include/food.js) the owner
+ * there. Ours there: a stack's x is kept from the house (the remake's home
+ * street grows to the left and moves the house; drops.go "A home street"),
+ * and food (the trade table's "food", include/food.js) the owner
  * drops on their own home street stays their own, because their own animals
  * there eat from the owner's own stacks (animal-husbandry-feature yardFood,
  * animal-mood-feature) and the server holds no home street animals to eat a
  * shared one.
  *
+ * The house (with its back yard) and the Tower's floors (G1190, Austin
+ * 2026-11-23: "make house floors shared as in Glitch", reversing the
+ * 2026-11-10 ruling): the original's house and Tower were locations like the
+ * street too (takeable.js 5-51, 157-213), so a stack dropped there is
+ * everyone's there, HOUSE_<owner> and TOWER_<owner>_<floor> on the server:
+ * the dropper's 100 px guard, then the first pickup, owner, key-holder or
+ * visitor alike. The one home rule, house_lock (takeable.js 33-36, 179-198;
+ * main.js doModifyItem 4870-4891), locked to the owner what the owner set on
+ * a furniture plat in their house or Tower: here that is what the owner sets
+ * down in Decoration Mode, which stays in the owner's own save, and visitors
+ * see it locked (neighbours-mp-feature, the site's Neighbours::stackRows),
+ * as they see the owner's stacks dropped there before G1190. In the house x
+ * is kept from the house's left end, as on the home street; a Tower floor
+ * keeps its own x. An upper floor of the house (G153) is a room of the
+ * remake's own with no visitors, and stays private.
+ *
  * Ours: a class the ledger does not carry (the trade table), a note (its
- * writing would not travel) and anything dropped in a private place (a house, a tower floor, a party
- * space, a race) stay the player's own, as in solo; a stack nobody picks up
- * in seven days goes back to its dropper. A copy's own words (a Cubimal's
+ * writing would not travel) and anything dropped in a private place (a
+ * party space, a race) stay the player's own, as in solo; a stack nobody
+ * picks up in seven days goes back to its dropper, but for the owner's own
+ * at their own home. A copy's own words (a Cubimal's
  * name ...) ride with a one-copy stack as "t", as its wear rides as "r".
  */
 
@@ -74,23 +90,33 @@ export function homeStreetOwner(street) {
   return m ? Number(m[1]) : 0;
 }
 
-/** A street whose drops are everyone's: a public street or a player's home street (drops.go dropShared). */
+/**
+ * The home a realtime street is (homes.go: HOME_<owner>, HOUSE_<owner>, TOWER_<owner>_<floor>):
+ * { owner, room: 'street' | 'interior' | 'tower', floor }, or null for any other street.
+ */
+export function homePlaceOf(street) {
+  const m = /^(HOME|HOUSE)_([1-9][0-9]{0,17})$|^TOWER_([1-9][0-9]{0,17})_([0-9])$/.exec(String(street || ''));
+  if (!m) return null;
+  if (m[3]) return { owner: Number(m[3]), room: 'tower', floor: Number(m[4]) };
+  return { owner: Number(m[2]), room: m[1] === 'HOUSE' ? 'interior' : 'street', floor: 0 };
+}
+
+/** A street whose drops are everyone's: a public street, or a player's home street, house or Tower floor (drops.go dropShared). */
 export function isSharedStreet(street) {
-  return isPublicStreet(street) || homeStreetOwner(street) > 0;
+  return isPublicStreet(street) || homePlaceOf(street) != null;
 }
 
 /**
  * Whether a pack stack is dropped for everyone: '' when it is, else why it
  * stays the player's own (the game then drops it as in solo).
- * street: the realtime street; sceneKey: the game's own name for the place
- * (the same on a public street; RH_HOME_EXT or MPH_<owner> on a home street);
- * dropKey: where the game keeps this place's own stacks; ownHome: the player
- * stands on their own home street; herdFood: their animals there eat the class.
+ * street: the realtime street; ownHome: the player stands at their own home;
+ * herdFood: their animals on their home street eat the class. (sceneKey and
+ * dropKey, the game's names for the place, are checked by the feature: a
+ * shared place is one the server and the scene agree on.)
  */
-export function shareReason(classTsid, table, { street = '', dropKey = '', sceneKey = street, ownHome = false, herdFood = false } = {}) {
+export function shareReason(classTsid, table, { street = '', ownHome = false, herdFood = false } = {}) {
   const c = String(classTsid || '');
   if (!isSharedStreet(street)) return 'private';
-  if (dropKey && dropKey !== sceneKey) return 'private'; // a Tower floor keeps its own stacks (G226)
   if (!table?.items) return 'table';
   if (!table.items[c]) return 'type';
   if (c === 'note') return 'note';

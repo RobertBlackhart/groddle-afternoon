@@ -2114,7 +2114,7 @@
   },
   {
    "id": "ours-drops",
-   "title": "drops: for what the owner sets on furniture inside the house or Tower). Ours there:",
+   "title": "drops: x kept from the house at a home; the owner's own food on their home street, and what the owner sets down in Decoration Mode in their house or Tower (G1190), stay theirs",
    "kind": "behaviour",
    "status": "proposed",
    "where": [
@@ -2123,9 +2123,12 @@
     }
    ],
    "why": "Marked as the remake's own in public/js/drops-mp.js (2 marks); the comment says why. No ruling recorded in the register yet.",
-   "rows": [],
+   "rows": [
+    "G1190"
+   ],
    "rulingHints": [
-    "Austin 2026-11-10 (in a code comment)"
+    "Austin 2026-11-10 (in a code comment)",
+    "Austin 2026-11-23 (G1190): make house floors shared as in Glitch"
    ]
   },
   {
