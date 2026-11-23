@@ -14702,6 +14702,39 @@ const engine = {
     refreshDroppedWorldItems();
     return result;
   },
+  /** Why a pack class can't go down here ('' when it can): Drop's own conditions (packDropBlockReason). */
+  packDropBlocked(classTsid) {
+    return packDropBlockReason(classTsid);
+  },
+  /**
+   * G1192: a pack stack dragged onto the street (features/world-drop-feature.js 'street'): its Drop, at
+   * your feet. LocationInputHandler.as 761-776 opened the drop verb on the dragged stack: one went at once,
+   * more asked how many (InteractionMenuController.as 976-985). Here that is the stack's own Drop, from
+   * its menu, so the count, the stack it comes off and a tool's own wear are Drop's. A bag goes whole.
+   */
+  dropDraggedAtFeet(stack) {
+    if (!state.started || !player || !currentStreetTsid || !stack?.cls) return false;
+    const cls = String(stack.cls);
+    if (stack.bag) {
+      dropPackBag(cls, stack.bag);
+      return true;
+    }
+    const place = stack.container != null && stack.container !== '' && Number.isFinite(Number(stack.index)) ? { container: String(stack.container), index: Number(stack.index) } : null;
+    const anchor = findPackSlotElement(cls, Number.isInteger(stack.copy) ? stack.copy : null, null, place);
+    closeWorldMenusForPack();
+    closePackPopover();
+    renderPackPopover(cls, anchor);
+    if (!isPackPopoverOpen()) return false;
+    const count = Math.min(countItem(inv, cls), packSelectedStack?.count || Infinity);
+    if (count <= 1) {
+      dropPackItem(cls, 1);
+      return true;
+    }
+    packDropMode = true;
+    renderPackPopover(cls, anchor);
+    document.getElementById('pack-popover')?.querySelector('[data-pack-drop-confirm]')?.focus({ preventScroll: true });
+    return true;
+  },
   /** A dropped stack drawn here back into the pack, as its Pick up verb does (homes-feature: Decoration Mode). */
   pickUpDroppedStack(id, count = Infinity) {
     const target = interactables.find((t) => t.classId === 'dropped_item' && t.worldItemId === id);

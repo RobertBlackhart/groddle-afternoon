@@ -32,6 +32,8 @@ import { draggedStack, markDragged } from '../drag-stack.js?v=536cddfb';
 export const WORLD_DROP_FEATURE_ID = 'world-drop';
 
 let wired = false;
+/** LocationInputHandler.as 690: the tip over the street itself. */
+export const WORLD_DROP_FEET = 'Drop at your feet';
 let dragging = null; // { cls, copy, ds } (ds: the dragged stack, js/drag-stack.js)
 let tip = null;
 let lit = null;
@@ -192,6 +194,43 @@ function wire(engine) {
       if (over) runDrop(engine, over, cls, copy, ds);
     },
     end() { if (dragging) endDrag(engine); },
+  });
+  // G1192: a pack stack let go on the street where no thing takes it is dropped at your feet, as the
+  // original's was (LocationInputHandler.as _packDragMoveHandler 686-690: the location itself is the
+  // target when the stack is dropable, tip "Drop at your feet"; _packDragCompleteHandler 761-776 opens the
+  // drop verb on the dragged stack, so one goes at once and more ask how many). Asked after every thing.
+  let feet = null;
+  registerDropTarget({
+    id: 'street',
+    order: 65,
+    scope: () => canvas,
+    start(d) {
+      const st = d.stack;
+      feet = st.from === 'pack' && st.cls && typeof engine.dropDraggedAtFeet === 'function' ? { ...st } : null;
+    },
+    over(d, at) {
+      if (!feet) return null;
+      const why = engine.packDropBlocked?.(feet.cls) || '';
+      engine.setData?.('worldDrag', `feet:${feet.cls}:${why ? 'no' : 'ok'}`);
+      showTip(why || WORLD_DROP_FEET, Boolean(why), at.x, at.y);
+      return { ok: !why };
+    },
+    leave() {
+      if (feet) showTip('');
+    },
+    drop(d, at, res) {
+      const st = feet;
+      feet = null;
+      showTip('');
+      if (!st || res?.ok === false) return;
+      engine.setData?.('worldDropLast', `feet:${st.cls}`);
+      engine.dropDraggedAtFeet(st);
+    },
+    end() {
+      if (!feet) return;
+      feet = null;
+      showTip('');
+    },
   });
   // G738: a QA lever (js/qa-gate.js): solo, or online on a local host only.
   exposeQA('groddleWorldDrop', {

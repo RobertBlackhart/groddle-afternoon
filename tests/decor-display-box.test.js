@@ -82,7 +82,7 @@ describe('a Storage Display Box takes things, as the original did', () => {
   });
 
   it('#470: outside Decorate a pack stack dropped on a box in your own house goes in it (bag_furniture_sdb.js 611-640)', () => {
-    const wire = homes.slice(homes.indexOf('const boxTarget = (engine) => ({'), homes.indexOf('function wireDropTargets('));
+    const wire = homes.slice(homes.indexOf('const boxTarget = (engine) => ({'), homes.indexOf('// --- G1192: outside Decorate'));
     const here = homes.slice(homes.indexOf('function boxDropHere('), homes.indexOf('function endBoxDrag('));
     assert.match(here, /mode === 'decorate'/, 'Decorate keeps its own drop');
     assert.match(here, /scene\.room !== 'interior'/);

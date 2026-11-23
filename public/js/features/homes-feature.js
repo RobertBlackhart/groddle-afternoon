@@ -6061,7 +6061,58 @@ const boxTarget = (engine) => ({
   },
 });
 
-/** The home's three drop targets (registered once; registering again replaces them with this engine). */
+// --- G1192: outside Decorate, in your own house, a pack stack let go in the room is set down on the
+// shelf, table or floor under the pointer. The original's can_decorate held in your own interior and
+// tower (WorldModel.as 59, location.js 2699-2706), and with it a pack drag placed the stack on the plat
+// under the pointer whether or not you were decorating (HandOfDecorator.as 536-543, the pack drag handler;
+// LocationInputHandler.as 591-597 dropItemFromPackOnTargetPlatform, the whole stack). The things that
+// take the stack ask first (DragVO.as findDragTargetForStack): players, a box, a thing in the room.
+
+let placeDrag = null; // { classTsid, count, ds } a pack stack dragged in your own house while not decorating
+
+function endPlaceDrag(engine) {
+  placeDrag = null;
+  drawPackMarker(engine, null);
+}
+
+const placeTarget = (engine) => ({
+  id: 'home-place',
+  order: 62,
+  scope: gameCanvas,
+  start(d) {
+    const st = d.stack;
+    placeDrag = st.from === 'pack' && st.cls && !st.bag && !st.tool && !FURNITURE_CATALOG[st.cls] && boxDropHere(engine)
+      ? { classTsid: st.cls, count: Math.max(1, Math.floor(Number(st.count) || 1)), ds: draggedStack(engine, st) }
+      : null;
+  },
+  over(d, at) {
+    if (!placeDrag || !boxDropHere(engine)) return null;
+    drawPackMarker(engine, packDropTarget(engine, { clientX: at.x, clientY: at.y }), placeDrag);
+    engine.setData('homeDrag', `place:${placeDrag.classTsid}`);
+    return { ok: true };
+  },
+  leave() {
+    if (placeDrag) drawPackMarker(engine, null);
+  },
+  drop(d, at) {
+    if (!placeDrag || !boxDropHere(engine)) return;
+    const was = placeDrag;
+    const target = packDropTarget(engine, { clientX: at.x, clientY: at.y });
+    endPlaceDrag(engine);
+    const count = was.ds ? draggedCount(engine, was.ds) : was.count;
+    const res = engine.dropPackStackAt?.(was.classTsid, count, target.x + roomX0(), target.y, { beforeRemove: (n) => takeDragged(engine, was.ds, n) });
+    if (!res?.ok) {
+      if (res?.msg) engine.toast(res.msg);
+      engine.playSound?.('CLICK_FAILURE', { volume: 0.4 });
+    } else settleRoomStacks(engine);
+    engine.setData('homeDropLast', res?.ok ? `place:${was.classTsid}:${target.on ?? 'floor'}` : `refused:${res?.reason || ''}`);
+  },
+  end() {
+    if (placeDrag) endPlaceDrag(engine);
+  },
+});
+
+/** The home's drop targets (registered once; registering again replaces them with this engine). */
 let dropTargetsEngine = null;
 function wireDropTargets(engine) {
   if (dropTargetsEngine === engine) return;
@@ -6069,6 +6120,7 @@ function wireDropTargets(engine) {
   registerDropTarget(decorateTarget(engine));
   registerDropTarget(pourTarget(engine));
   registerDropTarget(boxTarget(engine));
+  registerDropTarget(placeTarget(engine));
 }
 
 // --- stacks set down in the room: select, drag to move, drag onto the pack to pick up
