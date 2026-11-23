@@ -47,7 +47,7 @@ import { ITEM_CATALOG, addItem, countItem, removeItem } from '../inventory.js?v=
 import { TOOL_CONDITION_CATALOG, leavingCopyTag, leavingToolWear, receiveToolCopy, takeToolCopy } from '../tools.js?v=4156bba8';
 import { createMinnAccount } from '../minn-account.js?v=83127c18';
 import { saveStore, savedThrough } from '../save-store.js?v=4e720735';
-import { DROP_OP, DROP_TEXT, dropEffect, eatenStack, groundFrom, homePlaceOf, isPublicStreet, normalizeGroundStack, normalizeMine, pickupAsk, pigAnimalKey, shareReason, stackAt, stackLeft } from '../drops-mp.js?v=136e4dbf';
+import { DROP_OP, DROP_TEXT, dropEffect, dropRefusalText, eatenStack, groundFrom, homePlaceOf, isPublicStreet, normalizeGroundStack, normalizeMine, pickupAsk, pigAnimalKey, shareReason, stackAt, stackLeft } from '../drops-mp.js?v=0cd411dc';
 
 export const DROPS_MP_FEATURE_ID = 'drops-mp';
 const TABLE_URL = 'assets/content/trade-items.json';
@@ -258,7 +258,7 @@ function createSession(engine, client) {
     if (msg.status !== 'settled') {
       // The server would not share it: as in solo, the drop is the player's own.
       if (d && ['type', 'off', 'private'].includes(String(msg.why))) dropOwn(d);
-      else tell(String(msg.text || "That didn't work."));
+      else tell(dropRefusalText(msg, client.street || street));
       publish();
       return;
     }

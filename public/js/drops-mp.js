@@ -70,6 +70,8 @@ export const DROP_TEXT = Object.freeze({
   back: (n, label) => `Nobody picked up your ${n}× ${label}, so it came back to your pack.`, // ours
   by: (name) => `Dropped by ${name}`, // ours
   busy: 'Wait a moment, you are still dropping something.', // drops.go
+  // drops.go dropTextFull (ours) says "street" everywhere; a house or Tower floor holds 60 too (dropStreetMax).
+  full: (place) => `This ${place} can't hold any more dropped things.`,
   gone: 'That stack has already been picked up.', // the game's own
   locked: 'You are not allowed to pick this up.', // takeable.js:39
   offline: "You're offline.",
@@ -77,6 +79,23 @@ export const DROP_TEXT = Object.freeze({
   // stack is dropped for everyone (stacks dropped for others never merge: drops.go).
   prompt: 'Drop it on the ground.',
 });
+
+/**
+ * What a full place is called in its refusal (drops.go refuses "full" at dropStreetMax stacks on any
+ * shared place): 'house' for a house with its back yard, 'Tower floor', else 'street'.
+ */
+export function fullPlaceName(street) {
+  const home = homePlaceOf(street);
+  if (home?.room === 'interior') return 'house';
+  if (home?.room === 'tower') return 'Tower floor';
+  return 'street';
+}
+
+/** The words for a drop the server refused: its own, but a full place named as what it is. */
+export function dropRefusalText(msg, street = '') {
+  if (String(msg?.why || '') === 'full') return DROP_TEXT.full(fullPlaceName(street || msg?.street));
+  return String(msg?.text || "That didn't work.");
+}
 
 /** A public street others share (realtime-feature sharedStreet; drops.go dropShared: no "_" in the id). */
 export function isPublicStreet(street) {
