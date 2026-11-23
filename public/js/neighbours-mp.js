@@ -27,6 +27,7 @@
 import { SEED_CATALOG, applyFertilizer, sowPlot, wetPlot } from './garden.js?v=9caea9c6';
 import { normalizeParcelBox, stackCopy } from './butler.js?v=6c66ebf5';
 import { normalizeVisitGnomes } from './garden-gnome.js?v=d9f8e52b';
+import { DROP_TEXT } from './drops-mp.js?v=136e4dbf';
 
 /** The realtime server's street for a player's home street (homes.go). */
 export const HOME_STREET_PREFIX = 'HOME_';
@@ -377,9 +378,71 @@ export function normalizeHomeView(answer) {
     random: answer.random === true,
     // The owner's Garden Gnomes where they stand (Neighbours::gnomeRows; features/garden-gnome-feature.js draws them).
     gnomes: normalizeVisitGnomes(answer.gnomes),
+    // G1190: what the owner keeps in their own save in the house and on the Tower floors (Neighbours::stackRows).
+    stacks: normalizeOwnerStacks(answer.stacks),
     // Slice 2: the owner's Butler as it looks (Neighbours::butlerView), or null; `info` is its owner's leave info line (141 characters, bag_butler.js 3419).
     butler: answer.butler?.owned === true ? { owned: true, name: String(answer.butler.name || '').slice(0, 19), parts: answer.butler.parts && typeof answer.butler.parts === 'object' ? answer.butler.parts : {}, post: Number.isFinite(Number(answer.butler.post)) && answer.butler.post !== null ? Math.round(Number(answer.butler.post)) : null, info: typeof answer.butler.info === 'string' ? answer.butler.info.slice(0, 141) : '' } : null,
   };
+}
+
+/**
+ * G1190: the owner's own stacks a visitor sees in their house (with its back yard) and on their
+ * Tower floors (the site's Neighbours::stackRows, read from the owner's save). In Glitch the house
+ * and Tower were locations like the street, so what lay there was in sight of anyone inside
+ * (takeable.js 157-213); a stack the owner set on furniture there was locked to the owner,
+ * house_lock (takeable.js 33-36, 179-198), and Pick up said "You are not allowed to pick this up."
+ * (takeable.js:34). What the owner's save keeps there is what they set down in Decoration Mode
+ * and what they dropped before G1190 (a plain drop there is everyone's now, drops-mp-feature):
+ * both are shown, locked to the owner. Ours: the second were not locked in the original (left on
+ * the floor they were anyone's), but they live in the owner's save, which no visitor's pickup moves.
+ */
+export const OWNER_STACK_PREFIX = 'home-own-';
+export const OWNER_STACK_TEXT = Object.freeze({ locked: 'You are not allowed to pick this up.' }); // takeable.js:34
+
+/** The site's rows, checked: [{ id, place: 'house' | 'tower:<n>', c, n, x, y, on? }]. */
+export function normalizeOwnerStacks(rows) {
+  if (!Array.isArray(rows)) return [];
+  const out = [];
+  for (const r of rows) {
+    const id = String(r?.id ?? '');
+    const c = String(r?.c ?? '');
+    const n = Math.floor(Number(r?.n));
+    const x = Number(r?.x);
+    const y = Number(r?.y);
+    const place = String(r?.place ?? '');
+    if (!/^[A-Za-z0-9_-]{1,40}$/.test(id) || !/^[a-z0-9_]{1,64}$/.test(c) || !(n >= 1 && n <= 9999) || !Number.isFinite(x) || !Number.isFinite(y) || !/^(house|tower:[0-9])$/.test(place)) continue;
+    out.push({ id, place, c, n, x: Math.round(x), y: Math.round(y), ...(Number.isInteger(r?.on) && r.on > 0 ? { on: r.on } : {}) });
+    if (out.length >= 2200) break;
+  }
+  return out;
+}
+
+/** Whether a dropped stack drawn here is one of the owner's own a visitor only sees. */
+export function isOwnerStackId(id) {
+  return String(id || '').startsWith(OWNER_STACK_PREFIX);
+}
+
+/**
+ * The owner's stacks for one room of a visit, as game.js draws a dropped stack (spawnDroppedItemStack):
+ * room 'interior' (x from the house's left end, drawn from roomX) or 'tower' (floor: the floor's own x).
+ */
+export function ownerStacksFor(view, room, { floor = 0, roomX = 0, tsid = '' } = {}) {
+  const place = room === 'interior' ? 'house' : room === 'tower' ? `tower:${towerFloorOf(floor)}` : '';
+  if (!place) return [];
+  const owner = positiveId(view?.owner?.id);
+  const name = String(view?.owner?.name || 'Someone');
+  const dx = room === 'interior' ? Math.round(Number(roomX) || 0) : 0;
+  return (Array.isArray(view?.stacks) ? view.stacks : []).filter((r) => r.place === place).map((r) => ({
+    id: `${OWNER_STACK_PREFIX}${owner}-${r.id}`,
+    streetTsid: String(tsid || ''),
+    classTsid: r.c,
+    count: r.n,
+    x: r.x + dx,
+    y: r.y,
+    droppedAt: 0,
+    ownerLocked: true,
+    subtitle: `${DROP_TEXT.by(name)} · ${r.n} in this pile`,
+  }));
 }
 
 /** The keyring answer, checked. */

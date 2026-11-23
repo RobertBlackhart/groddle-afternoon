@@ -28,7 +28,7 @@ import {
   surfaceHeight,
 } from '../public/js/home-decor.js?v=b51e16a6';
 import { cabinetRefusal } from '../public/js/home-storage.js?v=b0225465';
-import { canSellClass } from '../public/js/home-street-mp.js?v=4a89041f';
+import { canSellClass } from '../public/js/home-street-mp.js?v=b63a3a30';
 import { filterTiles, furniturePane, trayFilters } from '../public/js/ui/home-builder.js?v=d73e840b';
 import { hasUpgrades, upgradeVerb } from '../public/js/furniture-upgrades.js?v=6cc0e2da';
 import { NO_SLOT_CLASSES } from '../public/js/pack-slots-data.js?v=800f664c';

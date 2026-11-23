@@ -116,7 +116,7 @@ import { cultivationDef, homeStreetLayout } from '../home-cultivation.js?v=9e6e2
 import { getPlot, tickGarden } from '../garden.js?v=9caea9c6';
 import { BUTLER_RIG_SCALE, ButlerPainter, butlerRigNow, loadButlerRig } from '../butler-rig.js?v=3acda854';
 import { BUTLER, BUTLER_INFO, butlerInfoText, butlerPostRx, normalizeButlerParts } from '../butler.js?v=6c66ebf5';
-import { butlerApi } from './butler-feature.js?v=bd473037';
+import { butlerApi } from './butler-feature.js?v=8bf748c3';
 import { homesFeature, visitorHomeScene, visitorHomeState } from './homes-feature.js?v=7eb769d1';
 import { homeMusicFile } from '../homes.js?v=10f6604f';
 import { visitGardenPlots, visitSceneKey } from '../home-live.js?v=cebb24d4';
@@ -155,6 +155,9 @@ import {
   normalizeGiftAnswer,
   normalizeTendActs,
   GIFT_QUEST,
+  OWNER_STACK_TEXT,
+  isOwnerStackId,
+  ownerStacksFor,
   giftedThisQuest,
   noteGift,
   outText,
@@ -171,9 +174,9 @@ import {
   takeFreshTendActs,
   visitedTowerName,
   visitSceneTsid,
-} from '../neighbours-mp.js?v=cb0c9e26';
+} from '../neighbours-mp.js?v=c79768c6';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { butlerCarries, registerButlerDrop } from '../butler-drop.js?v=950121cd';
+import { butlerCarries, registerButlerDrop } from '../butler-drop.js?v=c872d321';
 import { takeDragged } from '../drag-stack.js?v=536cddfb';
 import { worldPoint } from './world-drop-feature.js?v=9a89b4aa';
 import { clampToExpansion, elevatorStops, floorJobFor, TOWER_JOBS } from '../home-tower.js?v=84d99af0';
@@ -463,6 +466,9 @@ function createSession(engine, client) {
       engine.enterScene(scene);
       dropButler();
       const spots = built.populate(engine);
+      // G1190: the house's left end as drawn here, which the owner's stacks indoors are kept against.
+      visit.roomX = room === 'interior' ? Number(spots?.roomX) || 0 : 0;
+      engine.redrawDroppedStacks?.();
       registerTargets(room, spots);
       // HOMES3 (features/home-street-mp-feature.js): the signpost, Note Poles, furniture for sale and restorations here.
       if (room !== 'tower') engine.query?.('homeStreetVisit', { owner: visit.owner, name: visit.name, room, key: visit.key, view: visit.view, built, spots }, engine);
@@ -548,6 +554,8 @@ function createSession(engine, client) {
       const same = !rebuild && visitSceneKey(view) === visitSceneKey(visit.view);
       visit.view = view;
       visit.key = visit.key || view.key === true;
+      // G1190: the owner's own stacks as the site read them now.
+      engine.redrawDroppedStacks?.();
       if (same) applyGardens(view);
       else await rebuildRoom();
       liveLast = same ? 'gardens' : 'rebuilt';
@@ -2022,6 +2030,30 @@ export const neighboursMpFeature = {
     const v = session?.visit;
     if (!v || engine?.mode !== 'multiplayer' || readVisitScene(engine.streetTsid)?.owner !== v.owner) return null;
     return { owner: v.owner, name: v.name, gnomes: Array.isArray(v.view?.gnomes) ? v.view.gnomes : [] };
+  },
+
+  /**
+   * G1190, game.js refreshDroppedWorldItems: on a visit to someone's house or Tower floor, the stacks
+   * the owner keeps there in their own save, drawn to look at (js/neighbours-mp.js ownerStacksFor).
+   */
+  sharedDroppedStacks(tsid, engine) {
+    const v = session?.visit;
+    if (!v || engine?.mode !== 'multiplayer' || String(tsid || '') !== String(engine.streetTsid || '')) return null;
+    const seen = readVisitScene(tsid);
+    if (!seen || seen.owner !== v.owner || (seen.room !== 'interior' && seen.room !== 'tower')) return null;
+    const out = ownerStacksFor(v.view, seen.room, { floor: seen.floor, roomX: v.roomX, tsid });
+    return out.length ? out : null;
+  },
+
+  /** G1190 (takeable.js 33-36): the owner's own stack on a visit is locked to its owner: Pick up is greyed with the source's line. */
+  decorateVerbs(target, verbs) {
+    if (target?.classId !== 'dropped_item' || !isOwnerStackId(target.state?.id) || !Array.isArray(verbs)) return null;
+    return verbs.map((v) => (String(v?.id || '').split(':')[0] === 'pickup' ? { ...v, enabled: false, reason: OWNER_STACK_TEXT.locked } : v));
+  },
+
+  /** G1190: and no other way (a drag to the pack) takes it either. */
+  groundPickupRefused(target) {
+    return target?.classId === 'dropped_item' && isOwnerStackId(target.state?.id || target.worldItemId) ? OWNER_STACK_TEXT.locked : null;
   },
 
   /** G944 (yard-verbs-mp-feature): the yard I visit names something new or gone; true once the room is being built again. */

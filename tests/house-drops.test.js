@@ -21,11 +21,13 @@ import { after, before, describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { homePlaceOf, isSharedStreet, shareReason } from '../public/js/drops-mp.js?v=136e4dbf';
 import { dropsMpFeature } from '../public/js/features/drops-mp-feature.js?fresh=housedrops';
-import { homeStreetMpFeature } from '../public/js/features/home-street-mp-feature.js?v=40244bfa';
-import { sharedHomeStreet } from '../public/js/neighbours-mp.js?v=cb0c9e26';
-import { HAS_SERVER, HAS_SITE, SITE_DIR, serverPath } from '../tools/repos.mjs';
+import { homeStreetMpFeature } from '../public/js/features/home-street-mp-feature.js?v=5e8e752a';
+import { neighboursMpFeature } from '../public/js/features/neighbours-mp-feature.js?v=b8a530c3';
+import { OWNER_STACK_TEXT, isOwnerStackId, normalizeHomeView, normalizeOwnerStacks, ownerStacksFor, sharedHomeStreet } from '../public/js/neighbours-mp.js?v=c79768c6';
+import { GAME_DIR, HAS_SERVER, HAS_SITE, SITE_DIR, serverPath } from '../tools/repos.mjs';
 
 const OP = 'drop-00000000000000c1';
 const OP2 = 'drop-00000000000000c2';
@@ -183,6 +185,58 @@ describe('the feature in the house and on a Tower floor', () => {
   });
 });
 
+describe('what the owner keeps in their own save, seen by a visitor', () => {
+  const view = normalizeHomeView({
+    owner: { id: 7, name: 'Ada' },
+    home: { owned: true, style: 'meadow' },
+    stacks: [
+      { id: 'world-item-4', place: 'house', c: MB, n: 2, x: 150, y: 620 },
+      { id: 'world-item-5', place: 'house', c: 'cherry', n: 1, x: -300, y: 500, on: 3 },
+      { id: 'world-item-6', place: 'tower:2', c: 'cherry', n: 4, x: 500, y: 620 },
+      { id: 'bad id', place: 'house', c: 'cherry', n: 1, x: 1, y: 1 },
+      { id: 'w7', place: 'street', c: 'cherry', n: 1, x: 1, y: 1 },
+      { id: 'w8', place: 'house', c: 'cherry', n: 0, x: 1, y: 1 },
+    ],
+  });
+
+  it('the site\'s rows are checked', () => {
+    assert.deepEqual(view.stacks.map((r) => r.id), ['world-item-4', 'world-item-5', 'world-item-6']);
+    assert.equal(view.stacks[1].on, 3);
+    assert.deepEqual(normalizeOwnerStacks(null), []);
+  });
+
+  it('in the house they lie from the house\'s left end as the visitor\'s game draws it; on a Tower floor at its own x', () => {
+    const house = ownerStacksFor(view, 'interior', { roomX: 1050, tsid: 'MPH_7_IN' });
+    assert.deepEqual(house.map((s) => [s.classTsid, s.count, s.x, s.y]), [[MB, 2, 1200, 620], ['cherry', 1, 750, 500]]);
+    assert.ok(house.every((s) => isOwnerStackId(s.id) && s.streetTsid === 'MPH_7_IN'));
+    assert.equal(house[0].subtitle, 'Dropped by Ada · 2 in this pile');
+    const floor = ownerStacksFor(view, 'tower', { floor: 2, roomX: 1050 });
+    assert.deepEqual(floor.map((s) => [s.classTsid, s.x]), [['cherry', 500]]);
+    assert.deepEqual(ownerStacksFor(view, 'tower', { floor: 1 }), []);
+    assert.deepEqual(ownerStacksFor(view, 'street'), [], 'the home street is not this list\'s');
+  });
+
+  it('Pick up is greyed with the source\'s line, and no other way takes it', () => {
+    const [stack] = ownerStacksFor(view, 'interior', { roomX: 1050 });
+    const target = { classId: 'dropped_item', state: { id: stack.id, classTsid: stack.classTsid, count: stack.count }, worldItemId: stack.id };
+    const verbs = [{ id: 'pickup', label: 'pick up', enabled: true }, { id: 'examine', label: 'examine', enabled: true }];
+    const out = neighboursMpFeature.decorateVerbs(target, verbs);
+    assert.deepEqual(out[0], { id: 'pickup', label: 'pick up', enabled: false, reason: 'You are not allowed to pick this up.' });
+    assert.deepEqual(out[1], verbs[1]);
+    assert.equal(neighboursMpFeature.groundPickupRefused(target), OWNER_STACK_TEXT.locked);
+    // A shared stack or a player's own is left alone.
+    const shared = { classId: 'dropped_item', state: { id: OP, classTsid: MB, count: 1 } };
+    assert.equal(neighboursMpFeature.decorateVerbs(shared, verbs), null);
+    assert.equal(neighboursMpFeature.groundPickupRefused(shared), null);
+  });
+
+  it('the line is takeable.js\'s own', () => {
+    const src = readFileSync(join(GAME_DIR, '..', 'glitch-GameServerJS', 'items', 'include', 'takeable.js'), 'utf8').split('\n');
+    assert.match(src[32], /this\.house_lock && pc\.location\.pols_is_pol\(\) && !pc\.location\.pols_is_owner\(pc\)/);
+    assert.ok(src[33].includes(`"${OWNER_STACK_TEXT.locked}"`));
+  });
+});
+
 describe('solo', () => {
   it('home-street-mp-feature answers no home place in solo', () => {
     assert.equal(homeStreetMpFeature.homeDropOrigin({ mode: 'solo' }), null);
@@ -207,4 +261,20 @@ describe('the server and the site', () => {
     assert.deepEqual(JSON.parse(execFileSync('php', ['-r', code]).toString()), ['HOUSE-7', 'TOWER-123456789012345678-9']);
   });
 
+  it('the visit sends the owner\'s house and Tower stacks, x from the house', { skip: skipSite }, () => {
+    const dropped = { streets: {
+      RH_HOME_INT: [{ id: 'world-item-1', classTsid: MB, count: 2, x: 900, y: 620 }, { id: 'world-item-2', classTsid: 'cherry', count: 1, x: 800.4, y: 500, on: 3, contents: [{ classTsid: 'apple', count: 1 }] }, { id: 'bad id', classTsid: 'cherry', count: 1, x: 1, y: 1 }],
+      RH_HOME_TOWER_2: [{ id: 'world-item-3', classTsid: 'cherry', count: 4, x: 500, y: 620 }],
+      RH_HOME_EXT: [{ id: 'world-item-9', classTsid: 'cherry', count: 1, x: 1, y: 1 }],
+      RH_HOME_FLOOR_1: [{ id: 'world-item-8', classTsid: 'cherry', count: 1, x: 1, y: 1 }],
+    } };
+    const code = `foreach (["WordFilter", "Neighbours"] as $c) require ${JSON.stringify(SITE_DIR)} . "/src/$c.php"; echo json_encode(Groddle\\Minn\\Neighbours::stackRows(json_decode(${JSON.stringify(JSON.stringify(dropped))}), json_decode('{"houseX":750}')));`;
+    const rows = JSON.parse(execFileSync('php', ['-r', code]).toString());
+    assert.deepEqual(rows, [
+      { id: 'world-item-1', place: 'house', c: MB, n: 2, x: 150, y: 620 },
+      { id: 'world-item-2', place: 'house', c: 'cherry', n: 1, x: 50, y: 500, on: 3 },
+      { id: 'world-item-3', place: 'tower:2', c: 'cherry', n: 4, x: 500, y: 620 },
+    ]);
+    assert.match(readFileSync(join(SITE_DIR, 'src', 'Neighbours.php'), 'utf8'), /'stacks' => self::stackRows\(self::savedEntry\(\$db, \$owner, 'droppedItems'\), self::feature\(\$theirs, 'homes'\)\)/);
+  });
 });
