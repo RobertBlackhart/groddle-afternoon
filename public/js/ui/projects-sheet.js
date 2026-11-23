@@ -25,6 +25,11 @@
  * Open is the featured project and those under way, Done the finished ones. The choice is kept in
  * this browser (PROJECTS_FILTER_KEY); with none kept the panel opens on Open when anything is open.
  *
+ * G1210 (report #591): Sort: Status (open by how they stand, Done newest first, as before) or Region
+ * (each section grouped by region A to Z, a region's name over its projects, the usual order inside
+ * it): #projects-sorts, chips [data-pj-sort=status|region], kept in this browser (PROJECTS_SORT_KEY).
+ * The featured project keeps its own section at the top either way.
+ *
  * G801: "Roads to a region", folded after the open projects (not under Done): pick a region you
  * cannot walk to yet and the street projects that open the way there follow in order, each a card
  * as above (its progress, Set as Destination to its board on the way, Teleport, Show on Map).
@@ -41,6 +46,10 @@ export const PROJECTS_PANEL_ID = 'projects-panel';
 export const PROJECTS_FILTER_KEY = 'groddle.projects.filter';
 export const PROJECTS_FILTERS = Object.freeze([['all', 'All'], ['open', 'Open'], ['done', 'Done']]);
 const FILTER_IDS = new Set(PROJECTS_FILTERS.map(([id]) => id));
+/** G1210: the sort a viewer last picked, kept in this browser only. */
+export const PROJECTS_SORT_KEY = 'groddle.projects.sort';
+export const PROJECTS_SORTS = Object.freeze([['status', 'Status'], ['region', 'Region']]);
+const SORT_IDS = new Set(PROJECTS_SORTS.map(([id]) => id));
 const ICON = 'assets/sprites/street-jobs/sign_stake.webp';
 
 function el(doc, tag, attrs = {}, text = '') {
@@ -73,7 +82,7 @@ export function buildProjectsPanel(doc, root) {
   const close = el(doc, 'button', { type: 'button', id: 'projects-close', class: 'verb-menu-x ui-sheet-x', 'aria-label': 'Close Projects (Esc)' }, '×');
   head.append(icon, title, key, close);
   const body = el(doc, 'div', { class: 'ui-sheet-body' });
-  body.append(filterBar(doc));
+  body.append(filterBar(doc), sortBar(doc));
   const list = el(doc, 'div', { id: 'projects-list', class: 'projects-list', 'data-projects-list': '', 'aria-live': 'polite' });
   list.append(aheadBox(doc));
   body.append(list);
@@ -174,6 +183,18 @@ function filterBar(doc) {
   return bar;
 }
 
+/** G1210: Sort: Status / Region, drawn once; renderProjects sets which is on. */
+function sortBar(doc) {
+  const bar = el(doc, 'div', { id: 'projects-sorts', class: 'skill-tree-filters pj-filters pj-sorts', role: 'radiogroup', 'aria-label': 'Sort projects', hidden: true });
+  bar.append(el(doc, 'span', { class: 'pj-sort-label', 'aria-hidden': 'true' }, 'Sort'));
+  for (const [id, label] of PROJECTS_SORTS) {
+    const chip = el(doc, 'button', { type: 'button', class: 'skill-tree-chip', role: 'radio', 'aria-checked': 'false', dataset: { pjSort: id } }, label);
+    chip.addEventListener('click', () => pickSort(doc, id));
+    bar.append(chip);
+  }
+  return bar;
+}
+
 function viewerStore(o) {
   if (o && 'storage' in o) return o.storage;
   try {
@@ -201,6 +222,32 @@ function keepFilter(storage, id) {
   }
 }
 
+/** G1210: the kept sort, else Status. */
+export function keptSort(storage) {
+  try {
+    const v = storage?.getItem(PROJECTS_SORT_KEY) || '';
+    return SORT_IDS.has(v) ? v : 'status';
+  } catch {
+    return 'status';
+  }
+}
+
+/**
+ * G1210: a section's rows by region (e.hub) A to Z, a project with no region last, the order they
+ * came in kept inside a region. Returns [{ region, rows }].
+ */
+export function byRegion(rows = []) {
+  const groups = new Map();
+  for (const e of rows) {
+    const region = String(e?.hub || '');
+    if (!groups.has(region)) groups.set(region, []);
+    groups.get(region).push(e);
+  }
+  return [...groups.entries()]
+    .sort(([a], [b]) => (!a) - (!b) || a.localeCompare(b))
+    .map(([region, list]) => ({ region, rows: list }));
+}
+
 /**
  * G1116: which chip the list shows: the one picked this session, else the kept one, else Open when
  * anything is open and All when not.
@@ -219,6 +266,20 @@ function pickFilter(doc, id) {
   picked.set(doc, id);
   if (!last || last.doc !== doc) return;
   keepFilter(viewerStore(last.o), id);
+  renderProjects(doc, last.list, last.o);
+}
+
+const pickedSort = new WeakMap();
+
+function pickSort(doc, id) {
+  if (!SORT_IDS.has(id)) return;
+  pickedSort.set(doc, id);
+  if (!last || last.doc !== doc) return;
+  try {
+    viewerStore(last.o)?.setItem(PROJECTS_SORT_KEY, id);
+  } catch {
+    /* the choice just won't be remembered */
+  }
   renderProjects(doc, last.list, last.o);
 }
 
@@ -363,6 +424,19 @@ export function renderProjects(doc, list, o = {}) {
     }
   }
   box.dataset.pjFilter = filter;
+  // G1210: Status or Region; the chips show once there are two projects to order.
+  const sort = pickedSort.get(doc) || keptSort(viewerStore(o));
+  const sorts = doc.getElementById('projects-sorts');
+  if (sorts) {
+    sorts.hidden = active.length + done.length < 2;
+    for (const chip of sorts.children) {
+      const id = chip.dataset?.pjSort;
+      if (!id) continue;
+      chip.className = `skill-tree-chip${id === sort ? ' is-active' : ''}`;
+      chip.setAttribute('aria-checked', String(id === sort));
+    }
+  }
+  box.dataset.pjSort = sort;
   const showOpen = filter !== 'done';
   const showDone = filter !== 'open';
   if (featured && showOpen) {
@@ -380,7 +454,12 @@ export function renderProjects(doc, list, o = {}) {
       const sec = el(doc, 'section', { class: 'pj-section', dataset: { pjSection: kind }, 'aria-label': name });
       sec.append(el(doc, 'h3', { class: 'pj-section-title' }, `${name} ${rows.length}`));
       if (!rows.length) sec.append(el(doc, 'p', { class: 'pj-empty' }, empty));
-      for (const e of rows) sec.append(projectCard(doc, e, { ...o, now }));
+      if (sort === 'region') {
+        for (const g of byRegion(rows)) {
+          sec.append(el(doc, 'h4', { class: 'pj-region', dataset: { pjRegion: g.region } }, g.region || 'Elsewhere'));
+          for (const e of g.rows) sec.append(projectCard(doc, e, { ...o, now }));
+        }
+      } else for (const e of rows) sec.append(projectCard(doc, e, { ...o, now }));
       box.append(sec);
     };
     if (showOpen) section(T.active, active, T.noneActive, 'active');

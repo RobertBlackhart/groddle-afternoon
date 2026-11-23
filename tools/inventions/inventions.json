@@ -5437,6 +5437,22 @@
    "rows": [
     "G1206"
    ]
+  },
+  {
+   "id": "projects-sort-by-region",
+   "title": "The Projects panel's Sort: Status (as before) or Region, which groups Open and Done by region A to Z under each region's name, kept in this browser (G1210).",
+   "kind": "UI",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/ui/projects-sheet.js",
+     "symbol": "PROJECTS_SORTS byRegion keptSort sortBar"
+    }
+   ],
+   "why": "The Projects panel is the remake's (ticket 81); report #591 asked for All/Open/Done (built, G1116) and to sort projects by region.",
+   "rows": [
+    "G1210"
+   ]
   }
 ]
 }

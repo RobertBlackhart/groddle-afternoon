@@ -28,7 +28,7 @@ import {
   shareLine,
   statusLine,
 } from '../public/js/projects-tracker.js?v=28ac735e';
-import { PROJECTS_FILTER_KEY, buildProjectsPanel, needRow, needsSummary, projectCard, projectsFilter, renderProjects } from '../public/js/ui/projects-sheet.js?v=3cef54c9';
+import { PROJECTS_FILTER_KEY, PROJECTS_SORT_KEY, buildProjectsPanel, byRegion, keptSort, needRow, needsSummary, projectCard, projectsFilter, renderProjects } from '../public/js/ui/projects-sheet.js?v=7950eca2';
 import { MENU_ROWS } from '../public/js/ui/topbar.js?v=11479bf3';
 import { SIDE_SHEET_IDS } from '../public/js/ui/panel-shell.js?v=06a0d3fe';
 import { hotkeySections, hotkeyText } from '../public/js/client-hotkeys.js?v=5c5a4301';
@@ -257,7 +257,7 @@ describe('Projects panel (js/ui/projects-sheet.js)', () => {
     const card = panel.children[0];
     assert.match(card.className, /ui-sheet-card/);
     assert.deepEqual(card.children.map((c) => c.className), ['side-head ui-sheet-head', 'ui-sheet-body', 'ui-sheet-foot']);
-    assert.deepEqual(card.children[1].children.map((c) => c.id), ['projects-filters', 'projects-list'], 'the chips sit over the list');
+    assert.deepEqual(card.children[1].children.map((c) => c.id), ['projects-filters', 'projects-sorts', 'projects-list'], 'the chips and the sort sit over the list');
     const head = card.children[0];
     assert.equal(head.all((n) => n.tagName === 'H2')[0].textContent, 'Projects');
     assert.equal(head.all((n) => /ui-sheet-key/.test(n.className))[0].textContent, 'P');
@@ -627,4 +627,68 @@ it('the board still takes items the usual way', () => {
   const inv = { [req.classId]: 1 };
   assert.equal(contributeItems(state, catalog, VIA, req.classId, 1, inv, NOW).ok, true);
   assert.equal(contributedJobs(state, catalog, state.jobs).has(VIA), true);
+});
+
+describe('Projects panel Sort: Status / Region (G1210, report #591)', () => {
+  const setup = () => {
+    const doc = fakeDoc();
+    const gameRoot = doc.createElement('div');
+    doc.body.append(gameRoot);
+    buildProjectsPanel(doc, gameRoot);
+    const state = soloState();
+    const base = projectList(state, catalog, state.jobs, { now: NOW });
+    const a = base.active[0];
+    const d = base.done[0];
+    const list = {
+      ...base,
+      active: [{ ...a, jobId: 'a1', title: 'Zed Way', hub: 'Groddle Meadow' }, { ...a, jobId: 'a2', title: 'Alpha Way', hub: 'Bortola' }, { ...a, jobId: 'a3', title: 'Mid Way', hub: 'Groddle Meadow' }],
+      done: [{ ...d, jobId: 'd1', hub: 'Shimla Mirch' }, { ...d, jobId: 'd2', hub: 'Bortola' }],
+    };
+    const box = doc.getElementById('projects-list');
+    const bar = doc.getElementById('projects-sorts');
+    const chips = () => Object.fromEntries(bar.children.filter((c) => c.dataset.pjSort).map((c) => [c.dataset.pjSort, c]));
+    const order = () => box.all((n) => n.dataset.project).map((n) => n.dataset.project);
+    const regions = () => box.all((n) => n.dataset.pjRegion != null).map((n) => n.textContent);
+    return { doc, list, box, bar, chips, order, regions };
+  };
+
+  it('starts on Status, the order as before, with no region names', () => {
+    const { doc, list, bar, chips, order, regions, box } = setup();
+    renderProjects(doc, list, { now: NOW, storage: memStore({ [PROJECTS_FILTER_KEY]: 'all' }) });
+    assert.equal(bar.hidden, false);
+    assert.equal(bar.getAttribute('role'), 'radiogroup');
+    assert.deepEqual(Object.keys(chips()), ['status', 'region']);
+    assert.equal(chips().status.getAttribute('aria-checked'), 'true');
+    assert.deepEqual(order(), ['a1', 'a2', 'a3', 'd1', 'd2']);
+    assert.deepEqual(regions(), []);
+    assert.equal(box.dataset.pjSort, 'status');
+  });
+
+  it('Region groups each section A to Z under the region\'s name, and is kept for this viewer', () => {
+    const { doc, list, chips, order, regions } = setup();
+    const storage = memStore({ [PROJECTS_FILTER_KEY]: 'all' });
+    renderProjects(doc, list, { now: NOW, storage });
+    chips().region.click();
+    assert.deepEqual(order(), ['a2', 'a1', 'a3', 'd2', 'd1'], 'by region, the usual order inside one');
+    assert.deepEqual(regions(), ['Bortola', 'Groddle Meadow', 'Bortola', 'Shimla Mirch']);
+    assert.equal(storage.m.get(PROJECTS_SORT_KEY), 'region');
+    assert.equal(chips().region.getAttribute('aria-checked'), 'true');
+    const again = setup();
+    renderProjects(again.doc, again.list, { now: NOW, storage: memStore({ [PROJECTS_FILTER_KEY]: 'all', [PROJECTS_SORT_KEY]: 'region' }) });
+    assert.deepEqual(again.order(), ['a2', 'a1', 'a3', 'd2', 'd1']);
+  });
+
+  it('byRegion: A to Z, no region last; a bad or unreadable kept sort is Status; hidden under two projects', () => {
+    assert.deepEqual(byRegion([{ hub: 'B', n: 1 }, { hub: '', n: 2 }, { hub: 'A', n: 3 }, { hub: 'B', n: 4 }]).map((g) => [g.region, g.rows.map((r) => r.n)]), [['A', [3]], ['B', [1, 4]], ['', [2]]]);
+    assert.equal(keptSort(memStore({ [PROJECTS_SORT_KEY]: 'bogus' })), 'status');
+    assert.equal(keptSort(memStore({}, { throws: true })), 'status');
+    const { doc, list, bar } = setup();
+    renderProjects(doc, { ...list, active: list.active.slice(0, 1), done: [] }, { now: NOW, storage: memStore() });
+    assert.equal(bar.hidden, true);
+  });
+
+  it('styled in Modern and Classic', () => {
+    assert.match(read('public/style.css'), /\[data-ui="modern"\] #projects-sorts \{/);
+    assert.match(read('public/css/classic.css'), /:root\[data-ui="classic"\] #game-root #projects-sorts \.skill-tree-chip \{/);
+  });
 });

@@ -2135,6 +2135,22 @@
 :root[data-ui="classic"] #game-root #projects-filters .skill-tree-chip:hover { border-color: var(--c-classic-input-hi-border); background: var(--c-classic-input-hi); }
 :root[data-ui="classic"] #game-root #projects-filters .skill-tree-chip.is-active { border-color: var(--c-classic-input-hi-border); background: var(--c-classic-input-hi); color: var(--c-classic-title); }
 :root[data-ui="classic"] #game-root #projects-filters .skill-tree-chip:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--c-classic-focus); }
+/* G1210: Sort: Status / Region as the same small tabs; a region's name over its projects. */
+:root[data-ui="classic"] #game-root #projects-sorts { align-items: center; gap: calc(6 * var(--cu)); margin: 0 0 calc(6 * var(--cu)); }
+:root[data-ui="classic"] #game-root #projects-sorts .pj-sort-label { color: var(--c-classic-title); font: 800 calc(var(--fs-classic-body) * var(--cu-n, 1))/var(--lh-none) var(--font-classic-title); }
+:root[data-ui="classic"] #game-root #projects-sorts .skill-tree-chip {
+  min-height: calc(24 * var(--cu));
+  padding: 0 calc(8 * var(--cu));
+  border: 1px solid var(--c-classic-input-border);
+  border-radius: 3px;
+  background: var(--c-classic-input);
+  color: var(--c-classic-tab-off);
+  font: 800 calc(var(--fs-classic-body) * var(--cu-n, 1))/var(--lh-none) var(--font-classic-title);
+}
+:root[data-ui="classic"] #game-root #projects-sorts .skill-tree-chip:hover,
+:root[data-ui="classic"] #game-root #projects-sorts .skill-tree-chip.is-active { border-color: var(--c-classic-input-hi-border); background: var(--c-classic-input-hi); color: var(--c-classic-title); }
+:root[data-ui="classic"] #game-root #projects-sorts .skill-tree-chip:focus-visible { outline: none; box-shadow: 0 0 0 2px var(--c-classic-focus); }
+:root[data-ui="classic"] #game-root #projects-list .pj-region { margin: calc(6 * var(--cu)) 0 0; color: var(--c-classic-title); font: 800 calc(var(--fs-classic-body) * var(--cu-n, 1))/var(--lh-tight) var(--font-classic-title); }
 :root[data-ui="classic"] #game-root #projects-list .pj-section-title { margin: calc(10 * var(--cu)) 0 0; color: var(--c-classic-offline); font: 800 calc(var(--fs-classic-body) * var(--cu-n, 1))/var(--lh-tight) var(--font-classic-title); }
 :root[data-ui="classic"] #game-root #projects-list .pj-card { margin: 0; padding: calc(10 * var(--cu)) 0; border-bottom: 1px solid var(--c-classic-row-rule); color: var(--c-classic-text); font: calc(var(--fs-classic-row) * var(--cu-n, 1))/var(--lh-normal) var(--font-classic-body); }
 :root[data-ui="classic"] #game-root #projects-list .pj-title { margin: 0; color: var(--c-classic-title); font: 800 calc(var(--fs-classic-row-title) * var(--cu-n, 1))/var(--lh-snug) var(--font-classic-title); }

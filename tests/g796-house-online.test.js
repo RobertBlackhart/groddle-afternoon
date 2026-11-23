@@ -12,7 +12,7 @@ import { execFileSync } from 'node:child_process';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { homeLiveParts, homeLivePrints } from '../public/js/home-live.js?v=cebb24d4';
-import { visitorHomeState } from '../public/js/features/homes-feature.js?v=6b67e454';
+import { visitorHomeState } from '../public/js/features/homes-feature.js?v=d7e0078f';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SITE_DIR = process.env.GRODDLE_SITE_DIR || join(root, '../groddle-afternoon-site');

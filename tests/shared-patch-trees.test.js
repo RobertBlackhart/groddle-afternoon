@@ -31,7 +31,7 @@ import {
 import { sharedPatchesFeature } from '../public/js/features/shared-patches-feature.js?v=6b932f49';
 import { patchesFeature } from '../public/js/features/patches-feature.js?v=1892e7af';
 import { treeDeathFeature, decorateTreeVerbs } from '../public/js/features/tree-death-feature.js?v=7439d414';
-import { potionsFeature } from '../public/js/features/potions-feature.js?v=6b5eb7ea';
+import { potionsFeature } from '../public/js/features/potions-feature.js?v=ac3538be';
 import { powdersFeature, runPowder } from '../public/js/features/powders-feature.js?v=16dbe871';
 import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=86c2bf26';
 import { rookKeyFor } from '../public/js/rook-attack.js?v=5e62a79f';
