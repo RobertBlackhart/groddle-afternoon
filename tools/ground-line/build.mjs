@@ -15,7 +15,7 @@
  * of CELL px: the middleground and every layer fixed to the ground (js/street-render.js
  * skirtGroundOffset: those the street's own size, or close to it), each deco as the street draws it
  * (bottom centre, w x h, flipped, turned r degrees; hidden decos, missing art and the spare art
- * parked wholly over the top (#602) or wholly under the bottom left out, as Glitch never showed
+ * parked wholly over the top (#602) or wholly under the bottom left out, since the original camera never reached
  * them). From the deepest floor you can stand on down, the first row whose art leaves more than
  * GAP_SHARE of the width bare ends the ground: that row (street px from the top) is the ground line.
  * A street whose art reaches LIMIT_BELOW px under its bottom or more is left out (nothing to stop).
@@ -201,7 +201,7 @@ export function measureStreet(street, available, alphaOf = spriteAlpha, onCover 
       if (!direct && decoWhollyAboveTop(deco, t)) continue;
       const x = direct ? deco.x : deco.x - l;
       const y = parallax ? deco.y + H - layer.h : direct ? deco.y : deco.y - t;
-      // Spare art parked wholly under the street's bottom (Briarset Croft's ug_exface3): Glitch never showed it.
+      // Spare art parked wholly under the street's bottom (Briarset Croft's ug_exface3): outside the original camera.
       if (decoBox(deco, x, y).y0 >= H) continue;
       stampDeco(into, deco, x, y, alphaOf(sprite));
       drawn += 1;
