@@ -27,7 +27,7 @@ describe('Paradise sky over the course top (#603)', () => {
   });
 
   it('the band over a short view takes the course top colour where it is dark', () => {
-    assert.match(fnBody('paintParadiseSky'), /root\.skyTop = `#\$\{\(colors\[0\] >>> 0\)\.toString\(16\)\.padStart\(6, '0'\)\.slice\(-6\)\}`;/);
+    assert.match(fnBody('paintParadiseSky'), /root\.skyTop = `#\$\{\(stops\[0\]\[1\] >>> 0\)\.toString\(16\)\.padStart\(6, '0'\)\.slice\(-6\)\}`;/);
     assert.equal(shortSceneBand('#00222e'), '#00222e');
   });
 });

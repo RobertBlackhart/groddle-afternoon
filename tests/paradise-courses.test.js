@@ -24,7 +24,7 @@ import {
   resolveParadiseCourseAlias,
   stepParadiseBody,
   usesParadiseBody,
-} from '../public/js/paradise-courses.js?v=17579e08';
+} from '../public/js/paradise-courses.js?v=eb5c7fd9';
 import {
   PARADISE_COURSES,
   PARADISE_DAILY_LIMIT,
@@ -35,9 +35,10 @@ import {
   createParadiseState,
   finishParadiseRun,
   paradisePickupTouches,
+  paradiseSkyStops,
   paradiseTicketCost,
   resolveParadiseReward,
-} from '../public/js/paradise-flight.js?v=e70e955f';
+} from '../public/js/paradise-flight.js?v=5f9d8548';
 import { QURAZY_REWARDS } from '../public/js/quoins.js?v=5abad2c7';
 import { remakeStatus } from '../public/js/imagination-remake.js?v=c37ad887';
 
@@ -129,10 +130,11 @@ test('rewards line up one-to-one with pickups and keep recorded amounts', () => 
     for (const pick of course.pickups) {
       assert.ok(pick.x > 0 && pick.x < course.width && pick.y > 0 && pick.y < course.height, course.id);
     }
-    // G978: only the colours sampled from Tiny Speck's pictures of a course stay; the rest paint Radial Heights' gradient.
+    // G978: only the colours sampled from Tiny Speck's pictures of a course stay (G1160: the snaps'
+    // own skies are in js/paradise-flight.js PARADISE_SKIES); the rest paint Radial Heights' gradient.
     if (course.palette) assert.equal(course.palette.length, 4);
   }
-  assert.deepEqual(Object.values(EXTRA_PARADISE_COURSES).filter((c) => c.palette).map((c) => c.id).sort(), ['abysmal_thrill', 'sky_plunge']);
+  assert.deepEqual(Object.values(EXTRA_PARADISE_COURSES).filter((c) => c.palette).map((c) => c.id).sort(), ['abysmal_thrill']);
   // Recorded endings: Mountain Scaling +1098, Abysmal / Arbor / Cloud Flight +954, Bippity Bop +858.
   assert.equal(EXTRA_PARADISE_COURSES.mountain_scaling.completionReward.recorded, 1098);
   assert.equal(EXTRA_PARADISE_COURSES.abysmal_thrill.completionReward.recorded, 954);
@@ -447,14 +449,16 @@ test('game.js wires the new courses in through small additive hooks', () => {
 
 // --- Sky Plunge (card, card art and player reports) -------------------------
 
-test('Sky Plunge keeps the card copy and the card art palette', () => {
+test('Sky Plunge keeps the card copy, and the full-street snap\'s sky (G1160)', () => {
   const course = EXTRA_PARADISE_COURSES.sky_plunge;
   // source: inc_data_imagination.js:7407
   assert.equal(course.cardDesc, 'Take the plunge! A fast drop through soft, morning clouds. Can you collect every quoin?');
-  // art_keepable_t2p_skyplunge.png: mint (#c7f1e2) at the top to pale yellow (#d9e4b8) low down.
-  const [top, , , bottom] = course.palette;
+  // G1160: the players' full-street snap of the course: blue (#4aabca) at the top to the cream-gold landing (#eee0b6).
+  const stops = paradiseSkyStops(course);
+  const top = stops[0][1];
+  const bottom = stops[stops.length - 1][1];
   const rgb = (c) => [(c >> 16) & 0xff, (c >> 8) & 0xff, c & 0xff];
-  assert.ok(rgb(top)[1] > rgb(top)[0] && rgb(top)[2] > rgb(bottom)[2], 'mint top, yellower bottom');
+  assert.ok(rgb(top)[2] > rgb(top)[1] && rgb(top)[1] > rgb(top)[0], 'blue top');
   assert.ok(rgb(bottom)[0] > rgb(top)[0] && rgb(bottom)[2] < rgb(bottom)[1], 'pale yellow bottom');
   assert.match(course.objective, /every quoin/);
   assert.match(course.completion, /every quoin/);
@@ -490,8 +494,9 @@ test('Sky Plunge lands on the Snap\'s cloud floor, with Back to Top on the left 
   // Walking right along the landing never passes the door: EXIT is the other way.
   const c = body(700, SKY_PLUNGE_LANDING_Y);
   assert.ok(!run(course, c, 300, { right: true }).includes('back_to_top'));
-  // The Snap's landing sky is cream-gold (#eee0b6); the card's mint stays at the top.
-  const bottom = course.palette[3];
+  // The Snap's landing sky is cream-gold (#eee0b6).
+  const skyStops = paradiseSkyStops(course);
+  const bottom = skyStops[skyStops.length - 1][1];
   assert.ok(Math.abs(((bottom >> 16) & 0xff) - 0xee) < 8 && Math.abs(((bottom >> 8) & 0xff) - 0xe0) < 8 && Math.abs((bottom & 0xff) - 0xb6) < 8);
   // The doors are CC0 location art rendered by tools/room-art.
   const art = fs.readFileSync(path.join(publicDir, 'js', 'sky-plunge-art.js'), 'utf8');

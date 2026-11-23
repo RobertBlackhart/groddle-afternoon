@@ -125,6 +125,9 @@ function cloudBank(PIXI, root, scene, y, tint) {
  * unit) and 22 players' snaps (reference only): newxp cloud banks for the floor and its two end banks,
  * door_asset_heights_interior darkened with a plank EXIT sign, and the tractor beams as soft light.
  */
+/** G1160: Beam Me Down's sky, sampled from the players' full-street snaps (top 1e2c2f, 30% 272e33, 60% 1a1724, 90% 1f1424). */
+export const BEAM_SKY = Object.freeze([[0, '#1e2c2f'], [0.3, '#242c31'], [0.6, '#1a1724'], [1, '#1f1424']]);
+
 export const BEAM_ART = Object.freeze({
   clouds: Object.freeze(['clouds_bg_middleplus_01a_newxp', 'clouds_bg_middleplus_01b_newxp']),
   // The snaps' floor reads (188, 186, 173) to (159, 171, 163): the newxp clouds washed mint.
@@ -272,14 +275,19 @@ function buildBeamMeDown(engine) {
   const { PIXI } = engine;
   const scene = BEAM_ME_DOWN;
   const root = new PIXI.Container();
-  const sky = new PIXI.Sprite(skyTexture(PIXI, scene.height, [[0, '#1b2230'], [0.5, '#2a2440'], [1, '#3a2e48']]));
+  // G1160: the full-street snaps' sky (research/eleven-snaps/Upgrade Cards, reference only): a grey-teal
+  // charcoal at the top darkening to a deep purple low down (the old one was a lighter lilac).
+  const sky = new PIXI.Sprite(skyTexture(PIXI, scene.height, BEAM_SKY));
   sky.x = -600;
   sky.y = -400;
   sky.width = scene.width + 1200;
   sky.height = scene.height + 800;
   root.addChild(sky);
+  // G1160: soft grey cloud banks drifting in at the edges beside the saucers, as the snaps show, not
+  // faint puffs across the middle.
   for (let y = 300, i = 0; y < scene.height - 300; y += 340, i += 1) {
-    root.addChild(deco(PIXI, i % 2 ? 'cloud_fluffy_1' : 'cloud_fluffy_2', 200 + ((i * 523) % 1200), y, { w: 360, h: 190, alpha: 0.25, tint: 0x9aa4b8 }));
+    const x = i % 2 ? scene.width - 90 - ((i * 37) % 60) : 90 + ((i * 53) % 60);
+    root.addChild(deco(PIXI, i % 2 ? 'cloud_fluffy_1' : 'cloud_fluffy_2', x, y, { w: 460, h: 230, alpha: 0.7, tint: 0xb7baa6 }));
   }
   const beams = [];
   const cone = beamConeTexture(PIXI, scene);

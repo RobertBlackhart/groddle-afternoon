@@ -1,6 +1,6 @@
 /** Source-authored Ticket to Paradise economy and reusable flight-course state. */
 
-import { EXTRA_PARADISE_COURSES, paradiseReward } from './paradise-courses.js?v=17579e08';
+import { EXTRA_PARADISE_COURSES, paradiseReward } from './paradise-courses.js?v=eb5c7fd9';
 import { qrazyRewardForLevel, quoinPay, quoinTouches } from './quoins.js?v=5abad2c7';
 import { getGameDayKey } from './game-day.js?v=50c112eb';
 import { RADIAL_ARRIVAL_EVENTS, applyGeometryEffects, createRadialSession, radialFire } from './radial-heights.js?v=57df1ee2';
@@ -21,6 +21,108 @@ export const CLOUD_RING_PROFILES = Object.freeze([
   Object.freeze({ tint: 0x62b7e4, shadowTint: 0x3879ae, outerRx: 208, outerRy: 324, innerRx: 108, innerRy: 208 }),
   Object.freeze({ tint: 0xd486d7, shadowTint: 0x8e529e, outerRx: 201, outerRy: 314, innerRx: 104, innerRy: 202 }),
 ]);
+
+/**
+ * G1160 (Austin 2026-11-23): Cloud Rings' scenery as the players' full-street snaps show it
+ * (research/eleven-snaps/Upgrade Cards, reference only), from Tiny Speck's CC0 decos: a sunset sky
+ * (PARADISE_SKIES), the sun's glow low on the horizon at the start, dark purple mountains along the
+ * horizon, a row of tan-gold cloud behind lavender cloud sea, and mauve wisps in the orange sky.
+ * Each entry is [deco, x, y (its bottom), width, tint, alpha, z, flipX].
+ */
+export const CLOUD_RINGS_SCENERY = Object.freeze({
+  sun: Object.freeze({ deco: 'sun_01a_newxp', x: 380, y: 640, width: 1150, tint: 0xffd25a, alpha: 0.95 }),
+  decos: Object.freeze([
+    // Mauve wisps across the orange part of the sky.
+    ...[[520, 300, 640], [1320, 250, 760], [2100, 320, 600], [2820, 270, 720], [3420, 330, 560]].map(([x, y, w], i) =>
+      Object.freeze(['cloud_fluffy_2', x, y, w, 0x7a3c62, 0.32, -80, i % 2 === 1])),
+    // Far mountains, a lighter purple, then the dark near range.
+    ...[[300, 1500], [1500, 1700], [2700, 1600], [3700, 1500]].map(([x, w], i) =>
+      Object.freeze(['groddle_mountains_cutout', x, 790, w, 0x9a6ab8, 1, -70, i % 2 === 0])),
+    ...[[700, 820], [1900, 900], [3050, 840]].map(([x, w], i) =>
+      Object.freeze(['groddle_mountain_cut1', x, 830, w, 0x5c2a84, 1, -66, i % 2 === 1])),
+    // Tan-gold cloud behind, lavender cloud sea in front, running on under the course.
+    ...Array.from({ length: 7 }, (_, i) => Object.freeze(['clouds_bg_middleplus_01a_newxp', 120 + i * 580, 880, 900, 0xc19a5e, 1, -60, i % 2 === 1])),
+    ...Array.from({ length: 9 }, (_, i) => Object.freeze(['clouds_bg_middleplus_01a_newxp', i * 450 + (i % 2) * 60, 965 - (i % 3) * 18, 860, 0xc2b4f0, 1, -40, i % 2 === 0])),
+    ...Array.from({ length: 9 }, (_, i) => Object.freeze(['clouds_bg_middleplus_01a_newxp', 200 + i * 450, 1080 - (i % 2) * 20, 900, 0xb6a8ea, 1, -38, i % 2 === 1])),
+  ]),
+});
+
+/**
+ * G1160 (Austin 2026-11-23, reversing G978's one shared sky for these): each Ticket to Paradise
+ * course paints its own sky. A course whose location file survives names its gradient, and that
+ * wins (Starlit Night, GHFCVOD2GN631RJ.xml gradient top 050012, bottom 160042; Radial Heights keeps
+ * GHFQOLEIHN63P27's 222E, PARADISE_SKY_GRADIENT in game.js). The rest were sampled from the Eleven
+ * Giants players' full-street snaps of each course (research/eleven-snaps/Upgrade Cards, 1 px a unit,
+ * the whole height in one picture) and the players' Snaps (research/wayback/raw/snaps/paradise_*),
+ * reference only. Stops are [where down the course, 0 top to 1 bottom; colour]. A course with no
+ * snap at all (Aerial Boost, Updraft, Drafty Uplift) keeps Radial Heights' gradient.
+ * stars: the course's own night stars where its snaps show them ({ count, alpha, color, bottom }:
+ * bottom is how far down they reach); none where they show none.
+ */
+export const PARADISE_SKIES = Object.freeze({
+  // A sunset: deep violet over the top with stars, through mauve and burnt orange to a gold horizon.
+  cloud_rings: Object.freeze({
+    stops: Object.freeze([[0, 0x28006e], [0.2, 0x4a1a5a], [0.42, 0x7e3d41], [0.55, 0x944d36], [0.68, 0xb77634], [0.8, 0xd59f37], [0.92, 0xf8b01c], [1, 0xfcbb20]]),
+    stars: Object.freeze({ count: 70, alpha: 0.8, color: 0xffffff, bottom: 0.36 }),
+  }),
+  // Day: a clear blue sky paling to haze over a sea of white cloud.
+  mountain_scaling: Object.freeze({
+    stops: Object.freeze([[0, 0x5cb0cb], [0.2, 0x7dbdc9], [0.42, 0xa9cdcd], [0.62, 0xcfdedd], [1, 0xe6eded]]),
+    stars: null,
+  }),
+  // Inside the cloud: lavender under the cloud ceiling fading to peach over the cloud floor.
+  bippity_bop: Object.freeze({
+    stops: Object.freeze([[0, 0xcfc4f2], [0.16, 0xb79ad3], [0.32, 0xa98bba], [0.52, 0xbc9fb9], [0.7, 0xcfa8a7], [0.84, 0xdcb09e], [1, 0xf3e6da]]),
+    stars: null,
+  }),
+  // Bright blue sky over the canopy (the nest is up there), the forest dark below it.
+  arbor_hollow: Object.freeze({
+    stops: Object.freeze([[0, 0x7ed1ed], [0.1, 0x4fb3dc], [0.2, 0x2f86a8], [0.3, 0x1d2a18], [0.6, 0x18200f], [1, 0x12180a]]),
+    stars: null,
+  }),
+  // A clear blue sky, white low down where the firs stand in the cloud, faint stars up high.
+  cloud_flight: Object.freeze({
+    stops: Object.freeze([[0, 0x0199cc], [0.3, 0x4eb3d7], [0.5, 0x8cc9dd], [0.7, 0xc9e0e2], [0.86, 0xf4f8f6], [1, 0xfdfdfb]]),
+    stars: Object.freeze({ count: 40, alpha: 0.7, color: 0xffffff, bottom: 0.3 }),
+  }),
+  // Blue up top, through teal and sage to the cream-gold landing sky (#eee0b6).
+  sky_plunge: Object.freeze({
+    stops: Object.freeze([[0, 0x4aabca], [0.2, 0x67b4c6], [0.4, 0x8dbfc0], [0.6, 0xb3cabb], [0.8, 0xd6d6ac], [0.9, 0xece0b9], [1, 0xefe0b6]]),
+    stars: null,
+  }),
+  // GHFCVOD2GN631RJ.xml: gradient top 050012, bottom 160042 (its own stars_2 fields are the stars).
+  starlit_night: Object.freeze({
+    stops: Object.freeze([[0, 0x050012], [1, 0x160042]]),
+    stars: null,
+  }),
+  // A deep blue-teal night with soft stars over the snow hills (the hills run to the bottom).
+  slip_n_slide: Object.freeze({
+    stops: Object.freeze([[0, 0x0c2c3d], [0.15, 0x153545], [0.35, 0x1e3d4d], [0.55, 0x2a4958], [0.75, 0x33525f], [1, 0x3a5864]]),
+    stars: Object.freeze({ count: 110, alpha: 0.55, color: 0xf3edc8, bottom: 0.62 }),
+  }),
+});
+
+/** PURE: a course's sky stops: its own, else its sampled palette (evenly), else top and bottom. */
+export function paradiseSkyStops(course, fallback = { top: 0x00222e, bottom: 0x00222e }) {
+  const own = PARADISE_SKIES[course?.id]?.stops;
+  if (own) return own;
+  const palette = course?.palette;
+  if (Array.isArray(palette) && palette.length > 1) return palette.map((color, index) => [index / (palette.length - 1), color]);
+  return [[0, fallback.top], [1, fallback.bottom]];
+}
+
+/** PURE: the sky's colour at t (0 top, 1 bottom), mixed between the stops either side. */
+export function paradiseSkyColorAt(stops, t) {
+  const at = Math.max(0, Math.min(1, Number(t) || 0));
+  const right = stops.findIndex(([where]) => where >= at);
+  if (right < 0) return stops[stops.length - 1][1];
+  if (right === 0) return stops[0][1];
+  const [a, from] = stops[right - 1];
+  const [b, to] = stops[right];
+  const local = b > a ? (at - a) / (b - a) : 0;
+  const mix = (shift) => Math.round(((from >> shift) & 0xff) + (((to >> shift) & 0xff) - ((from >> shift) & 0xff)) * local);
+  return (mix(16) << 16) | (mix(8) << 8) | mix(0);
+}
 
 /**
  * The defining Radial Heights landmark, recovered from the source street
@@ -207,6 +309,14 @@ export const SLIP_N_SLIDE_LANDMARKS = Object.freeze([
   Object.freeze({ id: 'second-pine-copse', sprite: 'k03_treegroup_01', x: 2660, width: 178, z: -22, groundOffset: 8 }),
   Object.freeze({ id: 'way-home-castle', sprite: 'k03_snowcastle_01', x: 3260, width: 345, z: -7, groundOffset: 18 }),
 ]);
+
+/**
+ * G1160 (Austin 2026-11-23): Slip 'N Slide's crescent moon, Tiny Speck's moon deco (CC0) tinted the
+ * pale gold of the players' full-street snaps (research/eleven-snaps/Upgrade Cards, reference only:
+ * about 2530, 130 and 155 wide on the 3600 x 600 street, some 240 over the hilltops, as it is here). The frozen wave curling over the ice castle
+ * in those snaps has no CC0 picture (wave1-3 are Groddle's water ripples), so the castle stands alone.
+ */
+export const SLIP_N_SLIDE_MOON = Object.freeze({ id: 'moon', sprite: 'moon', x: 2540, y: 360, width: 165, z: -78, tint: 0xfff0b4 });
 
 export const SLIP_N_SLIDE_TREE_SPRITES = Object.freeze([
   'k03_tree01_snow_01',

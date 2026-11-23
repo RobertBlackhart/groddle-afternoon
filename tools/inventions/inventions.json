@@ -1500,10 +1500,11 @@
     }
    ],
    "why": "Templates lost; Radial Heights' source gradient survives and could be used.",
-   "ruling": "Austin 2026-11-17 (G978, R16 calls): use Radial Heights' surviving gradient (GHFQOLEIHN63P27 top/bottom 222E) instead of our palettes; Abysmal Thrill (G79 Snap) and Sky Plunge (card art) keep their sampled colours pending his word",
+   "ruling": "Austin 2026-11-17 (G978, R16 calls): use Radial Heights' surviving gradient (GHFQOLEIHN63P27 top/bottom 222E) instead of our palettes; Abysmal Thrill (G79 Snap) and Sky Plunge (card art) keep their sampled colours pending his word; Austin 2026-11-23 (G1160): each course paints its own sky from its snaps (its location file's gradient where it survives: Starlit Night), js/paradise-flight.js PARADISE_SKIES; Sky Plunge's card-art mint gives way to its full-street snap; courses with no snap keep Radial Heights' gradient",
    "rows": [
     "G892",
-    "G978"
+    "G978",
+    "G1160"
    ]
   },
   {

@@ -17,7 +17,7 @@
  */
 
 import { heldDirection } from './held-keys.js?v=a28eb293';
-import { ARBOR_TRUNK_WIDTH, arborBranchArt, stepParadiseBody, usesParadiseBody } from './paradise-courses.js?v=17579e08';
+import { ARBOR_TRUNK_WIDTH, arborBranchArt, stepParadiseBody, usesParadiseBody } from './paradise-courses.js?v=eb5c7fd9';
 import { SKY_PLUNGE_FILES } from './sky-plunge-art.js?v=47e01e53';
 import { isLoaded, onLoaded, textureFromUrl } from './textures.js?v=729b29ea';
 import { anchorBottomCentre } from './sprite-feet.js?v=6ffaec43';
@@ -33,7 +33,7 @@ export const PARADISE_COURSE_DECOS = Object.freeze({
   aerial_boost: ['clouds_bg_middleplus_01a_newxp', 'clouds_bg_middleplus_01b_newxp', 'cloud_fluffy_1', 'cloud_fluffy_2', 'door_asset_heights', 'firebog_sign_blank_plank'],
   mountain_scaling: [
     'craggyMountain_background_01', 'craggyMountain_background_03', 'craggyMountain_background_05',
-    'craggyMountain_background_08', 'craggyMountain_mid_01', 'craggyMountain_mid_04',
+    'craggyMountain_background_08',
     'cliff_face_mountaineering_01a_al1', 'cliff_face_mountaineering_01b_al1', 'cliff_face_mountaineering_01c_al1',
     'cliff_face_mountaineering_01d_al1', 'platform_horizontal_ledge_mountaineering_01a_al1',
     'platform_horizontal_ledge_mountaineering_01b_al1', 'clouds_bg_middleplus_01a_newxp',
@@ -51,6 +51,7 @@ export const PARADISE_COURSE_DECOS = Object.freeze({
     'platform_branch_a04', 'platform_branch_4', 'fungus_oyster_01a_et1', 'fungus_oyster_01b_et1',
     'fungus_oyster_noshadow_01c_et1', 'fungus_oyster_noshadow_01d_et1', 'mushroom_amanita_1', 'tree_coniferous_1',
     'heights_coniferous_3', 'mountain_flora_01a_al1', 'mountain_flora_01e_al1', 'door_asset_heights', 'sign_blank_wide_firebog',
+    'cloud_fluffy_1', 'cloud_fluffy_2',
   ],
   bippity_bop: ['clouds_bg_middleplus_01a_newxp', 'clouds_bg_middleplus_01b_newxp', 'cloud_fluffy_1', 'door_asset_heights', 'firebog_sign_blank_plank'],
   cloud_flight: [
@@ -289,15 +290,35 @@ function rockBlock(art, root, plat, course, { tint = 0xffffff } = {}) {
 }
 
 function paintMountainScaling(root, course, fg, art) {
+  // G1160: a bright day (js/paradise-flight.js PARADISE_SKIES) over a sea of white cloud: pale hazy
+  // peaks along the horizon and huge beige crags behind the pillars, as the snaps show (the far
+  // ones were blue-grey at half alpha and did not read against the old night sky).
   const far = ['craggyMountain_background_01', 'craggyMountain_background_03', 'craggyMountain_background_05', 'craggyMountain_background_08'];
   for (let index = 0; index < 9; index += 1) {
     deco(art, root, far[index % far.length], 180 + index * 520, 860, {
-      height: 420 + (index % 3) * 110, tint: 0x9db3c6, alpha: 0.5, z: -80, flipX: index % 2 === 1,
+      height: 420 + (index % 3) * 110, tint: 0xf1eee8, alpha: 0.9, z: -80, flipX: index % 2 === 1,
     });
   }
-  for (let index = 0; index < 6; index += 1) {
-    deco(art, root, index % 2 ? 'craggyMountain_mid_04' : 'craggyMountain_mid_01', 420 + index * 760, 860, {
-      height: 300 + (index % 2) * 90, tint: 0x8fa2b0, alpha: 0.62, z: -70, flipX: index % 3 === 0,
+  // The huge crags: columns of the course's own grey cliff faces stacked into peaks, hazed by the
+  // distance so they never read as rock you can stand on.
+  const faces = ['cliff_face_mountaineering_01a_al1', 'cliff_face_mountaineering_01b_al1'];
+  for (const [cx, peak] of [[1150, 250], [2400, 190], [3600, 240]]) {
+    // One see-through layer per crag, so the stacked faces' overlaps do not show through.
+    const crag = new PIXI.Container();
+    crag.sortableChildren = true;
+    crag.zIndex = -72;
+    if (PIXI.AlphaFilter) crag.filters = [new PIXI.AlphaFilter({ alpha: 0.75 })];
+    else crag.alpha = 0.75;
+    root.addChild(crag);
+    [-330, -165, 0, 165, 330].forEach((dx, column) => {
+      const width = 230;
+      const name = faces[column % 2];
+      const step = decoHeightAt(name, width) * 0.86;
+      let flip = column % 2 === 0;
+      for (let top = peak + Math.abs(dx) * 0.9 + (column % 2) * 30; top < 900; top += step) {
+        deco(art, crag, name, cx + dx, top, { width, ay: 0, z: column === 2 ? 1 : 0, tint: 0xd8d4cc, flipX: flip });
+        flip = !flip;
+      }
     });
   }
   cloudBand(art, root, { x1: 0, x2: course.width, y: 840, width: 1100, z: -40, alpha: 0.9, tint: 0xf0f5f8 });
@@ -383,6 +404,11 @@ function paintAbysmalThrill(root, course, fg, art) {
 
 function paintArborHollow(root, course, fg, art) {
   const floor = course.platforms.find((plat) => plat.kind === 'forest-floor').y;
+  // G1160: the canopy opens onto a bright blue sky (js/paradise-flight.js PARADISE_SKIES) with soft
+  // white clouds over the nest, as the snaps show.
+  for (const [x, y, width, name] of [[1180, 260, 620, 'cloud_fluffy_2'], [300, 150, 460, 'cloud_fluffy_1'], [760, 90, 380, 'cloud_fluffy_1']]) {
+    deco(art, root, name, x, y, { width, alpha: 0.92, z: -90 });
+  }
   // Distant firs against the sky at the top of the canopy.
   for (let index = 0; index < 9; index += 1) {
     deco(art, root, index % 2 ? 'heights_coniferous_3' : 'tree_coniferous_1', 60 + index * 190, 820, {
@@ -481,6 +507,18 @@ function paintBippityBop(root, course, fg, art) {
     ray._phase = index * 0.8;
     root.addChild(ray);
     art.rays.push(ray);
+  }
+  // G1160: cloud banks closing in at either side, lavender up high and peach low down, as the snaps
+  // and the full-street snap show them.
+  for (let index = 0; index < 9; index += 1) {
+    const t = index / 8;
+    const mix = (a, b) => Math.round(a + (b - a) * t);
+    const tint = (mix(0xd9, 0xfb) << 16) | (mix(0xcb, 0xe4) << 8) | mix(0xee, 0xd8);
+    for (const side of [0, 1]) {
+      deco(art, root, 'clouds_bg_middleplus_01b_newxp', side ? course.width - 14 - (index % 2) * 16 : 14 + (index % 2) * 16, 150 + index * 92, {
+        width: 440 + (index % 3) * 50, ay: 0.5, z: -23, tint, rotation: side ? -Math.PI / 2 : Math.PI / 2, flipX: index % 2 === side,
+      });
+    }
   }
   // Cloud ceiling and the cloud floor.
   rect(root, 0, 0, course.width, 120, 0xcbbbe3, 1, -22);
@@ -592,16 +630,11 @@ function paintUpdraft(root, course, fg, art) {
 const CARD_CLOUD_TINT = 0xf5fdf4;
 
 function paintSkyPlunge(root, course, fg, art) {
-  // Card art look (art_keepable_t2p_skyplunge) up top: a mint morning sky
-  // (course.palette) with soft white clouds and a pale sun. Low down, the
+  // G1160: up top, the players' full-street snap's blue sky with soft white
+  // clouds and no sun (js/paradise-flight.js PARADISE_SKIES). Low down, the
   // landing as its player Snap shows it: a cream-gold sky with sun rays, a
   // white cloud floor with cloud banks at either side, the sky lettering and
   // two wooden doors signed "Back to Top" and "EXIT".
-  const sun = new PIXI.Graphics();
-  sun.circle(1120, 260, 170).fill({ color: 0xfffbe2, alpha: 0.4 });
-  sun.circle(1120, 260, 82).fill({ color: 0xfffdf0, alpha: 0.92 });
-  sun.zIndex = -90;
-  root.addChild(sun);
   const landingY = course.backToTop?.y ?? course.exit.y;
   // Sun rays fanning down over the landing from a sun above the view.
   const rayOrigin = { x: course.width * 0.46, y: landingY - 1150 };

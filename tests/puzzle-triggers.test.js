@@ -320,7 +320,7 @@ describe('lost puzzle levels (scenes)', async () => {
     assert.match(body, /beamConeTexture\(PIXI, scene\)/);
     assert.match(body, /beamLanding\(PIXI, root, scene\)/);
     assert.match(body, /ufo_1\.webp/);
-    const { BEAM_ART } = await import('../public/js/features/puzzle-scenes-feature.js?v=93ff2cdc');
+    const { BEAM_ART } = await import('../public/js/features/puzzle-scenes-feature.js?v=73e17938');
     for (const n of BEAM_ART.clouds) assert.ok(existsSync(join(root, `public/assets/decos/groddle/${n}.webp`)), n);
     assert.ok(existsSync(join(root, 'public', BEAM_ART.door)));
     assert.ok(existsSync(join(root, `public/assets/decos/groddle/${BEAM_ART.plank}.webp`)));

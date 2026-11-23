@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=1b51891c';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=3afe42fe';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=fe53ff7b';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -362,6 +362,10 @@ import {
   paradisePickupTouches,
   paradiseQuoinScale,
   CLOUD_RING_PROFILES,
+  CLOUD_RINGS_SCENERY,
+  PARADISE_SKIES,
+  paradiseSkyColorAt,
+  paradiseSkyStops,
   RADIAL_HEIGHTS_MOON,
   STARLIT_NIGHT_MOON,
   STARLIT_NIGHT_MOON_FADE_MS,
@@ -382,6 +386,7 @@ import {
   radialStartPenOpens,
   SLIP_N_SLIDE_LANDMARKS,
   SLIP_N_SLIDE_TREE_SPRITES,
+  SLIP_N_SLIDE_MOON,
   activateParadiseTicket,
   cloudRingPuffLayout,
   collectParadisePickup,
@@ -405,7 +410,7 @@ import {
   slipTerrainY,
   starlitMoonPlainAlpha,
   starlitRevealAlpha,
-} from './js/paradise-flight.js?v=e70e955f';
+} from './js/paradise-flight.js?v=5f9d8548';
 import {
   RADIAL_ARRIVAL_EVENTS,
   RADIAL_FLITTERBUG_EVENTS,
@@ -417,12 +422,12 @@ import {
   radialStarNumbers,
   radialTick,
 } from './js/radial-heights.js?v=57df1ee2';
-import { paradiseControls, resolveParadiseCourseAlias } from './js/paradise-courses.js?v=17579e08';
+import { paradiseControls, resolveParadiseCourseAlias } from './js/paradise-courses.js?v=eb5c7fd9';
 import {
   buildParadiseCourseArt,
   paradiseCoursePreloadUrls,
   paradiseCourseRuntime,
-} from './js/paradise-course-runtime.js?v=647c2435';
+} from './js/paradise-course-runtime.js?v=8842f05c';
 import { installWorldText, loadWorldFont, NAMEPLATE_STYLE, WORLD_FONT_FAMILY, worldCanvasFont, worldLabelStyle } from './js/world-text.js?v=6b49f88c';
 import {
   createAchievementState,
@@ -554,7 +559,7 @@ import {
   inspectPlayerSave,
   serializePlayerSave,
   restorePlayerSave,
-} from './js/player-save.js?v=1cb127d5';
+} from './js/player-save.js?v=02312b36';
 import {
   HOME_INTERIOR_TSID,
   HOME_STREET_TSID,
@@ -23285,33 +23290,23 @@ const PARADISE_SKY_BELOW = 1200;
  */
 const PARADISE_SKY_ABOVE = 1200;
 /** Courses whose art ends in a floor run on in the floor's colour (js/paradise-course-runtime.js), not the sky's. */
-const PARADISE_FLOOR_BELOW = Object.freeze({ abysmal_thrill: 0x1d2522, arbor_hollow: 0x24331c, sky_plunge: 0xffffff });
+const PARADISE_FLOOR_BELOW = Object.freeze({ abysmal_thrill: 0x1d2522, arbor_hollow: 0x24331c, sky_plunge: 0xffffff, slip_n_slide: 0xdce8e9, cloud_rings: 0xb3a5e4 });
 
 /**
- * G978 (Austin 2026-11-17): a Paradise course's sky is the one location gradient that survives,
- * Radial Heights' (GHFQOLEIHN63P27.xml gradient top and bottom "222E", 0x00222e), as the client
- * painted a location's gradient (LocationRenderer), not palettes picked for the remake. A course whose
- * colours were sampled from Tiny Speck's own pictures of it keeps them (course.palette: Abysmal
- * Thrill's Snap, G79; Sky Plunge's card art and Snap).
+ * G978 (Austin 2026-11-17): Radial Heights' sky is its location gradient (GHFQOLEIHN63P27.xml gradient
+ * top and bottom "222E", 0x00222e), as the client painted a location's gradient (LocationRenderer).
+ * G1160 (Austin 2026-11-23): every other course paints its own sky, its location file's gradient where
+ * it survives, else the colours of the players' snaps of it (js/paradise-flight.js PARADISE_SKIES);
+ * a course with no snap (Aerial Boost, Updraft, Drafty Uplift) keeps Radial Heights' gradient.
  */
 const PARADISE_SKY_GRADIENT = Object.freeze({ top: 0x00222e, bottom: 0x00222e });
 
 function paintParadiseSky(root, course) {
-  const { top, bottom } = PARADISE_SKY_GRADIENT;
-  const colors = course.palette || [top, top, bottom, bottom];
+  const stops = paradiseSkyStops(course, PARADISE_SKY_GRADIENT);
   const sky = new PIXI.Graphics();
-  const bands = 28;
+  const bands = 48;
   for (let index = 0; index < bands; index += 1) {
-    const progress = index / Math.max(1, bands - 1);
-    const section = Math.min(2, Math.floor(progress * 3));
-    const local = progress * 3 - section;
-    const from = colors[section];
-    const to = colors[section + 1];
-    const mix = (a, b) => Math.round(a + (b - a) * local);
-    const color =
-      (mix((from >> 16) & 0xff, (to >> 16) & 0xff) << 16) |
-      (mix((from >> 8) & 0xff, (to >> 8) & 0xff) << 8) |
-      mix(from & 0xff, to & 0xff);
+    const color = paradiseSkyColorAt(stops, index / Math.max(1, bands - 1));
     // #603: the top band runs on up over the course, as the bottom one runs on under it.
     if (index === 0) sky.rect(0, -PARADISE_SKY_ABOVE, course.width, PARADISE_SKY_ABOVE).fill(color);
     sky.rect(0, (course.height / bands) * index, course.width, course.height / bands + 2).fill(color);
@@ -23322,55 +23317,61 @@ function paintParadiseSky(root, course) {
   sky.zIndex = -100;
   root.addChild(sky);
   // #603: the band an upright phone leaves over a short view takes the course's top colour where it is dark (shortSceneBand).
-  root.skyTop = `#${(colors[0] >>> 0).toString(16).padStart(6, '0').slice(-6)}`;
+  root.skyTop = `#${(stops[0][1] >>> 0).toString(16).padStart(6, '0').slice(-6)}`;
 
+  // G1160: a course's own stars where its snaps show them (PARADISE_SKIES stars), none where they show none.
+  const own = PARADISE_SKIES[course.id];
+  const starSpec = own && own.stars !== undefined ? own.stars : null;
+  const starCount = own && own.stars !== undefined ? (starSpec?.count || 0) : (course.skyStars ?? 180);
+  const starBottom = (starSpec?.bottom ?? 0.84) * course.height;
   const stars = new PIXI.Graphics();
-  const starCount = course.skyStars ?? (course.id === 'cloud_rings' ? 45 : course.id === 'slip_n_slide' ? 95 : 180);
   for (let index = 0; index < starCount; index += 1) {
     const x = (index * 193 + 71) % course.width;
-    const y = (index * 83 + 29) % Math.max(200, course.height * 0.84);
+    const y = (index * 83 + 29) % Math.max(200, starBottom);
     const size = 0.8 + ((index * 17) % 22) / 10;
     stars.circle(x, y, size);
-    stars.fill({ color: course.id === 'cloud_rings' ? 0xfff4dc : 0xe7f7ff, alpha: course.id === 'cloud_rings' ? 0.18 : course.id === 'slip_n_slide' ? 0.34 : 0.28 + (index % 5) * 0.08 });
+    const alpha = starSpec ? starSpec.alpha * (0.45 + (index % 5) * 0.14) : 0.28 + (index % 5) * 0.08;
+    stars.fill({ color: starSpec?.color ?? 0xe7f7ff, alpha });
   }
   stars.zIndex = -90;
   root.addChild(stars);
   return sky;
 }
 
-function buildCloudRingsBackground(root, course) {
-  const mountains = new PIXI.Graphics();
-  mountains.poly([0, 810, 0, 470, 115, 405, 210, 470, 300, 610, 365, 810]);
-  mountains.poly([3215, 810, 3300, 600, 3385, 465, 3490, 385, 3600, 450, 3600, 810]);
-  mountains.fill({ color: 0x5f6f8c, alpha: 0.58 });
-  mountains.poly([0, 850, 0, 600, 90, 530, 185, 620, 250, 850]);
-  mountains.poly([3370, 850, 3435, 620, 3525, 520, 3600, 580, 3600, 850]);
-  mountains.fill({ color: 0x3f526f, alpha: 0.76 });
-  mountains.zIndex = -60;
-  root.addChild(mountains);
+/** The decos Cloud Rings paints with (preloaded before the scene is built). */
+const CLOUD_RINGS_DECOS = Object.freeze([
+  CLOUD_RINGS_SCENERY.sun.deco,
+  ...new Set(CLOUD_RINGS_SCENERY.decos.map(([deco]) => deco)),
+]);
 
-  for (let index = 0; index < 12; index += 1) {
-    addParadiseCloud(
-      root,
-      index * 330 + 90,
-      910 - (index % 3) * 32,
-      500 + (index % 4) * 90,
-      135 + (index % 3) * 24,
-      0.78,
-      index % 2 ? 0xdce9f3 : 0xf4e6df
-    );
-  }
-  for (let index = 0; index < 9; index += 1) {
-    addParadiseCloud(
-      root,
-      280 + index * 410,
-      300 + (index % 4) * 80,
-      210 + (index % 3) * 60,
-      62 + (index % 2) * 18,
-      0.28,
-      0xfff4ee
-    );
-  }
+function addCloudRingsDeco(root, [name, x, y, width, tint, alpha, z, flipX]) {
+  const texture = textureFromUrl(`assets/decos/groddle/${name}.png`);
+  const sprite = new PIXI.Sprite(texture);
+  anchorBottomCentre(sprite, 'deco');
+  sprite.position.set(x, y);
+  sprite.tint = tint;
+  sprite.alpha = alpha;
+  sprite.zIndex = z;
+  const applySize = () => {
+    const w0 = Math.max(1, texture.orig?.width || texture.width || 1);
+    const h0 = Math.max(1, texture.orig?.height || texture.height || 1);
+    sprite.width = width;
+    sprite.height = width * (h0 / w0);
+    if (flipX) sprite.scale.x *= -1;
+  };
+  if (isLoaded(texture.source)) applySize();
+  else onLoaded(texture.source, applySize);
+  root.addChild(sprite);
+  return sprite;
+}
+
+function buildCloudRingsBackground(root, course) {
+  const { sun } = CLOUD_RINGS_SCENERY;
+  const glow = addCloudRingsDeco(root, [sun.deco, sun.x, sun.y, sun.width, sun.tint, sun.alpha, -85, false]);
+  glow.anchor.set(0.5);
+  glow.blendMode = 'add';
+  root.paradiseCloudRingsSun = glow;
+  root.paradiseCloudRingsDecos = CLOUD_RINGS_SCENERY.decos.map((spec) => addCloudRingsDeco(root, spec));
 }
 
 function buildRadialBackground(root, course) {
@@ -23609,30 +23610,14 @@ function addSlipRecoveredDeco(root, spec) {
 }
 
 function buildSlipBackground(root, course) {
-  const moon = new PIXI.Graphics();
-  moon.circle(0, 0, 72).fill({ color: 0xffef9a, alpha: 0.78 });
-  moon.circle(28, -18, 70).fill({ color: 0x17485b, alpha: 1 });
-  moon.position.set(2860, 175);
-  moon.zIndex = -78;
-  root.addChild(moon);
-
-  const mountains = new PIXI.Graphics();
-  mountains.poly([
-    0, 690, 0, 520, 170, 405, 285, 555, 430, 350, 610, 540, 795, 365,
-    1010, 565, 1200, 410, 1410, 575, 1640, 330, 1860, 555, 2090, 390,
-    2290, 580, 2520, 350, 2760, 555, 3010, 390, 3250, 565, 3600, 430,
-    3600, 690,
-  ]);
-  mountains.fill({ color: 0x79949a, alpha: 0.48 });
-  mountains.poly([
-    0, 700, 0, 570, 185, 440, 285, 555, 430, 383, 610, 550, 795, 405,
-    1010, 575, 1200, 450, 1410, 585, 1640, 375, 1860, 565, 2090, 430,
-    2290, 590, 2520, 395, 2760, 565, 3010, 430, 3250, 575, 3600, 470,
-    3600, 700,
-  ]);
-  mountains.fill({ color: 0xc7d7d9, alpha: 0.82 });
-  mountains.zIndex = -55;
-  root.addChild(mountains);
+  // G1160: a deep blue-teal night (PARADISE_SKIES) with its crescent moon high over the hills, Tiny
+  // Speck's moon deco as the full-street snaps show it (about 2530, 130 of the 3600-wide street), and
+  // no pale band of mountains behind the hills: the sky runs down to the snow.
+  const moon = addSlipRecoveredDeco(root, SLIP_N_SLIDE_MOON);
+  moon.anchor.set(0.5);
+  moon.position.set(SLIP_N_SLIDE_MOON.x, SLIP_N_SLIDE_MOON.y);
+  moon.tint = SLIP_N_SLIDE_MOON.tint;
+  root.paradiseSlipMoon = moon;
 
   const snowTrees = [];
   for (let index = 0; index < 24; index += 1) {
@@ -23657,11 +23642,12 @@ function buildSlipBackground(root, course) {
   );
 
   const terrain = new PIXI.Graphics();
-  const terrainPoints = [0, course.height];
+  // G1160: the snow runs on under the course (its edge line below any view), as the snaps' hills run to the frame's bottom.
+  const terrainPoints = [0, course.height + PARADISE_SKY_BELOW];
   for (let x = 0; x <= course.width; x += 16) {
     terrainPoints.push(x, slipTerrainY(x));
   }
-  terrainPoints.push(course.width, course.height);
+  terrainPoints.push(course.width, course.height + PARADISE_SKY_BELOW);
   terrain.poly(terrainPoints).fill(0xdce8e9).stroke({ width: 5, color: 0xf6fbfa, alpha: 1 });
   terrain.zIndex = -10;
   root.addChild(terrain);
@@ -23712,6 +23698,11 @@ async function loadParadiseVisualAssets(course) {
   const stars = PARADISE_STAR_COURSES.includes(course?.id)
     ? ['star_asset_01', 'star_asset_02'].map((name) => loadTexture(`assets/decos/groddle/${name}.png`).catch(() => null))
     : [];
+  if (course?.id === 'cloud_rings') {
+    // G1160: the sunset scenery's decos, before the first one is drawn.
+    await Promise.all(CLOUD_RINGS_DECOS.map((name) => loadTexture(`assets/decos/groddle/${name}.png`).catch(() => null)));
+    return;
+  }
   if (course?.id === 'radial_heights') {
     const src = `assets/decos/groddle/${RADIAL_HEIGHTS_MOON.asset}?v=radial-322`;
     // G1119: the scripts' decos (the start clouds, the flitterbug, "You're a star"), sized as drawn.
@@ -23742,6 +23733,7 @@ async function loadParadiseVisualAssets(course) {
   const sprites = new Set([
     ...SLIP_N_SLIDE_LANDMARKS.map((entry) => entry.sprite),
     ...SLIP_N_SLIDE_TREE_SPRITES,
+    SLIP_N_SLIDE_MOON.sprite,
   ]);
   await Promise.all(
     [...sprites].map((sprite) =>

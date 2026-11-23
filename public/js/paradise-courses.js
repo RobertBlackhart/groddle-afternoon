@@ -290,7 +290,8 @@ const UPDRAFT_PICKUPS = Object.freeze(
 //   drop through soft, morning clouds. Can you collect every quoin?"
 // - the CC0 card art (opengameart extracted_imagination
 //   art_keepable_t2p_skyplunge.png): a mint-to-pale-yellow sky (#c7f1e2 at
-//   the top to #d9e4b8 low down) with white clouds; the top of the palette;
+//   the top to #d9e4b8 low down) with white clouds (G1160: the sky is now the
+//   full-street snap's, blue at the top, js/paradise-flight.js PARADISE_SKIES);
 // - the only image of the course, a player Snap of its landing (Festeus,
 //   2012-10-01; glitchthegame.com snap PHF6RRQFSTC2DA8, its location link is
 //   LHFO01RM7I238UN; research/wayback/raw/snaps/paradise_sky_plunge/,
@@ -695,9 +696,9 @@ export const EXTRA_PARADISE_COURSES = Object.freeze({
     touchControls: 'The stick steers · hold Jump to float · stick down dives',
     touchControlsHint: 'Step off the cloud and fall. The stick steers, hold Jump to float, push the stick down to dive. Missed a quoin? The Back to Top door on the landing takes you up for another plunge.',
     prompt: 'STEP OFF AND PLUNGE!',
-    // Card art sky (mint) at the top to the Snap's cream-gold landing sky.
-    palette: Object.freeze([0xc4f0e2, 0xd4ecc9, 0xe7e3ba, 0xefe0b5]),
-    transitionColors: Object.freeze([0xc4f0e2, 0xefe0b5]),
+    // G1160: the sky is the full-street snap's, blue at the top to the cream-gold landing
+    // (js/paradise-flight.js PARADISE_SKIES); the card art's mint sky was the card's own.
+    transitionColors: Object.freeze([0x4aabca, 0xefe0b6]),
     rewards: [
       xp(), mood(), currants(), xp(), energy(), xp(), favor(), xp(360),
       currants(), mood(), xp(), energy(), xp(), currants(), xp(480), mood(),
