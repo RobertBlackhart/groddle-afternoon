@@ -2814,9 +2814,19 @@
   "deployed": "2026-11-23"
  },
  "git": {
-  "commits": 3206,
+  "commits": 3210,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-23",
+    "kind": "improve",
+    "text": "The chat box says who will read your line: everyone in Global Chat, your party, or the street"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "improve",
+    "text": "Encyclopedia pages for dirt piles, peat bogs, trees, rocks and animals list the streets that have them, by region"
+   },
    {
     "date": "2026-11-23",
     "kind": "fix",
@@ -2926,19 +2936,9 @@
     "date": "2026-11-23",
     "kind": "fix",
     "text": "The world past a street's end and the ground under it draw again after the graphics come back"
-   },
-   {
-    "date": "2026-11-22",
-    "kind": "fix",
-    "text": "The skill-time tip says when learning slows, and a new tip says where emblems are spent"
-   },
-   {
-    "date": "2026-11-22",
-    "kind": "improve",
-    "text": "Multiply Your Meditation's quest card says \"10 others, 11 in all\""
    }
   ]
  },
- "tests": 1295,
+ "tests": 1296,
  "generatedAt": "2026-11-23"
 }
