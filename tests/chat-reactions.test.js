@@ -24,11 +24,11 @@ import {
   sameWords,
   whoText,
 } from '../public/js/chat-reactions.js?v=38460172';
-import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=fb2a151c';
+import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=d5309803';
 import { createNotifier } from '../public/js/notify.js?v=4226f585';
 import { chatReactionsFeature } from '../public/js/features/chat-reactions-feature.js?v=704d27da';
 import { drawerLine, normalLine } from '../public/js/player-im.js?v=da51888c';
-import { chatLine } from '../public/js/groups.js?v=c9635d96';
+import { chatLine } from '../public/js/groups.js?v=2e9a714e';
 import { FakeEl, FakeText, memoryStore, page } from './social-fake-dom.js';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
 

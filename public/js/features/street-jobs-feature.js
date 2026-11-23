@@ -150,7 +150,7 @@ import {
 } from '../street-jobs-mp.js?v=2b2eb76f';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { createMinnAccount } from '../minn-account.js?v=edf182bb';
-import { normalizeGroups } from '../groups.js?v=c9635d96';
+import { normalizeGroups } from '../groups.js?v=2e9a714e';
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=729b29ea';
 import { createJobIndicator, jobIndicatorTip, jobIndicatorView, jobPerc } from '../job-indicator.js?v=a7d840f2';
 import { LOT_ART, LOT_CLASS, LOT_PLACEMENT, LOT_SIGN_BLOCKERS, LOT_SIGN_X, LOT_TEXT, floorYAt, lotFit, lotHeadline, lotVerb } from '../group-hall-lot.js?v=23e8fbd9';

@@ -39,7 +39,7 @@ import { MAIL_COMPANIONS, createMailboxState, sendMail } from '../public/js/mail
 import { teachPhrase } from '../public/js/seasons.js?v=64c72251';
 import { cleanCaption } from '../public/js/snaps.js?v=55d4c257';
 import { sauceLabel, sauceStreetLine } from '../public/js/potions.js?v=4f4c996d';
-import { groupNameProblem } from '../public/js/groups.js?v=c9635d96';
+import { groupNameProblem } from '../public/js/groups.js?v=2e9a714e';
 import { characterNameProblem } from '../public/js/account-forms.js?v=6729bb05';
 
 const ROOT = join(import.meta.dirname, '..');

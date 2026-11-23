@@ -179,6 +179,17 @@ export function tabOrder(open, list, { inParty = false } = {}) {
 }
 
 /**
+ * PURE (G1185): the chat input's words while a chat shows, saying who will read the line, as
+ * Local's "Say something on <street>" does: Global Chat reaches everyone online, another channel
+ * or group its own members. Players kept typing in Local when they meant Global and the other way
+ * round after the tab bug was fixed (G598): "Chat in Global Chat" did not say how far the line goes.
+ */
+export function chatPlaceholder(ch, label = '') {
+  if (ch === 'global') return 'Say something to everyone in Global Chat';
+  return `Say something in ${String(label || '').trim() || 'this chat'}`;
+}
+
+/**
  * PURE: the chat a line typed in the Social drawer goes to, from what the drawer shows now: its
  * Local tab is the street, its Party chat the party, an open channel or group that chat; anything
  * else (Activity, Buddies, the Chats list, an IM) the street. Never a tab remembered from an

@@ -196,7 +196,7 @@ function createSession(engine, client) {
       const note = n ? `${n} ${n === 1 ? 'member' : 'members'}` : '';
       if (party && (!social.has('party') || drawerNote !== note)) {
         drawerNote = note;
-        social.channel('party', { label: 'Party', header: box, prefix: '/p ', placeholder: 'Message your party', inputLabel: 'Party chat', section: 'private', note });
+        social.channel('party', { label: 'Party', header: box, prefix: '/p ', placeholder: 'Say something to your party', inputLabel: 'Party chat', section: 'private', note });
       } else if (!party && social.has('party')) {
         drawerNote = '';
         social.drop('party');

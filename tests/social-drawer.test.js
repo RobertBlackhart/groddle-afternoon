@@ -29,7 +29,7 @@ import {
   splitChat,
   withTimeLines,
   writeChoice,
-} from '../public/js/ui/social-drawer.js?v=fb2a151c';
+} from '../public/js/ui/social-drawer.js?v=d5309803';
 import { createNotifier } from '../public/js/notify.js?v=4226f585';
 import { resolveTokens } from './css-tokens.js';
 
@@ -187,7 +187,7 @@ describe('the Social drawer: mounted', () => {
     assert.equal(log.getAttribute('aria-live'), 'polite');
     const seen = [];
     t.drawer.onTab((id) => seen.push(id));
-    t.drawer.channel('party', { label: 'Party', prefix: '/p ', placeholder: 'Message your party' });
+    t.drawer.channel('party', { label: 'Party', prefix: '/p ', placeholder: 'Say something to your party' });
     assert.deepEqual(t.drawer.tabs, ['activity', 'local', 'global', 'buddies', 'chats'], 'the row never grows');
     assert.deepEqual(t.drawer.chats, ['party']);
     // A server note (the roster line on joining a chat) is shown but is not news.
@@ -207,7 +207,7 @@ describe('the Social drawer: mounted', () => {
     assert.equal(t.drawer.tab, 'chats', 'Chats stays selected');
     assert.equal(t.drawer.chat, 'party');
     assert.equal(t.drawer.unread('party'), 0);
-    assert.equal(t.input.placeholder, 'Message your party');
+    assert.equal(t.input.placeholder, 'Say something to your party');
     // What you type in the Party tab goes to the party.
     t.input.value = 'on my way';
     t.form.dispatch('submit');

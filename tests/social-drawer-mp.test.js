@@ -10,10 +10,10 @@
 import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { FakeEl, memoryStore, page } from './social-fake-dom.js';
-import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=fb2a151c';
+import { mountSocialDrawer } from '../public/js/ui/social-drawer.js?v=d5309803';
 import { createNotifier } from '../public/js/notify.js?v=4226f585';
-import { partyFeature } from '../public/js/features/party-feature.js?v=58a7368b';
-import { groupsFeature } from '../public/js/features/groups-feature.js?v=c286c41f';
+import { partyFeature } from '../public/js/features/party-feature.js?v=e218803f';
+import { groupsFeature } from '../public/js/features/groups-feature.js?v=19de6afd';
 
 const ANSWER = {
   max: 20,
@@ -153,13 +153,16 @@ describe('the Social drawer online: parties and chat channels', () => {
     client.msg({ t: 'channel_joined', channel: 'global', history: [{ id: 2, name: 'Bo', text: 'hello', at: 1 }] });
     client.msg({ t: 'channel_said', channel: 'global', id: 1, name: 'Ada', text: 'hi Bo', at: 2 });
     assert.deepEqual(drawer.lines('global').map((l) => [l.name, l.text, l.mine]), [['Bo', 'hello', false], ['Ada', 'hi Bo', true]]);
-    assert.equal(t.input.placeholder, 'Chat in Global Chat');
+    assert.equal(t.input.placeholder, 'Say something to everyone in Global Chat');
     t.input.value = 'anyone selling beans?';
     t.form.dispatch('submit');
     assert.deepEqual(client.take('channel_say'), [{ t: 'channel_say', channel: 'global', text: 'anyone selling beans?' }]);
     // The drawer's Local is the feature's Street: a line typed there is the game's, not the channel's.
     drawer.select('local');
     assert.equal(g.tab, 'street');
+    // G1185: the input names where the line goes, and it is where it goes.
+    assert.match(t.input.placeholder, /^Say something( on |$)/);
+    assert.doesNotMatch(t.input.placeholder, /Global/);
     assert.equal(g.submit('hi street'), false);
     assert.equal(client.take('channel_say').length, 0);
     client.msg({ t: 'channel_said', channel: 'global', id: 2, name: 'Bo', text: 'me!', at: 3 });
@@ -191,12 +194,12 @@ describe('the Social drawer online: parties and chat channels', () => {
     assert.equal(t.doc.activeElement, t.doc.body, 'a click on the tab never takes the keyboard');
     client.msg({ t: 'channel_joined', channel: 'global', history: [{ id: 2, name: 'Bo', text: 'back again', at: 9 }] });
     assert.deepEqual(drawer.lines('global').map((l) => l.text), ['back again']);
-    assert.equal(t.input.placeholder, 'Chat in Global Chat');
+    assert.equal(t.input.placeholder, 'Say something to everyone in Global Chat');
     await g.openChat('group:12');
     assert.equal(drawer.tab, 'chats');
     assert.equal(drawer.chat, 'group:12');
     assert.equal(engine.data.groupsTab, 'group:12');
-    assert.equal(t.input.placeholder, 'Chat in Zebra Club');
+    assert.equal(t.input.placeholder, 'Say something in Zebra Club');
     assert.match(t.dock.querySelector('[data-social-conv-head]').textContent, /Chats.*Zebra Club/, 'the back pill and its name over it');
   });
 });

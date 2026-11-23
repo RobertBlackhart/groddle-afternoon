@@ -65,6 +65,7 @@ import {
   WATCH_REFRESH_MS,
   chatLabel,
   chatLine,
+  chatPlaceholder,
   dropLid,
   groupChannel,
   groupIdOf,
@@ -86,7 +87,7 @@ import {
   shownName,
   tabOrder,
   writeMemory,
-} from '../groups.js?v=c9635d96';
+} from '../groups.js?v=2e9a714e';
 import { appendLinkedText } from '../chat-links.js?v=b717fac7';
 import { lineKey as reactKey } from '../chat-reactions.js?v=38460172';
 import { DELETE_TEXT, deletableChannel, lineLidOf, mayDelete } from '../chat-delete.js?v=c55a1043';
@@ -312,7 +313,7 @@ function createSession(engine, client) {
       if (handed.get(ch) === sig && social.has(ch)) return;
       handed.set(ch, sig);
       // THREADS: every channel and group line takes replies (features/chat-threads-feature.js).
-      social.channel(ch, { label, header: headFor(ch), placeholder: `Chat in ${label}`, inputLabel: label, order: 30 + i, empty: 'Nobody has said anything here yet.', note, threads: true, ...(ch === 'help' ? { initial: '?' } : {}) });
+      social.channel(ch, { label, header: headFor(ch), placeholder: chatPlaceholder(ch, label), inputLabel: label, order: 30 + i, empty: 'Nobody has said anything here yet.', note, threads: true, ...(ch === 'help' ? { initial: '?' } : {}) });
       social.setLines(ch, (chats.get(ch)?.lines || []).map(drawerLine));
     });
     for (const ch of [...handed.keys()]) {
@@ -405,7 +406,7 @@ function createSession(engine, client) {
     const chat = chats.get(tab);
     const show = Boolean(chat) && knownChat(tab);
     box.hidden = !show;
-    if (input) input.placeholder = show ? `Chat in ${chatLabel(tab, list)}` : tab === 'party' ? 'Chat with your party' : streetPlaceholder;
+    if (input) input.placeholder = show ? chatPlaceholder(tab, chatLabel(tab, list)) : tab === 'party' ? 'Say something to your party' : streetPlaceholder;
     if (!show) return;
     boxTitle.textContent = chatLabel(tab, list);
     lines.replaceChildren(...chat.lines.map((line) => {

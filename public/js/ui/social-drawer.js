@@ -651,7 +651,7 @@ export function mountSocialDrawer({
   if (online) {
     addTab('local', { label: 'Local', order: ORDER.local, icon: 'local', inputLabel: 'Local chat', empty: 'Nobody has said anything on this street yet.' });
     // Global Chat is always a tab: groups-feature joins it when it is picked (onTab).
-    addTab('global', { label: 'Global Chat', order: ORDER.global, icon: 'channel', live: false, placeholder: 'Chat in Global Chat', inputLabel: 'Global Chat', empty: GLOBAL_WAIT });
+    addTab('global', { label: 'Global Chat', order: ORDER.global, icon: 'channel', live: false, placeholder: 'Say something to everyone in Global Chat', inputLabel: 'Global Chat', empty: GLOBAL_WAIT });
     addTab('buddies', { kind: 'buddies', label: 'Buddies', order: ORDER.buddies, icon: 'buddies', compose: false });
     tab = 'local';
   }

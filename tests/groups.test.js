@@ -20,6 +20,7 @@ import {
   GROUP_TEXT,
   chatLabel,
   chatLine,
+  chatPlaceholder,
   groupChannel,
   groupIdOf,
   groupNameProblem,
@@ -31,10 +32,10 @@ import {
   tabCommand,
   tabOrder,
   writeMemory,
-} from '../public/js/groups.js?v=c9635d96';
+} from '../public/js/groups.js?v=2e9a714e';
 import { createMinnAccount } from '../public/js/minn-account.js?v=edf182bb';
-import { groupsFeature } from '../public/js/features/groups-feature.js?v=c286c41f';
-import { FEATURES } from '../public/js/features/index.js?v=4c4a993b';
+import { groupsFeature } from '../public/js/features/groups-feature.js?v=19de6afd';
+import { FEATURES } from '../public/js/features/index.js?v=ce7bae54';
 import { serverPath, sitePath, skipWithoutServer, skipWithoutSite } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');
@@ -53,6 +54,14 @@ const ANSWER = {
 };
 
 describe('groups rules (js/groups.js)', () => {
+  it('G1185: the input says who reads the line: everyone in Global, a channel\'s or group\'s own members elsewhere', () => {
+    assert.equal(chatPlaceholder('global', 'Global Chat'), 'Say something to everyone in Global Chat');
+    assert.equal(chatPlaceholder('help', 'Live Help'), 'Say something in Live Help');
+    assert.equal(chatPlaceholder('group:12', 'Zebra Club'), 'Say something in Zebra Club');
+    assert.notEqual(chatPlaceholder('global', 'Global Chat'), 'Chat in Global Chat');
+    assert.match(read('public/js/features/party-feature.js'), /placeholder: 'Say something to your party'/);
+  });
+
   it('reads the site\'s answer', () => {
     const list = normalizeGroups(ANSWER);
     assert.equal(list.max, GROUPS_MAX);
@@ -330,7 +339,7 @@ describe('groups feature (js/features/groups-feature.js)', () => {
     const tabs = dock.find('data-groups-tabs');
     assert.deepEqual(tabs.findAll('data-groups-tab').map((t) => t.attrs['data-groups-tab']), ['street', 'global']);
     assert.equal(dock.find('data-groups-box').hidden, false);
-    assert.equal(input.placeholder, 'Chat in Global Chat');
+    assert.equal(input.placeholder, 'Say something to everyone in Global Chat');
   });
 
   it('sends what is typed in a chat tab there, and leaves the rest to the game', () => {
