@@ -5495,7 +5495,7 @@
   },
   {
    "id": "full-bag-backdrop",
-   "title": "In the Modern pack row a full bag's bar takes the accent and its slot a dark backdrop, and its name reads \", full\" to a screen reader (G656, G1193).",
+   "title": "In the Modern pack row a full bag's bar takes the accent and its slot a mid grey backdrop, and its name reads \", full\" to a screen reader (G656, G1193, G1214).",
    "kind": "visual",
    "status": "proposed",
    "where": [
@@ -5508,9 +5508,10 @@
      "symbol": ".pack-bag-opener.is-full .pack-slot.pack-bag.is-bag-full"
     }
    ],
-   "why": "Glitch's opener strip printed used/total (PackSlot.as 147-176), which Classic keeps; Modern draws it as a thin bar, so a full bag looked like a nearly full one. The accent bar shipped first (v0.33.0); the backdrop is the Ideas thread's next step that Austin's reply named.",
+   "why": "Glitch's opener strip printed used/total (PackSlot.as 147-176), which Classic keeps; Modern draws it as a thin bar, so a full bag looked like a nearly full one. The accent bar shipped first (v0.33.0); the backdrop is the Ideas thread's next step that Austin's reply named, softened from navy to a mid grey token (--surface-bag-full) after #637.",
    "rows": [
-    "G1193"
+    "G1193",
+    "G1214"
    ]
   },
   {

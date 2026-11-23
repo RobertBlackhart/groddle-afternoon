@@ -140,6 +140,7 @@
   --c-grey-90: #dae1df;
   --c-grey-87: #d1d6d7;
   --c-grey-84: #c9c9cf;
+  --c-grey-76: #b0b0b0;
   --c-grey-69: #9a9a9a;
   --c-grey-57: #777777;
   --c-grey-53: #6c6c6c;
@@ -689,6 +690,7 @@
   --surface-lilac: var(--c-mauve-95);      /* windows and quest cards */
   --surface-navy: var(--c-navy-20);       /* Flash-style dark boxes */
   --surface-dark: var(--c-sand-25);       /* dark cards and toasts */
+  --surface-bag-full: var(--c-grey-76);   /* G1214: a full bag's slot in the Modern pack row: 3:1 to the accent bar, 2:1 to the row */
   --card: var(--surface-card);
   /* The HUD mock's names (Warm paper) */
   --surface: var(--surface-card);
@@ -3010,10 +3012,11 @@ button.play-context-head:focus-visible {
 .pack-bag-opener i { display: none; }
 /* G656: full, in the accent, so 16 of 16 never looks like 15 of 16. */
 .pack-bag-opener.is-full { background: var(--accent); }
-/* G1193: and a dark backdrop behind the full bag and its bar, so it shows across the row (Modern only:
-   Classic prints the count). Open or not; the open bag's gold ring still shows on it. */
-[data-ui="modern"] .pack-slots .pack-slot.pack-bag.is-bag-full { background: var(--c-navy-26); }
-[data-ui="modern"] .pack-slots .pack-slot.pack-bag.is-bag-full:hover { background: color-mix(in srgb, var(--c-navy-26) 82%, var(--surface-parchment)); }
+/* G1193: and a backdrop behind the full bag and its bar, so it shows across the row (Modern only:
+   Classic prints the count). Open or not; the open bag's gold ring still shows on it. G1214 (#637): a
+   mid grey (--surface-bag-full), not the first navy, which pulled the eye from everything else in the row. */
+[data-ui="modern"] .pack-slots .pack-slot.pack-bag.is-bag-full { background: var(--surface-bag-full); }
+[data-ui="modern"] .pack-slots .pack-slot.pack-bag.is-bag-full:hover { background: color-mix(in srgb, var(--surface-bag-full) 82%, var(--surface-parchment)); }
 /* #524: the open bag is marked in the row: a gold ring and glow (the route signpost's glow colour,
    MapHub.as 72) and a caret up to its tray. Glitch drew the open bag's slot in its tray's colour, joined
    to the tray above it (PackSlot.as drawFullBox 119-141); Modern's tray floats, so the caret points to it. */
