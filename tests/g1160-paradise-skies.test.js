@@ -1,6 +1,7 @@
 /**
  * G1160 (Austin 2026-11-23, reversing part of G978): each Ticket to Paradise course paints its own sky
- * from its snaps (its location file's gradient where that survives).
+ * from its snaps (its location file's gradient where that survives), and Cloud Rings' rings are the
+ * snaps' upright cloud hoops, lavender until flown through and gold after.
  */
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
@@ -8,13 +9,14 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
+  CLOUD_RING_ART,
   CLOUD_RINGS_SCENERY,
   PARADISE_COURSES,
   PARADISE_SKIES,
   SLIP_N_SLIDE_MOON,
   paradiseSkyColorAt,
   paradiseSkyStops,
-} from '../public/js/paradise-flight.js?v=5f9d8548';
+} from '../public/js/paradise-flight.js?v=fa182469';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (rel) => readFileSync(join(root, rel), 'utf8');
@@ -103,6 +105,17 @@ describe('G1160: each Paradise course paints its own sky', () => {
     const mountains = CLOUD_RINGS_SCENERY.decos.filter(([name]) => /mountain/.test(name));
     assert.ok(mountains.length >= 4 && mountains.every(([, , , , tint]) => { const [r, g, b] = rgb(tint); return b > r && r > g; }), 'purple mountains');
     assert.doesNotMatch(fn('buildCloudRingsBackground'), /mountains\.poly/);
+  });
+
+  it('Cloud Rings\' rings are one made cloud hoop each, recorded with its provenance', () => {
+    const ring = fn('spawnCloudRing');
+    assert.match(ring, /textureFromUrl\(`assets\/decos\/groddle\/\$\{CLOUD_RING_ART\.sprite\}\.png`\)/);
+    assert.doesNotMatch(ring, /ellipse|cloudRingPuffLayout|sparkle/);
+    const made = JSON.parse(read('tools/provenance/made-decos.json')).art[CLOUD_RING_ART.sprite];
+    assert.ok(made && made.scene && made.code === 'public/js/paradise-flight.js');
+    assert.equal(made.h, CLOUD_RING_ART.height);
+    assert.ok(read(made.code).includes(`'${CLOUD_RING_ART.sprite}'`));
+    assert.match(read('public/js/deco-new-list.js'), /"gz_ai_cr_ring"/);
   });
 
   it('Beam Me Down\'s sky is the snaps\' charcoal to deep purple', () => {

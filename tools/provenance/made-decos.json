@@ -5,10 +5,11 @@
   "Players' full-street snaps of Breezy, EZ Cookin' from the Eleven collections (zoi, mackenzie, cleops, Nov-Dec 2012): reference only, never given to the model and never in the repo; the sizes in attach/01 were measured from them and the prompts describe them in words",
   "Players' 2012 Snaps of Walk Toward the Light, Radiant Glare, Winter Walk and The Outer Mind, and Cleops' 2013 pictures of Winter Haven (research/art-briefs/quest-rooms-2026-11-16/*/ref): reference only. Unlike EZ Cookin', three of them (or crops) were attached to the prompts, as Austin allowed on 2026-11-16; none is in the repo, and the made pictures ship CC0 1.0",
   "Players' 2012 Snaps of Le Voyage Violet (research/art-briefs/quest-rooms-pack3-2026-11-17/03-voyage-violet/ref): reference only. Three crops (no player in them) were attached to the prompts, as Austin allowed on 2026-11-16; none is in the repo, and the made pictures ship CC0 1.0",
-  "Tiny Speck's 2012 Coral Caves header panorama (research/wayback/raw/home-images/headers/header-1346981279.jpg) and two players' pictures of the street (research/art-briefs/house-exteriors-2026-11-22/01-coral-caves/ref): reference only. Three crops of the header (no player in them) were attached to the prompts; none is in the repo, and the made pictures ship CC0 1.0"
+  "Tiny Speck's 2012 Coral Caves header panorama (research/wayback/raw/home-images/headers/header-1346981279.jpg) and two players' pictures of the street (research/art-briefs/house-exteriors-2026-11-22/01-coral-caves/ref): reference only. Three crops of the header (no player in them) were attached to the prompts; none is in the repo, and the made pictures ship CC0 1.0",
+  "The Eleven Giants players' full-street snaps of Cloud Rings (research/eleven-snaps/Upgrade Cards, shared 2026-11-11) and players' 2012 Snaps of the course (research/art-briefs/missing-art-2026-11-17/01-cloud-rings/ref): reference only. Two crops of the full-street snaps (no player in them) were attached to the prompt, as Austin allowed on 2026-11-16; none is in the repo, and the made picture ships CC0 1.0"
  ],
- "pack": "research/art-briefs/ez-cookin (outside git): brief.md, pack.md, prompts/, attach/ and attach/t3/ (the five files given), drop/ (model.txt); research/art-briefs/quest-rooms-2026-11-16 (outside git), rooms 01 to 05: readme.md, */brief.md, */prompts/, */attach/, */ref/, */drop/model.txt; research/art-briefs/quest-rooms-pack3-2026-11-17 (outside git), room 03: readme.md, 03-voyage-violet/brief.md, prompts/, attach/, ref/, drop/model.txt; research/art-briefs/house-exteriors-2026-11-22 (outside git), 01-coral-caves: readme.md, brief.md, prompts/, attach/, ref/, drop/model.txt",
- "count": 32,
+ "pack": "research/art-briefs/ez-cookin (outside git): brief.md, pack.md, prompts/, attach/ and attach/t3/ (the five files given), drop/ (model.txt); research/art-briefs/quest-rooms-2026-11-16 (outside git), rooms 01 to 05: readme.md, */brief.md, */prompts/, */attach/, */ref/, */drop/model.txt; research/art-briefs/quest-rooms-pack3-2026-11-17 (outside git), room 03: readme.md, 03-voyage-violet/brief.md, prompts/, attach/, ref/, drop/model.txt; research/art-briefs/house-exteriors-2026-11-22 (outside git), 01-coral-caves: readme.md, brief.md, prompts/, attach/, ref/, drop/model.txt; research/art-briefs/missing-art-2026-11-17 (outside git), 01-cloud-rings: readme.md, brief.md, prompts/, attach/, ref/, drop/model.txt",
+ "count": 33,
  "art": {
   "gz_ai_ezc_glass_counter": {
    "what": "The glass serving counter (three on the street, the food on their lids)",
@@ -2974,6 +2975,91 @@
    "intake": {
     "on": "2026-11-22",
     "by": "Claude (lane corak): sizes checked against attach/1 and the brief; trimmed and resized as the brief asks, nothing redrawn"
+   }
+  },
+  "gz_ai_cr_ring": {
+   "what": "A Cloud Rings cloud hoop (piece A): a tall upright doughnut of crinkly cloud seen from the side, its opening a recessed oval on the left, white and grey for the game to tint",
+   "file": "public/assets/decos/groddle/gz_ai_cr_ring.webp",
+   "sha256": "432b4d32b5864efe30b314496f2cb66738fdd73a54e36d6facf87ea1cccfd6cf",
+   "bytes": 23182,
+   "file3": "public/assets/decos/groddle/gz_ai_cr_ring@1.5x.webp",
+   "sha256_3": "b78f016baafce0af7b3f78557ec792893f7fb5a05507cc35f78f86a4c2ec57ee",
+   "bytes3": 39450,
+   "w": 165,
+   "h": 330,
+   "size": "brief 170 x 330 units, opening about 60 x 180 (the players' full-street snaps of the course, 1 px a unit); drawn 1 : 2.01, taken in by its height as 165 x 330 units at 2 and 3 px a unit (329 x 660, 494 x 990); the opening comes out about 44 x 165 units, centred 27% across and 54% down",
+   "replaces": "the 32 code-drawn cloud lobes per ring in five colours (game.js spawnCloudRing, cloudRingPuffLayout), the stand-in since the course shipped (G893)",
+   "scene": "cloud_rings (the Ticket to Paradise course Cloud Rings, template LHFVPPKQSR53T1L)",
+   "code": "public/js/paradise-flight.js",
+   "licence": "ai-generated",
+   "author": "Austin Ginder (directed and chose it)",
+   "madeBy": "Grok Bot, for Austin Ginder, who directed and chose it",
+   "tool": "GPT Image 2.6 Sunburst in T3 Chat canvas",
+   "model": "GPT Image 2.6 Sunburst",
+   "made": "2026-11-17",
+   "settings": "T3 Chat canvas; Flare and Nano Banana 2.1 off; Standard 1K; transparency on; 9:16; one image; 864 x 1536 RGBA",
+   "chosen": {
+    "by": "Austin Ginder",
+    "on": "2026-11-23",
+    "of": "1 generation on the second prompt (the first was refused by T3): research/art-briefs/missing-art-2026-11-17/01-cloud-rings/drop/model.txt, checked by Claude 2026-11-17 (readme, Second run); Austin 2026-11-16 night (G893): \"ring/cloud art from Grok Bot pack 2\", rings at the snaps' size, lavender and gold once flown through; Austin 2026-11-23 (G1160): Cloud Rings' cloud hoops rebuilt"
+   },
+   "reimagined": "No Tiny Speck picture of the Cloud Rings hoop survives (the course's template LHFVPPKQSR53T1L was never archived and no CC0 set has the deco); drawn fresh from the players' full-street snaps, so it ships as made art. The game tints it lavender, and gold once you fly through, as the snaps show.",
+   "modelNote": "A-ring.png: GPT Image 2.6 Sunburst (T3 Chat canvas), Flare and Nano Banana 2.1 off, transparency on; second try, 1 image, 9:16 Standard 1K, 864x1536 alpha; attachments 1, 2, 4, 5 (3, the snap with a player, left out), the whole A-cloud-ring-2.txt.",
+   "prompt": "Draw piece A from attachment 1: one cloud hoop from the flying course \"Cloud Rings\" in the video game Glitch (attachment 2 shows one close up, attachment 3 all eight along the course; they are all the same shape).\n\nWhat it is: a puffy white cumulus cloud formed into a tall hoop that stands upright, like a ring of cotton wool standing on its edge. It is seen from the side and slightly from the front, so the hoop looks like a tall rounded oval of cloud, about twice as tall as it is wide. The gap through the middle of the hoop shows as a narrow oval on its left side, a little below the middle: about a third of the hoop's width and a little more than half its height, filled with a slightly darker grey cloud shade (the far side of the hoop seen through the gap). The right two thirds is the thick, puffy band of cloud. The outline all round is bumpy, made of many small round cloud puffs, like the Tiny Speck clouds in attachment 4. Lighter on the upper left, a little darker on the lower right and in the gap. The hoop is closed all the way round.\n\nColour: white and very light grey only. No colour of its own and no glow (the game tints it later).\n\nSize: 170 x 330 units, the gap about 60 x 180. Draw it at 4 px per unit: 680 x 1320 px, on a larger canvas if needed (it must stay about twice as tall as it is wide).\n\nStyle: flat vector scenery art in the style of Tiny Speck's Glitch (2011-2012), the same family as the Tiny Speck clouds in attachment 4: clean shapes, soft painted shading, a thin slightly darker edge, no thick outlines, no photo texture, not 3D-rendered.\nOutput: one PNG, the cloud hoop alone and centred, on a fully transparent background (if transparency is not possible, a flat pure magenta #FF00FF background). No text, no ground, no shadow, no characters, no frame, no watermark.\nThe game pictures in the attachments are a guide to the shape only: draw the hoop fresh and clean, as its own object, at the size asked.\n",
+   "promptNote": "The prompt exactly as given to the model: research/art-briefs/missing-art-2026-11-17/01-cloud-rings/prompts/A-cloud-ring-2.txt (outside git), with the four attachments in inputFiles in this order (its attachments 1 to 4 are files 1, 2, 4 and 5 of attach/).",
+   "inputs": [
+    "own:our measurement drawing of the ring, sizes from the players' full-street snaps (attach/1-measurements-ours.png)",
+    "ref:2-ref-ring-closeup-street-snap.png (one ring at 2x from a player's full-street snap: reference only, never in the repo)",
+    "ref:4-ref-whole-course-street-snap.png (the whole course, reduced, from a player's full-street snap: reference only, never in the repo)",
+    "deco:clouds_bg_middleplus_01b_newxp",
+    "deco:clouds_bg_middleplus_01a_newxp",
+    "deco:clouds_bg_middle_01a_newxp",
+    "deco:cliff_face_mountaineering_01a_al1"
+   ],
+   "inputFiles": [
+    {
+     "n": 1,
+     "file": "1-measurements-ours.png",
+     "sha256": "86f46f048e7737388f61b6153ef45b9909f3a99135a0144c4e5ff980bc87745c",
+     "what": "the ring as a plain outline, 170 x 330 units, its opening about 60 x 180",
+     "source": "our own measurement drawing (research/art-briefs/missing-art-2026-11-17/01-cloud-rings/attach/1-measurements-ours.svg): sizes measured from the players' full-street snaps at 1 px a unit, measurements only"
+    },
+    {
+     "n": 2,
+     "file": "2-ref-ring-closeup-street-snap.png",
+     "sha256": "e75efbf3f3ac1ae2778771afedbfa513b236cf2aea5263dff0d84e2285918262",
+     "what": "one lavender ring close up, at 2x",
+     "source": "reference only: a crop of a player's full-street snap of Cloud Rings (research/eleven-snaps/Upgrade Cards, shared by the Eleven Giants players 2026-11-11, no player in the crop), kept in research/art-briefs/missing-art-2026-11-17/01-cloud-rings/attach, never copied into the repo"
+    },
+    {
+     "n": 3,
+     "file": "4-ref-whole-course-street-snap.png",
+     "sha256": "887968c51b5cd72a8f18238f7482d0baa36b6e9d5afb7aa479e5e737c1d37235",
+     "what": "the whole course in three rows, reduced: all eight rings",
+     "source": "reference only: a player's full-street snap of Cloud Rings (research/eleven-snaps/Upgrade Cards), reduced, kept in research/art-briefs/missing-art-2026-11-17/01-cloud-rings/attach, never copied into the repo"
+    },
+    {
+     "n": 4,
+     "file": "5-cc0-style.png",
+     "sha256": "2d607110408bdf5ddc858e8fae79ee8228704bd84cb26147e581d0f038c93add",
+     "what": "clouds_bg_middleplus_01b_newxp, clouds_bg_middleplus_01a_newxp, clouds_bg_middle_01a_newxp, cliff_face_mountaineering_01a_al1 on a dusk ground: Tiny Speck decos the course uses, for the style",
+     "source": "Tiny Speck, CC0 1.0: library decos clouds_bg_middleplus_01b_newxp, clouds_bg_middleplus_01a_newxp, clouds_bg_middle_01a_newxp, cliff_face_mountaineering_01a_al1 (public/assets/decos/groddle)"
+    }
+   ],
+   "source": {
+    "drop": "research/art-briefs/missing-art-2026-11-17/01-cloud-rings/drop/A-ring.png",
+    "dropSha256": "a89827fb4cd591cee0bb3e65948847b818129bfec514dc4188de537bcf85700b",
+    "trim": "alpha over 20: x 59-798, y 44-1526 (739 x 1482, 2.005 tall:wide); alpha under 20 cut to 0",
+    "resize": "premultiplied Lanczos to 330 units tall at 2 and 3 px a unit: 329 x 660 and 494 x 990",
+    "masterSha256": {
+     "x2": "04602df07fb3a2ca3c2c293409f400e6207d374c0db64c29ae2fdf326da68c8d",
+     "x3": "8d07fa21976d9be0980e1d5bf13dd9dd680d4b1c7592650d683b0e06dfa4e101"
+    },
+    "encode": "cwebp 1.6.0: -metadata none -q 82 -m 4 -sharp_yuv -alpha_q 100 -alpha_filter best (tools/deco-pipeline/build.py's lossy settings)"
+   },
+   "intake": {
+    "on": "2026-11-23",
+    "by": "Claude (lane paradk): size checked against attach/1 and the brief; trimmed and resized as the brief asks, nothing redrawn"
    }
   }
  }

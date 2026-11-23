@@ -7,7 +7,7 @@ and what it was made from), which tools/made-art/build-data.mjs checks against t
 
   python3.11 -I tools/made-art/compose.py --shots <dir> [--only <group>,...]
 
---only recomposes those groups (subway, ezc, lp, rg, lp-room, rg-room, ww, ww-room, wh, om, vv, cc) and keeps every other record of
+--only recomposes those groups (subway, ezc, lp, rg, lp-room, rg-room, ww, ww-room, wh, om, vv, cc, cr) and keeps every other record of
 showcase.json as it is, so a new piece does not need the older pieces' screenshots.
 
 <dir> holds the PNG screenshots of the game served from this checkout at deviceScaleFactor 2
@@ -40,6 +40,10 @@ showcase.json as it is, so a new piece does not need the older pieces' screensho
                       (x 1680, the boat), every page element but the canvas hidden, with recipes.mjs of 5ffed3be11c
                       (before the made art)
   cc-after.png        the same with today's style
+  cr-before.png       Cloud Rings (?autostart=1&questoffer=off&fresh=1&resetgame=1&paradise=cloud_rings&paradisepreview=ring,
+                      1280 x 800, localStorage groddle.nightTint off), framed on the first ring, every page element but
+                      the canvas hidden, with game.js of bd24322bb55 (before the made hoop and the sunset)
+  cr-after.png        the same with today's course
 
 Everything else is drawn from shipped files: Tiny Speck's CC0 art and the made art whose provenance
 is in tools/provenance/ (made-decos.json, repainted-maps.json, subway-map-paper.json).
@@ -352,6 +356,19 @@ def main():
             put(name, webp(s, name, q=84), what,
                 f"screenshot of the game (1280 x 800, deviceScaleFactor 2, homedemo=home&homestreetstyle=pol_ext_coral_high, the avatar placed at x 1680), every page element but the canvas hidden, {recipe}; cropped to y {box[1] // 2}-{box[3] // 2} (CSS px), Lanczos to 720 x 315",
                 [{'shot': f'cc-{which}.png', 'sha256': sha(shot)}])
+    if want('cr'):
+        box = (0, 60, 2560, 1180)
+        for which in ('before', 'after'):
+            shot = os.path.join(args.shots, f'cr-{which}.png')
+            s = Image.open(shot).convert('RGBA')
+            assert s.size == (2560, 1600), s.size
+            s = s.crop(box).resize((720, 315), Image.LANCZOS)
+            name = 'cr-course-vectors' if which == 'before' else 'cr-course'
+            what = "Cloud Rings before: rings of code-drawn cloud lobes in five colours under the shared night sky" if which == 'before' else "Cloud Rings with its made cloud hoops in its sunset sky, over Tiny Speck's mountains and clouds"
+            module = 'game.js of bd24322bb55 (before the made hoop and the sunset)' if which == 'before' else "today's course"
+            put(name, webp(s, name, q=84), what,
+                f"screenshot of the game (1280 x 800, deviceScaleFactor 2, paradise=cloud_rings&paradisepreview=ring, framed on the first ring), every page element but the canvas hidden, {module}; cropped to y {box[1] // 2}-{box[3] // 2} (CSS px), Lanczos to 720 x 315",
+                [{'shot': f'cr-{which}.png', 'sha256': sha(shot)}])
     if want('ww-room'):
         box = (360, 60, 2160, 1118)
         for which in ('before', 'after'):

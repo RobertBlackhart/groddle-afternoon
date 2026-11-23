@@ -183,6 +183,55 @@
       ]
     },
     {
+      "id": "decos:cr",
+      "anchor": "made-cloud-rings-cloud-hoops",
+      "name": "Cloud Rings' cloud hoops",
+      "made": "2026-11-17",
+      "madeLabel": "17 November 2026",
+      "caption": "Cloud Rings, a Ticket to Paradise course: you fly through a sunset sky, over purple mountains and a sea of lavender cloud, and through tall hoops of cloud standing on their edge. The course itself was never saved, only players' pictures of it from 2012. Its clouds and mountains are Tiny Speck's own pieces from other streets, but nothing in Tiny Speck's files matches the hoops, so one was drawn again. The game tints it lavender, and gold once you have flown through.",
+      "display": {
+        "w": 289,
+        "h": 126
+      },
+      "image": {
+        "src": "/assets/made-art/cr-course.webp",
+        "w": 720,
+        "h": 315,
+        "label": "With the picture made for Groddle",
+        "alt": "A sunset sky, violet at the top fading to orange and gold, purple mountains along the horizon and lavender cloud below, with a tall lavender hoop of crinkly cloud standing on its edge, its opening on the left."
+      },
+      "original": {
+        "src": "/assets/made-art/cr-course-vectors.webp",
+        "w": 720,
+        "h": 315,
+        "kind": "original",
+        "alt": "The same course before: a dark teal night sky with rings of bright yellow, orange, purple and blue ovals hanging in loops.",
+        "label": "Drawn in plain shapes"
+      },
+      "facts": [
+        {
+          "label": "What the 2012 course had",
+          "text": "Eight tall hoops of cloud along a long sunset sky, each about twice as tall as wide with its opening on the left, all lavender until you flew through them and gold after, as players' pictures of the whole course show."
+        },
+        {
+          "label": "How it was made",
+          "text": "Drawn by an image model (GPT Image 2.6 Sunburst) for Austin, in white and grey so the game can tint it, from our drawing of its size, two crops of the players' pictures of the course and Tiny Speck's own clouds for the look."
+        },
+        {
+          "label": "How it was checked",
+          "text": "The hoop was measured against the players' pictures, 165 by 330, and its opening is where you pass it. The course was flown in the game before and after."
+        },
+        {
+          "label": "In the game",
+          "text": "Cloud Rings, from a Ticket To Cloud Rings."
+        },
+        {
+          "label": "Licence",
+          "text": "Dedicated to the public domain under CC0 1.0, like the Tiny Speck art it comes from."
+        }
+      ]
+    },
+    {
       "id": "decos:vv",
       "anchor": "made-le-voyage-violet-s-stump-and-spiral-stone",
       "name": "Le Voyage Violet's stump and spiral stone",

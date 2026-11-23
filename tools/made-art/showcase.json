@@ -28,6 +28,32 @@
     }
    ]
   },
+  "public/assets/made-art/cr-course-vectors.webp": {
+   "what": "Cloud Rings before: rings of code-drawn cloud lobes in five colours under the shared night sky",
+   "w": 720,
+   "h": 315,
+   "sha256": "a1b9634f752239be8cda2678586611c16fe9ac785a68271214b49476b378d53e",
+   "made": "screenshot of the game (1280 x 800, deviceScaleFactor 2, paradise=cloud_rings&paradisepreview=ring, framed on the first ring), every page element but the canvas hidden, game.js of bd24322bb55 (before the made hoop and the sunset); cropped to y 30-590 (CSS px), Lanczos to 720 x 315",
+   "from": [
+    {
+     "shot": "cr-before.png",
+     "sha256": "659cb62ade6a398a8c00c5c7447841f1660fe13d7f6445e6a0e0dddf4ca8634e"
+    }
+   ]
+  },
+  "public/assets/made-art/cr-course.webp": {
+   "what": "Cloud Rings with its made cloud hoops in its sunset sky, over Tiny Speck's mountains and clouds",
+   "w": 720,
+   "h": 315,
+   "sha256": "1eadd7c36fa9d979abb203544844d3a9f57bbbdf4f46a9c3d7576a5c85b094d8",
+   "made": "screenshot of the game (1280 x 800, deviceScaleFactor 2, paradise=cloud_rings&paradisepreview=ring, framed on the first ring), every page element but the canvas hidden, today's course; cropped to y 30-590 (CSS px), Lanczos to 720 x 315",
+   "from": [
+    {
+     "shot": "cr-after.png",
+     "sha256": "c6a242452c1cd05f6bdb45ce0f149eebe21e5639a45a0fbf527c7c2b91dfdd81"
+    }
+   ]
+  },
   "public/assets/made-art/ezc-props-outline.webp": {
    "what": "Our drawing of EZ Cookin's table, counter and lamp, at their measured sizes",
    "w": 750,

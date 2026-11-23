@@ -10,17 +10,22 @@ export const PARADISE_DURATION_MS = 4 * 60 * 1000;
 export const PARADISE_DAILY_LIMIT = 11;
 
 /**
- * Clean cloud-tunnel profiles derived from the supplied Cloud Rings recording.
- * The source rings are tall, thick cloud masses with a navigable central gap,
- * not thin geometric hoops.
+ * G1160 (Austin 2026-11-23; G893): Cloud Rings' rings are tall upright cloud hoops, one picture each
+ * (gz_ai_cr_ring, made for Groddle from the players' full-street snaps of the course, provenance in
+ * tools/provenance/made-decos.json), at the snaps' size (about 170 x 330 units: drawn 165 x 330 by
+ * its height). Every ring is lavender until you fly through it and gold after, as the snaps show
+ * (snap 266979, the "Completed" full-street snap). The opening is a recessed oval on the hoop's left
+ * (27% across, 54% down, about 44 x 165 units in the picture); flying into it passes the ring, with a
+ * little slack round it so a pilot who threads the hole is never refused.
  */
-export const CLOUD_RING_PROFILES = Object.freeze([
-  Object.freeze({ tint: 0xffc51f, shadowTint: 0xc87913, outerRx: 196, outerRy: 304, innerRx: 101, innerRy: 196 }),
-  Object.freeze({ tint: 0xef9332, shadowTint: 0xb55b26, outerRx: 205, outerRy: 320, innerRx: 106, innerRy: 205 }),
-  Object.freeze({ tint: 0xa886e2, shadowTint: 0x6754ad, outerRx: 198, outerRy: 310, innerRx: 102, innerRy: 199 }),
-  Object.freeze({ tint: 0x62b7e4, shadowTint: 0x3879ae, outerRx: 208, outerRy: 324, innerRx: 108, innerRy: 208 }),
-  Object.freeze({ tint: 0xd486d7, shadowTint: 0x8e529e, outerRx: 201, outerRy: 314, innerRx: 104, innerRy: 202 }),
-]);
+export const CLOUD_RING_ART = Object.freeze({
+  sprite: 'gz_ai_cr_ring',
+  width: 165,
+  height: 330,
+  tint: 0xc9b9f6,
+  passedTint: 0xffc634,
+  opening: Object.freeze({ x: -38, y: 13, rx: 30, ry: 92 }),
+});
 
 /**
  * G1160 (Austin 2026-11-23): Cloud Rings' scenery as the players' full-street snaps show it
@@ -46,6 +51,18 @@ export const CLOUD_RINGS_SCENERY = Object.freeze({
     ...Array.from({ length: 9 }, (_, i) => Object.freeze(['clouds_bg_middleplus_01a_newxp', 200 + i * 450, 1080 - (i % 2) * 20, 900, 0xb6a8ea, 1, -38, i % 2 === 1])),
   ]),
 });
+
+/** PURE: where a ring drawn centred at (x, y) passes the pilot: its opening's centre and half sizes. */
+export function cloudRingOpening(x, y, art = CLOUD_RING_ART) {
+  return { x: x + art.opening.x, y: y + art.opening.y, rx: art.opening.rx, ry: art.opening.ry };
+}
+
+/** PURE: whether a point (the pilot's middle) is in a ring's opening. */
+export function cloudRingPasses(opening, px, py) {
+  const dx = px - opening.x;
+  const dy = py - opening.y;
+  return (dx * dx) / (opening.rx * opening.rx) + (dy * dy) / (opening.ry * opening.ry) <= 1;
+}
 
 /**
  * G1160 (Austin 2026-11-23, reversing G978's one shared sky for these): each Ticket to Paradise
@@ -245,32 +262,6 @@ export function starlitMoonPlainAlpha(startedAt, now) {
   const start = Number(startedAt);
   if (!Number.isFinite(start) || start <= 0) return 1;
   return 1 - starlitRevealAlpha(start, now, STARLIT_NIGHT_MOON_FADE_MS);
-}
-
-/**
- * Deterministic clean-cloud layout for one vertical tunnel.
- * @param {number} ringIndex
- * @param {number} puffCount
- */
-export function cloudRingPuffLayout(ringIndex, puffCount = 32) {
-  const profile =
-    CLOUD_RING_PROFILES[Math.abs(Math.floor(Number(ringIndex) || 0)) % CLOUD_RING_PROFILES.length];
-  const count = Math.max(16, Math.min(32, Math.floor(Number(puffCount) || 32)));
-  return Array.from({ length: count }, (_, index) => {
-    const angle = -Math.PI / 2 + (index / count) * Math.PI * 2;
-    const wobble = 1 + Math.sin((index + ringIndex * 3) * 1.73) * 0.055;
-    return Object.freeze({
-      x: Math.cos(angle) * profile.outerRx * wobble,
-      y: Math.sin(angle) * profile.outerRy * wobble,
-      width: 104 + ((index * 23 + ringIndex * 17) % 32),
-      height: 62 + ((index * 19 + ringIndex * 11) % 22),
-      rotation: Math.sin(angle * 2 + ringIndex) * 0.11,
-      alpha: 0.94 + (index % 3) * 0.025,
-      tint: profile.tint,
-      shadowTint: profile.shadowTint,
-      textureVariant: (index + ringIndex) % 3 === 0 ? 2 : 1,
-    });
-  });
 }
 
 /**

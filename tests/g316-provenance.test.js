@@ -36,6 +36,9 @@
  * 2026-11-22 (lane corak, G223): a made deco may belong to home street styles (`homeStyles`, the style
  * keys, and the `code` that composes them): each style's built look in js/home-styles-data.js draws it.
  *
+ * 2026-11-23 (lane paradk, G1160): a made deco's `scene` may be a Ticket to Paradise course (Cloud Rings'
+ * cloud hoop, named in js/paradise-flight.js).
+ *
  * 2026-11-17 (lane art45, G922): a made deco may come without a @1.5x copy when its drop holds less than
  * 3 px a unit (Winter Haven's trees, the Outer Mind's head), and a chat may have been given four files.
  */
@@ -280,7 +283,7 @@ describe('sprites, decos and garden art (G316)', () => {
   it('every manifest deco has its file; renamed twins draw their CC0 SWF render', async () => {
     const names = JSON.parse(readFileSync(join(pub, 'assets/decos/manifest.json'), 'utf8'));
     for (const n of names) assert.ok(existsSync(join(pub, 'assets/decos/groddle', `${n}.webp`)), n);
-    const { DECO_TWINS } = await import('../public/js/street-render.js?v=32ac8ad3');
+    const { DECO_TWINS } = await import('../public/js/street-render.js?v=b744f8fc');
     for (const [alias, twin] of Object.entries(DECO_TWINS)) {
       assert.ok(!names.includes(alias), alias);
       assert.ok(names.includes(twin), twin);

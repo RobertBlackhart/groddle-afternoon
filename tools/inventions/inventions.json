@@ -809,7 +809,8 @@
    "rows": [
     "G316",
     "G922",
-    "G964"
+    "G964",
+    "G1160"
    ],
    "family": "made-decos",
    "members": [
@@ -844,7 +845,8 @@
     "gz_ai_cc_kelp",
     "gz_ai_cc_crystal_dark",
     "gz_ai_cc_crystal_pale",
-    "gz_ai_cc_spires"
+    "gz_ai_cc_spires",
+    "gz_ai_cr_ring"
    ]
   },
   {
@@ -1530,9 +1532,10 @@
      "symbol": "spawnWinterPortal"
     }
    ],
-   "why": "Nine Paradise templates and several rooms were never archived; stand-ins audit class C, made-art or re-lay candidates.",
+   "why": "Nine Paradise templates and several rooms were never archived; stand-ins audit class C, made-art or re-lay candidates. G1160 (2026-11-23): Cloud Rings' rings are the made cloud hoop gz_ai_cr_ring now (made-decos), its mountains and cloud sea re-laid from CC0 decos.",
    "rows": [
-    "G892"
+    "G892",
+    "G1160"
    ]
   },
   {

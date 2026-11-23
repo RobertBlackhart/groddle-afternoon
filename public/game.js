@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=1b51891c';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=fe53ff7b';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=7e99ac78';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -137,7 +137,7 @@ import {
 } from './js/legalize-it.js?v=7ec63cac';
 import { HALL, HALL_LAYOUT, HALL_QUESTIONS } from './js/bureaucratic-hall.js?v=a8eaa334';
 import { STATION_X, stationArrival, stationScreen, surfaceStation } from './js/subway.js?v=0a87a908';
-import { ALLEY, SHADY, drawAlley, inEnteredBox } from './js/quest-rooms/back-alley-set.js?v=f1dc47ea';
+import { ALLEY, SHADY, drawAlley, inEnteredBox } from './js/quest-rooms/back-alley-set.js?v=400f9e26';
 import { WINTER_WALK_BOUNDS, WINTER_WALK_PASSAGE } from './js/winter-walk-streets.js?v=c921bf92';
 import {
   WINTER_HAVEN_STREET_ID,
@@ -361,9 +361,11 @@ import {
   paradiseStarArt,
   paradisePickupTouches,
   paradiseQuoinScale,
-  CLOUD_RING_PROFILES,
+  CLOUD_RING_ART,
   CLOUD_RINGS_SCENERY,
   PARADISE_SKIES,
+  cloudRingOpening,
+  cloudRingPasses,
   paradiseSkyColorAt,
   paradiseSkyStops,
   RADIAL_HEIGHTS_MOON,
@@ -388,7 +390,6 @@ import {
   SLIP_N_SLIDE_TREE_SPRITES,
   SLIP_N_SLIDE_MOON,
   activateParadiseTicket,
-  cloudRingPuffLayout,
   collectParadisePickup,
   createParadiseRun,
   createParadiseState,
@@ -410,7 +411,7 @@ import {
   slipTerrainY,
   starlitMoonPlainAlpha,
   starlitRevealAlpha,
-} from './js/paradise-flight.js?v=5f9d8548';
+} from './js/paradise-flight.js?v=fa182469';
 import {
   RADIAL_ARRIVAL_EVENTS,
   RADIAL_FLITTERBUG_EVENTS,
@@ -559,7 +560,7 @@ import {
   inspectPlayerSave,
   serializePlayerSave,
   restorePlayerSave,
-} from './js/player-save.js?v=02312b36';
+} from './js/player-save.js?v=99bd4921';
 import {
   HOME_INTERIOR_TSID,
   HOME_STREET_TSID,
@@ -730,7 +731,7 @@ import {
   ensureStreetIndex,
   resolveIndexTsid,
 } from './js/street-loader.js?v=10376267';
-import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=90b88ad8';
+import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=e9207885';
 import {
   ladderTopDeck,
   groundBeneath,
@@ -761,7 +762,7 @@ import {
   setSignpostHover,
   setSignpostKeys,
   signpostBoardAt,
-} from './js/street-render.js?v=32ac8ad3';
+} from './js/street-render.js?v=b744f8fc';
 import {
   GAME_DAY_MS,
   shouldFireNewDay,
@@ -1103,7 +1104,7 @@ import { energyMax, forceMetabolic, gainMetabolic, loseMood, moodMax, setMetabol
 import { MOOD_DECAY_TEXT } from './js/mood-decay.js?v=49175993';
 import { installHiresIcons } from './js/icon-hires.js?v=fb952dde';
 import { IT_TAKES_TWO_HINT, IT_TAKES_TWO_QUEST } from './js/help-dig.js?v=ca0cc848';
-import { installHiresDecos, maxTextureSizeOf } from './js/deco-hires.js?v=196ca767';
+import { installHiresDecos, maxTextureSizeOf } from './js/deco-hires.js?v=77cab890';
 import { loadAudioLevels, loadMutedPreference, loadOtherMusic, saveAudioLevel, saveMutedPreference, saveOtherMusic } from './js/audio-pref.js?v=80d433c3';
 import { createAudioBuses, fadeGain } from './js/audio-buses.js?v=af167b54';
 import { applyAudioSession, streetMusicWanted } from './js/other-music.js?v=f58af5e6';
@@ -1142,7 +1143,7 @@ import { isOneClickDoor, oneClickChoice, signpostArmRows, worldContextAction } f
 import { blockedPlayerVerbs, listPlayerTarget, opensPlayerMenu, playerMenuRows } from './js/ui/player-menu.js?v=a6a2650c';
 import { forgetTexture, frameTexture, isFailed, isLoaded, onFailed, onLoaded, textureFromUrl, whenLoaded } from './js/textures.js?v=729b29ea';
 import { FALLBACK_MAX as WORLD_ART_FALLBACK_MAX, worldArtFor } from './js/world-art.js?v=2b3cf8d5';
-import { sceneAnim, syncAnim } from './js/deco-anim.js?v=19406aed';
+import { sceneAnim, syncAnim } from './js/deco-anim.js?v=275ca611';
 import { revealStartCard, whenSceneDrawn } from './js/start-backdrop.js?v=8510d51e';
 import { cancelAllOverlays, displayTopOf, itemstackOverlayPoint, playPoofIn, setOverlayResolution } from './js/overlay-art.js?v=95f23414';
 import * as textureUrls from './js/textures.js?v=729b29ea';
@@ -23340,6 +23341,7 @@ function paintParadiseSky(root, course) {
 
 /** The decos Cloud Rings paints with (preloaded before the scene is built). */
 const CLOUD_RINGS_DECOS = Object.freeze([
+  CLOUD_RING_ART.sprite,
   CLOUD_RINGS_SCENERY.sun.deco,
   ...new Set(CLOUD_RINGS_SCENERY.decos.map(([deco]) => deco)),
 ]);
@@ -23699,7 +23701,7 @@ async function loadParadiseVisualAssets(course) {
     ? ['star_asset_01', 'star_asset_02'].map((name) => loadTexture(`assets/decos/groddle/${name}.png`).catch(() => null))
     : [];
   if (course?.id === 'cloud_rings') {
-    // G1160: the sunset scenery's decos, before the first one is drawn.
+    // G1160: the cloud hoops and the sunset scenery's decos, before the first one is drawn.
     await Promise.all(CLOUD_RINGS_DECOS.map((name) => loadTexture(`assets/decos/groddle/${name}.png`).catch(() => null)));
     return;
   }
@@ -23846,64 +23848,29 @@ function spawnCloudRing(course, index) {
     [3040, 370],
   ];
   const [x, y] = positions[index] || [500 + index * 580, 450];
+  // G1160: one cloud hoop picture per ring at the snaps' size, lavender until flown through
+  // (js/paradise-flight.js CLOUD_RING_ART), in place of the 32 code-drawn lobes in five colours.
   const root = new PIXI.Container();
   root.position.set(x, y);
   root.zIndex = 12;
-  root.sortableChildren = true;
   root._cloudPhase = index * 1.37;
-  const profile = CLOUD_RING_PROFILES[index % CLOUD_RING_PROFILES.length];
-  const glow = new PIXI.Graphics();
-  glow.ellipse(0, 0, profile.outerRx - 20, profile.outerRy - 28).stroke({ width: 72, color: profile.tint, alpha: 0.18 });
-  glow.zIndex = -2;
-  root.addChild(glow);
-  const puffs = cloudRingPuffLayout(index).map((puff, puffIndex) => {
-    // The source tunnels fill most of the location viewport. Build their
-    // cloud masses as native-resolution vector lobes so scaling never carries
-    // thumbnail blur or recording artifacts into the remake.
-    const sprite = new PIXI.Container();
-    const shadow = new PIXI.Graphics();
-    shadow.ellipse(3, 5, puff.width * 0.5, puff.height * 0.45).fill({ color: puff.shadowTint, alpha: 0.24 });
-    sprite.addChild(shadow);
-    const body = new PIXI.Graphics();
-    body.ellipse(0, 0, puff.width * 0.5, puff.height * 0.38);
-    body.ellipse(-puff.width * 0.22, -puff.height * 0.08, puff.width * 0.27, puff.height * 0.35);
-    body.ellipse(puff.width * 0.03, -puff.height * 0.19, puff.width * 0.31, puff.height * 0.4);
-    body.ellipse(puff.width * 0.27, -puff.height * 0.04, puff.width * 0.25, puff.height * 0.32);
-    body.fill({ color: puff.tint, alpha: 0.96 });
-    sprite.addChild(body);
-    const highlight = new PIXI.Graphics();
-    highlight.ellipse(-puff.width * 0.08, -puff.height * 0.22, puff.width * 0.29, puff.height * 0.16).fill({ color: 0xffffff, alpha: 0.14 });
-    sprite.addChild(highlight);
-    sprite.position.set(puff.x, puff.y);
-    sprite.rotation = puff.rotation;
-    sprite.alpha = puff.alpha;
-    sprite.zIndex = Math.sin((puffIndex / 32) * Math.PI * 2) > 0 ? 2 : 0;
-    sprite._baseX = puff.x;
-    sprite._baseY = puff.y;
-    sprite._baseAlpha = puff.alpha;
-    sprite._phase = puffIndex * 0.61 + index;
-    root.addChild(sprite);
-    return sprite;
-  });
-  const sparkle = new PIXI.Graphics();
-  for (let dot = 0; dot < 14; dot += 1) {
-    const angle = (dot / 14) * Math.PI * 2 + index * 0.4;
-    sparkle.circle(
-      Math.cos(angle) * (profile.outerRx + 8),
-      Math.sin(angle) * (profile.outerRy + 10),
-      1.4 + (dot % 2)
-    );
-    sparkle.fill({ color: 0xffffff, alpha: 0.3 + (dot % 3) * 0.16 });
-  }
-  sparkle.zIndex = 4;
-  root.addChild(sparkle);
-  root._cloudPuffs = puffs;
+  const texture = textureFromUrl(`assets/decos/groddle/${CLOUD_RING_ART.sprite}.png`);
+  const hoop = new PIXI.Sprite(texture);
+  hoop.anchor.set(0.5);
+  hoop.tint = CLOUD_RING_ART.tint;
+  const applySize = () => {
+    hoop.width = CLOUD_RING_ART.width;
+    hoop.height = CLOUD_RING_ART.height;
+  };
+  if (isLoaded(texture.source)) applySize();
+  else onLoaded(texture.source, applySize);
+  root.addChild(hoop);
+  root._cloudHoop = hoop;
   entityLayer.addChild(root);
   const entry = {
     index,
     sprite: root,
-    rx: profile.innerRx,
-    ry: profile.innerRy,
+    opening: cloudRingOpening(x, y),
     passed: false,
   };
   paradiseRings.push(entry);
@@ -24041,13 +24008,8 @@ function renderParadiseFlightHud() {
     app.canvas.dataset.paradiseObjective = paradiseObjective(paradiseRun);
     app.canvas.dataset.paradiseExit = paradiseExit?.active ? 'open' : 'closed';
     if (course.id === 'cloud_rings') {
-      app.canvas.dataset.paradiseRingArt = 'clean-cloud-puffs';
-      app.canvas.dataset.paradiseRingPuffs = String(
-        paradiseRings.reduce(
-          (total, entry) => total + (entry.sprite?._cloudPuffs?.length || 0),
-          0
-        )
-      );
+      app.canvas.dataset.paradiseRingArt = CLOUD_RING_ART.sprite;
+      app.canvas.dataset.paradiseRingsGold = String(paradiseRings.filter((entry) => entry.passed).length);
     } else if (course.id === 'radial_heights') {
       app.canvas.dataset.paradiseRadialArt = 'source-moon-and-stars';
       app.canvas.dataset.paradiseRadialMoon = [
@@ -24436,8 +24398,9 @@ function passParadiseRingEntry(entry) {
   if (!result.ok) return false;
   entry.passed = true;
   const applied = applyParadiseReward(result.reward);
-  entry.sprite.alpha = 0.24;
-  entry.sprite.scale.set(1.18);
+  // G1160: a ring turns gold once flown through, as the snaps show (snap 266979).
+  if (entry.sprite._cloudHoop) entry.sprite._cloudHoop.tint = CLOUD_RING_ART.passedTint;
+  entry.sprite.scale.set(1);
   playSfx('quest', { volume: 0.5, rate: 0.86 + entry.index * 0.08 });
   floatText(entry.sprite.x, entry.sprite.y - 130, applied.copy, 0xffe278);
   pushActivity(`Cloud Ring ${entry.index + 1}: ${applied.copy}.`);
@@ -24946,21 +24909,8 @@ function updateParadiseFlight(dt) {
     entry.sprite._cloudPhase += 0.022 * dt;
     const breathe = 1 + Math.sin(entry.sprite._cloudPhase) * 0.018;
     entry.sprite.scale.set(breathe);
-    for (const puff of entry.sprite._cloudPuffs || []) {
-      const drift = Math.sin(entry.sprite._cloudPhase * 1.7 + puff._phase);
-      puff.x = puff._baseX + drift * 2.4;
-      puff.y = puff._baseY + Math.cos(entry.sprite._cloudPhase + puff._phase) * 1.8;
-      puff.alpha = puff._baseAlpha + drift * 0.035;
-      if (puff._shadow) {
-        puff._shadow.x = puff.x + 3;
-        puff._shadow.y = puff.y + 5;
-      }
-    }
-    const dx = player.x - entry.sprite.x;
-    const dy = player.y - 34 - entry.sprite.y;
-    if ((dx * dx) / (entry.rx * entry.rx) + (dy * dy) / (entry.ry * entry.ry) <= 1) {
-      passParadiseRingEntry(entry);
-    }
+    // The pilot's middle in the hoop's opening (CLOUD_RING_ART.opening) passes the ring.
+    if (cloudRingPasses(entry.opening, player.x, player.y - 34)) passParadiseRingEntry(entry);
   }
   const starlitRevealComplete =
     course.id !== 'starlit_night' ||
@@ -24999,7 +24949,7 @@ function updateParadiseFlight(dt) {
     }
     const ring = paradiseRings.find((entry) => !entry.passed && entry.sprite?.parent);
     const pickup = paradisePickups.find((entry) => !entry.collected && entry.sprite?.parent);
-    const target = ring?.sprite || pickup?.sprite || (paradiseExit?.active ? paradiseExit.sprite : null);
+    const target = ring ? ring.opening : pickup?.sprite || (paradiseExit?.active ? paradiseExit.sprite : null);
     if (target) {
       player.x = target.x;
       player.y = ring ? target.y + 34 : pickup ? target.y + 30 : target.y;

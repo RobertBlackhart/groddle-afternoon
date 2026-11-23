@@ -10,7 +10,9 @@ import {
   PARADISE_DURATION_MS,
   PARADISE_HELL_BLOCK,
   PARADISE_TICKET_EAT,
-  CLOUD_RING_PROFILES,
+  CLOUD_RING_ART,
+  cloudRingOpening,
+  cloudRingPasses,
   RADIAL_HEIGHTS_MOON,
   STARLIT_NIGHT_MOON,
   STARLIT_NIGHT_MOON_FADE_MS,
@@ -19,7 +21,6 @@ import {
   SLIP_N_SLIDE_LANDMARKS,
   SLIP_N_SLIDE_TREE_SPRITES,
   activateParadiseTicket,
-  cloudRingPuffLayout,
   collectParadisePickup,
   createParadiseRun,
   createParadiseState,
@@ -37,7 +38,7 @@ import {
   slipTerrainY,
   starlitMoonPlainAlpha,
   starlitRevealAlpha,
-} from '../public/js/paradise-flight.js?v=5f9d8548';
+} from '../public/js/paradise-flight.js?v=fa182469';
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const publicDir = path.join(here, '..', 'public');
@@ -165,20 +166,24 @@ test("Slip 'N Slide uses the clean recovered K03 landmarks from the recording", 
   assert.ok(SLIP_N_SLIDE_LANDMARKS.every((entry) => entry.x >= 0 && entry.x <= 3600));
 });
 
-test('Cloud Rings uses five tall, navigable tunnels built from clean cloud puffs', () => {
-  assert.equal(CLOUD_RING_PROFILES.length, 5);
-  for (let index = 0; index < CLOUD_RING_PROFILES.length; index += 1) {
-    const profile = CLOUD_RING_PROFILES[index];
-    const puffs = cloudRingPuffLayout(index);
-    assert.equal(puffs.length, 32);
-    assert.ok(profile.outerRy >= 304, 'source rings fill most of the location viewport');
-    assert.ok(profile.outerRy > profile.outerRx, 'source rings are vertically elongated');
-    assert.ok(profile.innerRx >= 101, 'opening must clear the avatar horizontally');
-    assert.ok(profile.innerRy >= 196, 'opening must clear the avatar vertically');
-    assert.ok(puffs.every((puff) => puff.textureVariant === 1 || puff.textureVariant === 2));
-    assert.ok(puffs.every((puff) => puff.tint === profile.tint));
-    assert.ok(puffs.every((puff) => puff.shadowTint === profile.shadowTint));
-  }
+test('G1160: Cloud Rings uses five upright cloud hoops at the snaps\' size, lavender until flown through and gold after', () => {
+  assert.equal(PARADISE_COURSES.cloud_rings.ringCount, 5);
+  assert.equal(CLOUD_RING_ART.sprite, 'gz_ai_cr_ring');
+  // The players' full-street snaps: about 170 x 330, opening about 60 x 180 on the hoop's left.
+  assert.ok(CLOUD_RING_ART.height === 330 && Math.abs(CLOUD_RING_ART.width - 170) <= 10);
+  assert.ok(fs.existsSync(path.join(publicDir, 'assets', 'decos', 'groddle', 'gz_ai_cr_ring.webp')));
+  const rgb = (c) => [(c >> 16) & 0xff, (c >> 8) & 0xff, c & 0xff];
+  const [lr, lg, lb] = rgb(CLOUD_RING_ART.tint);
+  assert.ok(lb > lr && lr > lg, 'lavender before');
+  const [gr, gg, gb] = rgb(CLOUD_RING_ART.passedTint);
+  assert.ok(gr > gg && gg > gb && gb < 0x80, 'gold after');
+  const opening = cloudRingOpening(1000, 500);
+  assert.ok(opening.x < 1000, 'the opening is on the left of the hoop');
+  assert.ok(opening.rx * 2 >= 44 && opening.ry * 2 >= 165 && opening.ry * 2 < CLOUD_RING_ART.height);
+  assert.ok(cloudRingPasses(opening, opening.x, opening.y));
+  assert.ok(cloudRingPasses(opening, opening.x, opening.y + opening.ry - 2));
+  assert.ok(!cloudRingPasses(opening, 1000 + CLOUD_RING_ART.width / 2 - 10, 500), 'the thick rim on the right is not the way through');
+  assert.ok(!cloudRingPasses(opening, opening.x, 500 - CLOUD_RING_ART.height / 2 - 5), 'over the top is not through');
 });
 
 test('ticket pricing, eleven-ticket daily gate, and daily reset match GSJS', () => {
@@ -262,9 +267,10 @@ test('client ships real ticket art, a flight HUD, and deterministic QA entry', (
   assert.match(game, /paradiseObjectiveComplete\(paradiseRun\) && starlitRevealComplete/);
   assert.match(game, /loadTexture\(`assets\/decos\/groddle\/\$\{sprite\}\.png`\)/);
   assert.match(game, /paradisepreview'\) === 'finish'/);
-  assert.match(game, /dataset\.paradiseRingArt = 'clean-cloud-puffs'/);
-  assert.match(game, /cloudRingPuffLayout\(index\)/);
-  assert.match(game, /native-resolution vector lobes/);
+  assert.match(game, /dataset\.paradiseRingArt = CLOUD_RING_ART\.sprite/);
+  assert.match(game, /hoop\.tint = CLOUD_RING_ART\.tint;/);
+  assert.match(game, /_cloudHoop\.tint = CLOUD_RING_ART\.passedTint;/);
+  assert.match(game, /cloudRingPasses\(entry\.opening, player\.x, player\.y - 34\)/);
   assert.match(game, /paradisepreview'\) === 'ring'/);
   assert.match(game, /Keep the dedicated visual-QA route framed on the first tunnel/);
   assert.match(html, /id="paradise-flight-hud"/);
