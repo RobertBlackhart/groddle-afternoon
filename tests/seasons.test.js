@@ -50,7 +50,7 @@ import {
   teachPhrase,
   yetiMailDue,
   yetiQuote,
-} from '../public/js/seasons.js?v=64c72251';
+} from '../public/js/seasons.js?v=a46a90d3';
 import { SEASON_DATA } from '../public/js/seasons-data.js?v=b5174bc9';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
@@ -66,7 +66,11 @@ describe('seasonal calendar', () => {
     assert.deepEqual(calendarSeasons(at(2026, 10, 31)), ['zilloween']);
     assert.deepEqual(calendarSeasons(at(2026, 11, 2)), []);
     assert.deepEqual(calendarSeasons(at(2026, 12, 24)), ['glitchmas']);
-    assert.deepEqual(calendarSeasons(at(2027, 1, 3)), ['glitchmas']);
+    // G1195: Happy New Ur runs Dec 26 to Jan 3 inside Glitchmas, and leads on December 31.
+    assert.deepEqual(calendarSeasons(at(2027, 1, 3)), ['glitchmas', 'new_ur']);
+    assert.deepEqual(calendarSeasons(at(2026, 12, 25)), ['glitchmas']);
+    assert.deepEqual(calendarSeasons(at(2026, 12, 26)), ['glitchmas', 'new_ur']);
+    assert.deepEqual(calendarSeasons(at(2026, 12, 31)), ['new_ur', 'glitchmas']);
     assert.deepEqual(calendarSeasons(at(2027, 1, 4)), []);
     // Easter week 2027 is no event: the source's eggs come from Egg Plants all year.
     assert.deepEqual(calendarSeasons(at(2027, 3, 22)), []);
@@ -104,7 +108,7 @@ describe('seasonal calendar', () => {
     assert.deepEqual(calendarSeasons(Date.UTC(2026, 9, 17, 4, 30)), []);
     assert.deepEqual(calendarSeasons(Date.UTC(2026, 9, 17, 8, 0)), ['zilloween']);
     // Glitchmas ends with January 3 on Ur's clock, even where it is already the 4th.
-    assert.deepEqual(calendarSeasons(Date.UTC(2027, 0, 4, 7, 30)), ['glitchmas']);
+    assert.deepEqual(calendarSeasons(Date.UTC(2027, 0, 4, 7, 30)), ['glitchmas', 'new_ur']);
     assert.deepEqual(calendarSeasons(Date.UTC(2027, 0, 4, 8, 30)), []);
     assert.equal(seasonYearKey('glitchmas', Date.UTC(2027, 0, 1, 5)), 'glitchmas:2026', 'New Year in London is still December 31 on Ur');
     // A device in any time zone reaches the same answer for the same moment.
@@ -313,7 +317,7 @@ describe('Egg Hunt and Pi Day', () => {
   });
 
   it('counts each egg into the collection however it arrives, then gives the trophy for them (seasons-feature)', async () => {
-    const { seasonsFeature } = await import('../public/js/features/seasons-feature.js?v=81a2f66f');
+    const { seasonsFeature } = await import('../public/js/features/seasons-feature.js?v=11369a09');
     const { createInventory, addItem, countItem, removeItem } = await import('../public/js/inventory.js?v=6414dbdc');
     const unlocked = [];
     const counted = {};
@@ -387,7 +391,7 @@ describe('supply paths', () => {
 
 describe('a ?season= preview leaves the save alone (G342)', () => {
   it('a carved pumpkin survives previewing another season, and the save still remembers Zilloween', async () => {
-    const { seasonsFeature } = await import('../public/js/features/seasons-feature.js?v=81a2f66f');
+    const { seasonsFeature } = await import('../public/js/features/seasons-feature.js?v=11369a09');
     const { createInventory, addItem, countItem } = await import('../public/js/inventory.js?v=6414dbdc');
     const inv = createInventory();
     addItem(inv, 'pumpkin_carved_1', 2);

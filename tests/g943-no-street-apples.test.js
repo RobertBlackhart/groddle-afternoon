@@ -17,7 +17,7 @@ import { join } from 'node:path';
 
 import { populationForStreet } from '../public/js/street-ecology.js?v=ff90efe4';
 import { normalizeWorldSnapshot } from '../public/js/player-save.js?v=bfaedb35';
-import { getVerbsFor } from '../public/content.js?v=77614819';
+import { getVerbsFor } from '../public/content.js?v=2a4e3b9f';
 import { ITEM_CATALOG } from '../public/js/inventory.js?v=6414dbdc';
 
 const root = join(import.meta.dirname, '..');

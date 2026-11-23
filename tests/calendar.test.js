@@ -28,10 +28,10 @@ import {
   urHolidaysOn,
   urMidnight,
   urYear,
-} from '../public/js/calendar.js?v=a3d580f8';
+} from '../public/js/calendar.js?v=4ea8f051';
 import { GAME_DAY_MS, dametimeParts } from '../public/js/game-day.js?v=a532775d';
 import { RUN_MS, runAt } from '../public/js/feats-mp.js?v=49ed2393';
-import { calendarSeasons, isDametimeZilloween } from '../public/js/seasons.js?v=64c72251';
+import { calendarSeasons, isDametimeZilloween } from '../public/js/seasons.js?v=a46a90d3';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const client = join(root, '..', 'glitch-client');
@@ -79,7 +79,7 @@ describe('the events the remake runs, on their real dates', () => {
     assert.equal(pot.end, Date.parse('2026-11-30T08:00:00Z'));
     assert.equal(fmtLocal(pot.start, { locale: 'en-US', timeZone: 'America/New_York' }), 'Sun, Nov 22, 3:00 AM');
     assert.equal(fmtLocal(pot.start, { locale: 'en-US', timeZone: 'Europe/London' }), 'Sun, Nov 22, 8:00 AM');
-    assert.deepEqual(new Set(rows.map((r) => r.id)), new Set(['pot_luck_day', 'glitchmas', 'pi_day', 'zilloween', 'zilloween_ur']));
+    assert.deepEqual(new Set(rows.map((r) => r.id)), new Set(['pot_luck_day', 'glitchmas', 'pi_day', 'zilloween', 'zilloween_ur', 'new_ur', 'new_ur_eve']));
     // Soonest first.
     assert.deepEqual(rows.map((r) => r.start), [...rows.map((r) => r.start)].sort((a, b) => a - b));
   });
@@ -88,7 +88,7 @@ describe('the events the remake runs, on their real dates', () => {
     const t0 = Date.parse('2026-01-01T00:30:00Z');
     for (let t = t0; t < t0 + 366 * 86_400_000; t += 3_600_000) {
       const on = new Set(calendarSeasons(t));
-      for (const id of ['zilloween', 'glitchmas', 'pi_day', 'pot_luck_day']) {
+      for (const id of ['zilloween', 'glitchmas', 'pi_day', 'pot_luck_day', 'new_ur']) {
         const y = new Date(t).getUTCFullYear();
         const inside = [y - 1, y, y + 1].some((yy) => {
           const w = eventWindow(id, yy);

@@ -254,8 +254,8 @@ function ensureCss() {
   document.head.appendChild(style);
 }
 
-/** The location viewport inside #game-root, in CSS px, and the logical-px scale (the view's width, g458). */
-function viewport() {
+/** The location viewport inside #game-root, in CSS px, and the logical-px scale (the view's width, g458); the Happy New Ur fireworks use it too. */
+export function viewport() {
   const root = rootEl();
   const canvas = root?.querySelector('canvas:not(.lonely-portrait)');
   if (!root || !canvas) return null;

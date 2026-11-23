@@ -36,7 +36,7 @@ import { createButlerState, renameButler, teachButler } from '../public/js/butle
 import { cleanTowerName } from '../public/js/home-tower.js?v=84d99af0';
 import { PENMANSHIP_SKILL, editNote, writePaperNote } from '../public/js/street-furniture.js?v=071203fc';
 import { MAIL_COMPANIONS, createMailboxState, sendMail } from '../public/js/mailbox.js?v=d50d0d05';
-import { teachPhrase } from '../public/js/seasons.js?v=64c72251';
+import { teachPhrase } from '../public/js/seasons.js?v=a46a90d3';
 import { cleanCaption } from '../public/js/snaps.js?v=55d4c257';
 import { sauceLabel, sauceStreetLine } from '../public/js/potions.js?v=4f4c996d';
 import { groupNameProblem } from '../public/js/groups.js?v=2e9a714e';

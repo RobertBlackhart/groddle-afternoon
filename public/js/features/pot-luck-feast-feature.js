@@ -31,15 +31,15 @@
 import { addItem, countItem, ensureItem, itemIcon, removeItem, registerItemUse, ITEM_CATALOG } from '../inventory.js?v=6414dbdc';
 import { dametimeParts, getGameDayKey } from '../game-day.js?v=a532775d';
 import { RECIPE_CATALOG, isRecipeCatalogReady, setRecipeCatalog } from '../making.js?v=5a718e7f';
-import { activeSeasons, parseSeasonDate, potLuckWindow, seasonYearKey } from '../seasons.js?v=64c72251';
+import { activeSeasons, parseSeasonDate, potLuckWindow, seasonYearKey } from '../seasons.js?v=a46a90d3';
 import { shiftMetabolic } from '../metabolics.js?v=48f784bf';
 import { landingY, nearestSurfaceY } from '../walk-surface.js?v=3c919d5b';
 import { isLoaded, onLoaded, textureFromUrl } from '../textures.js?v=729b29ea';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
-import { SEED_CATALOG } from '../garden.js?v=9caea9c6';
+import { SEED_CATALOG } from '../garden.js?v=765c6ddf';
 import { openListDialog } from '../ui/storage-windows.js?v=5a6dbe0b';
-import { feastDayKey, servingsText } from '../feast-day.js?v=38906717';
+import { feastDayKey, servingsText } from '../feast-day.js?v=eeac9135';
 import {
   DISHES_NEEDED,
   DISH_BOX,

@@ -30,7 +30,7 @@ import {
   clearPlot,
   SEED_CATALOG,
   GARDEN_HARVEST_FAILED_LINES,
-} from '../public/js/garden.js?v=9caea9c6';
+} from '../public/js/garden.js?v=765c6ddf';
 import {
   loadRecipeCatalogFromFile,
   ensureMakingItems,

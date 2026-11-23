@@ -772,7 +772,7 @@
   },
   {
    "id": "designed-seasons",
-   "title": "Seasonal events with source 'designed' (Pot Luck Day)",
+   "title": "Seasonal events with source 'designed' (Pot Luck Day, Happy New Ur)",
    "kind": "content",
    "status": "proposed",
    "where": [
@@ -784,11 +784,49 @@
    "why": "An event Glitch never ran, written in its voice. Every entry here needs Austin's ruling (the grass eggs were one).",
    "rows": [
     "G344",
-    "G982"
+    "G982",
+    "G1195"
    ],
    "family": "designed-seasons",
    "members": [
+    "new_ur",
     "pot_luck_day"
+   ]
+  },
+  {
+   "id": "new-ur-countdown",
+   "title": "Happy New Ur (Dec 31): a countdown, sparkles and fireworks at all six Groddle midnights, the one nearest 1 PM Pacific the big one with a party on Unnu Slight (confetti, a warm glow on the stone dragon, Goodnight Groddle), a \"HAPPY NEW UR!\" New Day screen, one free trip to the party, Global notices at 24 h, 1 h and 10 min, synced online by the server",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/new-ur.js",
+     "symbol": "newUrMidnights"
+    },
+    {
+     "file": "public/js/new-ur.js",
+     "symbol": "newUrMoment"
+    },
+    {
+     "file": "public/js/new-ur.js",
+     "symbol": "newDayDress"
+    },
+    {
+     "file": "public/js/features/new-ur-feature.js",
+     "symbol": "newUrFeature"
+    },
+    {
+     "file": "public/js/seasons.js",
+     "symbol": "SEASONS.new_ur"
+    },
+    {
+     "file": "public/js/calendar.js",
+     "symbol": "newUrEve"
+    }
+   ],
+   "why": "Austin's picks 2026-11-23 (G1195, research/seasonal/new-year-plan.md). Glitch's own New Year was two seconds of the Sparkle Powder burst for everyone online at midnight Pacific 2011, with players gathered at Unnu Slight: matched (one moment for the world, the sparkle Ur-wide, the party street). Ours: the moment is a Groddle midnight (six on Dec 31 on Ur's clock, all derived from the game clock), the 10-minute HUD countdown and the 10..4 numbers, the fireworks (Tiny Speck's loneliness-party overlays) and the 321 overlay at that moment, the New Day screen's title and lines, the party dressing and its free teleport, the Global lines, the season window Dec 26 to Jan 3 for later stock.",
+   "rows": [
+    "G1195"
    ]
   },
   {

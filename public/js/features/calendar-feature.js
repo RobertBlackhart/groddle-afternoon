@@ -28,10 +28,11 @@ import {
   featTurns,
   fmtLocal,
   fmtSpan,
+  midnightsLine,
   urDateLine,
   urHolidaysOn,
   urYear,
-} from '../calendar.js?v=a3d580f8';
+} from '../calendar.js?v=4ea8f051';
 
 export const CALENDAR_FEATURE_ID = 'calendar';
 export const CALENDAR_EVENT = 'groddle:calendar';
@@ -71,6 +72,9 @@ const STYLE = `
 .ur-calendar .cal-day[data-ev~="glitchmas"] { background: var(--c-blue-79); }
 .ur-calendar .cal-day[data-ev~="pi_day"] { background: var(--surface-moss); }
 .ur-calendar .cal-day[data-ev~="pot_luck_day"] { background: var(--c-gold-84); }
+.ur-calendar .cal-day[data-ev~="new_ur"] { background: var(--c-slate-98); }
+.ur-calendar .cal-day[data-ev~="new_ur_eve"] { background: var(--c-gold-84b); }
+.ur-calendar .cal-party { margin-top: var(--sp-2); border: 1px solid var(--c-gold-84b); border-radius: var(--radius-pill); background: var(--c-cream-99b); color: var(--c-brown-46); font: inherit; font-weight: 700; padding: 0 var(--sp-5); cursor: pointer; }
 .ur-calendar .cal-day .feat { position: absolute; left: 0; right: 0; bottom: 0; height: 7px; background: var(--c-sky-54); }
 .ur-calendar .cal-day .feat.odd { background: var(--c-green-57); }
 .ur-calendar .cal-day.picked { outline: 2px solid var(--c-brown-46); }
@@ -165,6 +169,21 @@ function render(engine, t) {
       if (r.on) li.dataset.on = '';
       li.append(el('b', '', r.label), el('span', 'cal-tag', eventTag(r)));
       li.append(el('small', '', `${fmtSpan(r.start, r.end)} (${r.on ? `ends ${aboutWhen(r.end, t).replace(/^About/, 'about')}` : aboutWhen(r.start, t)})`));
+      // G1195: Happy New Ur's six Groddle midnights in your own time, and the free trip while it is open.
+      if (r.midnights) {
+        li.append(el('small', 'cal-midnights', midnightsLine(r.midnights)));
+        const trip = engine?.query?.('newUrPartyTrip', engine);
+        if (trip?.open) {
+          const go = el('button', 'cal-party', trip.label);
+          go.type = 'button';
+          go.title = trip.tip || '';
+          go.addEventListener('click', () => {
+            closeCalendar(engine);
+            engine.query?.('newUrGoParty', engine);
+          });
+          li.append(go);
+        }
+      }
       li.title = r.blurb;
       ul.append(li);
     }

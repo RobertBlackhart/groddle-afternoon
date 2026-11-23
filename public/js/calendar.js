@@ -22,7 +22,8 @@
  *
  * The remake fills it from its own data: Ur's days (js/game-day.js), Glitch's holidays as the
  * calendar named them, the events the remake runs on real dates (js/seasons.js SEASONS: Zilloween,
- * Glitchmas and Pi Day from Glitch, Pot Luck Day the remake's) and in Ur's own Zilloween (Remember 25-37,
+ * Glitchmas and Pi Day from Glitch, Pot Luck Day and Happy New Ur the remake's, with Happy New Ur's
+ * countdown day and its six Groddle midnights: newUrEve) and in Ur's own Zilloween (Remember 25-37,
  * isDametimeZilloween), and the Feats: online the shared Feat's turns (js/feats-mp.js runAt, one a
  * real day, six Ur days, as Glitch's), solo your own Feats (js/solo-feats.js). Real times are shown
  * in the player's own time zone (fmtLocal), as the page linked "Find out when the feat starts in
@@ -38,9 +39,10 @@ import {
   MONTH_NAMES,
   dametimeParts,
 } from './game-day.js?v=a532775d';
-import { SEASONS, SEASON_TIME_ZONE, potLuckWindow, urDate } from './seasons.js?v=64c72251';
+import { SEASONS, SEASON_TIME_ZONE, potLuckWindow, urDate } from './seasons.js?v=a46a90d3';
 import { MP_ORDER, RUN_EPOCH_MS, RUN_MS, runAt } from './feats-mp.js?v=49ed2393';
 import { FEAT_BY_ID } from './solo-feats.js?v=0ec0bd95';
+import { NEW_UR_TEXT, newUrMidnights } from './new-ur.js?v=f47ca80b';
 
 export const CALENDAR_TEXT = Object.freeze({
   title: 'Calendar',
@@ -156,6 +158,7 @@ const daysIn = (y, m) => new Date(Date.UTC(y, m, 0)).getUTCDate();
 export function eventWindow(id, y) {
   if (id === 'zilloween') return { start: urMidnight(y, 10, 17), end: urMidnight(y, 11, 2) };
   if (id === 'glitchmas') return { start: urMidnight(y, 12, 12), end: urMidnight(y + 1, 1, 4) };
+  if (id === 'new_ur') return { start: urMidnight(y, 12, 26), end: urMidnight(y + 1, 1, 4) };
   if (id === 'pi_day') return { start: Date.UTC(y, 2, 13, 12), end: Date.UTC(y, 2, 15, 12) };
   if (id === 'pot_luck_day') {
     const w = potLuckWindow(y);
@@ -192,8 +195,34 @@ export function calendarEvents(now = Date.now()) {
   let z = dametimeZilloween(p.year);
   if (z.end <= t) z = dametimeZilloween(p.year + 1);
   rows.push({ id: 'zilloween_ur', label: 'Zilloween', start: z.start, end: z.end, on: z.start <= t, glitch: true, blurb: "Zilloween on Ur's own calendar, Remember 25 to 37: pumpkins and candy as in the real-world Zilloween.", ur: true });
+  // G1195: Happy New Ur's countdown day, December 31, with its six Groddle midnights (js/new-ur.js).
+  const eve = newUrEve(t);
+  if (eve) rows.push(eve);
   rows.sort((a, b) => Number(b.on) - Number(a.on) || a.start - b.start);
   return rows;
+}
+
+/**
+ * The countdown day still to come or on (December 31 on Ur's clock): a calendarEvents row with
+ * `midnights` ({ index, at, big }, the six Groddle midnights, the big one the party).
+ */
+export function newUrEve(now = Date.now()) {
+  const t = whole(now);
+  const y = urDate(t).y;
+  for (const yy of [y - 1, y]) {
+    const start = urMidnight(yy, 12, 31);
+    const end = urMidnight(yy + 1, 1, 1);
+    if (end <= t) continue;
+    const midnights = newUrMidnights(yy).map(({ index, at, big }) => ({ index, at, big }));
+    return { id: 'new_ur_eve', label: NEW_UR_TEXT.calendarLabel, start, end, on: start <= t, glitch: false, blurb: SEASONS.new_ur.blurb, ur: false, midnights };
+  }
+  return null;
+}
+
+/** "Groddle midnights: 1:00 AM, 5:00 AM, 9:00 AM, 1:00 PM (the party), 5:00 PM, 9:00 PM" in your own zone. */
+export function midnightsLine(midnights, opts = {}) {
+  const f = new Intl.DateTimeFormat(opts.locale || undefined, { hour: 'numeric', minute: '2-digit', ...(opts.timeZone ? { timeZone: opts.timeZone } : {}) });
+  return `${NEW_UR_TEXT.calendarMidnights}: ${midnights.map((m) => `${f.format(new Date(m.at))}${m.big ? ` (${NEW_UR_TEXT.calendarBig})` : ''}`).join(', ')}`;
 }
 
 /** The events (calendarEvents rows) that touch an Ur day, for the grid. */

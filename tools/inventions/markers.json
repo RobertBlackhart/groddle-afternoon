@@ -444,6 +444,11 @@
     "ours: // Ours: a gift from before that the site could not take": "ours-neighbours",
     "reimagined: * give_bag_butler (reimagined: GSJS never counts": "ours-neighbours"
   },
+  "public/js/features/new-ur-feature.js": {
+    "invented: * Ours, beyond Glitch's two seconds of sparkles: inventions register": "new-ur-countdown",
+    "ours: * Ours, beyond Glitch's two seconds of sparkles:": "new-ur-countdown",
+    "ours: // A warm glow on the stone dragon's head (ours: a light on the existing deco, nothing": "new-ur-countdown"
+  },
   "public/js/features/newxp-feature.js": {
     "no-source: hubName: 'Tutorial', // remake label (G310: no source names the newxp levels'": "ours-newxp",
     "remake-own: '').trim().slice(0, TUTORIAL_NAME_MAX)); // the remake's own word filter": "word-filter"
@@ -519,6 +524,7 @@
     "ours: the dark letters readable where a trunk passes (ours: the snaps": "ours-rebuilt-rooms"
   },
   "public/js/features/seasons-feature.js": {
+    "ours: // G1195 (ours):": "new-ur-countdown",
     "ours: // G982 (ours):": "pot-luck-costumes",
     "remake-own: || '').trim().slice(0, 300)); // the remake's own word filter": "word-filter"
   },
@@ -817,6 +823,11 @@
     "remake-own: // The chores are remake design; their mood goes through the same door": "ours-neighbours",
     "remake-own: One small job per home; rewards are remake design (no source equivalent).": "ours-neighbours"
   },
+  "public/js/new-ur.js": {
+    "invented: * Ours (inventions register new-ur-countdown): the moment is a": "new-ur-countdown",
+    "ours: * Ours (inventions register new-ur-countdown): the": "new-ur-countdown",
+    "ours: on a New Ur midnight, in place of NewDayView's (ours).": "new-ur-countdown"
+  },
   "public/js/newxp.js": {
     "remake-own: * remake's own (G310,": "ours-newxp"
   },
@@ -1070,7 +1081,9 @@
   "public/js/seasons.js": {
     "glitch-had-none: // G982 (Austin 2026-11-17): ours, an event Glitch never ran (inventions register": "designed-seasons",
     "invented: 2026-11-17): ours, an event Glitch never ran (inventions register": "designed-seasons",
+    "invented: ours, a New Year countdown on Groddle midnights (inventions": "new-ur-countdown",
     "no-source: * 'designed' = no source event, written for the remake in Glitch's": "designed-seasons",
+    "ours: // G1195 (Austin 2026-11-23): ours, a New Year countdown on Groddle midnights": "new-ur-countdown",
     "ours: // G982 (Austin 2026-11-17): ours, an event Glitch never ran (inventions register": "designed-seasons",
     "ours: // G982: ours, the chicken costumes": "designed-seasons",
     "remake-own: || '').trim().slice(0, 150)); // the remake's own word filter": "word-filter",

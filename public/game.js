@@ -2,9 +2,9 @@
  * Groddle Afternoon — original street geometry + layered decos
  * PixiJS 8 · locations-xml streets · CoU PNG decos · quests/items
  */
-import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=77614819';
+import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=2a4e3b9f';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=21b315a1';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=e37cd4b0';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE, playerClickBox } from './js/reach.js?v=456da8a8';
@@ -709,7 +709,7 @@ import {
   hasHoe,
   plantSeedChoices,
   PLANT_PICK_TITLE,
-} from './js/garden.js?v=9caea9c6';
+} from './js/garden.js?v=765c6ddf';
 import { GARDEN_SCALE, PLOT_H as GARDEN_PLOT_H, PLOT_W as GARDEN_PLOT_W, gardenFrame, gardenLayout, gardenStyle, plotPieces } from './js/garden-view.js?v=04fe8467';
 import { nearestPlotIndex } from './js/garden-view.js?v=04fe8467';
 import {
@@ -936,7 +936,7 @@ import {
   vendorSellUnitPrice,
   vendorBuyUnitPrice,
   VENDOR_BAG_HOLDS,
-} from './js/vendor.js?v=3cb21978';
+} from './js/vendor.js?v=b969190e';
 import {
   createAnimalState,
   resetAnimalDay,
@@ -1146,7 +1146,7 @@ import { HOME_SCREEN_TIP_CACHE, mountHomeScreenTip } from './js/home-screen-tip.
 import { EAT_PICK_TEXT, bestFoodIndex, eatChoices, eatTip } from './js/eat-pick.js?v=8fb763d0';
 import { heldDirection, installHeldKeyGuard, isMacPlatform } from './js/held-keys.js?v=a28eb293';
 import { isOneClickDoor, oneClickChoice, signpostArmRows, worldContextAction } from './js/world-context-menu.js?v=e4c99c05';
-import { blockedPlayerVerbs, listPlayerTarget, opensPlayerMenu, playerMenuRows } from './js/ui/player-menu.js?v=102c9307';
+import { blockedPlayerVerbs, listPlayerTarget, opensPlayerMenu, playerMenuRows } from './js/ui/player-menu.js?v=21e8753f';
 import { forgetTexture, frameTexture, isFailed, isLoaded, onFailed, onLoaded, textureFromUrl, whenLoaded } from './js/textures.js?v=729b29ea';
 import { FALLBACK_MAX as WORLD_ART_FALLBACK_MAX, worldArtFor } from './js/world-art.js?v=2b3cf8d5';
 import { sceneAnim, syncAnim } from './js/deco-anim.js?v=5e2bfba2';
@@ -14785,6 +14785,8 @@ const engine = {
   metabolicGate: (stat, direction) => features.metabolicGate(stat, direction, engine),
   /** A new game day waits for maybeNewDay (Hell holds a croak until its refill lands). */
   newDayPending: (now) => newDayPending(now),
+  /** G1195 QA: run the new day now with its screen (features/new-ur-feature.js, under ?newurmidnight= only). */
+  runNewDay: (opts = {}) => maybeNewDay({ force: true, ...opts }),
   openMap: (hubId, opts) => openMap(hubId, opts),
   closeMap: () => closeMap(),
   /** Ticket 81: the content panels close (Classic's Projects window opens alone, as Quests does). */
@@ -16448,11 +16450,12 @@ let newDayMessageIndex = 0;
  * bubble over you (NewDayView.as onDoneTweenComplete 216-225, showChatBubble
  * 236-265; js/screen-queue.js newDayBubble).
  */
-function showNewDayBubble(refill = {}) {
+function showNewDayBubble(refill = {}, line = '') {
   if (!playerSpeechTarget) return null;
   newDayMessages ||= shuffleNewDayMessages();
-  const message = newDayMessages[newDayMessageIndex] || newDayMessages[0];
-  newDayMessageIndex = newDayMessageIndex < newDayMessages.length - 1 ? newDayMessageIndex + 1 : 0;
+  // G1195: a Happy New Ur midnight says its own line (features/new-ur-feature.js newDayDress); the turn waits.
+  const message = line || newDayMessages[newDayMessageIndex] || newDayMessages[0];
+  if (!line) newDayMessageIndex = newDayMessageIndex < newDayMessages.length - 1 ? newDayMessageIndex + 1 : 0;
   const bubble = newDayBubble(message, { energy: refill.energyGained, mood: refill.moodGained });
   if (app?.canvas) app.canvas.dataset.newDayBubble = bubble.text;
   return showSpeechBubble(playerSpeechTarget, {
@@ -16753,6 +16756,8 @@ async function maybeNewDay(opts = {}) {
   const introDone = features.query('tutorialRunning', engine) !== true;
   const showScreen = opts.force || (introDone && (Number(pc.playedSeconds ?? NEW_DAY_SCREEN_PLAYED_S) || 0) >= NEW_DAY_SCREEN_PLAYED_S);
   const el = showScreen ? document.getElementById('new-day-screen') : null;
+  // G1195: a day that starts at a Happy New Ur midnight is dressed as "Happy New Ur!" (features/new-ur-feature.js).
+  const dress = features.query('newDayDress', engine) || null;
   const refill = introDone
     ? applyNewDayRefill(pc, { energyMax: energyCap(), moodMax: moodMax(pc) })
     : { energyGained: 0, moodGained: 0, energyBefore: pc.energy, moodBefore: pc.mood };
@@ -16774,7 +16779,7 @@ async function maybeNewDay(opts = {}) {
   resetStreetCollectiblesForNewDay();
   features.newDay(Date.now(), engine);
   updateHud();
-  const newDayLine =
+  const newDayLine = (dress?.activity ? `${dress.activity} ` : '') +
     `A new day: energy refilled (+${Math.round(refill.energyGained)}) · mood restored` +
     (trantN ? ` · ${trantN} tree${trantN === 1 ? '' : 's'} ready for care` : '') +
     (animalN ? ` · ${animalN} animal${animalN === 1 ? '' : 's'} ready for care` : '') +
@@ -16783,7 +16788,13 @@ async function maybeNewDay(opts = {}) {
   if (el) {
     const dateEl = el.querySelector('[data-nd-date]');
     const statsEl = el.querySelector('[data-nd-stats]');
-    if (dateEl) dateEl.textContent = formatGameDayLabel();
+    if (dateEl) dateEl.textContent = dress?.date || formatGameDayLabel();
+    const titleEl = el.querySelector('.new-day-title');
+    const refillEl = el.querySelector('.new-day-refill');
+    if (titleEl) titleEl.textContent = dress?.title || 'A NEW DAY';
+    if (refillEl) refillEl.textContent = dress?.refill || 'Complete energy refill';
+    el.classList.toggle('is-new-ur', Boolean(dress));
+    el.setAttribute('aria-label', dress ? dress.title : 'A new day');
     if (statsEl) {
       statsEl.textContent =
         refill.energyGained > 0 || refill.moodGained > 0
@@ -16798,10 +16809,10 @@ async function maybeNewDay(opts = {}) {
       playSfx('newDay', { volume: 0.75 });
       await showNewDayScreen(el);
     }, { requiresFocus: false });
-    showNewDayBubble(refill);
+    showNewDayBubble(refill, dress?.line || '');
   } else if (showScreen) {
     pushActivity(newDayLine);
-    toast('A new day: energy refilled!', 4000);
+    toast(dress ? 'Happy New Ur! Energy refilled!' : 'A new day: energy refilled!', 4000);
     playSfx('newDay', { volume: 0.75 });
   }
   newDayBusy = false;
@@ -36205,7 +36216,7 @@ async function main() {
   }
   // Garden talkback QA (js/garden-talk-qa.js): ?gardentalkdemo=herb|crop.
   if (new URLSearchParams(location.search).has('gardentalkdemo')) {
-    import('./js/garden-talk-qa.js?v=52a834d7').then((m) => m.runGardenTalkDemo({ engine, executeVerb, params: new URLSearchParams(location.search) }));
+    import('./js/garden-talk-qa.js?v=8805433a').then((m) => m.runGardenTalkDemo({ engine, executeVerb, params: new URLSearchParams(location.search) }));
   }
   // MEMQA (ticket 21, Safari's memory reload in Naraka): ?memqa=1 lets a probe walk streets through the
   // real street trip (tools/qa/street-memory.mjs). Solo pages only: online pages drop their params.

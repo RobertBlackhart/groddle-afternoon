@@ -22,6 +22,8 @@
  * Pi Day (source): Pi's Estimate verb.
  * Pot Luck Day (designed, G982): the Toy Vendor's chicken costumes (SEASONAL_STOCK); the
  * costumes, the dressing and the Fancy Feather live in features/pot-luck-feature.js.
+ * Happy New Ur (designed, G1195): the countdown, the show and the party street live in
+ * features/new-ur-feature.js; this module only lists it on the season card.
  *
  * QA: ?autostart=1&fresh=1&resetgame=1&questoffer=off&season=zilloween
  *     (glitchmas | pi_day | none), &seasondate=2026-12-24 previews a
@@ -35,8 +37,8 @@
 
 import { addItem, countItem, ensureItem, removeItem, registerItemUse, ITEM_CATALOG } from '../inventory.js?v=6414dbdc';
 import { dametimeParts, getGameDayKey } from '../game-day.js?v=a532775d';
-import { SEASONAL_SEEDS, seedInSeason, seedSeasonLine, seedSeasons, setSeasonalSeedCheck as setGardenSeasonGate } from '../garden.js?v=9caea9c6';
-import { setSeasonalSeedCheck as setMasterGardenSeasonGate } from '../garden.js?v=9caea9c6';
+import { SEASONAL_SEEDS, seedInSeason, seedSeasonLine, seedSeasons, setSeasonalSeedCheck as setGardenSeasonGate } from '../garden.js?v=765c6ddf';
+import { setSeasonalSeedCheck as setMasterGardenSeasonGate } from '../garden.js?v=765c6ddf';
 import { setSeasonalRecipeCheck } from '../making.js?v=5a718e7f';
 import { getToolCondition, copyForVerb, copyTag, migrateClassTag, setCopyTag, takeToolCopy } from '../tools.js?v=4156bba8';
 import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=6ffaec43';
@@ -136,7 +138,7 @@ import {
   teachPhrase,
   yetiMailDue,
   yetiQuote,
-} from '../seasons.js?v=64c72251';
+} from '../seasons.js?v=a46a90d3';
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=729b29ea';
 import { playOverlay } from '../overlays.js?v=1f5027a3';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
@@ -385,6 +387,7 @@ function renderChip(engine) {
 .season-chip { display: inline-flex; align-items: center; gap: 0.3rem; margin-left: 0.45rem; padding: 0.05rem var(--sp-4) 0.05rem 0.2rem; border: 1px solid var(--c-gold-84b); border-radius: var(--radius-pill); background: var(--c-cream-99b); color: var(--c-brown-46); font: inherit; font-size: var(--fs-sm); font-weight: 700; cursor: pointer; vertical-align: middle; }
 .season-chip[data-season="glitchmas"] { background: var(--c-slate-98); border-color: var(--c-sky-84); color: var(--c-blue-44); }
 .season-chip[data-season="pi_day"] { background: var(--surface-moss); border-color: var(--c-green-83b); color: var(--c-green-48); }
+.season-chip[data-season="new_ur"] { background: var(--c-slate-98); border-color: var(--c-gold-84b); color: var(--c-blue-44); }
 /* The nameplate lets clicks through to the street (pointer-events: none); the chip is a button, so it takes them back. */
 .season-chip { pointer-events: auto; cursor: pointer; }
 .season-chip img { width: 18px; height: 18px; object-fit: contain; }
@@ -442,6 +445,15 @@ function seasonTodo(id) {
       'Squeeze a dressed Chicken: now and then it lets go of a Fancy Feather (five a day at most).',
       'When Pot Luck Day ends the costumes fall off and Fancy Feathers rot into loam.',
       ...seedTodo('pot_luck_day'),
+    ];
+  }
+  if (id === 'new_ur') {
+    // G1195 (ours): features/new-ur-feature.js.
+    return [
+      'On December 31 every Groddle midnight (every four real hours) gets a countdown, sparkles and fireworks, on every street.',
+      'The one nearest 1 PM Pacific is the big one: the party is at Unnu Slight, by the stone dragon.',
+      'In the hour before it, the countdown has a button for one free trip to the party.',
+      'The Calendar shows all six midnights in your own time.',
     ];
   }
   return [];

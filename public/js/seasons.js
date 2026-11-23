@@ -28,7 +28,8 @@
  * about two real days in every 51) and the exact Pi Day test, and accepts a
  * `?season=<id>` QA override (`none` forces every event off; an id that is
  * not a dated event, such as egg_hunt, overrides nothing) and
- * `?seasondate=YYYY-MM-DD` to preview a calendar date.
+ * `?seasondate=YYYY-MM-DD` to preview a calendar date (Happy New Ur's midnights also take
+ * `?newurmidnight=1..6&newurlead=<s>`, js/new-ur.js qaClockOffset).
  */
 
 import { SEASON_DATA } from './seasons-data.js?v=b5174bc9';
@@ -83,6 +84,18 @@ export const SEASONS = Object.freeze({
     window: 'The Sunday before US Thanksgiving to the Sunday after (November 22 to 29 in 2026)',
     blurb: 'Chickens dress for the feast. The Toy Vendor sells Turkey Tailfans and Rooster Plumes: drop one on a Chicken to dress it up, and a dressed Chicken now and then lets go of a Fancy Feather when squeezed.',
   }),
+  // G1195 (Austin 2026-11-23): ours, a New Year countdown on Groddle midnights (inventions register
+  // designed-seasons, new-ur-countdown; rules in js/new-ur.js). Glitch's own New Year was two seconds
+  // of sparkles at midnight Pacific, inside Glitchmas.
+  new_ur: Object.freeze({
+    id: 'new_ur',
+    label: 'Happy New Ur',
+    giant: 'all',
+    icon: 'sparkly',
+    source: 'designed',
+    window: 'December 26 to January 3, with the countdown on December 31 at every Groddle midnight',
+    blurb: 'The year turns at a Groddle midnight. On December 31 every Groddle midnight gets a countdown, sparkles and fireworks for everyone online, and the one nearest 1 PM Pacific is the big one, with a party at Unnu Slight.',
+  }),
 });
 
 export const SEASON_IDS = Object.freeze(Object.keys(SEASONS));
@@ -136,6 +149,8 @@ function inWindow({ m, d }, from, to) {
 export const REAL_WINDOWS = Object.freeze({
   zilloween: Object.freeze({ from: [10, 17], to: [11, 1] }),
   glitchmas: Object.freeze({ from: [12, 12], to: [1, 3] }),
+  // G1195: the season runs with the stock (Dec 26 to Jan 3); the show is on December 31 (js/new-ur.js EVE).
+  new_ur: Object.freeze({ from: [12, 26], to: [1, 3] }),
 });
 
 /** Source isPiDay(): March 14 in UTC, or the 15th before noon UTC, or the 13th from noon UTC. */
@@ -176,8 +191,13 @@ export function calendarSeasons(now = Date.now()) {
   const out = [];
   if (isPiDay(now)) out.push('pi_day');
   if (isPotLuckDay(now)) out.push('pot_luck_day');
+  // G1195: Happy New Ur leads on December 31, its countdown day; on its other days Glitchmas leads.
+  const newUr = inWindow(t, REAL_WINDOWS.new_ur.from, REAL_WINDOWS.new_ur.to);
+  const eve = t.m === 12 && t.d === 31;
+  if (newUr && eve) out.push('new_ur');
   if (inWindow(t, REAL_WINDOWS.zilloween.from, REAL_WINDOWS.zilloween.to)) out.push('zilloween');
   if (inWindow(t, REAL_WINDOWS.glitchmas.from, REAL_WINDOWS.glitchmas.to)) out.push('glitchmas');
+  if (newUr && !eve) out.push('new_ur');
   return out;
 }
 
@@ -210,7 +230,7 @@ export function activeSeasons(now = Date.now(), opts = {}) {
 export function seasonYearKey(id, now = Date.now()) {
   const t = urDate(now);
   // Glitchmas spans New Year: January belongs to the previous December's season.
-  if (id === 'glitchmas' && t.m === 1) return `${id}:${t.y - 1}`;
+  if ((id === 'glitchmas' || id === 'new_ur') && t.m === 1) return `${id}:${t.y - 1}`;
   return `${id}:${t.y}`;
 }
 
@@ -509,6 +529,8 @@ export const SEASONAL_STOCK = Object.freeze({
   }),
   // G982: ours, the chicken costumes (js/pot-luck.js).
   pot_luck_day: POT_LUCK_STOCK,
+  // G1195: Happy New Ur's stock, Dec 26 to Jan 3. Empty until the Confetti Popper and Bubbly lanes add their rows.
+  new_ur: Object.freeze({ toys: Object.freeze([]) }),
 });
 export const SEASONAL_ITEMS = Object.freeze(
   Object.fromEntries(Object.entries(SEASONAL_STOCK).flatMap(([season, stores]) =>
@@ -609,7 +631,7 @@ export function daysLeft(id, now = Date.now()) {
   const today = dayIndex(t.y, t.m, t.d);
   let end = null;
   if (id === 'zilloween') end = dayIndex(t.y, 11, 1);
-  else if (id === 'glitchmas') end = t.m === 1 ? dayIndex(t.y, 1, 3) : dayIndex(t.y + 1, 1, 3);
+  else if (id === 'glitchmas' || id === 'new_ur') end = t.m === 1 ? dayIndex(t.y, 1, 3) : dayIndex(t.y + 1, 1, 3);
   else if (id === 'pi_day') end = today;
   else if (id === 'pot_luck_day') end = dayIndex(t.y, 11, potLuckWindow(t.y).to[1]);
   if (end == null) return null;

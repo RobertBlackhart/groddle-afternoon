@@ -23,7 +23,7 @@
  * window.groddleGuano reads and sets its plots (plot, set, bed).
  */
 
-import { FERTILIZE_TEXT, GARDEN_FERTILIZER, SEED_CATALOG, fertilizeCheck, seedDropCheck } from '../garden.js?v=9caea9c6';
+import { FERTILIZE_TEXT, GARDEN_FERTILIZER, SEED_CATALOG, fertilizeCheck, seedDropCheck } from '../garden.js?v=765c6ddf';
 import { nearestPlotIndex } from '../garden-view.js?v=04fe8467';
 import { registerDropTarget } from '../drop-targets.js?v=59e6edb4';
 
