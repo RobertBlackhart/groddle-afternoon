@@ -2814,9 +2814,19 @@
   "deployed": "2026-11-23"
  },
  "git": {
-  "commits": 3176,
+  "commits": 3180,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "Rock walls, hills and wallpapers drawn far over their size are sharp again"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "Jethimadh's beehive hills, ferns and bog willows draw Tiny Speck's own art, not small blurry exports"
+   },
    {
     "date": "2026-11-23",
     "kind": "fix",
@@ -2926,19 +2936,9 @@
     "date": "2026-11-22",
     "kind": "improve",
     "text": "The Eastern Grotto has its far lavender cliff wall, distant mountains and chasm mist"
-   },
-   {
-    "date": "2026-11-22",
-    "kind": "fix",
-    "text": "An Autumn Day's black ground runs to the bottom of the view, no light-blue band under it"
-   },
-   {
-    "date": "2026-11-22",
-    "kind": "fix",
-    "text": "The Hall of Rejected Concepts has its deep dark floor and light shafts on the exhibits"
    }
   ]
  },
- "tests": 1293,
+ "tests": 1294,
  "generatedAt": "2026-11-23"
 }
