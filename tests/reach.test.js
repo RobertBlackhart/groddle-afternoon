@@ -185,7 +185,7 @@ describe('every server-laid tree, rock and piggy stays in reach from beside it',
 
 describe('game.js wiring', () => {
   it('Enter, the chooser and the prompt drop things behind a floor', () => {
-    assert.match(game, /import \{ avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE \} from '\.\/js\/reach\.js\?v=[0-9a-f]{8}'/);
+    assert.match(game, /import \{ avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE(, playerClickBox)? \} from '\.\/js\/reach\.js\?v=[0-9a-f]{8}'/);
     assert.match(game, /function behindFloorFromPlayer\(t, at = player\) \{/);
     assert.match(game, /const hitBox = avatarHitBox\(at\.x, at\.y, bodyScale\);\s*return behindFloor\([\s\S]{0,200}feetY: at\.y, hitBox \}\);/);
     assert.match(game, /function interactReach\(t\) \{[\s\S]{0,420}if \(d < 160 && behindFloorFromPlayer\(t\)\) return Infinity;/);

@@ -7,7 +7,7 @@ import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feat
 import { FEATURES, questFlagsFeature } from './js/features/index.js?v=3ff72aab';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
-import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
+import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE, playerClickBox } from './js/reach.js?v=1fd5de5a';
 import { createVogOverlay } from './js/vog-overlay.js?v=3f8e2fef';
 import { createPromptStack } from './js/prompt-stack.js?v=19885e1b';
 import { createWindowStack } from './js/window-stack.js?v=a7104f02';
@@ -8110,7 +8110,8 @@ function spriteWorldHitBox(spr, pad = 6) {
   const ax = spr.anchor?.x ?? 0.5;
   const ay = spr.anchor?.y ?? 1;
   const left = spr.x - w * ax - pad;
-  const top = spr.y - h * ay - pad;
+  // G1164: a box whose bottom sits under the feet (a player's: hit_box_offset_y, AbstractAvatarView.as 142).
+  const top = spr.y - h * ay - pad + (Number(spr._worldHitBelow) || 0);
   return { left, top, right: left + w + pad * 2, bottom: top + h + pad * 2, w, h };
 }
 
@@ -8124,7 +8125,8 @@ function pickInteractableAt(worldX, worldY) {
   const hits = [];
   for (const t of interactables) {
     if (!t.sprite || t.sprite.destroyed) continue;
-    const box = spriteWorldHitBox(t.sprite, t.airborne ? 14 : 8);
+    // G1164: a player's box is Glitch's own hit box (js/reach.js AVATAR_HIT_BOX), clicked as drawn, with no pad.
+    const box = spriteWorldHitBox(t.sprite, t.sprite._worldHitExact ? 0 : t.airborne ? 14 : 8);
     if (pointInHitBox(box, worldX, worldY)) {
       // Prefer garden_plot over whole bed / other large targets
       const area =
@@ -11714,6 +11716,8 @@ function makeLocalCompanion(profile) {
   root.addChild(body, plate, name);
   root.zIndex = 49;
   root.eventMode = 'none';
+  // G1164: clicked by Glitch's avatar hit box (66 x 123, 10 px under the feet), not its name plate's bounds.
+  playerClickBox(root);
   root._companionBody = body;
   root._namePlate = plate;
   root._profile = profile;

@@ -50,11 +50,14 @@ import {
 import { appendLinkedText } from '../chat-links.js?v=b717fac7';
 import { lineKey } from '../chat-reactions.js?v=38460172';
 import { UNNAMED_PLAYER } from '../player-names.js?v=f9b78094';
+import { playerClickBox } from '../reach.js?v=1fd5de5a';
 
 export const PARTY_FEATURE_ID = 'party';
-/** The hit box over another player's Glitch and name plate (realtime-feature PLATE_Y -150). */
-const HIT_W = 64;
-const HIT_H = 172;
+/**
+ * How tall another player stands for speech and menus: the Glitch and its name plate (realtime-feature
+ * PLATE_Y -150). G1164: the click box is Glitch's avatar hit box instead (js/reach.js playerClickBox).
+ */
+const ART_H = 172;
 
 const STYLE = `
 .party-pill[data-in-party="true"] { background: var(--c-mauve-93); }
@@ -386,11 +389,10 @@ function createSession(engine, client) {
       }
       if (!t) {
         const hit = new PIXI.Container();
-        hit._worldHitW = HIT_W;
-        hit._worldHitH = HIT_H;
+        playerClickBox(hit);
         hit.zIndex = 48;
         layer.addChild(hit);
-        const target = { featureId: PARTY_FEATURE_ID, classId: 'pc_remote', label: p.name, playerId: p.id, sprite: hit, artHeight: HIT_H };
+        const target = { featureId: PARTY_FEATURE_ID, classId: 'pc_remote', label: p.name, playerId: p.id, sprite: hit, artHeight: ART_H };
         engine.register?.(target);
         t = { target, box: hit };
         targets.set(p.id, t);

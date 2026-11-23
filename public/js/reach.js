@@ -52,6 +52,23 @@ export function avatarHitBox(x, feetY, scale = 1) {
   return { left: x - half, right: x + half, top: bottom - Math.round(AVATAR_HIT_BOX.h * s), bottom };
 }
 
+/**
+ * G1164: another player's click box is the same hit box (AbstractAvatarView.as drawHitBox: the
+ * clickable rect it draws), set on the sprite or container game.js spriteWorldHitBox reads: 66 x 123,
+ * its bottom 10 px under the feet, clicked as drawn (no pad). A crowd's old 64 x 172 boxes (to the
+ * top of the name plate, padded 8 px) covered a dirt pile's whole top. Where a player and a thing
+ * overlap the player still wins, as in Glitch (avatars drew over items; the Enter chooser lists
+ * every touched thing, players last).
+ */
+export function playerClickBox(target, scale = 1) {
+  const s = scale > 0 ? scale : 1;
+  target._worldHitW = Math.round(AVATAR_HIT_BOX.w * s);
+  target._worldHitH = Math.round(AVATAR_HIT_BOX.h * s);
+  target._worldHitBelow = Math.round(AVATAR_HIT_BOX.below * s);
+  target._worldHitExact = true;
+  return target;
+}
+
 /** Two boxes overlap (Flash hitTestObject on bounds, MiddleGroundRenderer.as 1161). */
 export function boxesTouch(a, b) {
   return Boolean(a && b) && a.left < b.right && b.left < a.right && a.top < b.bottom && b.top < a.bottom;
