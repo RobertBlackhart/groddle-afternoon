@@ -17419,6 +17419,7 @@ function physics(dt) {
   // right after a donation) sends it early, its line still in the Activity log (tickNotices).
   tickNotices();
   followMapYou();
+  followMapRoads();
 }
 
 /**
@@ -27670,6 +27671,8 @@ async function openMap(hubId, { find = '', focus = '', view: pickedView = '' } =
     st.unvisited = ![st.loadedTsid, st.tsid].some((t) => t && engine.streetVisitsBefore(t) > 0);
     if (st.unvisited) unvisited += 1;
   }
+  // G1151: the roads this drawing shows built, so a project built while the Map is open redraws it (followMapRoads).
+  mapDrawnRoads = mapRoadsKey();
   if (app?.canvas) {
     app.canvas.dataset.mapHub = targetHub;
     app.canvas.dataset.mapYou = view.streets?.find((st) => st.current)?.tsid || '';
@@ -28132,6 +28135,28 @@ function closeMap() {
 function isMapOpen() {
   const panel = document.getElementById('map-panel');
   return panel && !panel.hidden;
+}
+
+/**
+ * G1151 (chat 11-23): the region map read which streets are under construction once, when it drew.
+ * A project the world built while it stood open (project_built, or the first project_world after a
+ * reload) left its street striped until the Map was opened again. The closed roads as the street-jobs
+ * feature has them now (the server's built rows, live), as one key.
+ */
+let mapDrawnRoads = '';
+let mapRoadsCheckedAt = 0;
+const mapRoadsKey = () => (features.query('closedRoads', engine) || []).slice().sort().join(',');
+/** Once a second while the region map is open: the roads changed, so it draws again (the view on show kept). */
+function followMapRoads(now = performance.now()) {
+  if (mapPanelView !== 'hub' || !isMapOpen() || now - mapRoadsCheckedAt < 1000) return;
+  mapRoadsCheckedAt = now;
+  // An open street menu stays: the check comes again once it closes.
+  if (mapCtxMenu?.isOpen()) return;
+  const key = mapRoadsKey();
+  if (key === mapDrawnRoads) return;
+  // Once per change: a draw that does not come (a refusal) is not asked for again every second.
+  mapDrawnRoads = key;
+  openMap();
 }
 
 /** G935: the region map's street you stand on, as drawn (null when the star stands on another street's behalf). */

@@ -36,7 +36,7 @@ describe('the You star on the region map (G935, #467)', () => {
     assert.match(renderHubMapSvg(view), new RegExp(`class="map-you" points="${hubYouPoints(200, 100)}"`));
     assert.match(renderHubMapSvg({ ...view, youAt: { x: 120, y: 100 } }), new RegExp(`class="map-you" points="${hubYouPoints(120, 100)}"`));
     const game = read('public/game.js');
-    assert.match(game, /tickNotices\(\);\n  followMapYou\(\);\n\}/, 'once a frame');
+    assert.match(game, /tickNotices\(\);\n  followMapYou\(\);\n/, 'once a frame');
     assert.match(game, /youOnStreet\(seg, \{ xShare: player\.x \/ w, yShare: h > 0 \? player\.y \/ h : 1, tall: h > w \}\)/);
     assert.match(game, /mapYouSeg = youSeg && findCurrentStreet\(currentStreetTsid, \[youSeg\]\) \? youSeg : null;/, 'only on the street you stand on');
   });
