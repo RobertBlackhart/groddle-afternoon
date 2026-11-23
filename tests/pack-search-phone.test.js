@@ -12,7 +12,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createPackRow } from '../public/js/ui/pack-row.js?v=62e891eb';
+import { createPackRow } from '../public/js/ui/pack-row.js?v=8c1f055d';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const css = readFileSync(join(root, 'public/style.css'), 'utf8');

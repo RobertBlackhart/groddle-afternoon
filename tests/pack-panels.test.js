@@ -7,7 +7,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { packStamp } from '../public/js/inventory.js?v=6414dbdc';
 import { bindToolInventory, createToolConditionState, getToolCondition, repairToolCondition, setToolRemaining, useToolCondition } from '../public/js/tools.js?v=4156bba8';
-import { createPackRow } from '../public/js/ui/pack-row.js?v=62e891eb';
+import { createPackRow } from '../public/js/ui/pack-row.js?v=8c1f055d';
 import { FakeEl, page } from './social-fake-dom.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
