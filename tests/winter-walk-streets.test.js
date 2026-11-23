@@ -43,8 +43,8 @@ import {
   WINTER_WALK_TSID,
   isWinterStreetTsid,
   winterStreetEcology,
-} from '../public/js/winter-walk-streets.js?v=cbe116f2';
-import { rebuiltRoomsFeature } from '../public/js/features/rebuilt-rooms-feature.js?v=0a7a7b7b';
+} from '../public/js/winter-walk-streets.js?v=0374fa29';
+import { rebuiltRoomsFeature } from '../public/js/features/rebuilt-rooms-feature.js?v=7d3e44dd';
 import { reachStreet } from '../public/js/builder/reach-graph.js?v=467ca20f';
 import { GRAVITY, JUMP_SPEED, WALK_MAX } from '../public/js/avatar-step.js?v=39d7b1af';
 
@@ -266,6 +266,33 @@ describe('Winter Walk, round 5 (the Tribute Blog and the 147 Snaps)', () => {
       for (const p of sub.platforms.filter((q) => q.id.startsWith('plat_ww_pillar'))) {
         assert.ok(res.surfaces.filter((x) => x.line === p.id).every((x) => x.reached), p.id);
       }
+    }
+  });
+});
+
+describe('G1161: snow-mottled tan ground to the bottom of the view (Snaps PHV90CU6KG22L76_83293, Flickr 8273330942, 8264519059)', () => {
+  const layer = (id) => walk.layers.find((l) => l.id === id);
+  const toWorld = (d) => ({ sprite: d.sprite, x: d.x + walk.bounds.l, y: d.y + walk.bounds.t, w: d.w, h: d.h });
+  const snow = layer('T_ww_front').decos.filter((d) => /^(whitesnow_|snow_patch_)/.test(d.sprite)).map(toWorld);
+
+  it('lays rows of snow patches in front of the feet, end to end and on past the street bottom', () => {
+    assert.ok(snow.length >= 60, `${snow.length} patches`);
+    const feet = WINTER_WALK_START.y;
+    // In front of the walk line only: no patch reaches up over the feet (the layer draws in front of the avatar).
+    for (const d of snow) assert.ok(d.y - d.h >= feet + 4, `patch at ${d.x},${d.y} over the feet`);
+    const rows = new Set(snow.map((d) => Math.round((d.y - feet) / 30)));
+    assert.ok(rows.size >= 5, 'several depths');
+    assert.ok(Math.max(...snow.map((d) => d.y)) > walk.bounds.b + 150, 'runs on below the street');
+    const xs = snow.map((d) => d.x).sort((a, b) => a - b);
+    assert.ok(xs[0] < walk.bounds.l + 300 && xs.at(-1) > walk.bounds.r - 300);
+    for (const d of snow) assert.ok(manifest.has(d.sprite) || existsSync(join(pub, 'assets/decos/groddle', `${d.sprite}.webp`)));
+  });
+
+  it('tints both ground layers a warm tan (red over green), not grey-brown', () => {
+    for (const id of ['T_ww_ground', 'T_ww_front_ground']) {
+      const c = layer(id).filters.tintColor;
+      const [r, g, b] = [(c >> 16) & 255, (c >> 8) & 255, c & 255];
+      assert.ok(r - g >= 25 && g > b, `${id} tint ${c.toString(16)}`);
     }
   });
 });

@@ -487,12 +487,40 @@ function walkFrontGroundDecos() {
   return out;
 }
 
-/** In front of the walk line: drifts and snowy boulders along the bottom, in street-local coordinates. */
+/**
+ * G1161: the ground's tan, warmer than the dirt art's grey-brown under the layer's filter (Snaps:
+ * rgb ~177,160,140, red over green by ~17).
+ */
+export const WINTER_WALK_GROUND_TINT = 0xf2d2ae;
+
+/**
+ * G1161: the snow mottling the ground in front of the walk line, rows of patches from just under
+ * the feet down past the street bottom (Snaps PHV90CU6KG22L76_83293, Flickr 8273330942, 8264519059:
+ * tan ground with many drifts to the frame bottom). [bottom over the feet, patch scale].
+ */
+export const WINTER_WALK_SNOW_ROWS = Object.freeze([[24, 0.22], [58, 0.3], [100, 0.36], [150, 0.42], [215, 0.5], [290, 0.56]]);
+const SNOW_PATCHES = Object.freeze({ whitesnow_patch_1c_g1: [564, 74], whitesnow_patch_1d_g1: [1014, 148], whitesnow_patch_1e_g1: [948, 134], whitesnow_splotch_1a_g1: [330, 42], whitesnow_splotch_1b_g1: [432, 52], snow_patch_2: [194, 32] });
+
+/** In front of the walk line: snow patches, drifts and snowy boulders along the bottom, in street-local coordinates. */
 function walkFrontDecos() {
   const out = [];
   let z = 0;
   const ox = -WB.l;
   const oy = -WB.t;
+  const names = Object.keys(SNOW_PATCHES);
+  for (const [r, [below, scale]] of WINTER_WALK_SNOW_ROWS.entries()) {
+    for (let x = WB.l - 100 + rnd(r + 301) * 200, i = 0; x < WB.r + 100; i += 1) {
+      const n = r * 97 + i;
+      const sprite = names[Math.floor(rnd(n + 311) * names.length)];
+      const [sw, sh] = SNOW_PATCHES[sprite];
+      const s = scale * (0.6 + rnd(n + 321) * 0.8);
+      const h = Math.round(sh * s);
+      // The layer draws in front of the avatar: a patch's top stays under the feet.
+      const y = Math.max(WF + below + (rnd(n + 331) - 0.5) * 16, WF + 6 + h);
+      out.push(deco(sprite, Math.round(x + ox), Math.round(y + oy), Math.round(sw * s), h, z++, rnd(n + 341) < 0.5 ? { flip: true } : {}));
+      x += sw * s * 0.6 + 120 + rnd(n + 351) * 260;
+    }
+  }
   for (let x = WB.l + 120, i = 0; x < WB.r; x += 420 + rnd(i + 121) * 380, i += 1) {
     const sprite = i % 3 === 2 ? 'snow_drift_01a_al1' : i % 2 ? 'snow_rubble_01d_al1' : 'snow_rubble_01c_al1';
     const [sw, sh] = { snow_drift_01a_al1: [618, 168], snow_rubble_01d_al1: [618, 274], snow_rubble_01c_al1: [386, 218] }[sprite];
@@ -563,9 +591,9 @@ export function winterWalkStreet() {
     { id: 'T_ww_firs', name: 'firs', z: -7, w: 5300, h: H, decos: walkFirDecos(5300, H), filters: { tintColor: 0xc6c8f0, tintAmount: 18, brightness: 6 } },
     { id: 'T_ww_near', name: 'bg_1', z: -6, w: 5700, h: H, decos: [...walkNearDecos(5700, H), ...walkCliffBlockDecos(5700, H, 900)], filters: { saturation: -35, brightness: 22, tintColor: 0xd2d4f2, tintAmount: 20 } },
     { id: 'T_ww_fog', name: 'blizzard', z: -5, w: W, h: H, decos: walkFogBackDecos() },
-    { id: 'T_ww_ground', name: 'ground', z: -4, w: W, h: H, decos: walkGroundDecos(), filters: { brightness: 72, saturation: -45, tintColor: 0xead9b6, tintAmount: 45 } },
+    { id: 'T_ww_ground', name: 'ground', z: -4, w: W, h: H, decos: walkGroundDecos(), filters: { brightness: 72, saturation: -45, tintColor: WINTER_WALK_GROUND_TINT, tintAmount: 45 } },
     { id: 'middleground', name: 'middleground', z: 0, w: W, h: H, decos: walkMiddleDecos() },
-    { id: 'T_ww_front_ground', name: 'ground front', z: 1, w: W, h: H, decos: walkFrontGroundDecos(), filters: { brightness: 72, saturation: -45, tintColor: 0xead9b6, tintAmount: 45 } },
+    { id: 'T_ww_front_ground', name: 'ground front', z: 1, w: W, h: H, decos: walkFrontGroundDecos(), filters: { brightness: 72, saturation: -45, tintColor: WINTER_WALK_GROUND_TINT, tintAmount: 45 } },
     { id: 'T_ww_front', name: 'middleplus', z: 2, w: W, h: H, decos: walkFrontDecos(), filters: { tintColor: 0x9eabd0, tintAmount: 30, brightness: -6 } },
     { id: 'T_ww_fog_front', name: 'blizzard front', z: 3, w: W, h: H, decos: walkFogFrontDecos() },
   ];

@@ -47,7 +47,7 @@ import { TOOL_CONDITION_CATALOG } from '../public/js/tools.js?v=4156bba8';
 import { placementRequests } from './build-realtime-objects.mjs';
 import { streetIsRookable } from '../public/js/rook-attack.js?v=5e62a79f';
 import { rebuiltRoomEcology } from '../public/js/rebuilt-rooms.js?v=8c2eaf24';
-import { winterStreetEcology } from '../public/js/winter-walk-streets.js?v=cbe116f2';
+import { winterStreetEcology } from '../public/js/winter-walk-streets.js?v=0374fa29';
 import { isZoneTsid } from '../public/js/zone-streets.js?v=b40010d5';
 import { upgradeEcologyEntry } from '../public/js/street-jobs.js?v=692d65c4';
 

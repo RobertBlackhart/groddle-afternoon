@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=1b51891c';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=94528fab';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=e6767765';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE } from './js/reach.js?v=1fd5de5a';
@@ -138,7 +138,7 @@ import {
 import { HALL, HALL_LAYOUT, HALL_QUESTIONS } from './js/bureaucratic-hall.js?v=a8eaa334';
 import { STATION_X, stationArrival, stationScreen, surfaceStation } from './js/subway.js?v=0a87a908';
 import { ALLEY, SHADY, drawAlley, inEnteredBox } from './js/quest-rooms/back-alley-set.js?v=f1dc47ea';
-import { WINTER_WALK_BOUNDS, WINTER_WALK_PASSAGE } from './js/winter-walk-streets.js?v=cbe116f2';
+import { WINTER_WALK_BOUNDS, WINTER_WALK_PASSAGE } from './js/winter-walk-streets.js?v=0374fa29';
 import {
   WINTER_HAVEN_STREET_ID,
   WINTER_MOTE_REWARDS,

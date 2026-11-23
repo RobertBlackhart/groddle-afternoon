@@ -45,7 +45,7 @@ import {
   icicleSummary,
   stepIcicles,
 } from '../winter-icicles.js?v=04c0780f';
-import { WINTER_WALK_FLOOR_Y, WINTER_WALK_ICICLES, WINTER_WALK_BOUNDS, WINTER_WALK_CAPTION, WINTER_WALK_TSID, winterStreetEcology } from '../winter-walk-streets.js?v=cbe116f2';
+import { WINTER_WALK_FLOOR_Y, WINTER_WALK_ICICLES, WINTER_WALK_BOUNDS, WINTER_WALK_CAPTION, WINTER_WALK_TSID, winterStreetEcology } from '../winter-walk-streets.js?v=0374fa29';
 import { anchorBottomCentre } from '../sprite-feet.js?v=6ffaec43';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 
