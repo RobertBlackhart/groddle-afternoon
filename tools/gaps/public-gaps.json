@@ -4408,7 +4408,8 @@
         "game:fccb4230217",
         "game:508c3e4c365",
         "site:74c13b7",
-        "site:4a8ab5a"
+        "site:4a8ab5a",
+        "game:def47055e8e"
       ]
     },
     {
@@ -4454,6 +4455,120 @@
       "show": "fixing",
       "commits": [
         "game:b9edca7ac4f"
+      ]
+    },
+    {
+      "id": "G1136",
+      "area": "Homes",
+      "text": "Furniture in a house all stood on the walking line, so a Door or a bed sat in the middle of the room instead of against the back wall as in the original.",
+      "show": "fixing",
+      "commits": [
+        "game:b381e2eb3aa",
+        "game:c6cf971ba62",
+        "game:da3feb1bfa0"
+      ]
+    },
+    {
+      "id": "G1137",
+      "area": "Homes",
+      "text": "A Door could not be given another style once placed, though the original had 32 Door styles.",
+      "show": "fixing",
+      "commits": [
+        "game:0a1e0f4e878"
+      ]
+    },
+    {
+      "id": "G1138",
+      "area": "Homes",
+      "text": "After a house changed its look, the Mailbox could stand on top of a garden.",
+      "show": "fixing",
+      "commits": [
+        "game:fcf38cae120"
+      ]
+    },
+    {
+      "id": "G1139",
+      "area": "Subway",
+      "text": "Getting off the Subway could leave you stuck in a still car if the station did not load.",
+      "show": "fixing",
+      "commits": [
+        "game:ad03084db7f",
+        "game:a938665829a"
+      ]
+    },
+    {
+      "id": "G1140",
+      "area": "Street projects",
+      "text": "A street spirit with two projects always offered the same one first, and the featured project line could point at a project waiting for its next phase.",
+      "show": "fixing",
+      "commits": [
+        "game:621fa338262",
+        "game:4e65cc104a9",
+        "server:df514ea",
+        "server:2b0173e"
+      ]
+    },
+    {
+      "id": "G1141",
+      "area": "Seasons",
+      "text": "The Harvest Table on Pot Luck Day did not say whether a dish counted toward Pot's Empty Table.",
+      "show": "fixing",
+      "commits": [
+        "game:f27819d0995"
+      ]
+    },
+    {
+      "id": "G1142",
+      "area": "Quest rooms",
+      "text": "The Smuggler's cell showed bare sky at the top on an upright phone, and the Smuggler went down the hole behind it.",
+      "show": "fixing",
+      "commits": [
+        "game:dd3c2820846"
+      ]
+    },
+    {
+      "id": "G1143",
+      "area": "Interface",
+      "text": "The check and cross on prompts like \"Are you stuck?\" were hard to read on their green buttons.",
+      "show": "fixing",
+      "commits": [
+        "game:309d9b8045e"
+      ]
+    },
+    {
+      "id": "G1144",
+      "area": "Avatars",
+      "text": "Some clothing colour chips looked alike, hiding colourways such as the black Rook headpiece.",
+      "show": "fixing",
+      "commits": [
+        "game:78986dd563e"
+      ]
+    },
+    {
+      "id": "G1146",
+      "area": "Camera",
+      "text": "On a phone, the bottom of many streets showed a bare strip under the ground art.",
+      "show": "fixing",
+      "commits": [
+        "game:2f53ab3822c"
+      ]
+    },
+    {
+      "id": "G1147",
+      "area": "Interface",
+      "text": "An upright iPhone showed a light band above the game in the status bar.",
+      "show": "fixing",
+      "commits": [
+        "game:a3b0da0af4e"
+      ]
+    },
+    {
+      "id": "G1148",
+      "area": "Quest rooms",
+      "text": "Top of Tree on an upright phone opened with the tree hidden behind the buttons and empty space under the ground.",
+      "show": "fixing",
+      "commits": [
+        "game:3fdaa828c79"
       ]
     }
   ]

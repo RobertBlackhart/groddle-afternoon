@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.57.0",
+  "release": "v0.58.0",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -42,7 +42,7 @@
     "fixing": 3,
     "known": 13,
     "unreleased": 0,
-    "fixed": 439,
+    "fixed": 451,
     "lost": 5,
     "purpose": 16,
     "idea": 10
@@ -159,6 +159,18 @@
           "text": "Winter Walk motes paid about a hundred times what Glitch's did.",
           "state": "fixed",
           "version": "v0.53.0"
+        },
+        {
+          "id": "G1142",
+          "text": "The Smuggler's cell showed bare sky at the top on an upright phone, and the Smuggler went down the hole behind it.",
+          "state": "fixed",
+          "version": "v0.58.0"
+        },
+        {
+          "id": "G1148",
+          "text": "Top of Tree on an upright phone opened with the tree hidden behind the buttons and empty space under the ground.",
+          "state": "fixed",
+          "version": "v0.58.0"
         }
       ]
     },
@@ -1036,7 +1048,25 @@
           "id": "G796",
           "text": "You could not choose your house's look as in the original: every home was the same stand-in building.",
           "state": "fixed",
-          "version": "v0.57.0"
+          "version": "v0.58.0"
+        },
+        {
+          "id": "G1136",
+          "text": "Furniture in a house all stood on the walking line, so a Door or a bed sat in the middle of the room instead of against the back wall as in the original.",
+          "state": "fixed",
+          "version": "v0.58.0"
+        },
+        {
+          "id": "G1137",
+          "text": "A Door could not be given another style once placed, though the original had 32 Door styles.",
+          "state": "fixed",
+          "version": "v0.58.0"
+        },
+        {
+          "id": "G1138",
+          "text": "After a house changed its look, the Mailbox could stand on top of a garden.",
+          "state": "fixed",
+          "version": "v0.58.0"
         },
         {
           "id": "G48",
@@ -1194,6 +1224,12 @@
           "text": "The exclamation mark in a street project's bubble looked blurry.",
           "state": "fixed",
           "version": "v0.57.0"
+        },
+        {
+          "id": "G1140",
+          "text": "A street spirit with two projects always offered the same one first, and the featured project line could point at a project waiting for its next phase.",
+          "state": "fixed",
+          "version": "v0.58.0"
         }
       ]
     },
@@ -2783,6 +2819,12 @@
           "text": "In Camera Mode you could click a far signpost and travel without walking there.",
           "state": "fixed",
           "version": "v0.48.1"
+        },
+        {
+          "id": "G1146",
+          "text": "On a phone, the bottom of many streets showed a bare strip under the ground art.",
+          "state": "fixed",
+          "version": "v0.58.0"
         }
       ]
     },
@@ -3031,6 +3073,12 @@
           "report": 518,
           "state": "fixed",
           "version": "v0.50.1"
+        },
+        {
+          "id": "G1139",
+          "text": "Getting off the Subway could leave you stuck in a still car if the station did not load.",
+          "state": "fixed",
+          "version": "v0.58.0"
         }
       ]
     },
@@ -3176,6 +3224,18 @@
           "text": "Stat icons and colours in speech bubbles did not match the top bar.",
           "state": "fixed",
           "version": "v0.53.0"
+        },
+        {
+          "id": "G1143",
+          "text": "The check and cross on prompts like \"Are you stuck?\" were hard to read on their green buttons.",
+          "state": "fixed",
+          "version": "v0.58.0"
+        },
+        {
+          "id": "G1147",
+          "text": "An upright iPhone showed a light band above the game in the status bar.",
+          "state": "fixed",
+          "version": "v0.58.0"
         }
       ]
     },
@@ -3267,6 +3327,23 @@
           "text": "Your own Chickens gave no hint that only a Chicken out on the streets can dress up for Pot Luck Day.",
           "state": "fixed",
           "version": "v0.57.0"
+        },
+        {
+          "id": "G1141",
+          "text": "The Harvest Table on Pot Luck Day did not say whether a dish counted toward Pot's Empty Table.",
+          "state": "fixed",
+          "version": "v0.58.0"
+        }
+      ]
+    },
+    {
+      "name": "Avatars",
+      "items": [
+        {
+          "id": "G1144",
+          "text": "Some clothing colour chips looked alike, hiding colourways such as the black Rook headpiece.",
+          "state": "fixed",
+          "version": "v0.58.0"
         }
       ]
     }
