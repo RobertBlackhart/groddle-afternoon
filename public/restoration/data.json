@@ -2814,9 +2814,24 @@
   "deployed": "2026-11-23"
  },
  "git": {
-  "commits": 3210,
+  "commits": 3214,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "A reload online puts you back where you stood, even when the save had stopped writing"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "The street named in the top bar is always the street you see"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "Write mail offers every stack in your pack, Teleportation Scripts and tools included"
+   },
    {
     "date": "2026-11-23",
     "kind": "improve",
@@ -2921,24 +2936,9 @@
     "date": "2026-11-23",
     "kind": "fix",
     "text": "Street skies show the gradient where Glitch painted it, so ground level sees the lower colours"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "improve",
-    "text": "A bug report says what the last graphics restore dropped and what drew as nothing since"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "A signpost's number keys come back after the graphics come back"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "The world past a street's end and the ground under it draw again after the graphics come back"
    }
   ]
  },
- "tests": 1296,
+ "tests": 1299,
  "generatedAt": "2026-11-23"
 }
