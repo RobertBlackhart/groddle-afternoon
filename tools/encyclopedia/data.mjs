@@ -198,13 +198,18 @@ export async function loadEncyclopedia({ inventory = readInventoryAll() } = {}) 
 
   /* Items: every catalog item, for names, icons and links. */
   const items = new Map();
+  const gsjsPage = new Map(); // id -> { infopage, proxy }: Glitch's has_infopage and proxy_item
   for (const [id, r] of live('item')) {
     if (!existsSync(join(GSJS, 'items', `${id}.js`))) continue;
     const text = readFileSync(join(GSJS, 'items', `${id}.js`), 'utf8');
     const name = /^var name_single\s*=\s*"((?:[^"\\]|\\.)*)"/m.exec(text)?.[1] || id;
     const plural = /^var name_plural\s*=\s*"((?:[^"\\]|\\.)*)"/m.exec(text)?.[1] || '';
     items.set(id, { id, name: JSON.parse(`"${name}"`), plural: plural ? JSON.parse(`"${plural}"`) : '', status: r.status, icon: itemIcon(id) });
+    gsjsPage.set(id, { infopage: !/^var has_infopage\s*=\s*false/m.test(text), proxy: /^var proxy_item\s*=\s*"([a-z0-9_]+)"/m.exec(text)?.[1] || null });
   }
+  /* One thing, one page (#505): fold an item's variants into the item Glitch gave the page (foldsOf). */
+  const folds = foldsOf(items, gsjsPage);
+  for (const id of folds.keys()) items.delete(id);
 
   const quests = content('quests.json');
   const { withBetterLearning } = await import(js('better-learning.js'));
@@ -323,6 +328,7 @@ export async function loadEncyclopedia({ inventory = readInventoryAll() } = {}) 
     if (ap) return ap;
     if (/^npc_shrine_(firebog|ix|uralia)_([a-z]+)$/.test(id)) return `people:npc_shrine_${/_([a-z]+)$/.exec(id)[1].replace(/^tii$/, 'ti')}`;
     if (items.has(id)) return `item:${id}`;
+    if (folds.has(id)) return `item:${folds.get(id)}`;
     return null;
   };
   const ref = (from, to, rel, extra = {}) => { if (to && (to.startsWith('item:') || has(to))) from.refs.push({ to, rel, ...extra }); };
@@ -434,13 +440,43 @@ export async function loadEncyclopedia({ inventory = readInventoryAll() } = {}) 
   const sounds = addSounds({ entries, items, keyOf, stubKey, nameOf }, { picture });
   for (const s of sounds.stubs) stubs.set(s.key, s);
   addMoreSections({ add, entries, items, keyOf, nameOf, picture, itemIcon, recipes, skills, ecology });
-  const out = { entries, items, recipes, keyOf, skills, stores, stubs, stubKey, nameOf, sounds };
+  const out = { entries, items, recipes, keyOf, skills, stores, stubs, stubKey, nameOf, sounds, folds };
   /* Streets, Stores and the item pages' Where to find it (streets.mjs, stores.mjs, where-to-find.mjs). */
   await addStreets(out, { inventory, picture, slug });
   await addStores(out, { itemIcon, portrait });
   await addWhereToFind(out);
   out.back = backOf();
   return out;
+}
+
+/* -- One thing, one page (#505) ------------------------------ */
+
+/**
+ * PURE: the items folded into another item's page: id -> the id whose page it shares.
+ * Glitch's encyclopedia gave one page to one thing. A variant named its page with proxy_item
+ * (rock_metal_2 and rock_metal_3 -> rock_metal_1, items/rock_metal_2.js 12), and the classes it
+ * kept off the encyclopedia (has_infopage = false: the variants, the home-cultivation protos,
+ * the street's barnacle) shared their name with the one class that had the page. Fold both, so
+ * a name never has two pages that tell different halves (one with the streets, one without).
+ * `items` is id -> { name }, `page` is id -> { infopage, proxy }.
+ */
+/** Kept on a page of their own: the remake's new player tour door is not a house Door. */
+export const OWN_PAGE = new Set(['newxp_door']);
+
+export function foldsOf(items, page) {
+  const withPage = new Map(); // name -> the ids of that name Glitch gave a page
+  for (const [id, it] of items) if (page.get(id)?.infopage && !page.get(id)?.proxy) (withPage.get(it.name) || withPage.set(it.name, []).get(it.name)).push(id);
+  const folds = new Map();
+  for (const [id, it] of items) {
+    const g = page.get(id) || {};
+    const proxy = g.proxy && g.proxy !== id && items.has(g.proxy) ? g.proxy : null;
+    const same = withPage.get(it.name) || [];
+    const to = OWN_PAGE.has(id) ? null : proxy || (!g.infopage && same.length === 1 && same[0] !== id ? same[0] : null);
+    if (to) folds.set(id, to);
+  }
+  // A proxy of a proxy ends at the page.
+  for (const [id, to] of folds) { let t = to; const seen = new Set([id]); while (folds.has(t) && !seen.has(t)) { seen.add(t); t = folds.get(t); } folds.set(id, t); }
+  return folds;
 }
 
 /* -- Blank stubs ------------------------------------------- */

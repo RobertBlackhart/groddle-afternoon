@@ -23,8 +23,11 @@ const skipWithoutInventory = existsSync(INVENTORY_DB) ? false : `needs the cover
 const inventory = skipWithoutInventory ? new Map() : readInventory();
 const gsjsIds = readdirSync(join(GSJS, 'items')).filter((f) => f.endsWith('.js')).map((f) => f.slice(0, -3));
 // Blank stubs get no page (tools/encyclopedia/data.mjs isBlankStub, tests/encyclopedia-stubs.test.js).
-const stubIds = skipWithoutInventory ? new Set() : new Set([...(await loadEncyclopedia()).stubs.values()].filter((s) => s.section === 'items').map((s) => s.id));
-const listed = gsjsIds.filter((id) => inventory.has(id) && inventory.get(id).status !== 'excluded' && !stubIds.has(id));
+const ency = skipWithoutInventory ? null : await loadEncyclopedia();
+const stubIds = skipWithoutInventory ? new Set() : new Set([...ency.stubs.values()].filter((s) => s.section === 'items').map((s) => s.id));
+// A variant folded into its thing's page (#505) has a folder that only forwards there.
+const folds = ency?.folds || new Map();
+const listed = gsjsIds.filter((id) => inventory.has(id) && inventory.get(id).status !== 'excluded' && !stubIds.has(id) && !folds.has(id));
 const excluded = gsjsIds.filter((id) => inventory.get(id)?.status === 'excluded');
 const pages = data.items.map((i) => ({ id: i.id, file: `encyclopedia/items/${i.id}/index.html`, html: readFileSync(join(items, i.id, 'index.html'), 'utf8') }));
 const index = { id: '', file: 'encyclopedia/items/index.html', html: readFileSync(join(items, 'index.html'), 'utf8') };

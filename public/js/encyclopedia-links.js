@@ -54,6 +54,8 @@ export function buildEncyclopediaIndex(json) {
       places.get(k).push({ id: e.id, h: e.h });
     }
   }
+  // A variant shares its thing's page (rock_metal_2 opens Metal Rock's, #505): search.json folded.
+  for (const [k, h] of Object.entries(json?.folded && typeof json.folded === 'object' ? json.folded : {})) if (typeof h === 'string' && !pages.has(k)) pages.set(k, h);
   const sections = (Array.isArray(json?.sections) ? json.sections : []).map((s) => s?.key).filter(Boolean);
   return { pages, places, sections };
 }

@@ -110,7 +110,8 @@ describe('blank stubs', () => {
     assert.match(home, new RegExp(`ency-card-name">Tools and recipes <span class="count">[\\d,]+ tools · ${recipeCount.toLocaleString('en-US')} recipes</span>`));
     assert.match(read('encyclopedia/recipes/index.html'), new RegExp(`Between them they make ${recipeCount.toLocaleString('en-US')} recipes\\.`));
     // Items: the home card, the catalog page, its data and the search all count the same items.
-    const itemPages = readdirSync(join(pub, 'encyclopedia/items'), { withFileTypes: true }).filter((x) => x.isDirectory()).length;
+    // A folded variant's folder only forwards to its thing's page (#505).
+    const itemPages = readdirSync(join(pub, 'encyclopedia/items'), { withFileTypes: true }).filter((x) => x.isDirectory() && !search.folded?.[`items:${x.name}`]).length;
     const itemRows = search.entries.filter((x) => x.s === 'items');
     assert.equal(catalog.counts.listed, itemPages);
     assert.equal(itemRows.length, itemPages);

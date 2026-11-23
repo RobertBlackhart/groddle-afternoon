@@ -249,7 +249,9 @@ export async function buildEncyclopedia(data = null) {
     ...[...items.values()].map((it) => ({ s: 'items', id: it.id, n: it.name, st: it.status, ic: it.icon?.src || '', h: pathOf(`item:${it.id}`) })),
     ...[...entries.values()].map((e) => ({ s: e.section, id: e.id, n: e.name, g: e.group || '', st: e.status, ic: e.icon?.src || '', h: pathOf(e.key) })),
   ];
-  put(`${OUT}/search.json`, `${JSON.stringify({ sections: [{ key: 'items', label: 'Items' }, ...SECTIONS.map(({ key, label }) => ({ key, label }))], statuses: Object.fromEntries(Object.entries(STATUS).map(([k, v]) => [k, v.label])), inRemake: Object.keys(STATUS).filter(inRemake), entries: search }).replace(/\{"s":/g, '\n{"s":')}\n`);
+  // A folded variant's class opens the page it shares (data.mjs foldsOf, #505; js/encyclopedia-links.js).
+  const folded = Object.fromEntries([...d.folds].filter(([, to]) => items.has(to)).sort(([a], [b]) => a.localeCompare(b)).map(([id, to]) => [`items:${id}`, pathOf(`item:${to}`)]));
+  put(`${OUT}/search.json`, `${JSON.stringify({ sections: [{ key: 'items', label: 'Items' }, ...SECTIONS.map(({ key, label }) => ({ key, label }))], statuses: Object.fromEntries(Object.entries(STATUS).map(([k, v]) => [k, v.label])), inRemake: Object.keys(STATUS).filter(inRemake), entries: search, folded }).replace(/\{"s":/g, '\n{"s":')}\n`);
   put(`${OUT}/index.html`, homePage(bySection, items, info, d.nameOf, subway.count));
 
   const keys = committedMap();

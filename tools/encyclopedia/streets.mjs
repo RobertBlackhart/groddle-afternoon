@@ -155,7 +155,8 @@ export async function addStreets(d, { inventory, picture, slug }) {
     const pop = ecology.populationForStreet(g, ecoRow, { starter: g === home });
     // What is here: the population's own counts, then every other class the street's file and rows list.
     const here = new Map();
-    const add = (cls, n) => { if (n > 0) here.set(cls, (here.get(cls) || 0) + n); };
+    // A variant counts as the thing whose page it shares (data.mjs foldsOf, #505).
+    const add = (cls, n) => { const c = d.folds?.get(cls) || cls; if (n > 0) here.set(c, (here.get(c) || 0) + n); };
     add('npc_piggy', pop.piggies);
     add('npc_chicken', pop.chickens);
     add('npc_butterfly', pop.butterflies + pop.flyingButterflies);

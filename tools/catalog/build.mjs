@@ -646,7 +646,9 @@ export async function buildCatalog({ inventory = readInventory(), evidence = rea
   const excluded = ids.filter((id) => inventory.get(id).status === 'excluded');
   // Blank stubs (tools/encyclopedia/data.mjs isBlankStub: never finished, no picture, no description, nothing that uses them) get no page.
   const stubs = [...ency.stubs.values()].filter((s) => s.section === 'items').map((s) => s.id);
-  const listed = ids.filter((id) => inventory.get(id).status !== 'excluded' && !stubs.includes(id))
+  // A variant shares its thing's page (tools/encyclopedia/data.mjs foldsOf, #505): its old address forwards there.
+  const folds = ency.folds || new Map();
+  const listed = ids.filter((id) => inventory.get(id).status !== 'excluded' && !stubs.includes(id) && !folds.has(id))
     .map((id) => all.get(id))
     .sort((a, b) => a.name.localeCompare(b.name, 'en', { sensitivity: 'base' }) || a.id.localeCompare(b.id));
   const inCatalog = new Set(listed.map((i) => i.id));
@@ -729,6 +731,7 @@ export async function buildCatalog({ inventory = readInventory(), evidence = rea
       prev: entries[i - 1], next: entries[i + 1], remake, inCatalog, names, musicCards, quests, total: entries.length, index: i, ency, costs, usesFor, questStatus,
     });
   });
+  for (const [id, to] of folds) if (inCatalog.has(to)) files[`${OUT}/${id}/index.html`] = foldedPage(all.get(id), all.get(to));
   // Each page's icons and art carry their content keys (tools/data-versions/build.mjs keyAssetUrls).
   const keys = committedMap();
   for (const path of Object.keys(files)) if (path.endsWith('.html')) files[path] = keyAssetUrls(files[path], path, keys);
@@ -896,8 +899,10 @@ function itemPage(e, ctx) {
   const p = '../../../';
   const nameOf = (id) => names.get(id)?.name || remake.uses[id]?.label || id;
   const pluralOf = (id) => names.get(id)?.plural || nameOf(id);
-  const link = (id, label = nameOf(id)) => (inCatalog.has(id) ? `<a href="../${esc(id)}/">${esc(label)}</a>` : esc(label));
-  const linkItem = (id) => (inCatalog.has(id) ? `../${esc(id)}/` : null);
+  // A folded variant links the page it shares (data.mjs foldsOf, #505).
+  const pageOf = (id) => (inCatalog.has(id) ? id : inCatalog.has(ctx.ency.folds?.get(id)) ? ctx.ency.folds.get(id) : null);
+  const link = (id, label = nameOf(id)) => (pageOf(id) ? `<a href="../${esc(pageOf(id))}/">${esc(label)}</a>` : esc(label));
+  const linkItem = (id) => (pageOf(id) ? `../${esc(pageOf(id))}/` : null);
   const qty = (id, n) => (n === 1 || n === '1' ? `${article(nameOf(id))} ${link(id)}` : `${esc(n)} ${link(id, pluralOf(id))}`);
   const tool = (id) => (id ? `${article(nameOf(id))} ${link(id)}` : '');
   const { ency, costs } = ctx;
@@ -1027,6 +1032,8 @@ function itemPage(e, ctx) {
   // What the remake does with it beyond recipes and food (tools/catalog/uses.mjs), or, when nothing, says so.
   const more = ctx.usesFor(it.id);
   for (const line of more?.lines || []) uses.push(`<li>${esc(line)}</li>`);
+  // A variant folded into this page (#505) keeps what it does differently (foldedUseLines).
+  for (const line of foldedUseLines(it.id, ctx.ency.folds, ctx.usesFor)) uses.push(`<li>${esc(line)}</li>`);
   if (!uses.length && !useTiles && e.status === 'source') {
     const keep = more?.none || (it.takeable ? 'Nothing in the remake uses it yet: you keep it as a collectible.' : 'It is part of the street: there is nothing to do with it yet.');
     uses.push(`<li class="cat-none">${esc(keep)}${sells ? ` A vendor will buy it for ${fmt(sells.usual)} ${sells.usual === 1 ? 'currant' : 'currants'}.` : ''}</li>`);
@@ -1188,6 +1195,49 @@ ${verbs.map((v) => `          <div><dt>${esc(v.name)}</dt><dd>${v.tooltip ? esc(
     description: `${plainDesc ? `${plainDesc.slice(0, 150)} ` : ''}${status.label}${e.status === 'source' ? '' : ' in the remake'}.`.trim(),
     body,
   });
+}
+
+/**
+ * How a folded variant's own uses read on its thing's page (#505): a lead-in, or null where the
+ * page already says it (the street's Mortar Barnacle is How to get it on the barnacle's page).
+ * A variant not named here adds the lines its thing's page does not already have.
+ */
+export const FOLDED_USES = {
+  wood_tree_enchanted: 'In the Enchanted Forests',
+  mortar_barnacle: null,
+};
+
+/** PURE: the use lines the variants folded into `id` add to its page. */
+export function foldedUseLines(id, folds, usesFor) {
+  const own = new Set(usesFor(id)?.lines || []);
+  const out = [];
+  for (const [v, to] of folds || []) {
+    if (to !== id || FOLDED_USES[v] === null) continue;
+    const lines = (usesFor(v)?.lines || []).filter((l) => !own.has(l) && !out.includes(l));
+    if (!lines.length) continue;
+    if (FOLDED_USES[v]) out.push(`${FOLDED_USES[v]}: ${lines.map((l, i) => (i ? l : l[0].toLowerCase() + l.slice(1))).join(' ')}`);
+    else out.push(...lines);
+  }
+  return out;
+}
+
+/** A folded variant's old address (#505): it forwards to the page of the thing it is. */
+export function foldedPage(it, to) {
+  const href = `../${to.id}/`;
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>${esc(to.name)} · Groddle Encyclopedia</title>
+  <meta name="robots" content="noindex" />
+  <link rel="canonical" href="${href}" />
+  <meta http-equiv="refresh" content="0; url=${href}" />
+</head>
+<body>
+  <p>This page moved: <a href="${href}">${esc(to.name)}</a>.</p>
+</body>
+</html>
+`;
 }
 
 /* -- Write / check -------------------------------------- */

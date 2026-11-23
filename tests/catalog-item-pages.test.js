@@ -52,6 +52,8 @@ describe('What it is for', () => {
 
   it('cites a remake file and line for every hand-written use, and the lines exist', () => {
     const curated = readCurated();
+    // A variant folded into its thing's page (#505) is checked there (tests/encyclopedia-streets.test.js).
+    const folded = JSON.parse(readFileSync(join(spike, 'public/encyclopedia/search.json'), 'utf8')).folded || {};
     for (const [id, v] of Object.entries(curated)) {
       assert.ok(v.lines?.length || v.none, `${id}: lines or none`);
       assert.ok(!JSON.stringify(v).includes('—'), `${id}: no em-dash`);
@@ -65,6 +67,7 @@ describe('What it is for', () => {
         assert.ok(existsSync(file), `${id}: ${m[1]}`);
         assert.ok(readFileSync(file, 'utf8').split('\n').length >= Number(m[2]), `${id}: ${m[1]}:${m[2]} is past the end`);
       }
+      if (folded[`items:${id}`]) continue;
       for (const line of v.lines) assert.ok(forLines(page(id)).includes(line), `${id}: "${line}" on its page`);
     }
   });

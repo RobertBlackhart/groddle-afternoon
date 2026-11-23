@@ -24,7 +24,7 @@ import {
   encyclopediaPage,
   encyclopediaSearchHref,
   isEncyclopediaKey,
-} from '../public/js/encyclopedia-links.js?v=eebc2a5d';
+} from '../public/js/encyclopedia-links.js?v=0c3b2863';
 import { GIANTS } from '../public/js/shrines.js?v=d5d7a471';
 import { VENDOR_PROFILES } from '../public/js/vendor.js?v=b969190e';
 import { CLIENT_KEY_TABLE, clientKeyAction } from '../public/js/client-hotkeys.js?v=5c5a4301';
@@ -45,7 +45,7 @@ const key = (k, mods = {}) => ({ key: k, shiftKey: false, ctrlKey: false, altKey
 describe('ENCYC: pages from the encyclopedia\'s own index', () => {
   it('reads every page of search.json, and every address is a built page', () => {
     assert.ok(SEARCH.entries.length > 2000);
-    assert.equal(index.pages.size, SEARCH.entries.length, 'one page per section and id');
+    assert.equal(index.pages.size, SEARCH.entries.length + Object.keys(SEARCH.folded || {}).length, 'one page per section and id, and each folded variant');
     for (const s of ['items', 'quests', 'animals', 'people', 'skills', 'places']) assert.ok(index.sections.includes(s), s);
     for (const h of index.pages.values()) assert.ok(built(h), h);
     assert.ok(built(ENCYCLOPEDIA_HOME), 'the home page');
@@ -98,6 +98,12 @@ describe('ENCYC: pages from the encyclopedia\'s own index', () => {
       { s: 'places', id: 'kajuu-140', n: 'Kajuu', h: 'encyclopedia/places/kajuu-140/' },
     ] });
     assert.equal(encyclopediaPage(twin, { section: 'places', name: 'Kajuu', hubId: '140' }), 'encyclopedia/places/kajuu-140/');
+  });
+
+  it('#505: a variant (rock_metal_2) opens the page of the thing it is, from search.json folded', () => {
+    assert.equal(encyclopediaPage(index, { id: 'rock_metal_2' }), 'encyclopedia/items/rock_metal_1/');
+    assert.equal(encyclopediaPage(index, { id: 'proto_metal_rock' }), 'encyclopedia/items/rock_metal_1/');
+    assert.equal(encyclopediaPage(index, { id: 'metal_rock' }), 'encyclopedia/items/metal_rock/');
   });
 
   it('no page: the home page\'s search for the name (and section); nothing at all: the home page', () => {

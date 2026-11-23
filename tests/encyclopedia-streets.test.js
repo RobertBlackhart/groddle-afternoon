@@ -287,3 +287,37 @@ describe('G1183: a resource or creature page lists the streets that have it', ()
   });
 });
 
+
+describe('#505: one thing, one page', () => {
+  it('never has two catalog pages of one name where only one lists the streets', { skip }, () => {
+    const data = json('encyclopedia/items/data.json');
+    const byName = new Map();
+    for (const it of data.items) (byName.get(it.name) || byName.set(it.name, []).get(it.name)).push(it.id);
+    for (const [name, ids] of byName) {
+      if (ids.length < 2) continue;
+      const withStreets = ids.filter((id) => read(`encyclopedia/items/${id}/index.html`).includes('ency-with-region'));
+      assert.ok(withStreets.length === 0 || withStreets.length === ids.length, `${name}: ${ids.join(', ')} share a name, only ${withStreets.join(', ')} list the streets`);
+    }
+  });
+
+  it('folds Glitch’s variants into the page Glitch gave them, and their old address forwards there', { skip }, () => {
+    for (const id of ['rock_metal_2', 'rock_metal_3', 'proto_metal_rock']) {
+      assert.equal(d.folds.get(id), 'rock_metal_1', id);
+      assert.ok(!d.items.has(id), id);
+      assert.match(read(`encyclopedia/items/${id}/index.html`), /http-equiv="refresh" content="0; url=\.\.\/rock_metal_1\/"/);
+    }
+    assert.equal(d.folds.get('peat_3'), 'peat_1');
+    assert.equal(d.folds.get('mortar_barnacle'), 'barnacle');
+    // The Chunk of Metal Rock is its own thing.
+    assert.ok(!d.folds.has('metal_rock'));
+    const search = json('encyclopedia/search.json');
+    assert.equal(search.folded['items:rock_metal_2'], 'encyclopedia/items/rock_metal_1/');
+    assert.ok(!search.entries.some((e) => e.s === 'items' && e.id === 'rock_metal_2'));
+    // What a variant does differently stays on its thing's page; the tour's door keeps its own.
+    assert.match(text(read('encyclopedia/items/wood_tree/index.html')), /In the Enchanted Forests: harvest it/);
+    assert.ok(!d.folds.has('newxp_door'));
+    // A variant on a street counts as its thing there.
+    assert.ok(d.streetsWith('rock_metal_1').length > 10);
+    assert.equal(d.streetsWith('rock_metal_2').length, 0);
+  });
+});

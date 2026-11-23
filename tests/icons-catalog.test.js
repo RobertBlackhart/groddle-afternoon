@@ -33,7 +33,9 @@ describe('G174 catalog icons', () => {
     const leftOut = new Set(['bag_greeter_badge']);
     // A tool's broken pack icon (ticket 63, js/tools.js BROKEN_TOOL_ICONS) is its item's other state.
     const state = (id) => (id.endsWith('_broken') ? id.slice(0, -'_broken'.length) : id);
-    for (const [id] of added) if (!leftOut.has(id)) assert.ok(catalog.has(state(id)), `${id} is not a catalog item`);
+    // A variant folded into its thing's page (#505) keeps its icon for the world and the pack.
+    const folded = JSON.parse(readFileSync(join(root, 'public/encyclopedia/search.json'), 'utf8')).folded || {};
+    for (const [id] of added) if (!leftOut.has(id) && !folded[`items:${id}`]) assert.ok(catalog.has(state(id)), `${id} is not a catalog item`);
   });
 
   it('each one is a 1x icon plus an @3x icon exactly three times its size, and listed', () => {
