@@ -2814,9 +2814,14 @@
   "deployed": "2026-11-23"
  },
  "git": {
-  "commits": 3125,
+  "commits": 3129,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-22",
+    "kind": "fix",
+    "text": "On a computer the camera stops at the street's or room's bottom, not in a band under it"
+   },
    {
     "date": "2026-11-22",
     "kind": "fix",
@@ -2931,14 +2936,9 @@
     "date": "2026-11-22",
     "kind": "fix",
     "text": "A placed Door stands against the back wall, not in the middle of the room"
-   },
-   {
-    "date": "2026-11-22",
-    "kind": "fix",
-    "text": "A street spirit with two projects offers the one you are helping with first"
    }
   ]
  },
- "tests": 1282,
+ "tests": 1283,
  "generatedAt": "2026-11-22"
 }
