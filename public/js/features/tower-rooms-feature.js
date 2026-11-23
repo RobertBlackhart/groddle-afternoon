@@ -44,7 +44,7 @@ import { DOOR_TEXT, doorKeyClass, insideBottomRect } from '../doors.js?v=727d0e0
 import { textureFromUrl } from '../textures.js?v=729b29ea';
 import { ROOM_15_TSID } from '../tower-rooms.js?v=4f1f6af7';
 import { anyTowerRoomByTsid as baseRoomByTsid } from '../tower-challenge-rooms.js?v=01f1c620';
-import { midTowerRoomByTsid } from '../tower-mid-rooms.js?v=908fef6e';
+import { midTowerRoomByTsid } from '../tower-mid-rooms.js?v=07360655';
 import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=6ffaec43';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 

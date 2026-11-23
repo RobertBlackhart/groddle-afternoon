@@ -103,9 +103,10 @@ export const HALL_WIDGET = Object.freeze({
   frameW: 74,
   frameH: 85,
   // Bottom-centre, world px (V): ~55 px right of the first window's centre, its knob level with the
-  // sill (the recordings put it 65-95 px over the floor; the sill lines it up as they show it).
+  // sill (the recordings put it 65-95 px over the plinths' feet; the sill lines it up as they show it).
+  // G1158: it rose with the sill when the floor got its depth.
   x: 705,
-  y: -70,
+  y: -150,
 });
 
 /** The client's in-window announcement advance label (InWindowAnnouncementOverlay.as). */
@@ -122,12 +123,17 @@ export const STAND = Object.freeze({ rest: 9, foot: 7, h: 51, box: 0.672 });
 export const HALL = Object.freeze({
   bounds: Object.freeze({ l: 0, r: 5300, t: -780, b: 300 }),
   floor: 0,
-  // S: plinths stand at the back of the floor, the avatar walks in front of them.
-  back: -28,
+  // S (G1158): a wide dark floor runs from the wall to the bottom of the view; its back edge is
+  // ~110 px over the avatar's feet, the plinths' feet ~28 px in front of that edge, so the avatar
+  // walks ~80 px in front of the exhibits (Snaps 8260366216 and 8263068316 at world scale: the
+  // windows and plinths match the CC0 art's size there).
+  edge: -108,
+  back: -80,
   doorX: 230,
   arrowX: 450,
   windows: Object.freeze([650, 1490, 2390, 3330, 3690, 4505]),
-  windowSize: Object.freeze({ w: 80, h: 178, bottom: -140 }),
+  // S: the window sills sit ~110 px over the floor's back edge.
+  windowSize: Object.freeze({ w: 80, h: 178, bottom: -220 }),
   // Multiply tint on the wall tiles (ids hall_wall_<n>): jethimadh_int_bg_center reads orange here
   // (wall pixels g/r 0.62, b/r 0.25, hue 29 deg at midday) against the Snaps' olive-gold (8 unfiltered
   // Snaps: median g/r 0.67, b/r 0.26, hue 33-36 deg). Red x0.876, green x0.95, blue x0.914.
@@ -180,6 +186,42 @@ export function hallLayout() {
   });
 }
 
+/** room_background3a_floor.webp (firebog.swf, 3464 x 1240): its slab fills rows 363..877. */
+export const FLOOR_SLAB = Object.freeze({ rows: 1240, top: 363, bottom: 877, w: 2400, step: 1400, front: 130 });
+
+/** Centre x of each floor slab length, left to right, the outer ones reaching past both walls. */
+export function hallFloorSlabs() {
+  const { l, r } = HALL.bounds;
+  const xs = [];
+  for (let x = l + 300; x < r - 300; x += FLOOR_SLAB.step) xs.push(x);
+  xs.push(r - 300);
+  return xs;
+}
+
+/** One floor slab length: its opaque band on world y HALL.edge .. HALL.floor + front, bottom-centre anchored. */
+function floorSlab(x) {
+  const { rows, top, bottom, w, front } = FLOOR_SLAB;
+  const y0 = HALL.edge;
+  const y1 = HALL.floor + front;
+  const h = Math.round(((y1 - y0) * rows) / (bottom - top));
+  return { sprite: 'room_background3a_floor', x, y: Math.round(y1 + ((rows - bottom) / rows) * h), w, h, z: 10, r: 0, layer: 'mg' };
+}
+
+/**
+ * rookhall_spotlight (352 x 1260): its shaft is brightest near the top (row ~160) and gone by row
+ * ~1000. Each exhibit gets two, their bright tops in the upper wall where a window's view still
+ * shows them (the ceiling's shadow above), their tails gone just over the floor's back edge.
+ */
+export const SHAFT = Object.freeze({ top: -440, h: 400, w: 210 });
+
+export function hallSpotlights() {
+  const out = [];
+  HALL_EXHIBITS.forEach((ex, i) => {
+    for (const k of [0, 1]) out.push({ sprite: 'rookhall_spotlight', x: ex.x, y: SHAFT.top + SHAFT.h, w: SHAFT.w - k * 40, h: SHAFT.h, z: 20 + i * 2 + k, r: 0, layer: 'mg' });
+  });
+  return out;
+}
+
 /** The room as a tower-room record (js/tower-mid-rooms.js lists it with the Stairs and the Mezzanine). */
 export function buildHall({ hub, mezzanine }) {
   const { bounds, floor, doorX, arrowX, windows, windowSize } = HALL;
@@ -188,27 +230,33 @@ export function buildHall({ hub, mezzanine }) {
   const c = { platforms, decos };
   const W = bounds.r - bounds.l;
 
-  // Wall: the corridors' wood backdrop tiled along the hall and on under the floor, the corridors'
-  // (remake; S: a warm wooden hall, darker overhead).
+  // Wall: the corridors' wood backdrop tiled along the hall down to just under the floor's back
+  // edge (remake; S: a warm wooden hall, darker overhead).
   const tile = 760;
+  const wallFoot = HALL.edge + 40;
   for (let x = bounds.l + tile / 2 - 60, i = 0; x < bounds.r + tile / 2; x += tile, i += 1) {
-    decos.push({ id: `hall_wall_${i}`, sprite: 'jethimadh_int_bg_center', x, y: bounds.b + 60, w: tile + 120, h: bounds.b - bounds.t + 120, z: i % 2, r: 0, layer: 'mg' });
+    decos.push({ id: `hall_wall_${i}`, sprite: 'jethimadh_int_bg_center', x, y: wallFoot, w: tile + 120, h: wallFoot - bounds.t + 60, z: i % 2, r: 0, layer: 'mg' });
   }
+  // The floor (S, G1158): the firebog set's dark room floor slab (room_background3a_floor, the same
+  // grey-green the Snaps show) from the wall's foot to past the walking line, in overlapping
+  // lengths so each slab's rounded ends hide under its neighbours (the outer ones under the frame).
+  for (const x of hallFloorSlabs()) decos.push(floorSlab(x));
   // firebog_linear_gradient_shadow is black, opaque over its left 55 % and fading out to the right;
-  // turned 90 degrees it darkens the ceiling (opaque side up), turned -90 the floor (opaque side down).
+  // turned 90 degrees it darkens the ceiling (opaque side up), turned -90 the floor's front
+  // (opaque side down), so the floor fades to black toward the bottom of the view as in S.
   const run = 700;
   for (let x = bounds.l - 100; x < bounds.r + 100; x += run) {
     decos.push({ sprite: 'firebog_linear_gradient_shadow', x, y: bounds.t + 260, w: 520, h: run + 2, z: 3, r: 90, layer: 'mg' });
-    decos.push({ sprite: 'firebog_linear_gradient_shadow', x: x + run, y: HALL.back + 150, w: 300, h: run + 2, z: 3, r: -90, layer: 'mg' });
+    decos.push({ sprite: 'firebog_linear_gradient_shadow', x: x + run, y: floor + 110, w: 300, h: run + 2, z: 12, r: -90, layer: 'mg' });
   }
   // Pointed windows (S, V: jethimadh_tower_window_1, the tower's own window).
   windows.forEach((x, i) => {
     decos.push({ sprite: 'jethimadh_tower_window_1', x, y: floor + windowSize.bottom, w: windowSize.w, h: windowSize.h, z: 5 + i, r: 0, layer: 'mg' });
   });
-  // A spotlight over every exhibit (V: the loading-screen panorama), doubled: the Rook Hall's cone is faint.
-  HALL_EXHIBITS.forEach((ex, i) => {
-    for (const k of [0, 1]) decos.push({ sprite: 'rookhall_spotlight', x: ex.x, y: HALL.back - 30, w: 210 - k * 40, h: 680, z: 20 + i * 2 + k, r: 0, layer: 'mg' });
-  });
+  // A light shaft over every exhibit (V: the loading-screen panorama; G1158: the shafts fall from
+  // the dark ceiling and fade out over the exhibits, the lower two thirds of the wall), doubled:
+  // the Rook Hall's cone is faint.
+  for (const s of hallSpotlights()) decos.push(s);
   // Both ends: the corridors' frame caps.
   decos.push(
     { sprite: 'jethimadh_frame_cap', x: bounds.l + 40, y: bounds.b, w: 300, h: bounds.b - bounds.t, z: 9, r: 0, layer: 'fg' },
@@ -216,7 +264,7 @@ export function buildHall({ hub, mezzanine }) {
   );
   // V: the arrival door wears a "Mezzanine" plaque; an arrow sign points on to the exhibits.
   plaque(c, doorX, floor - DOOR.h + 4, 'Mezzanine');
-  decos.push({ sprite: 'sign_arrow_1', x: arrowX, y: floor - 110, w: 140, h: 93, z: 30, r: 0, layer: 'mg', signText: 'Exhibits' });
+  decos.push({ sprite: 'sign_arrow_1', x: arrowX, y: HALL.edge - 75, w: 140, h: 93, z: 30, r: 0, layer: 'mg', signText: 'Exhibits' });
 
   const floorWhy = 'S/V: one level floor the length of the hall, every exhibit on it or on a low plinth.';
   platforms.push(flat('hall_floor', bounds.l + 32, bounds.r - 32, floor, floorWhy));

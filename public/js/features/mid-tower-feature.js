@@ -55,9 +55,9 @@ import {
   STOOT_RETURN,
   boxToScreen,
   midTowerRoomByTsid,
-} from '../tower-mid-rooms.js?v=908fef6e';
+} from '../tower-mid-rooms.js?v=07360655';
 import { touchWords } from '../touch-controls.js?v=b10f17bb';
-import { CLICK_ANYWHERE, HALL, HALL_ART, HALL_ART_ROOT, HALL_BUTTON_CLASS, HALL_WIDGET, WALL_BUTTON } from '../hall-rejected-concepts.js?v=04d831b8';
+import { CLICK_ANYWHERE, HALL, HALL_ART, HALL_ART_ROOT, HALL_BUTTON_CLASS, HALL_WIDGET, WALL_BUTTON } from '../hall-rejected-concepts.js?v=d2d29ad6';
 import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=6ffaec43';
 
 export const MID_TOWER_FEATURE_ID = 'mid-tower';

@@ -24,8 +24,8 @@ import {
   STAND,
   WALL_BUTTON,
   hallLayout,
-} from '../public/js/hall-rejected-concepts.js?v=04d831b8';
-import { MEZZ, MEZZANINE_TSID, midTowerRoomByTsid } from '../public/js/tower-mid-rooms.js?v=908fef6e';
+} from '../public/js/hall-rejected-concepts.js?v=d2d29ad6';
+import { MEZZ, MEZZANINE_TSID, midTowerRoomByTsid } from '../public/js/tower-mid-rooms.js?v=07360655';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const gsjs = join(spike, '../glitch-GameServerJS');
@@ -227,6 +227,57 @@ describe('Hall of Rejected Concepts: the wall (G86)', () => {
   });
 });
 
+describe('Hall of Rejected Concepts: the floor and the light shafts (G1158)', () => {
+  // room_background3a_floor.webp: 3464 x 1240, its slab rows 363..877; rookhall_spotlight.webp: 1260 rows,
+  // the shaft brightest near row 160 and gone by row 1000.
+  const slabTop = (d) => d.y - d.h + (363 / 1240) * d.h;
+  const slabBottom = (d) => d.y - d.h + (877 / 1240) * d.h;
+
+  it('lays a deep dark floor: its back edge ~110 px behind the feet, the plinths at its back, the avatar ~80 px in front', () => {
+    assert.ok(HALL.floor - HALL.edge >= 90 && HALL.floor - HALL.edge <= 130, `edge ${HALL.edge}`);
+    assert.ok(HALL.back - HALL.edge >= 15 && HALL.back - HALL.edge <= 40, 'plinth feet just in front of the back edge');
+    assert.ok(HALL.floor - HALL.back >= 60, 'the avatar walks well in front of the exhibits');
+    for (const ex of hallLayout()) if (ex.plinth) assert.equal(ex.plinth.y, HALL.back + STAND.foot, ex.id);
+  });
+
+  it('the firebog floor slab covers the hall wall to wall from the edge to past the feet, over the wall tiles', () => {
+    const slabs = hall.decos.filter((d) => d.sprite === 'room_background3a_floor').sort((a, b) => a.x - b.x);
+    assert.ok(slabs.length >= 3);
+    for (const d of slabs) {
+      assert.ok(Math.abs(slabTop(d) - HALL.edge) <= 1, `slab top ${slabTop(d)}`);
+      assert.ok(slabBottom(d) >= HALL.floor + 100, 'runs well past the walking line');
+    }
+    // The flat middle 60 % of each slab overlaps the next one's, so their rounded ends never show.
+    const flat = slabs.map((d) => [d.x - d.w * 0.3, d.x + d.w * 0.3]);
+    assert.ok(flat[0][0] <= HALL.bounds.l + 40 && flat.at(-1)[1] >= HALL.bounds.r - 40);
+    for (let i = 1; i < flat.length; i += 1) assert.ok(flat[i][0] <= flat[i - 1][1], `gap before slab ${i}`);
+    const walls = hall.decos.filter((d) => d.sprite === 'jethimadh_int_bg_center');
+    for (const w of walls) assert.ok(w.y > HALL.edge && w.y <= HALL.edge + 60 && w.z < slabs[0].z, 'wall ends under the slab');
+    const json = street(HALL_TSID).layers.find((l) => l.id === 'middleground').decos;
+    assert.equal(json.filter((d) => d.sprite === 'room_background3a_floor').length, slabs.length);
+  });
+
+  it('hangs two light shafts over each exhibit, bright under the ceiling and fading out over the wall', () => {
+    const shafts = hall.decos.filter((d) => d.sprite === 'rookhall_spotlight');
+    assert.equal(shafts.length, HALL_EXHIBITS.length * 2);
+    for (const ex of HALL_EXHIBITS) assert.equal(shafts.filter((d) => d.x === ex.x).length, 2, ex.id);
+    for (const d of shafts) {
+      const top = d.y - d.h;
+      const bright = top + (160 / 1260) * d.h;
+      const gone = top + (1000 / 1260) * d.h;
+      // The bright part sits on the wall where the view shows it (it fell 600+ px over the feet before).
+      assert.ok(bright > HALL.edge - 400 && bright < HALL.edge - 250, `bright at ${bright}`);
+      assert.ok(gone < HALL.edge && gone > HALL.edge - 150, `fades out at ${gone}`);
+    }
+  });
+
+  it('keeps the window sills ~110 px over the floor\'s back edge and the sign on the wall', () => {
+    assert.ok(Math.abs(HALL.edge - HALL.windowSize.bottom - 110) <= 15);
+    const sign = hall.decos.find((d) => d.signText === 'Exhibits');
+    assert.ok(sign.y < HALL.edge);
+  });
+});
+
 describe('Hall of Rejected Concepts: the Wall Buttons', () => {
   it('follow items/wall_button.js', { skip: !existsSync(gsjs) && 'GSJS checkout not beside this worktree' }, () => {
     const js = readFileSync(join(gsjs, 'items/wall_button.js'), 'utf8');
@@ -268,7 +319,7 @@ describe('Hall of Rejected Concepts: the Wall Buttons', () => {
       globalThis.PIXI = { Sprite: Obj, Container: Obj, AnimatedSprite: Anim, Rectangle, ImageSource: Source, Texture: class { constructor(o) { Object.assign(this, o); } } };
       globalThis.Image = class { set src(_u) {} decode() { return new Promise(() => {}); } };
       globalThis.document = { createElement: () => ({ width: 0, height: 0, getContext: () => ({ drawImage() {} }) }) };
-      ({ midTowerFeature: feature } = await import('../public/js/features/mid-tower-feature.js?v=08a5aef9'));
+      ({ midTowerFeature: feature } = await import('../public/js/features/mid-tower-feature.js?v=75e806d1'));
     });
     after(() => {
       for (const [k, v] of Object.entries(saved)) globalThis[k] = v;
