@@ -155,7 +155,8 @@ describe('the validator (js/builder/validate.js): one fixture per rule', () => {
     ['AST-002', (z) => { delete z.assets.bush_3; }],
     ['AST-003', (z) => { lane(z).layers[1].decos[0].sprite = 'gz_moss'; z.assets.gz_moss = { origin: 'tinyspeck-cc0', licence: 'CC0-1.0' }; }],
     ['AST-004', (z) => { z.assets.bush_3.licence = 'CC-BY-4.0'; }],
-    ['AST-005', (z) => { const d = lane(z).layers[1].decos[0]; d.sprite = 'cave_gr_tile_horiz_sm'; d.w = 900; z.assets.cave_gr_tile_horiz_sm = { origin: 'tinyspeck-cc0', licence: 'CC0-1.0', source: 'x' }; }],
+    // A soft deco with no sharp copy (cave_gr_tile_horiz_sm has had one since G1172's outline rule).
+    ['AST-005', (z) => { const d = lane(z).layers[1].decos[0]; d.sprite = 'cave_gr_tile_horiz_large'; d.w = 2400; z.assets.cave_gr_tile_horiz_large = { origin: 'tinyspeck-cc0', licence: 'CC0-1.0', source: 'x' }; }],
     ['AST-006', (z) => { lane(z).layers[1].decos[0].animated = true; }],
     ['TXT-001', (z) => { lane(z).label = 'Glitch Lane'; }],
     ['TXT-002', (z) => { lane(z).label = 'Hechey Track'; }],

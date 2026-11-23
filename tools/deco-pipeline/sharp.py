@@ -19,7 +19,9 @@ R backing px per view px (css width / 960 x devicePixelRatio, capped at 4: js/re
 worst case R = 4. ratio = w x R / texels of the file loaded there (3x where it has one), max of
 both axes. Candidates: ratio >= `ratio_min`, or ratio >= `front_min` on a layer that draws over the
 avatars, with hard edges in the shipped file (`edge` >= `edge_min`: 99th percentile neighbour step,
-0-255; skies, glows and gradients score under 20 and look the same magnified). Decos with no SWF
+0-255; skies, glows and gradients score under 20 and look the same magnified), or, drawn well above
+their size (ratio >= `outline_ratio`), a hard outline (`outline`: the 99.9th percentile, which a big
+flat deco's crisp outline reaches though its inside has no steps: G1172). Decos with no SWF
 or a kept PNG (build.py mode png) are listed as skipped.
 
 Format, decided per deco by measurement against FFDec's raster render:
@@ -71,6 +73,7 @@ SETTINGS = {
     'ratio_min': 1.5,     # needed / available texels at R that counts as blurry
     'front_min': 1.0,     # the same on a layer drawn over the avatars
     'edge_min': 40.0,     # hard-edge score of the shipped file (0-255) below which magnifying shows nothing
+    'outline_ratio': 2.0, # ratio at or above which a deco also counts by its outline score (G1172)
     'target': 3.0,        # WebP texels per view px at the largest near placement: what a 3x deco drawn at half its PNG size gets
     'webp_max_side': 4096,
     'svg_rgb': 2.0,       # SVG (Chromium) vs FFDec raster: mean premultiplied RGB difference, visible px
@@ -352,8 +355,12 @@ def room_placements(plan):
 
 
 def edge_score(path):
-    """99th percentile of the largest premultiplied channel step to the right/lower neighbour (0-255)
-    over covered pixels; a centre crop of at most 2048 px keeps texel steps for big files."""
+    """(edge, outline): the 99th and 99.9th percentile of the largest premultiplied channel step to
+    the right/lower neighbour (0-255) over covered pixels; a centre crop of at most 2048 px keeps
+    texel steps for big files. The 99th percentile misses the outline of a big flat-coloured deco
+    (a hill, a rock wall: its outline is well under 1% of its pixels), which FFDec's seams used to
+    stand in for until they were sealed (G1162); the 99.9th catches it, while skies, glows and
+    gradients, whose file edges are not steps, stay low (G1172)."""
     im = Image.open(path)
     w, h = im.size
     cw, ch = min(w, 2048), min(h, 2048)
@@ -365,7 +372,9 @@ def edge_score(path):
     d = np.maximum(dx, dy)
     vis = a[:-1, :-1, 3] > 4
     v = d[vis] if vis.any() else d.ravel()
-    return round(float(np.percentile(v, 99)), 1) if v.size else 0.0
+    if not v.size:
+        return 0.0, 0.0
+    return round(float(np.percentile(v, 99)), 1), round(float(np.percentile(v, 99.9)), 1)
 
 
 def measure(plan, old=None):
@@ -378,7 +387,9 @@ def measure(plan, old=None):
       2, 1 or 0.5), since the bake keeps nothing finer, against the file loaded there.
     Far and blurred placements count at ratio_min and only where the art's edge survives the
     layer's colour matrix (edge x matrix_gain >= edge_min): washed-out hills look the same
-    magnified. s, sf and sb are the largest view px per logical px over the near placements, and
+    magnified. Hard edges: the edge score (99th percentile step) at edge_min, or, for a deco drawn
+    well above its size (ratio >= outline_ratio), its outline score (99.9th) at edge_min: a big
+    flat deco's crisp outline stair-steps when magnified though its inside has no steps (G1172). s, sf and sb are the largest view px per logical px over the near placements, and
     over the far and blurred placements that count."""
     S = SETTINGS
     old_edges = {r['name']: r for r in ((old or {}).get('decos') or []) + ((old or {}).get('skipped') or []) + ((old or {}).get('soft') or [])}
@@ -407,11 +418,19 @@ def measure(plan, old=None):
             continue
         fsha = row.get('sha3') if row.get('hires') else row.get('sha2')
         o = old_edges.get(sp)
-        edge = o['edge'] if o and o.get('edge_of') == fsha else edge_score(path)
-        counted = [p for p in other if edge * p['gain'] >= S['edge_min']]
-        if near_blurry and edge >= S['edge_min']:
+        edge, outline = (o['edge'], o['outline']) if o and o.get('edge_of') == fsha and 'outline' in o else edge_score(path)
+
+        # The outline counts for the deco as a whole once some placement draws it outline_ratio
+        # times its file: then its every blurry placement is judged by it, as by the edge score.
+        top = max(p['ratio'] for p in ps)
+
+        def hard(gain=1.0):
+            return edge * gain >= S['edge_min'] or (top >= S['outline_ratio'] and outline * gain >= S['edge_min'])
+        counted = [p for p in other if hard(p['gain'])]
+        near_hard = near_blurry and hard()
+        if near_hard:
             counted += near
-        if home_blurry and edge >= S['edge_min']:
+        if home_blurry and hard():
             counted += home
         pool = counted or (near if near_blurry else other or home)
         worst = max(pool, key=lambda p: p['ratio'])
@@ -424,10 +443,10 @@ def measure(plan, old=None):
                  worst={k: worst[k] for k in ('tsid', 'street', 'layer', 'cls', 'w', 'h', 'blur', 'gain')},
                  file=os.path.basename(path if worst['cls'] != 'far' else path.replace('@1.5x.webp', '.webp')),
                  texels=(L if worst['cls'] == 'far' else f3), need=[round(worst['w'] * worst['dens']), round(worst['h'] * worst['dens'])],
-                 s=round(max([max(p['w'] / L[0], p['h'] / L[1]) for p in near] or [0]), 4) if near_blurry and edge >= S['edge_min'] else 0,
+                 s=round(max([max(p['w'] / L[0], p['h'] / L[1]) for p in near] or [0]), 4) if near_hard else 0,
                  sf=round(sf, 4), sb=round(sb, 4), sh=round(sh, 4), bneed=round(bneed, 4), size2=L,
                  counted=bool(counted), unsized=sum(1 for p in counted if not p['sized']), source=row['mode'] == 'swf' or sp in ALIGN_TO_PNG,
-                 edge=edge, edge_of=fsha)
+                 edge=edge, outline=outline, edge_of=fsha)
         rows.append(r)
     rows.sort(key=lambda r: -r['ratio'])
     return rows
@@ -649,7 +668,7 @@ def write_sharp(p):
 
 # Settings that only pick candidates or size the WebP: a WebP row is redone when its res changes
 # (webp_res), an SVG row never needs them.
-SIZING = ('R', 'ratio_min', 'front_min', 'edge_min', 'target', 'webp_max_side')
+SIZING = ('R', 'ratio_min', 'front_min', 'edge_min', 'outline_ratio', 'target', 'webp_max_side')
 
 
 def row_key(r, prow):
@@ -700,7 +719,7 @@ def cmd_build(args):
         fresh = (o and o.get('key') == r['key'] and not args.force and all(os.path.exists(f) for f in out_files(o))
                  and (o['kind'] != 'webp' or o.get('res') == webp_res(r, 1.5 if prow.get('hires') else 1)))
         if o and (only and r['name'] not in only or fresh):
-            keep.append(dict(o, ratio=r['ratio'], front=r['front'], placements=r['placements'], over=r['over'], worst=r['worst'],
+            keep.append(dict(o, ratio=r['ratio'], front=r['front'], placements=r['placements'], over=r['over'], worst=r['worst'], outline=r['outline'],
                              s=r['s'], sf=r['sf'], sb=r['sb'], sh=r['sh'], bneed=r['bneed']))
             continue
         if only and r['name'] not in only:
@@ -743,7 +762,7 @@ def cmd_build(args):
 
 
 def soft_rows(soft):
-    return [{k: r[k] for k in ('name', 'ratio', 'front', 'edge', 'edge_of', 'worst')} for r in soft]
+    return [{k: r[k] for k in ('name', 'ratio', 'front', 'edge', 'outline', 'edge_of', 'worst')} for r in soft]
 
 
 def seam_reference(r, refs):
@@ -884,7 +903,7 @@ def build_chunk(work, chunk, args):
     for r in chunk:
         if not r.get('kind'):
             continue
-        keep = ('name', 'kind', 's', 'sf', 'sb', 'sh', 'bneed', 'size2', 'ratio', 'front', 'placements', 'over', 'worst', 'edge', 'edge_of', 'swf_sha',
+        keep = ('name', 'kind', 's', 'sf', 'sb', 'sh', 'bneed', 'size2', 'ratio', 'front', 'placements', 'over', 'worst', 'edge', 'outline', 'edge_of', 'swf_sha',
                 'key', 'svg_check', 'seam', 'sealed', 'why', 'fit', 'aligned_diff', 'res', 'size', 'bytes', 'sha', 'lossless', 'err')
         out.append({k: r[k] for k in keep if k in r and r[k] is not None})
     return out
