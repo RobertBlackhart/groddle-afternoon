@@ -813,13 +813,14 @@ export function getVerbsFor(target, ctx) {
     });
   }
 
+  // #665: spin is offered the moment the wheel appears (npc_spinning_wheel.js 184-189), once.
   if (classId === 'npc_spinning_wheel') {
     const wheel = target.state?.wheel;
-    const ready = wheel?.phase === 'ready' && !wheel?.spun;
+    const ready = !wheel?.spun;
     add('spin', 'spin', {
       sort: 10,
       enabled: ready,
-      reason: wheel?.spun ? 'This wheel has already been spun.' : 'The wheel is still appearing.',
+      reason: 'This wheel has already been spun.',
       tooltip: 'Test your luck',
     });
   }

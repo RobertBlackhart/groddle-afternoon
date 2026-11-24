@@ -238,7 +238,8 @@ export function canSpinWheel(state, ownerId = 'player', now = Date.now()) {
     return { ok: false, reason: 'owner', message: "This wheel isn't here for you." };
   }
   if (state.spun) return { ok: false, reason: 'spun', message: 'This wheel has already been spun.' };
-  if (now < state.readyAt) return { ok: false, reason: 'appearing', message: 'The wheel is still appearing.' };
+  // #665: Glitch's spin verb is enabled for the owner from onCreate (npc_spinning_wheel.js 184-189);
+  // readyAt only times the "Spin me!" bubble, as the source's spin_me message at 1200 ms (:213).
   if (now >= state.expiresAt) return { ok: false, reason: 'expired', message: 'The wheel has disappeared.' };
   return { ok: true };
 }

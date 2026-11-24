@@ -32,6 +32,7 @@ import {
   createShrineState,
   donateToShrine,
 } from '../public/js/shrines.js?v=d5d7a471';
+import { getVerbsFor } from '../public/content.js?v=c76a3f3f';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
@@ -85,7 +86,8 @@ test.describe('owner-only one-spin lifecycle', () => {
   test('waits for appearance, reveals color, awards, and disappears on source timing', () => {
     const wheel = createSpinningWheelState('ur', 1_000);
     assert.equal(spinningWheelPhase(wheel, 1_000), 'appear');
-    assert.equal(canSpinWheel(wheel, 'ur', 1_000).reason, 'appearing');
+    // #665: spin is open from the moment the wheel appears (npc_spinning_wheel.js 184-189).
+    assert.equal(canSpinWheel(wheel, 'ur', 1_000).ok, true);
     assert.equal(spinningWheelPhase(wheel, 1_000 + SPINNING_WHEEL_APPEAR_MS), 'ready');
     assert.equal(canSpinWheel(wheel, 'someone-else', 2_200).reason, 'owner');
 
@@ -389,5 +391,41 @@ print(json.dumps(out))`;
     }
     assert.match(game, /preloadWheelSheets\(\['wheelAppear', 'wheelWhiteSpin', 'wheelDisappear'\]\);\n\s+setSpinningWheelVisual\(spinningWheelTarget, 'appear'\);/);
     assert.match(game, /preloadWheelSheets\(\[wheelSheetKey\(`\$\{result\.color\}_spin`\), wheelSheetKey\(`\$\{result\.color\}_end`\)\]\);/);
+  });
+});
+
+// #665: a Gameshow Ticket's wheel can be spun the moment it appears, as in Glitch
+// (npc_spinning_wheel.js 184-189: spin is 'enabled' for the owner from onCreate; the 1200 ms at 213 only
+// times the "Spin me!" bubble). Failed on v0.64.0: a 1.2 s client-only gate (readyAt).
+test.describe('#665 spin at once', () => {
+  test('the wheel spins at once after the ticket is used', () => {
+    const wheel = createSpinningWheelState('player', 1_000, { ticket: GAMESHOW_TICKET_ID });
+    wheel.phase = spinningWheelPhase(wheel, 1_000);
+    assert.equal(wheel.phase, 'appear');
+    const spin = getVerbsFor({ classId: 'npc_spinning_wheel', state: { wheel } }, { pc: {}, inv: {} })
+      .find((v) => v.id === 'spin');
+    assert.equal(spin?.enabled, true, `menu: ${spin?.reason}`);
+    assert.equal(canSpinWheel(wheel, 'player', 1_000).ok, true);
+  });
+
+  test('still one spin and one ticket', () => {
+    const wheel = createSpinningWheelState('player', 1_000, { ticket: GAMESHOW_TICKET_ID });
+    const inv = { [GAMESHOW_TICKET_ID]: 1 };
+    assert.equal(startSpinningWheel(wheel, 'player', { now: 1_000 }).ok, true);
+    assert.equal(startSpinningWheel(wheel, 'player', { now: 1_001 }).reason, 'spun');
+    const spin = getVerbsFor({ classId: 'npc_spinning_wheel', state: { wheel } }, { pc: {}, inv: {} })
+      .find((v) => v.id === 'spin');
+    assert.equal(spin?.enabled, false);
+    applySpinningWheelReward(wheel, inv, { currants: 0 });
+    assert.equal(inv[GAMESHOW_TICKET_ID] || 0, 0);
+    applySpinningWheelReward(wheel, inv, { currants: 0 });
+    assert.equal(spendSpinningWheelTicket(wheel, inv), false);
+  });
+
+  test('the game refreshes an open verb menu when the wheel changes', () => {
+    const src = fs.readFileSync(path.join(root, 'public/game.js'), 'utf8');
+    const body = src.slice(src.indexOf('function updateSpinningWheel()'), src.indexOf('function makePlayer()'));
+    assert.match(body, /refreshVerbMenu\(target\)/);
+    assert.doesNotMatch(src, /Give it a moment, then spin/);
   });
 });

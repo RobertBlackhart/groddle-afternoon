@@ -11768,7 +11768,7 @@ function useGameshowTicket() {
   }
   // G318: buildVerbMessage(count, 'use', 'used') (gameshow_ticket.js 125-126).
   pushActivity('You used a Gameshow Ticket.');
-  toast('A Spinning Wheel appears. Give it a moment, then spin!', 3200);
+  toast('A Spinning Wheel appears. Spin it!', 3200);
   playSfx('alert', { volume: 0.42, rate: 1.12 });
   updateHud();
   return true;
@@ -11821,8 +11821,11 @@ function updateSpinningWheel() {
   if (!target || !wheel) return;
   const now = Date.now();
   const phase = spinningWheelPhase(wheel, now);
+  const changed = wheel.phase !== phase;
   wheel.phase = phase;
   setSpinningWheelVisual(target, phase);
+  // #665: a verb menu open on the wheel follows its state (Spin greys once it has been spun).
+  if (changed) refreshVerbMenu(target);
   if (phase === 'ready' && !spinningWheelPrompted) {
     spinningWheelPrompted = true;
     showSpeechBubble(target, {
