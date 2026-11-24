@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.66.0",
+  "release": "v0.67.0",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -42,7 +42,7 @@
     "fixing": 3,
     "known": 15,
     "unreleased": 0,
-    "fixed": 525,
+    "fixed": 531,
     "lost": 5,
     "purpose": 17,
     "idea": 10
@@ -1271,6 +1271,24 @@
           "version": "v0.63.2"
         },
         {
+          "id": "G1242",
+          "text": "Doors between house floors could not be moved once placed; in Glitch they slid along their own floor.",
+          "state": "fixed",
+          "version": "v0.67.0"
+        },
+        {
+          "id": "G1249",
+          "text": "Machines and the Crafty Bot worked only on a house's ground floor.",
+          "state": "fixed",
+          "version": "v0.67.0"
+        },
+        {
+          "id": "G1251",
+          "text": "The house floor move took Stills out of their owners' homes onto the shared floor.",
+          "state": "fixed",
+          "version": "v0.67.0"
+        },
+        {
           "id": "G48",
           "text": "The name sign on a player tower and the lettering of its floor numbers have no free source, so they look different from Glitch.",
           "state": "lost"
@@ -2409,6 +2427,12 @@
           "text": "On streets with low platforms, a phone's camera put your Glitch under the stick and buttons.",
           "state": "fixed",
           "version": "v0.63.0"
+        },
+        {
+          "id": "G1247",
+          "text": "On a phone, party, quest room, crowns and race bars sat in the status bar over the top bar.",
+          "state": "fixed",
+          "version": "v0.67.0"
         }
       ]
     },
@@ -2660,6 +2684,12 @@
           "text": "The full-bag backdrop in the pack row was a jarring jet black.",
           "state": "fixed",
           "version": "v0.60.0"
+        },
+        {
+          "id": "G1241",
+          "text": "Typing a number into a How many field put the cursor back at the start after each digit, so 24 came out as 42.",
+          "state": "fixed",
+          "version": "v0.67.0"
         }
       ]
     },
@@ -3838,6 +3868,17 @@
           "text": "Snaps were saved small, cropped in the album, and could not be opened full size, downloaded or shared.",
           "state": "fixed",
           "version": "v0.65.0"
+        }
+      ]
+    },
+    {
+      "name": "Furniture",
+      "items": [
+        {
+          "id": "G1248",
+          "text": "There was no way to get a Bookcase.",
+          "state": "fixed",
+          "version": "v0.67.0"
         }
       ]
     }
