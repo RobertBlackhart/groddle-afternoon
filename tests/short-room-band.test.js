@@ -11,9 +11,9 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { SHORT_SCENE_BAND, shortSceneBand } from '../public/js/location-view.js?v=5a7e0e75';
-import { stageSkyColour } from '../public/js/street-render.js?v=1e049218';
-import { ROOM_NO_SKY, gradientTop, sceneRoot } from '../public/js/quest-rooms/kit.js?v=743479f0';
+import { SHORT_SCENE_BAND, shortSceneBand } from '../public/js/location-view.js?v=60099786';
+import { stageSkyColour } from '../public/js/street-render.js?v=a3aa6336';
+import { ROOM_NO_SKY, gradientTop, sceneRoot } from '../public/js/quest-rooms/kit.js?v=926747d2';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');
@@ -56,15 +56,17 @@ describe('G863: a short room\'s band colour', () => {
 
   it('game.js: the band and the canvas clear take the scene\'s colour while there is a band, the page blue otherwise', () => {
     const game = read('public/game.js');
-    assert.match(game, /const sky = band >= 1 \? shortSceneBand\(viewSceneLayer\?\.skyTop\) : '';/);
-    assert.match(game, /const clear = \/\^#\[0-9a-f\]\{6\}\$\/i\.test\(sky\) \? parseInt\(sky\.slice\(1\), 16\) : STAGE_CLEAR;/);
+    // SKY FILL (2026-11-24): a computer's narrow window takes shortSceneBand, an upright phone the scene's sky (stageBandColour).
+    assert.match(game, /const sceneSky = band >= 1 \? stageBandColour\(sceneBandSky\(viewSceneLayer\), \{ phone: stageSkyFill \}\) : '';/);
+    assert.match(read('public/js/location-view.js'), /if \(!phone\) return shortSceneBand\(css\);/);
+    assert.match(game, /const colour = \/\^#\[0-9a-f\]\{6\}\$\/i\.test\(clear\) \? parseInt\(clear\.slice\(1\), 16\) : STAGE_CLEAR;/);
     assert.match(game, /const STAGE_CLEAR = 0x8ec8e8;/);
     assert.match(game, /background: STAGE_CLEAR,/);
     assert.match(read('public/style.css'), /--c-sky-80: #8ec8e8;/);
   });
 });
 
-describe('G880 (Austin 2026-11-16): the band is dark everywhere a scene is shorter than the screen', () => {
+describe('G880 (Austin 2026-11-16): the band is dark where a scene is shorter than a computer\'s narrow window (an upright phone carries the scene\'s sky on up since 2026-11-24, tests/g1167-sky-gradient-layer.test.js SKY FILL)', () => {
   const street = (tsid) => JSON.parse(read(`public/assets/streets/${tsid}.json`));
   it('a scene\'s own dark top keeps it; a light one (a street\'s sky, the yard, a sunny room) gets the dark border', () => {
     assert.equal(SHORT_SCENE_BAND, ROOM_NO_SKY);

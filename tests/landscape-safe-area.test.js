@@ -12,7 +12,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { phoneStage, stageFor } from '../public/js/location-view.js?v=5a7e0e75';
+import { phoneStage, stageFor } from '../public/js/location-view.js?v=60099786';
 import { STREET_GROUND_LINES } from '../public/js/street-ground-lines.js?v=31e7f393';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

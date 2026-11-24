@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=7ef2b106';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=3eeed40d';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=7e2d7fe4';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE, playerClickBox } from './js/reach.js?v=456da8a8';
@@ -137,7 +137,7 @@ import {
 } from './js/legalize-it.js?v=7ec63cac';
 import { HALL, HALL_LAYOUT, HALL_OFFICE, HALL_QUESTIONS } from './js/bureaucratic-hall.js?v=7ea53899';
 import { STATION_X, stationArrival, stationScreen, surfaceStation } from './js/subway.js?v=ea6921ff';
-import { ALLEY, SHADY, drawAlley, inEnteredBox } from './js/quest-rooms/back-alley-set.js?v=5ed1be2c';
+import { ALLEY, SHADY, drawAlley, inEnteredBox } from './js/quest-rooms/back-alley-set.js?v=1338ff35';
 import { WINTER_WALK_BOUNDS, WINTER_WALK_PASSAGE } from './js/winter-walk-streets.js?v=c921bf92';
 import {
   WINTER_HAVEN_STREET_ID,
@@ -738,7 +738,7 @@ import {
   ensureStreetIndex,
   resolveIndexTsid,
 } from './js/street-loader.js?v=10376267';
-import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=9d8d2ede';
+import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=e69d434a';
 import {
   ladderTopDeck,
   groundBeneath,
@@ -770,7 +770,7 @@ import {
   setSignpostHover,
   setSignpostKeys,
   signpostBoardAt,
-} from './js/street-render.js?v=1e049218';
+} from './js/street-render.js?v=a3aa6336';
 import {
   GAME_DAY_MS,
   shouldFireNewDay,
@@ -834,7 +834,7 @@ import { easeCameraAxis } from './js/camera-feel.js?v=e668afc5';
 import { renderResolution, resolutionCap, RESOLUTION_STEP, phoneZoomResolution } from './js/render-density.js?v=74c6f5f9';
 // g458: low energy and mood turn amber and red, and a click offers something from the pack.
 import { makingNeeds, vitalMenuEmpty, vitalMenuHeading, vitalSnacks } from './js/vitals.js?v=85a51302';
-import { DEFAULT_VP_H, LOCATION_VIEW_W, VIEW_CEIL_H, stageFor, sceneViewCap, sceneViewWidthCap, zoomMovesStage, phoneZoomSpan, phoneCameraAnchor, phoneFeetWorldHeight, phoneGroundWorldHeight, reachableFloorY, sceneBottomLine, sceneGroundLine, shortSceneBand, stageRoomBeside } from './js/location-view.js?v=5a7e0e75';
+import { DEFAULT_VP_H, LOCATION_VIEW_W, VIEW_CEIL_H, stageFor, sceneViewCap, sceneViewWidthCap, zoomMovesStage, phoneZoomSpan, phoneCameraAnchor, phoneFeetWorldHeight, phoneGroundWorldHeight, reachableFloorY, sceneBottomLine, sceneGroundLine, stageBandColour, stageEdgeColour, stageRoomBeside } from './js/location-view.js?v=60099786';
 import {
   levelInfoForXp,
   reconcilePlayerProgression,
@@ -865,12 +865,12 @@ import {
 import { momentMoreText } from './js/ui/moment-card.js?v=35252236';
 import { CHAT_MAX_CHARS, chatBubbleText } from './js/ui/chat-input.js?v=8f2479a3';
 // HUB: the hub is the Modern skin's; Classic owns X in its skin (js/classic/classic-hub.js).
-import { MODERN, onUiModeChange, readUiCache, uiState, writeUiCache } from './js/classic/ui-mode.js?v=9ab49258';
+import { MODERN, onUiModeChange, readUiCache, uiState, writeUiCache } from './js/classic/ui-mode.js?v=cccf1ea6';
 // ZOOM: the world zoom (a device preference) and Classic's frame scale under it; both load before main().
 import { worldZoom, setWorldZoom, stepWorldZoom, onZoomChange, zoomKeyAction, zoomKeyToast, zoomFixed, setZoomFixed, onZoomFixedChange, phoneZoom } from './js/world-zoom.js?v=38816228';
 import { nightTint, nightTintOn, onNightTintChange, worldTintOpacity } from './js/night-tint.js?v=1dfc9c89';
 import { streetMapSetting, toggleStreetMap } from './js/ui/street-minimap.js?v=cf66d461';
-import './js/classic/classic-zoom.js?v=896005d6';
+import './js/classic/classic-zoom.js?v=0aeb0ba7';
 import { mountImaginationHub } from './js/ui/imagination-hub.js?v=6928c5b7';
 import { newDayBubble, shuffleNewDayMessages, waitForScreenGates } from './js/screen-queue.js?v=cf0132c0';
 import { applyFamiliarLook, familiarCardHeading, familiarLook, skillArtFor, skillLearnedActivity } from './js/familiar.js?v=b9597cd3';
@@ -1179,7 +1179,7 @@ import { filterText } from './js/word-filter.js?v=9a7a7ebb'; // the remake's own
 import { mountStartStreet } from './js/start-street.js?v=7d8ce49c'; // #349: the start card names the save's street
 import { arrangeMapCards, fitMapExtras } from './js/map-extras.js?v=16e261b1'; // the Map's Shortcuts
 // The interface skin (js/classic/ui-mode.js) sets <html data-ui> as it loads: before main(), so before the boot cover lifts.
-import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=ca208204';
+import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=a44a67c0';
 import { standOnFeet, anchorBottomCentre } from './js/sprite-feet.js?v=11303931';
 import { markLeaving, packPicks, takeCopies } from './js/copy-picks.js?v=b368fd49';
 import { holdKeepsBusy } from './js/instance-holds.js?v=ff3a63a3';
@@ -2264,6 +2264,8 @@ function stageArgs() {
     groundFit: computerGroundFit(),
     // TOP BAND (#653 follow-up): in the iOS Home Screen app upright a held street reaches up to the dark strip.
     topBand: dock ? 0 : phoneTopBand(),
+    // SKY FILL: the house and a Tower floor take a narrower floor upright (js/features/homes-feature.js phoneMinViewW).
+    minViewW: bgLayer?.phoneMinViewW,
   };
 }
 
@@ -2352,6 +2354,72 @@ function streetZoomFixed() {
 }
 
 /**
+ * SKY FILL (js/location-view.js stageBandColour): whether an upright phone's band over a short scene
+ * carries the scene on up (set by syncLocationViewHeight), the scene it was worked out for, the
+ * colour read back from the canvas's top edge (sampleStageSkyEdge) and what was last painted.
+ */
+let stageSkyFill = false;
+let stageSkyScene = null;
+let stageSkyEdge = null;
+let stageSkyReadAt = -Infinity;
+let stageSkyShown = { band: null, clear: null };
+
+/** SKY FILL: the scene's sky colour at the canvas's top edge (a street's, where its camera has it), or its top colour. */
+function sceneBandSky(layer) {
+  return Number.isFinite(layer?.viewSkyTop) ? layer.viewSkyTop : layer?.skyTop;
+}
+
+/**
+ * The band's colour (--stage-sky) and the canvas's clear colour, painted only when they change. G863
+ * (#422): a room draws nothing above its ceiling, where the canvas showed its clear colour (the page's
+ * sky blue) under that band; it clears to the scene's colour while there is one. With no arguments
+ * (each frame, SKY FILL only) the band follows what the canvas draws at its top edge, or the street's
+ * sky at the camera's top edge until that has been read.
+ */
+function syncStageSky(band, clear = band) {
+  if (band === undefined) {
+    if (!stageSkyFill || viewSceneLayer !== bgLayer) return;
+    clear = stageBandColour(sceneBandSky(bgLayer), { phone: true });
+    band = stageSkyEdge || clear;
+  }
+  if (band !== stageSkyShown.band) {
+    stageSkyShown.band = band;
+    const root = document.getElementById('game-root');
+    if (band) root?.style.setProperty('--stage-sky', band);
+    else root?.style.removeProperty('--stage-sky');
+  }
+  if (clear !== stageSkyShown.clear) {
+    stageSkyShown.clear = clear;
+    const colour = /^#[0-9a-f]{6}$/i.test(clear) ? parseInt(clear.slice(1), 16) : STAGE_CLEAR;
+    if (app?.renderer?.background && app.renderer.background.color?.toNumber?.() !== colour) app.renderer.background.color = colour;
+  }
+}
+
+/**
+ * SKY FILL: read back the row the canvas just drew at its top edge (WebGL, right after the render in
+ * the same frame, so the drawing buffer still holds it) twice a second while there is a band, and
+ * carry its main colour on up (stageEdgeColour). A Towers hall or a cave whose far layer is opaque art
+ * shows no sky there; reading the canvas fits every scene the same way. WebGPU keeps the scene's colour.
+ */
+function sampleStageSkyEdge() {
+  if (!stageSkyFill || pinchPreview || viewSceneLayer !== bgLayer) return;
+  const now = performance.now();
+  if (now - stageSkyReadAt < 500) return;
+  stageSkyReadAt = now;
+  const gl = app?.renderer?.gl;
+  if (!gl || gl.isContextLost?.() || gl.getParameter(gl.FRAMEBUFFER_BINDING) !== null) return;
+  const w = gl.drawingBufferWidth;
+  const h = gl.drawingBufferHeight;
+  if (!(w > 0) || !(h > 2)) return;
+  const row = new Uint8Array(w * 4);
+  // A CSS px or two under the edge: the canvas's own top row, clear of any half-pixel seam.
+  gl.readPixels(0, h - 1 - Math.min(h - 1, Math.round(2 * (app.renderer.resolution || 1))), w, 1, gl.RGBA, gl.UNSIGNED_BYTE, row);
+  stageSkyEdge = stageEdgeColour(row, w);
+  if (app.canvas) app.canvas.dataset.stageSkyEdge = stageSkyEdge || '';
+  syncStageSky();
+}
+
+/**
  * Size the canvas to the window, live; true when the view changed. The view
  * grows with the window at about 1:1 (VIEWHEIGHT = grow, now in both axes),
  * a scene smaller than it magnifies to fill, and the canvas always fills
@@ -2395,15 +2463,21 @@ function syncLocationViewHeight({ keepFraming = false } = {}) {
       stageCanvasSize = null;
     }
     pinStageCanvasSize();
-    // #348: the band above a short street is not the page's blue. G880 (Austin 2026-11-16): it is dark
-    // everywhere, the scene's own top colour only where that is dark (js/location-view.js shortSceneBand).
-    const sky = band >= 1 ? shortSceneBand(viewSceneLayer?.skyTop) : '';
-    if (sky) root.style.setProperty('--stage-sky', sky);
-    else root.style.removeProperty('--stage-sky');
-    // G863 (#422): a room draws nothing above its ceiling, where the canvas showed its clear colour
-    // (the page's sky blue) under that band; it clears to the band's colour while there is one.
-    const clear = /^#[0-9a-f]{6}$/i.test(sky) ? parseInt(sky.slice(1), 16) : STAGE_CLEAR;
-    if (app?.renderer?.background && app.renderer.background.color?.toNumber?.() !== clear) app.renderer.background.color = clear;
+    // #348: the band above a short street is not the page's blue. G880 (Austin 2026-11-16): dark on a
+    // computer's narrow window. SKY FILL (Austin's iPhone 2026-11-24): on an upright phone the band is
+    // the scene's own sky carried on up, faded over the canvas's top edge (js/location-view.js
+    // stageBandColour, style.css data-stage-sky-fill); syncStageSky follows the camera each frame.
+    stageSkyFill = band >= 1 && Boolean(stage.phone) && !stage.landscape;
+    if (stageSkyFill) root.dataset.stageSkyFill = '1';
+    else delete root.dataset.stageSkyFill;
+    // A new scene, or no band: the old read-back is not this one's; the next frame reads again.
+    if (!stageSkyFill || stageSkyScene !== viewSceneLayer) {
+      stageSkyScene = viewSceneLayer;
+      stageSkyEdge = null;
+    }
+    stageSkyReadAt = -Infinity;
+    const sceneSky = band >= 1 ? stageBandColour(sceneBandSky(viewSceneLayer), { phone: stageSkyFill }) : '';
+    syncStageSky(stageSkyFill && stageSkyEdge ? stageSkyEdge : sceneSky, sceneSky);
   }
   if (stage.pinned && stageCanvasSize) {
     stageCanvasSize = null;
@@ -23845,7 +23919,7 @@ function paintParadiseSky(root, course) {
   }
   sky.zIndex = -100;
   root.addChild(sky);
-  // #603: the band an upright phone leaves over a short view takes the course's top colour where it is dark (shortSceneBand).
+  // #603: the band an upright phone leaves over a short view carries the course's top colour on up (stageBandColour).
   root.skyTop = `#${(stops[0][1] >>> 0).toString(16).padStart(6, '0').slice(-6)}`;
 
   // G1160: a course's own stars where its snaps show them (PARADISE_SKIES stars), none where they show none.
@@ -36700,6 +36774,8 @@ async function main() {
     syncStreetFront();
     bgLayer?.updateParallax?.(-world.x, -world.y, VIEW_W, LOCATION_VIEW_H, VIEW_H, parallaxSnap());
     bgLayer?.cullDecos?.(-world.x, -world.y, VIEW_W, VIEW_H);
+    // SKY FILL: the band over a short street follows its sky at the camera's top edge.
+    syncStageSky();
   };
   // Report 116: the frame's work runs inside a guard. A throw used to stop the loop for good
   // (Pixi's ticker asks for the next frame only after its listeners return): the view froze on
@@ -36931,6 +37007,8 @@ async function main() {
   // asked for another frame, so the game froze for good. The render is a guarded stage too ("frame
   // render", reported once), still last (js/pixi-fixes.js guardTickerRender).
   guardTickerRender(PIXI, app, (fn) => run('render', fn));
+  // SKY FILL: after the render (UTILITY runs after LOW), the band over a short scene reads the canvas's top edge.
+  app.ticker.add(() => run('sky fill', sampleStageSkyEdge), null, PIXI.UPDATE_PRIORITY?.UTILITY ?? -50);
 
   if (startCardWaits) {
     const t0 = performance.now();

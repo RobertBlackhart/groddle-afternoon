@@ -103,6 +103,7 @@ import { countItem, ensureItem, ITEM_CATALOG, removeItem } from '../inventory.js
 import { likeStackAt, mergeDroppedStacks, pickupCountTitle } from '../world-items.js?v=b984e516';
 import { groundKey, groundStacks, ownGroundRows, ownGroundState } from '../ground-stacks.js?v=22792362';
 import { keepsOwnStack } from '../tools.js?v=4156bba8';
+import { PHONE_HOME_MIN_VIEW_W } from '../location-view.js?v=60099786';
 import { createCountChooser } from '../ui/count-chooser.js?v=c268eefe';
 import { isBagClass } from '../pack-slots.js?v=11aa0ad5';
 import { registerDropTarget } from '../drop-targets.js?v=59e6edb4';
@@ -218,7 +219,7 @@ import { DISPATCHER_HALF, DISPATCHER_TEXT, MOVABLE_FIXTURES, MOVABLE_FIXTURE_IDS
 import { displayTopOf, itemstackOverlayPoint, overlayAlpha, overlayLifeMs, playPoofIn, trackOverlay } from '../overlay-art.js?v=e50bacca';
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d787e3c3';
 import { fadeInNewNear } from '../poof-fade.js?v=57db6aea';
-import { projectApi } from './street-jobs-feature.js?v=3cc8c23d';
+import { projectApi } from './street-jobs-feature.js?v=8a358377';
 import { TOWER_CHASSIS, TOWER_CONFIG, TOWER_DOOR_DX, TOWER_GEO, TOWER_PROTO, normalizeTowerState } from '../home-tower.js?v=84d99af0';
 import { drawTowerBench, drawTowerElevator, drawTowerExit, towerApi, visitorTowerView } from './home-tower-feature.js?v=7de4d00a';
 import { pieceUrl, roomPieces, surfaceAt, swatchPiece, wallTargetAt } from '../home-wallpaper.js?v=99228166';
@@ -248,7 +249,7 @@ import {
 } from '../home-styles.js?v=ec5d2f69';
 import { frameTexture, isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=b8e38103';
 import { FALLBACK_MAX as WORLD_ART_FALLBACK_MAX, worldArtFor } from '../world-art.js?v=a67514c8';
-import { oneArmSignpost } from '../street-render.js?v=1e049218';
+import { oneArmSignpost } from '../street-render.js?v=a3aa6336';
 import { ROCK_CATALOG } from '../mining.js?v=c3bd3675';
 import {
   HOUSE_SIGN,
@@ -988,6 +989,9 @@ function interiorBackground(engine, opts = {}) {
   root.yardStyle = opts.yard ? shownYardStyle(engine) : null;
   if (!opts.yard) root.skyTop = HOME_OUTSIDE_SKY;
   root.worldH = root.room.bottom;
+  // SKY FILL (js/location-view.js PHONE_HOME_MIN_VIEW_W): on an upright phone the house and a Tower
+  // floor magnify a little more than other short scenes, up to the strip at the screen's top.
+  root.phoneMinViewW = PHONE_HOME_MIN_VIEW_W;
   const { room } = root;
   // The floor is solid from the top (inc_homes.js homes_rebuild_floor 928-933: platform_pc_perm -1).
   // pc_perm 1 is an underside (street-model.js isStandable): with it the avatar stood on the yard's
@@ -2123,6 +2127,9 @@ export function drawLandscape(engine, root, style, seed, { width, groundY, lift,
   // The profile's diorama (js/home-layout-scene.js) draws these from their colours.
   sky.homeLayoutSky = style.sky;
   root.addChild(sky);
+  // SKY FILL (js/location-view.js stageBandColour): the sky is pinned to the view, so its top colour
+  // is the canvas's top edge; the band over a short yard on an upright phone carries it on up.
+  root.skyTop = `#${(style.sky[0] >>> 0).toString(16).padStart(6, '0').slice(-6)}`;
 
   const parallax = [];
   const spanFor = (f) => width * f + VIEW_W * (1 - f) + 400;

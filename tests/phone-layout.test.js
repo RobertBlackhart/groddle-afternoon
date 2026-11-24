@@ -871,3 +871,107 @@ describe('the home\'s buttons on the real game (Chrome, Austin 2026-11-24)', { s
     });
   }
 });
+
+// SKY FILL (Austin's iPhone 2026-11-24, the Home Screen app upright, in his back yard: "Go ahead and
+// fill the top part for my screen"): the yard is shorter than the screen, so the stage held it under a
+// flat dark band (#2a2a2a) from the strip at 62 pt down to the yard's sky at about 245 pt. Now the house
+// reaches up to the strip (js/location-view.js PHONE_HOME_MIN_VIEW_W), and whatever band a short scene
+// still leaves under the strip is the scene carried on up: the colour the canvas draws at its top edge
+// (game.js sampleStageSkyEdge), the yard's sky or a Towers hall's wall, never the dark border.
+describe('a short scene on an upright phone leaves no flat dark band (Chrome, Austin 2026-11-24)', { skip: !chromium && 'no playwright' }, () => {
+  const LOCK_WAIT_MS = 30 * 60_000;
+  const UA = 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1';
+  let server = null;
+  let chrome = null;
+  before(async () => {
+    const { openBrowser } = await import('../tools/qa/browser.mjs');
+    const { startServer } = await import('../tools/qa/serve.mjs');
+    chrome = await openBrowser({ label: 'phone-layout sky fill test', waitMs: LOCK_WAIT_MS });
+    server = await startServer({ root: join(root, 'public') });
+  }, { timeout: LOCK_WAIT_MS + 60_000 });
+  after(async () => {
+    await chrome?.close();
+    await server?.stop();
+  });
+
+  // [place, width, height, Home Screen app (navigator.standalone and a 62 px inset)]
+  const PLACES = [
+    ['Home Screen app 402x874', 402, 874, true],
+    ['Safari tab 402x874', 402, 874, false],
+    ['375x667', 375, 667, false],
+  ];
+  const SCENES = [
+    ['the back yard', 'homedemo=interior&homex=-330'],
+    // A Towers hall: its far layer is the hall's wall, so its blue sky gradient never shows (the band once took that blue).
+    ['Hakusan Heaps Towers', 'streetdemo=GHVUFJ6HGRU2V0E'],
+  ];
+  for (const [scene, q] of SCENES) {
+    it(`${scene}: at 402x874 (the Home Screen app and a Safari tab) and 375x667 the top is the scene, not a flat dark band`, { timeout: 240_000 }, async () => {
+      const base = `http://127.0.0.1:${server.address().port}`;
+      const bad = [];
+      for (const [place, w, h, app] of PLACES) {
+        const ctx = await chrome.browser.newContext({ viewport: { width: w, height: h }, isMobile: true, hasTouch: true, deviceScaleFactor: 1, userAgent: UA });
+        await ctx.addInitScript((standalone) => {
+          try { localStorage.setItem('groddle-play-device', 'qa-game'); } catch { /* none */ }
+          if (standalone) Object.defineProperty(Navigator.prototype, 'standalone', { get: () => true, configurable: true });
+        }, app);
+        const tab = await ctx.newPage();
+        const cdp = await ctx.newCDPSession(tab);
+        await cdp.send('Emulation.setSafeAreaInsetsOverride', { insets: app ? { top: 62, bottom: 34, left: 0, right: 0 } : { top: 0, bottom: 0, left: 0, right: 0 } });
+        const errors = [];
+        tab.on('pageerror', (e) => errors.push(e.message));
+        await tab.goto(`${base}/play/?autostart=1&questoffer=off&hstip=0&fresh=1&resetgame=1&${q}`);
+        await tab.waitForFunction(() => !document.body.classList.contains('is-booting') && document.getElementById('overlay')?.classList.contains('hidden') && document.documentElement.classList.contains('phone-layout'), null, { timeout: 60_000 });
+        await tab.waitForTimeout(3500);
+        const m = await tab.evaluate(() => {
+          const c = document.querySelector('#game-root > canvas[role="application"]').getBoundingClientRect();
+          const strip = parseFloat(getComputedStyle(document.body, '::before').height) || 0;
+          const hud = [...document.querySelectorAll('#hud-stats, .top-bar .top-actions, #street-nameplate, #homes-modes, #buff-strip, .notify-notices > *, .touch-stick, .touch-act, .touch-jump, .street-prompt, .quoin-notice')]
+            .filter((el) => el.checkVisibility() && el.getBoundingClientRect().width > 0)
+            .map((el) => { const r = el.getBoundingClientRect(); return [r.left, r.top, r.right, r.bottom]; });
+          return { top: c.top, strip, hud, app: document.documentElement.classList.contains('ios-home-app') };
+        });
+        if (m.app !== app) bad.push(`${place}: the Home Screen hook is ${m.app}`);
+        // The scene reaches the strip, or the band left over it is the scene carried on up.
+        if (m.top - m.strip > 2) {
+          const covered = (x, y) => m.hud.some(([l, t, r, b]) => x >= l - 2 && x <= r + 2 && y >= t - 2 && y <= b + 2);
+          const under = Math.round(m.top + 30); // the canvas's top colour, under the band's fade (28 px)
+          const spots = [];
+          for (const y of [m.top - 3, (m.strip + m.top) / 2]) {
+            for (let x = 6; x < w; x += 12) if (!covered(x, y)) spots.push([x, Math.round(y)]);
+          }
+          const shot = (await tab.screenshot()).toString('base64');
+          const got = await tab.evaluate(async ([b64, spots, under, w]) => {
+            const img = new Image();
+            img.src = `data:image/png;base64,${b64}`;
+            await img.decode();
+            const c = document.createElement('canvas');
+            c.width = img.width;
+            c.height = img.height;
+            const g = c.getContext('2d');
+            g.drawImage(img, 0, 0);
+            const at = (x, y) => [...g.getImageData(x, y, 1, 1).data.slice(0, 3)];
+            // The canvas row's main colour (the most common, 16 levels a channel).
+            const groups = new Map();
+            for (let x = 4; x < w; x += 8) {
+              const p = at(x, under);
+              const k = p.map((v) => v >> 4).join(',');
+              groups.set(k, [...(groups.get(k) || []), p]);
+            }
+            const main = [...groups.values()].sort((a, b) => b.length - a.length)[0];
+            return { band: spots.map(([x, y]) => at(x, y)), row: [0, 1, 2].map((i) => Math.round(main.reduce((t, p) => t + p[i], 0) / main.length)) };
+          }, [shot, spots, under, w]);
+          if (spots.length < 4) bad.push(`${place}: only ${spots.length} spots of the band clear of the HUD`);
+          for (const [i, [x, y]] of spots.entries()) {
+            const px = got.band[i];
+            if (px.every((v) => Math.abs(v - 0x2a) <= 3)) bad.push(`${place}: (${x}, ${y}) is the flat dark band ${px}`);
+            else if (px.some((v, k) => Math.abs(v - got.row[k]) > 24)) bad.push(`${place}: (${x}, ${y}) ${px} is not the scene's top colour ${got.row}`);
+          }
+        }
+        if (errors.length) bad.push(`${place}: ${errors.join('; ')}`);
+        await ctx.close();
+      }
+      assert.deepEqual(bad, []);
+    });
+  }
+});

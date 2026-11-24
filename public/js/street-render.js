@@ -3628,6 +3628,9 @@ export function buildStreetView(street, PIXI, opts = {}) {
     };
     put(skyParts.base, at.base);
     put(skyParts.gradient, at.gradient);
+    // SKY FILL (js/location-view.js stageBandColour): the sky's colour at the view's top edge, which
+    // the band over a short street on an upright phone carries on up.
+    root.viewSkyTop = skyColourAt(street.gradient.top, street.gradient.bottom, at.gradient.y, at.gradient.h, camY);
     skyParts.cap.visible = Boolean(at.cap);
     if (at.cap) put(skyParts.cap, at.cap);
     // Below the street's bottom: ground, never the sky's bottom colour (groundBelow, above).

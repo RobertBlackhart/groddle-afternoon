@@ -67,6 +67,15 @@ export const ORIGINAL_VIEW_H = 600;
  * instead of magnifying to a keyhole.
  */
 export const PHONE_PORTRAIT_MIN_VIEW_W = 560;
+/**
+ * SKY FILL (Austin's iPhone 2026-11-24, the Home Screen app upright, in his back yard: "Go ahead and
+ * fill the top part for my screen"): the narrowest view an upright phone shows in the house and on a
+ * Tower floor (a scene's `phoneMinViewW`, js/features/homes-feature.js interiorBackground). They are
+ * short (the house and its yard 738 px, a Tower floor 691) and the camera follows the avatar along
+ * them, so they magnify a little more than other short scenes: at 402 x 874 in the Home Screen app
+ * both reach up to the strip (the yard 444 px wide, a Tower floor 420), with no band left over them.
+ */
+export const PHONE_HOME_MIN_VIEW_W = 420;
 /** The remake's smallest view: its old fixed 408 px, inside the source's 400-600. */
 export const VIEW_FLOOR_H = 408;
 /**
@@ -262,12 +271,13 @@ export function stageFor({
   groundLine,
   groundFit,
   topBand,
+  minViewW,
 } = {}) {
   const W = finite(width);
   const H = finite(height);
   const pack = finite(packReserve, MIN_PACK_HEIGHT);
   const pinned = finite(pinnedHeight);
-  if (phone && !(pinned > 0) && W > 0 && H > W) return phoneStage({ width: W, height: H, packReserve: pack, sceneWidth, sceneHeight, closeup, groundLine, topBand });
+  if (phone && !(pinned > 0) && W > 0 && H > W) return phoneStage({ width: W, height: H, packReserve: pack, sceneWidth, sceneHeight, closeup, groundLine, topBand, minViewW });
   if (phone && !(pinned > 0) && W > 0 && H > 0) return landscapePhoneStage({ width: W, height: H, packReserve: pack, sceneWidth, sceneHeight, zoom, closeup, fitViewH });
   return computerStage({ width: W, height: H, packReserve: pack, sceneWidth, sceneHeight, pinnedHeight: pinned, zoom, borders: sceneBorders, fitViewH, groundFit });
 }
@@ -357,6 +367,58 @@ export function shortSceneBand(skyTop) {
   return luma <= SHORT_SCENE_BAND_MAX_LUMA ? String(skyTop).toLowerCase() : SHORT_SCENE_BAND;
 }
 
+/** SKY FILL: how far (CSS px) the band's colour fades down over the canvas's top edge on an upright phone. */
+export const STAGE_SKY_FADE = 28;
+
+/**
+ * PURE (SKY FILL, Austin's iPhone 2026-11-24, the Home Screen app upright, his back yard: "Go ahead
+ * and fill the top part for my screen"): the colour of the band over a scene shorter than the screen.
+ * On an upright phone (`phone`) it is the scene's own sky carried on up, its colour at the canvas's
+ * top edge (a street's gradient where the camera has it, js/street-render.js viewSkyTop; a yard's or
+ * a room's top colour), so the band reads as more sky, the way Glitch's gradient carried its end
+ * colour on past the layer (SpreadMethod.PAD, G1167). A scene with no colour of its own keeps
+ * SHORT_SCENE_BAND. Elsewhere (a computer's narrow window) G880's dark band stands (shortSceneBand).
+ * `skyTop` is a #rrggbb or 0xrrggbb number. Where game.js can read the canvas's top edge back
+ * (WebGL) the band takes what is drawn there (stageEdgeColour); this is the colour until then, and
+ * the canvas's clear colour.
+ */
+export function stageBandColour(skyTop, { phone = false } = {}) {
+  const css = typeof skyTop === 'number' && Number.isFinite(skyTop) ? `#${(skyTop >>> 0).toString(16).padStart(6, '0').slice(-6)}` : String(skyTop || '');
+  if (!phone) return shortSceneBand(css);
+  return /^#[0-9a-f]{6}$/i.test(css) ? css.toLowerCase() : SHORT_SCENE_BAND;
+}
+
+/**
+ * PURE (SKY FILL): the colour most of a canvas row shows, as #rrggbb, or null for an empty row.
+ * `row` is RGBA bytes `width` px wide (a WebGL read-back of the canvas's top edge, game.js
+ * sampleStageSkyEdge). `samples` columns spread over the row are grouped by colour (16 levels a
+ * channel) and the biggest group's average wins, so a tree's crown or a sign cut by the scene's top
+ * does not tint the band: a scene whose far layer is opaque art (a Towers hall, a cave) carries that
+ * art's colour on up, where its sky gradient never shows.
+ */
+export function stageEdgeColour(row, width, samples = 32) {
+  const w = Math.floor(finite(width, 0));
+  if (!row || !(w > 0) || row.length < w * 4) return null;
+  const n = Math.max(1, Math.min(w, Math.floor(finite(samples, 32))));
+  const groups = new Map();
+  let best = null;
+  for (let i = 0; i < n; i += 1) {
+    const x = Math.min(w - 1, Math.floor(((i + 0.5) * w) / n));
+    const o = x * 4;
+    const [r, g, b] = [row[o], row[o + 1], row[o + 2]];
+    const key = ((r >> 4) << 8) | ((g >> 4) << 4) | (b >> 4);
+    const at = groups.get(key) || { n: 0, r: 0, g: 0, b: 0 };
+    at.n += 1;
+    at.r += r;
+    at.g += g;
+    at.b += b;
+    groups.set(key, at);
+    if (!best || at.n > best.n) best = at;
+  }
+  const hex = (v) => Math.round(v / best.n).toString(16).padStart(2, '0');
+  return `#${hex(best.r)}${hex(best.g)}${hex(best.b)}`;
+}
+
 /**
  * PURE (TOUCH PORTRAIT): the stage of an upright phone (the phone gate's phone, a window taller
  * than wide). The width floor that keeps a computer's view 960 px wide drew a portrait iPhone's
@@ -389,21 +451,29 @@ export function shortSceneBand(skyTop) {
  * 505 px there) so a held scene magnifies until its canvas reaches up to the strip's bottom edge: the
  * street runs up under the pills. A scene too short for that (a room, a home) still keeps a band, a
  * shorter one. 0 (a Safari tab, Android, sideways, computers): nothing changes.
+ *
+ * SKY FILL (Austin's iPhone 2026-11-24): `minViewW` lowers the width floor for a home place (the
+ * house and its yard, a Tower floor: PHONE_HOME_MIN_VIEW_W), so they reach up to the strip; it never
+ * raises it. What band is left over a short scene shows the scene carried on up (stageBandColour).
  */
-export function phoneStage({ width, height, packReserve = MIN_PACK_HEIGHT, sceneWidth, sceneHeight, closeup = 0, groundLine, topBand = 0 } = {}) {
+export function phoneStage({ width, height, packReserve = MIN_PACK_HEIGHT, sceneWidth, sceneHeight, closeup = 0, groundLine, topBand = 0, minViewW } = {}) {
   const W = finite(width);
   const H = finite(height);
   const pack = finite(packReserve, MIN_PACK_HEIGHT);
+  // SKY FILL: a home place's own floor (PHONE_HOME_MIN_VIEW_W), never wider than the usual one.
+  const minW = Math.min(PHONE_PORTRAIT_MIN_VIEW_W, finite(minViewW) > 0 ? finite(minViewW) : PHONE_PORTRAIT_MIN_VIEW_W);
   const sh = finite(sceneHeight);
   let fitH = Math.min(VIEW_HOLD_H, Math.max(VIEW_FLOOR_H, sh > 0 ? Math.floor(sh) : VIEW_HOLD_H));
   // GROUND LINE (G1146): the canvas (the view and the pack reserve under it) ends at the street's
   // ground line, not past its bottom, so the scene magnifies a little to fill the screen.
   const line = finite(groundLine);
   if (line > 0) fitH = Math.min(fitH, Math.max(VIEW_FLOOR_H, Math.floor(line) - pack));
-  let scale = Math.min(H / (fitH + pack), W / PHONE_PORTRAIT_MIN_VIEW_W);
-  // TOP BAND (#653 follow-up): under a strip the held canvas reaches up to it, the width floor eased by the strip's share.
   const band = Math.min(H / 2, Math.max(0, finite(topBand, 0)));
-  if (band > 0) scale = Math.max(scale, Math.min((H - band) / (fitH + pack), W / (PHONE_PORTRAIT_MIN_VIEW_W * (H - band) / H)));
+  // SKY FILL: under a strip the home floor works only through the strip's rule below, so a home place
+  // stops at the strip's bottom edge and is not magnified on past it, behind the strip.
+  let scale = Math.min(H / (fitH + pack), W / (band > 0 ? PHONE_PORTRAIT_MIN_VIEW_W : minW));
+  // TOP BAND (#653 follow-up): under a strip the held canvas reaches up to it, the width floor eased by the strip's share.
+  if (band > 0) scale = Math.max(scale, Math.min((H - band) / (fitH + pack), W / (minW * (H - band) / H)));
   const sw = finite(sceneWidth);
   if (sw > 0) scale = Math.max(scale, W / sw);
   const top = H / (VIEW_FLOOR_H + pack);

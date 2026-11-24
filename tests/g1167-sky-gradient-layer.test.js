@@ -23,7 +23,8 @@ import {
   skyGradientPlacement,
   groundBelowSpan,
   skirtFadeColour,
-} from '../public/js/street-render.js?v=1e049218';
+} from '../public/js/street-render.js?v=a3aa6336';
+import { PHONE_HOME_MIN_VIEW_W, PHONE_PORTRAIT_MIN_VIEW_W, SHORT_SCENE_BAND, STAGE_SKY_FADE, phoneStage, shortSceneBand, stageBandColour, stageEdgeColour, stageFor } from '../public/js/location-view.js?v=60099786';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const read = (rel) => readFileSync(join(here, '..', rel), 'utf8');
@@ -313,5 +314,138 @@ describe('below the street the view is ground, never the sky (Austin 2026-11-24)
     const root = withDocument(() => buildStreetView({ ...x, signposts: [] }, PIXI, { available: new Set() }));
     assert.equal(root.skyView.children.length, 3);
     assert.match(read('public/game.js'), /skirtBelow: VIEW_H - LOCATION_VIEW_H,\n[^\n]*\n    groundBelow: true,/);
+  });
+});
+
+// SKY FILL (Austin's iPhone 2026-11-24, the Home Screen app upright, his back yard: "Go ahead and fill
+// the top part for my screen"): an upright phone held a short scene under a flat dark band (#2a2a2a,
+// G880) from the status bar's strip down to the scene's top, 62 to 245 pt in his yard. The band is now
+// the scene's own sky carried on up (its colour at the canvas's top edge, SpreadMethod.PAD as above),
+// fading over the canvas's top edge; a computer's narrow window keeps G880's dark band.
+describe('SKY FILL: a short scene on an upright phone leaves no flat dark band', () => {
+  const PURPLYSA = 'GHVP7QOKT403F5Q';
+  const p = street(PURPLYSA);
+  const W = 402;
+  const H = 874;
+  const strip = 62 + 24;
+  const hex = (n) => `#${n.toString(16).padStart(6, '0')}`;
+
+  it('the band is the colour of the canvas\'s top edge (the street\'s sky there), not the dark border', () => {
+    assert.equal(p.bounds.b - p.bounds.t, 600, 'Purplysa: 600 px tall');
+    assert.equal(p.gradient.top.toUpperCase(), '7CBBCC', 'a light sky top');
+    for (const [place, band] of [['Home Screen app', strip], ['Safari tab', 0]]) {
+      const stage = phoneStage({ width: W, height: H, sceneWidth: 4950, sceneHeight: 600, topBand: band });
+      const gap = H - stage.cssHeight;
+      assert.ok(gap > band + 100, `${place}: the scene is held under a band (${gap.toFixed(0)} px)`);
+      const PIXI = fakePixi();
+      const root = withDocument(() => buildStreetView({ ...p, signposts: [] }, PIXI, { available: new Set() }));
+      // The camera at the street's top, as a view the whole scene's height holds it.
+      root.updateParallax(1200, 0, stage.viewW, stage.viewH, stage.canvasH);
+      const atTop = skyColourAt(p.gradient.top, p.gradient.bottom, root.skyStats().y, root.skyStats().h, 0);
+      assert.equal(root.viewSkyTop, atTop, 'the street says its sky colour at the view top');
+      const fill = stageBandColour(root.viewSkyTop, { phone: true });
+      assert.equal(fill, hex(atTop), `${place}: the band carries the canvas's top colour on up`);
+      assert.notEqual(fill, SHORT_SCENE_BAND, `${place}: not the flat dark band`);
+      // Lower in the street the view's top colour moves down the gradient, and the band with it.
+      root.updateParallax(1200, 40, stage.viewW, stage.viewH, stage.canvasH);
+      assert.equal(root.viewSkyTop, skyColourAt(p.gradient.top, p.gradient.bottom, root.skyStats().y, root.skyStats().h, 40));
+    }
+  });
+
+  it('a yard, a room or a course gives its own top colour; a scene with none keeps the dark border', () => {
+    assert.equal(stageBandColour('#9DC3D6', { phone: true }), '#9dc3d6');
+    assert.equal(stageBandColour(0x7cbbcc, { phone: true }), '#7cbbcc');
+    assert.equal(stageBandColour('#2a2019', { phone: true }), '#2a2019', "a Tower floor's timber");
+    assert.equal(stageBandColour(undefined, { phone: true }), SHORT_SCENE_BAND);
+    assert.equal(stageBandColour('rgba(0,0,0,0)', { phone: true }), SHORT_SCENE_BAND);
+    // The yard's sky is pinned to the view: its top colour is the canvas's top edge.
+    const homes = read('public/js/features/homes-feature.js');
+    const land = homes.slice(homes.indexOf('export function drawLandscape('));
+    assert.match(land.slice(0, 1200), /root\.skyTop = `#\$\{\(style\.sky\[0\] >>> 0\)\.toString\(16\)\.padStart\(6, '0'\)\.slice\(-6\)\}`;/);
+  });
+
+  it("a computer's narrow window keeps G880's dark band (sideways phones never hold a band)", () => {
+    for (const c of ['#7cbbcc', '#9dc3d6', undefined, '#2a2019']) {
+      assert.equal(stageBandColour(c), shortSceneBand(c));
+      assert.equal(stageBandColour(c, { phone: false }), shortSceneBand(c));
+    }
+  });
+
+  it('game.js paints it on an upright phone and follows the camera; style.css fades it over the canvas top', () => {
+    const game = read('public/game.js');
+    assert.match(game, /stageSkyFill = band >= 1 && Boolean\(stage\.phone\) && !stage\.landscape;/);
+    assert.match(game, /const sceneSky = band >= 1 \? stageBandColour\(sceneBandSky\(viewSceneLayer\), \{ phone: stageSkyFill \}\) : '';\n    syncStageSky\(stageSkyFill && stageSkyEdge \? stageSkyEdge : sceneSky, sceneSky\);/);
+    // The canvas's top edge is read back right after the render, twice a second, and wins over the scene's colour.
+    assert.match(game, /app\.ticker\.add\(\(\) => run\('sky fill', sampleStageSkyEdge\), null, PIXI\.UPDATE_PRIORITY\?\.UTILITY \?\? -50\);/);
+    assert.match(game, /if \(now - stageSkyReadAt < 500\) return;/);
+    assert.match(game, /stageSkyEdge = stageEdgeColour\(row, w\);/);
+    assert.match(game, /band = stageSkyEdge \|\| clear;/);
+    assert.match(game, /return Number\.isFinite\(layer\?\.viewSkyTop\) \? layer\.viewSkyTop : layer\?\.skyTop;/);
+    const frame = game.slice(game.indexOf('const drawStreetFrame = () => {'));
+    assert.match(frame.slice(0, 900), /bgLayer\?\.updateParallax\?\.\([^\n]*\n[^\n]*cullDecos[^\n]*\n[^\n]*\n    syncStageSky\(\);/);
+    const css = read('public/style.css');
+    const rule = /#game-root\[data-stage-sky-fill\]::before \{([^}]*)\}/.exec(css)?.[1] || '';
+    assert.match(rule, /top: var\(--stage-gap, 0px\);/);
+    assert.match(rule, new RegExp(`height: min\\(${STAGE_SKY_FADE}px, var\\(--stage-gap, 0px\\)\\);`));
+    assert.match(rule, /background: linear-gradient\(var\(--stage-sky\), transparent\);/);
+    assert.match(rule, /pointer-events: none;/);
+  });
+});
+
+describe('SKY FILL: the band takes what the canvas draws at its top edge', () => {
+  const rowOf = (colours) => {
+    const row = new Uint8Array(colours.length * 4);
+    colours.forEach((c, i) => { row.set([(c >> 16) & 0xff, (c >> 8) & 0xff, c & 0xff, 255], i * 4); });
+    return row;
+  };
+  it("the row's main colour wins; a crown or a sign cut by the scene's top does not tint it", () => {
+    // A Towers hall (Hakusan Heaps Towers): its far layer is the hall's wall, so its blue sky never shows.
+    const wall = 0x645568;
+    const row = rowOf(Array.from({ length: 400 }, (_, x) => (x > 120 && x < 190 ? 0x2b2116 : wall)));
+    assert.equal(stageEdgeColour(row, 400), '#645568');
+    // A sky row with a little gradient noise averages to the sky.
+    assert.equal(stageEdgeColour(rowOf(Array.from({ length: 300 }, (_, x) => (x % 2 ? 0xa6ebf2 : 0xa8edf2))), 300), '#a7ecf2');
+    assert.equal(stageEdgeColour(new Uint8Array(0), 0), null);
+    assert.equal(stageEdgeColour(rowOf([0x112233]), 1), '#112233');
+  });
+});
+
+describe('SKY FILL: the house and a Tower floor reach up to the strip (Austin 2026-11-24)', () => {
+  const W = 402;
+  const H = 874;
+  const strip = 62 + 24;
+  // The house and its yard: a 738 px view; a Tower floor: 691 (both measured in Chrome at 402 x 874).
+  const places = [['the house and its yard', 738], ['a Tower floor', 691]];
+  it('in the Home Screen app neither leaves a band under the strip', () => {
+    for (const [name, sceneHeight] of places) {
+      const before = stageFor({ width: W, height: H, sceneHeight, sceneWidth: 3000, phone: true, topBand: strip });
+      assert.ok(H - before.cssHeight > strip + 90, `${name}: before, a band down to ${(H - before.cssHeight).toFixed(0)} px`);
+      const home = stageFor({ width: W, height: H, sceneHeight, sceneWidth: 3000, phone: true, topBand: strip, minViewW: PHONE_HOME_MIN_VIEW_W });
+      assert.ok(Math.abs(H - home.cssHeight - strip) < 0.5, `${name}: the canvas starts at ${(H - home.cssHeight).toFixed(1)} px, the strip ends at ${strip} (not magnified on behind it)`);
+      assert.ok(home.viewW >= PHONE_HOME_MIN_VIEW_W, `${name}: ${home.viewW} px wide`);
+    }
+  });
+  it('a Safari tab and 375x667 magnify no closer than the home floor; other scenes and tall streets are untouched', () => {
+    for (const [w, h] of [[402, 874], [375, 667]]) {
+      for (const [, sceneHeight] of places) {
+        const s = stageFor({ width: w, height: h, sceneHeight, sceneWidth: 3000, phone: true, minViewW: PHONE_HOME_MIN_VIEW_W });
+        assert.ok(s.viewW >= PHONE_HOME_MIN_VIEW_W, `${w}x${h}: ${s.viewW}`);
+      }
+    }
+    assert.ok(PHONE_HOME_MIN_VIEW_W < PHONE_PORTRAIT_MIN_VIEW_W);
+    // A floor wider than the usual one is ignored; no floor is the usual one.
+    const plain = stageFor({ width: W, height: H, sceneHeight: 600, sceneWidth: 3000, phone: true, topBand: strip });
+    assert.deepEqual(stageFor({ width: W, height: H, sceneHeight: 600, sceneWidth: 3000, phone: true, topBand: strip, minViewW: 900 }), plain);
+    assert.deepEqual(stageFor({ width: W, height: H, sceneHeight: 600, sceneWidth: 3000, phone: true, topBand: strip, minViewW: undefined }), plain);
+    // Only the house and Tower floors carry it (streets never do); sideways and computers never see it.
+    const side = { width: H, height: W, sceneHeight: 738, sceneWidth: 3000, phone: true };
+    assert.deepEqual(stageFor({ ...side, minViewW: PHONE_HOME_MIN_VIEW_W }), stageFor(side));
+    assert.deepEqual(stageFor({ width: 1280, height: 800, sceneHeight: 738, sceneWidth: 3000, minViewW: PHONE_HOME_MIN_VIEW_W }), stageFor({ width: 1280, height: 800, sceneHeight: 738, sceneWidth: 3000 }));
+  });
+  it('the house and every Tower floor carry the floor; game.js passes it', () => {
+    const homes = read('public/js/features/homes-feature.js');
+    const body = homes.slice(homes.indexOf('function interiorBackground('), homes.indexOf('function interiorBackground(') + 6000);
+    assert.match(body, /root\.phoneMinViewW = PHONE_HOME_MIN_VIEW_W;/);
+    assert.match(read('public/game.js'), /minViewW: bgLayer\?\.phoneMinViewW,/);
   });
 });

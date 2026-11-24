@@ -30,7 +30,7 @@ import {
   standingWalls,
   touchOrb,
   room,
-} from '../public/js/quest-rooms/light-perspective.js?v=9e27386a';
+} from '../public/js/quest-rooms/light-perspective.js?v=7c29a79d';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const { JUMP_RISE, JUMP_GAP } = LIGHT_ROOM_FACTS;
