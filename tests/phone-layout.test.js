@@ -974,4 +974,32 @@ describe('a short scene on an upright phone leaves no flat dark band (Chrome, Au
       assert.deepEqual(bad, []);
     });
   }
+
+  // Coordinator 2026-11-24: reading the canvas back is a GPU sync that can hitch a phone's frame. It
+  // reads on a scene's arrival (and once as its art loads), then never while the camera holds still.
+  it('the band reads the canvas back on arrival, then not at all while the camera holds still (Safari tab 402x874)', { timeout: 180_000 }, async (t) => {
+    const base = `http://127.0.0.1:${server.address().port}`;
+    const bad = [];
+    for (const [scene, q] of SCENES) {
+      const ctx = await chrome.browser.newContext({ viewport: { width: 402, height: 874 }, isMobile: true, hasTouch: true, deviceScaleFactor: 1, userAgent: UA });
+      await ctx.addInitScript(() => { try { localStorage.setItem('groddle-play-device', 'qa-game'); } catch { /* none */ } });
+      const tab = await ctx.newPage();
+      await tab.goto(`${base}/play/?autostart=1&questoffer=off&hstip=0&fresh=1&resetgame=1&${q}`);
+      await tab.waitForFunction(() => !document.body.classList.contains('is-booting') && document.getElementById('overlay')?.classList.contains('hidden') && document.documentElement.classList.contains('phone-layout'), null, { timeout: 60_000 });
+      await tab.waitForTimeout(4000);
+      const read = () => tab.evaluate(() => {
+        const c = document.querySelector('#game-root > canvas[role="application"]');
+        return { reads: Number(c.dataset.stageSkyReads || 0), ms: c.dataset.stageSkyReadMs || '', fill: document.getElementById('game-root').hasAttribute('data-stage-sky-fill'), cam: [c.dataset.cameraX, c.dataset.cameraY].join(',') };
+      });
+      const first = await read();
+      await tab.waitForTimeout(3000);
+      const later = await read();
+      t.diagnostic(`${scene}: ${first.reads} read(s) after arrival, ${later.reads - first.reads} in 3 s standing still; read cost ${later.ms} ms`);
+      if (!first.fill) bad.push(`${scene}: no band to fill`);
+      if (!(first.reads >= 1 && first.reads <= 3)) bad.push(`${scene}: ${first.reads} reads in the first 4 s (arrival and settle only)`);
+      if (later.reads !== first.reads) bad.push(`${scene}: ${later.reads - first.reads} reads while nothing moved`);
+      await ctx.close();
+    }
+    assert.deepEqual(bad, []);
+  });
 });

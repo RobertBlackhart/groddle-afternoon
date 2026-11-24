@@ -24,7 +24,7 @@ import {
   groundBelowSpan,
   skirtFadeColour,
 } from '../public/js/street-render.js?v=a3aa6336';
-import { PHONE_HOME_MIN_VIEW_W, PHONE_PORTRAIT_MIN_VIEW_W, SHORT_SCENE_BAND, STAGE_SKY_FADE, phoneStage, shortSceneBand, stageBandColour, stageEdgeColour, stageFor } from '../public/js/location-view.js?v=60099786';
+import { PHONE_HOME_MIN_VIEW_W, PHONE_PORTRAIT_MIN_VIEW_W, SHORT_SCENE_BAND, STAGE_EDGE_GAP_MS, STAGE_EDGE_MOVE, STAGE_EDGE_SETTLE_MS, STAGE_SKY_FADE, phoneStage, shortSceneBand, stageBandColour, stageEdgeColour, stageEdgeSampler, stageFor } from '../public/js/location-view.js?v=febc0a91';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const read = (rel) => readFileSync(join(here, '..', rel), 'utf8');
@@ -375,9 +375,12 @@ describe('SKY FILL: a short scene on an upright phone leaves no flat dark band',
     const game = read('public/game.js');
     assert.match(game, /stageSkyFill = band >= 1 && Boolean\(stage\.phone\) && !stage\.landscape;/);
     assert.match(game, /const sceneSky = band >= 1 \? stageBandColour\(sceneBandSky\(viewSceneLayer\), \{ phone: stageSkyFill \}\) : '';\n    syncStageSky\(stageSkyFill && stageSkyEdge \? stageSkyEdge : sceneSky, sceneSky\);/);
-    // The canvas's top edge is read back right after the render, twice a second, and wins over the scene's colour.
+    // The canvas's top edge is read back right after the render, only on the frames the sampler names, and wins over the scene's colour.
     assert.match(game, /app\.ticker\.add\(\(\) => run\('sky fill', sampleStageSkyEdge\), null, PIXI\.UPDATE_PRIORITY\?\.UTILITY \?\? -50\);/);
-    assert.match(game, /if \(now - stageSkyReadAt < 500\) return;/);
+    assert.match(game, /const due = stageSkySampler\.next\(\{ scene: bgLayer, camX: -world\.x, camY: -world\.y, scale: STAGE_SCALE, viewW: VIEW_W, now \}\);\n  if \(!due\) return;/);
+    const sample = game.slice(game.indexOf('function sampleStageSkyEdge() {'), game.indexOf('function sampleStageSkyEdge() {') + 2500);
+    assert.equal((sample.match(/gl\.readPixels\(/g) || []).length, 1, 'one read-back, after the sampler said so');
+    assert.ok(sample.indexOf('if (!due) return;') < sample.indexOf('gl.readPixels('));
     assert.match(game, /stageSkyEdge = stageEdgeColour\(row, w\);/);
     assert.match(game, /band = stageSkyEdge \|\| clear;/);
     assert.match(game, /return Number\.isFinite\(layer\?\.viewSkyTop\) \? layer\.viewSkyTop : layer\?\.skyTop;/);
@@ -447,5 +450,74 @@ describe('SKY FILL: the house and a Tower floor reach up to the strip (Austin 20
     const body = homes.slice(homes.indexOf('function interiorBackground('), homes.indexOf('function interiorBackground(') + 6000);
     assert.match(body, /root\.phoneMinViewW = PHONE_HOME_MIN_VIEW_W;/);
     assert.match(read('public/game.js'), /minViewW: bgLayer\?\.phoneMinViewW,/);
+  });
+});
+
+// Coordinator 2026-11-24: a read-back is a GPU sync (readPixels) that can hitch a phone's frame, and it
+// ran twice a second whether or not anything had changed. It is event-driven now (stageEdgeSampler).
+describe('SKY FILL: the canvas is read back only when something changed', () => {
+  const scene = { id: 'yard' };
+  const cam = (o = {}) => ({ scene, camX: 1000, camY: 0, scale: 0.9, viewW: 444, ...o });
+  // Drives the sampler as game.js does: next() each frame, record() after a read. Returns the frames that read.
+  const run = (s, frames) => {
+    const reads = [];
+    for (const f of frames) {
+      const due = s.next(cam(f));
+      if (due?.read) {
+        reads.push(f.now);
+        s.record(f.colour ?? '#a6eef8', f.now);
+      }
+    }
+    return reads;
+  };
+  const still = (from, to, o = {}) => Array.from({ length: Math.floor((to - from) / 16) }, (_, i) => ({ now: from + i * 16, ...o }));
+
+  it('reads on the first drawn frame and once as the art loads, then never while the camera holds still', () => {
+    const s = stageEdgeSampler();
+    assert.equal(s.next(cam({ now: 0 })), null, 'nothing before a scene arrives');
+    s.arrive(scene);
+    const reads = run(s, still(0, 10_000));
+    assert.deepEqual(reads, [0, 1504], `the arrival frame and the settle read ${STAGE_EDGE_SETTLE_MS} ms on, then none in 600 still frames`);
+    assert.equal(s.next(cam({ now: 20_000 })), null);
+    assert.equal(s.next(cam({ now: 20_016, camY: STAGE_EDGE_MOVE - 1 })), null, 'under the move threshold');
+  });
+
+  it("reads when the camera's top edge moves 24 px or a zoom changes the view, at most once a second", () => {
+    const s = stageEdgeSampler();
+    s.arrive(scene);
+    run(s, still(0, 2000));
+    assert.equal(s.next(cam({ now: 2100, camY: 30 })), null, `down 30 px, but within ${STAGE_EDGE_GAP_MS} ms of the settle read`);
+    assert.equal(s.next(cam({ now: 2600, camY: 30 })).read, true, 'a second on, it reads');
+    s.record('#111111', 2600);
+    assert.equal(s.next(cam({ now: 2800, camY: 70 })), null, 'another 40 px, within the gap');
+    assert.equal(s.next(cam({ now: 3700, camY: 70 })).read, true);
+    s.record('#222222', 3700);
+    assert.equal(s.next(cam({ now: 4800, camY: 70, viewW: 505 })).read, true, 'a zoom (the view 61 px wider)');
+    s.record('#333333', 4800);
+    assert.equal(s.next(cam({ now: 5900, camY: 70, viewW: 505, camX: 1400 })).read, true, 'half a view sideways');
+  });
+
+  it('a camera band already read reuses its colour without reading', () => {
+    const s = stageEdgeSampler();
+    s.arrive(scene);
+    run(s, still(0, 2000));
+    assert.equal(s.next(cam({ now: 2600, camY: 48 })).read, true);
+    s.record('#123456', 2600);
+    assert.deepEqual(s.next(cam({ now: 2616, camY: 0 })), { colour: '#a6eef8' }, 'back at the top, inside the gap: the first read');
+    assert.deepEqual(s.next(cam({ now: 2632, camY: 48 })), { colour: '#123456' }, 'and down again');
+  });
+
+  it('a resize reads again, kept to once a second; a new scene reads at once', () => {
+    const s = stageEdgeSampler();
+    s.arrive(scene);
+    run(s, still(0, 2000));
+    s.arrive(scene, true);
+    assert.equal(s.next(cam({ now: 2000 })), null, 'within a second of the last read (the settle read at 1504)');
+    assert.equal(s.next(cam({ now: 2600 })).read, true);
+    s.record('#a6eef8', 2600);
+    const room = { id: 'tower' };
+    s.arrive(room);
+    assert.equal(s.next({ ...cam({ now: 2616 }), scene: room }).read, true, 'a new scene does not wait');
+    assert.equal(s.next(cam({ now: 2632 })), null, 'the old scene is not asked about');
   });
 });

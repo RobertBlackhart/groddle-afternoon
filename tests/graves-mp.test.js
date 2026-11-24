@@ -56,7 +56,7 @@ const { createQuestState } = await import('../public/js/quests.js?v=90a2ee3d');
 const { hellFeature } = await import('../public/js/features/hell-feature.js?v=4fc52fd2');
 const { hellTicketsFeature } = await import('../public/js/features/hell-tickets-feature.js?v=e9205443');
 const { gravesMpFeature } = await import('../public/js/features/graves-mp-feature.js?v=67dbcda7');
-const { FEATURES } = await import('../public/js/features/index.js?v=7e2d7fe4');
+const { FEATURES } = await import('../public/js/features/index.js?v=fd99d385');
 
 const STREET = 'GLI2V0UN7RD1T2J';
 const HELL_ONE = 'GA5PPFP86NF2FOS';

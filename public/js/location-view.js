@@ -419,6 +419,88 @@ export function stageEdgeColour(row, width, samples = 32) {
   return `#${hex(best.r)}${hex(best.g)}${hex(best.b)}`;
 }
 
+/** SKY FILL: how far (world px) the camera's top edge moves, up or down or by a zoom, before the band's colour is read again. */
+export const STAGE_EDGE_MOVE = 24;
+/** SKY FILL: the fewest milliseconds between two read-backs of the canvas's top edge. */
+export const STAGE_EDGE_GAP_MS = 1000;
+/** SKY FILL: after a scene arrives, one more read once its art has had time to load. */
+export const STAGE_EDGE_SETTLE_MS = 1500;
+
+/**
+ * SKY FILL (coordinator 2026-11-24: a read-back is a GPU sync that can hitch a phone's frame, so read
+ * only when something changed): when game.js may read the canvas's top edge back. A read is due on a
+ * scene's first drawn frame, once more STAGE_EDGE_SETTLE_MS after it (art still loading), after a
+ * resize, and when the camera's top edge has moved STAGE_EDGE_MOVE world px up or down (a zoom moves
+ * it too) or half a view sideways since the last read; never twice within STAGE_EDGE_GAP_MS, and
+ * never while nothing has moved. Each read is kept per scene and camera band, so coming back to a
+ * band reuses its colour without reading. Pure apart from its own state; `now` is passed in.
+ *
+ *   const s = stageEdgeSampler();
+ *   s.arrive(scene)                                     a new scene, or a resize (s.arrive(scene, true))
+ *   s.next({ scene, camX, camY, scale, viewW, now })    { read: true } | { colour } (cached) | null
+ *   s.record(colour)                                    the colour read for the band next() asked about
+ */
+export function stageEdgeSampler({ move = STAGE_EDGE_MOVE, gapMs = STAGE_EDGE_GAP_MS, settleMs = STAGE_EDGE_SETTLE_MS } = {}) {
+  const cache = new WeakMap();
+  let scene = null;
+  let last = null;
+  let lastAt = -Infinity;
+  let arrivedAt = NaN;
+  let pending = false;
+  let arrival = false;
+  let settle = false;
+  let asked = null;
+  const bandKey = ({ camX, camY, scale, viewW }) => `${Math.round(camY / move)}|${Math.round(camX / Math.max(1, viewW / 2))}|${Math.round(viewW)}|${Number(scale).toFixed(3)}`;
+  const store = (key, colour) => {
+    if (!scene || typeof scene !== 'object') return;
+    let map = cache.get(scene);
+    if (!map) cache.set(scene, (map = new Map()));
+    map.set(key, colour);
+  };
+  return {
+    arrive(next, resized = false) {
+      const same = next === scene;
+      if (!resized || !same) arrivedAt = NaN;
+      // A resize keeps a settle read still to come; a new scene starts its own.
+      settle = !resized || !same || settle;
+      arrival = !resized || !same;
+      scene = next;
+      pending = true;
+    },
+    next({ scene: at, camX = 0, camY = 0, scale = 1, viewW = 1, now = 0 } = {}) {
+      if (!at || at !== scene) return null;
+      if (!Number.isFinite(arrivedAt) && settle) arrivedAt = now;
+      const settleDue = settle && now - arrivedAt >= settleMs;
+      const view = { camX, camY, scale, viewW };
+      // A zoom changes the view's width (and moves its top edge); up or down past `move`, or half a view sideways.
+      const moved = last && (Math.abs(camY - last.camY) > move || Math.abs(camX - last.camX) > viewW / 2 || Math.abs(viewW - last.viewW) > move);
+      if (!pending && !moved && !settleDue) return null;
+      const key = bandKey(view);
+      const cached = !pending && !settleDue ? cache.get(scene)?.get(key) : undefined;
+      if (cached !== undefined) {
+        last = view;
+        return { colour: cached };
+      }
+      // A scene's arrival read waits for no gap; the rest (a resize too) keep STAGE_EDGE_GAP_MS apart.
+      if (!(pending && arrival) && now - lastAt < gapMs) return null;
+      asked = { key, view, settleDue };
+      return { read: true };
+    },
+    record(colour, now = 0) {
+      if (!asked) return;
+      store(asked.key, colour);
+      last = asked.view;
+      lastAt = now;
+      pending = false;
+      arrival = false;
+      if (asked.settleDue) settle = false;
+      asked = null;
+    },
+    /** QA: what the sampler holds. */
+    get state() { return { pending, arrival, settle, last, lastAt }; },
+  };
+}
+
 /**
  * PURE (TOUCH PORTRAIT): the stage of an upright phone (the phone gate's phone, a window taller
  * than wide). The width floor that keeps a computer's view 960 px wide drew a portrait iPhone's

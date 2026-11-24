@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=7ef2b106';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=7e2d7fe4';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=fd99d385';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE, playerClickBox } from './js/reach.js?v=456da8a8';
@@ -137,7 +137,7 @@ import {
 } from './js/legalize-it.js?v=7ec63cac';
 import { HALL, HALL_LAYOUT, HALL_OFFICE, HALL_QUESTIONS } from './js/bureaucratic-hall.js?v=7ea53899';
 import { STATION_X, stationArrival, stationScreen, surfaceStation } from './js/subway.js?v=ea6921ff';
-import { ALLEY, SHADY, drawAlley, inEnteredBox } from './js/quest-rooms/back-alley-set.js?v=1338ff35';
+import { ALLEY, SHADY, drawAlley, inEnteredBox } from './js/quest-rooms/back-alley-set.js?v=2b7a63a3';
 import { WINTER_WALK_BOUNDS, WINTER_WALK_PASSAGE } from './js/winter-walk-streets.js?v=c921bf92';
 import {
   WINTER_HAVEN_STREET_ID,
@@ -834,7 +834,7 @@ import { easeCameraAxis } from './js/camera-feel.js?v=e668afc5';
 import { renderResolution, resolutionCap, RESOLUTION_STEP, phoneZoomResolution } from './js/render-density.js?v=74c6f5f9';
 // g458: low energy and mood turn amber and red, and a click offers something from the pack.
 import { makingNeeds, vitalMenuEmpty, vitalMenuHeading, vitalSnacks } from './js/vitals.js?v=85a51302';
-import { DEFAULT_VP_H, LOCATION_VIEW_W, VIEW_CEIL_H, stageFor, sceneViewCap, sceneViewWidthCap, zoomMovesStage, phoneZoomSpan, phoneCameraAnchor, phoneFeetWorldHeight, phoneGroundWorldHeight, reachableFloorY, sceneBottomLine, sceneGroundLine, stageBandColour, stageEdgeColour, stageRoomBeside } from './js/location-view.js?v=60099786';
+import { DEFAULT_VP_H, LOCATION_VIEW_W, VIEW_CEIL_H, stageFor, sceneViewCap, sceneViewWidthCap, zoomMovesStage, phoneZoomSpan, phoneCameraAnchor, phoneFeetWorldHeight, phoneGroundWorldHeight, reachableFloorY, sceneBottomLine, sceneGroundLine, stageBandColour, stageEdgeColour, stageEdgeSampler, stageRoomBeside } from './js/location-view.js?v=febc0a91';
 import {
   levelInfoForXp,
   reconcilePlayerProgression,
@@ -865,12 +865,12 @@ import {
 import { momentMoreText } from './js/ui/moment-card.js?v=35252236';
 import { CHAT_MAX_CHARS, chatBubbleText } from './js/ui/chat-input.js?v=8f2479a3';
 // HUB: the hub is the Modern skin's; Classic owns X in its skin (js/classic/classic-hub.js).
-import { MODERN, onUiModeChange, readUiCache, uiState, writeUiCache } from './js/classic/ui-mode.js?v=cccf1ea6';
+import { MODERN, onUiModeChange, readUiCache, uiState, writeUiCache } from './js/classic/ui-mode.js?v=069f076e';
 // ZOOM: the world zoom (a device preference) and Classic's frame scale under it; both load before main().
 import { worldZoom, setWorldZoom, stepWorldZoom, onZoomChange, zoomKeyAction, zoomKeyToast, zoomFixed, setZoomFixed, onZoomFixedChange, phoneZoom } from './js/world-zoom.js?v=38816228';
 import { nightTint, nightTintOn, onNightTintChange, worldTintOpacity } from './js/night-tint.js?v=1dfc9c89';
 import { streetMapSetting, toggleStreetMap } from './js/ui/street-minimap.js?v=cf66d461';
-import './js/classic/classic-zoom.js?v=0aeb0ba7';
+import './js/classic/classic-zoom.js?v=c8611f87';
 import { mountImaginationHub } from './js/ui/imagination-hub.js?v=6928c5b7';
 import { newDayBubble, shuffleNewDayMessages, waitForScreenGates } from './js/screen-queue.js?v=cf0132c0';
 import { applyFamiliarLook, familiarCardHeading, familiarLook, skillArtFor, skillLearnedActivity } from './js/familiar.js?v=b9597cd3';
@@ -1179,7 +1179,7 @@ import { filterText } from './js/word-filter.js?v=9a7a7ebb'; // the remake's own
 import { mountStartStreet } from './js/start-street.js?v=7d8ce49c'; // #349: the start card names the save's street
 import { arrangeMapCards, fitMapExtras } from './js/map-extras.js?v=16e261b1'; // the Map's Shortcuts
 // The interface skin (js/classic/ui-mode.js) sets <html data-ui> as it loads: before main(), so before the boot cover lifts.
-import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=a44a67c0';
+import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=cc210a3d';
 import { standOnFeet, anchorBottomCentre } from './js/sprite-feet.js?v=11303931';
 import { markLeaving, packPicks, takeCopies } from './js/copy-picks.js?v=b368fd49';
 import { holdKeepsBusy } from './js/instance-holds.js?v=ff3a63a3';
@@ -2355,14 +2355,17 @@ function streetZoomFixed() {
 
 /**
  * SKY FILL (js/location-view.js stageBandColour): whether an upright phone's band over a short scene
- * carries the scene on up (set by syncLocationViewHeight), the scene it was worked out for, the
- * colour read back from the canvas's top edge (sampleStageSkyEdge) and what was last painted.
+ * carries the scene on up (set by syncLocationViewHeight), the scene and stage size it was worked out
+ * for, when to read the canvas's top edge back (stageEdgeSampler), the colour read and what was last
+ * painted, and (QA) how many reads there have been and what they cost.
  */
 let stageSkyFill = false;
 let stageSkyScene = null;
+let stageSkySize = '';
+const stageSkySampler = stageEdgeSampler();
 let stageSkyEdge = null;
-let stageSkyReadAt = -Infinity;
 let stageSkyShown = { band: null, clear: null };
+const stageSkyReads = { count: 0, lastMs: 0, maxMs: 0, totalMs: 0 };
 
 /** SKY FILL: the scene's sky colour at the canvas's top edge (a street's, where its camera has it), or its top colour. */
 function sceneBandSky(layer) {
@@ -2397,25 +2400,46 @@ function syncStageSky(band, clear = band) {
 
 /**
  * SKY FILL: read back the row the canvas just drew at its top edge (WebGL, right after the render in
- * the same frame, so the drawing buffer still holds it) twice a second while there is a band, and
- * carry its main colour on up (stageEdgeColour). A Towers hall or a cave whose far layer is opaque art
- * shows no sky there; reading the canvas fits every scene the same way. WebGPU keeps the scene's colour.
+ * the same frame, so the drawing buffer still holds it) and carry its main colour on up
+ * (stageEdgeColour). A Towers hall or a cave whose far layer is opaque art shows no sky there, and a
+ * deco's art is pixels, not data, so reading the canvas fits every scene the same way. A read-back is
+ * a GPU sync that can hitch a phone's frame (coordinator 2026-11-24), so it runs only when
+ * stageEdgeSampler says something changed: the scene's first drawn frame and once more as its art
+ * loads, a resize, the camera's top edge 24 px up or down (a zoom too) or half a view sideways, at
+ * most once a second; a band already read reuses its colour. Never while nothing moves. WebGPU keeps
+ * the scene's own colour (stageBandColour).
  */
 function sampleStageSkyEdge() {
-  if (!stageSkyFill || pinchPreview || viewSceneLayer !== bgLayer) return;
+  if (!stageSkyFill || pinchPreview || viewSceneLayer !== bgLayer || !world) return;
   const now = performance.now();
-  if (now - stageSkyReadAt < 500) return;
-  stageSkyReadAt = now;
+  const due = stageSkySampler.next({ scene: bgLayer, camX: -world.x, camY: -world.y, scale: STAGE_SCALE, viewW: VIEW_W, now });
+  if (!due) return;
+  if (due.colour !== undefined) {
+    stageSkyEdge = due.colour;
+    syncStageSky();
+    return;
+  }
   const gl = app?.renderer?.gl;
-  if (!gl || gl.isContextLost?.() || gl.getParameter(gl.FRAMEBUFFER_BINDING) !== null) return;
+  if (!gl || gl.isContextLost?.() || gl.getParameter(gl.FRAMEBUFFER_BINDING) !== null) return stageSkySampler.record(null, now);
   const w = gl.drawingBufferWidth;
   const h = gl.drawingBufferHeight;
-  if (!(w > 0) || !(h > 2)) return;
+  if (!(w > 0) || !(h > 2)) return stageSkySampler.record(null, now);
   const row = new Uint8Array(w * 4);
   // A CSS px or two under the edge: the canvas's own top row, clear of any half-pixel seam.
+  const t0 = performance.now();
   gl.readPixels(0, h - 1 - Math.min(h - 1, Math.round(2 * (app.renderer.resolution || 1))), w, 1, gl.RGBA, gl.UNSIGNED_BYTE, row);
+  const ms = performance.now() - t0;
+  stageSkyReads.count += 1;
+  stageSkyReads.lastMs = ms;
+  stageSkyReads.maxMs = Math.max(stageSkyReads.maxMs, ms);
+  stageSkyReads.totalMs += ms;
   stageSkyEdge = stageEdgeColour(row, w);
-  if (app.canvas) app.canvas.dataset.stageSkyEdge = stageSkyEdge || '';
+  stageSkySampler.record(stageSkyEdge, now);
+  if (app.canvas) {
+    app.canvas.dataset.stageSkyEdge = stageSkyEdge || '';
+    app.canvas.dataset.stageSkyReads = String(stageSkyReads.count);
+    app.canvas.dataset.stageSkyReadMs = `${ms.toFixed(3)} max ${stageSkyReads.maxMs.toFixed(3)} mean ${(stageSkyReads.totalMs / stageSkyReads.count).toFixed(3)}`;
+  }
   syncStageSky();
 }
 
@@ -2470,12 +2494,15 @@ function syncLocationViewHeight({ keepFraming = false } = {}) {
     stageSkyFill = band >= 1 && Boolean(stage.phone) && !stage.landscape;
     if (stageSkyFill) root.dataset.stageSkyFill = '1';
     else delete root.dataset.stageSkyFill;
-    // A new scene, or no band: the old read-back is not this one's; the next frame reads again.
+    // A new scene, or no band: the old read-back is not this one's, and the scene's first drawn frame
+    // reads again; the same scene at a new size reads again too (stageEdgeSampler keeps it to once a second).
+    const size = `${stage.cssWidth.toFixed(1)}x${stage.cssHeight.toFixed(1)}@${stage.scale.toFixed(4)}`;
     if (!stageSkyFill || stageSkyScene !== viewSceneLayer) {
       stageSkyScene = viewSceneLayer;
       stageSkyEdge = null;
-    }
-    stageSkyReadAt = -Infinity;
+      if (stageSkyFill) stageSkySampler.arrive(viewSceneLayer);
+    } else if (size !== stageSkySize) stageSkySampler.arrive(viewSceneLayer, true);
+    stageSkySize = size;
     const sceneSky = band >= 1 ? stageBandColour(sceneBandSky(viewSceneLayer), { phone: stageSkyFill }) : '';
     syncStageSky(stageSkyFill && stageSkyEdge ? stageSkyEdge : sceneSky, sceneSky);
   }
@@ -37007,7 +37034,8 @@ async function main() {
   // asked for another frame, so the game froze for good. The render is a guarded stage too ("frame
   // render", reported once), still last (js/pixi-fixes.js guardTickerRender).
   guardTickerRender(PIXI, app, (fn) => run('render', fn));
-  // SKY FILL: after the render (UTILITY runs after LOW), the band over a short scene reads the canvas's top edge.
+  // SKY FILL: after the render (UTILITY runs after LOW), the band over a short scene reads the canvas's
+  // top edge, only on the frames stageEdgeSampler names (a new scene, a resize, the camera moved).
   app.ticker.add(() => run('sky fill', sampleStageSkyEdge), null, PIXI.UPDATE_PRIORITY?.UTILITY ?? -50);
 
   if (startCardWaits) {

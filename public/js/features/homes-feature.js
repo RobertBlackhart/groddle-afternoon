@@ -103,7 +103,7 @@ import { countItem, ensureItem, ITEM_CATALOG, removeItem } from '../inventory.js
 import { likeStackAt, mergeDroppedStacks, pickupCountTitle } from '../world-items.js?v=b984e516';
 import { groundKey, groundStacks, ownGroundRows, ownGroundState } from '../ground-stacks.js?v=22792362';
 import { keepsOwnStack } from '../tools.js?v=4156bba8';
-import { PHONE_HOME_MIN_VIEW_W } from '../location-view.js?v=60099786';
+import { PHONE_HOME_MIN_VIEW_W } from '../location-view.js?v=febc0a91';
 import { createCountChooser } from '../ui/count-chooser.js?v=c268eefe';
 import { isBagClass } from '../pack-slots.js?v=11aa0ad5';
 import { registerDropTarget } from '../drop-targets.js?v=59e6edb4';
