@@ -2814,9 +2814,34 @@
   "deployed": "2026-11-23"
  },
  "git": {
-  "commits": 3283,
+  "commits": 3290,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "Notices on a phone start under favor's tap area, and the phone layout test waits for the layout pass"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "Quick drops online go through one after another instead of \"Wait a moment\""
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "A full house or Tower floor says house or Tower floor, not street"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "new",
+    "text": "At your own home, a small lock marks the things only you can pick up"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "A Red Button on the subway platform faces the way it did in Glitch"
+   },
    {
     "date": "2026-11-23",
     "kind": "new",
@@ -2911,34 +2936,9 @@
     "date": "2026-11-23",
     "kind": "fix",
     "text": "A visitor sees the owner's stacks on a table or shelf where the owner set them, not on the floor"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "new",
-    "text": "Visitors see what the owner keeps on their house's shelves and floor and on their Tower floors"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "new",
-    "text": "Things dropped in a house, its back yard or on a Tower floor are seen and picked up by everyone there"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "new",
-    "text": "Animal names may hold an apostrophe, a hyphen and a period"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "new",
-    "text": "Tapping a Winter Walk icicle plays a chime"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "new",
-    "text": "Everyone helping with Peter out Peat sees its 9 second countdown"
    }
   ]
  },
- "tests": 1310,
+ "tests": 1314,
  "generatedAt": "2026-11-23"
 }
