@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=61432cc9';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=10e719a0';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=755ba418';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE, playerClickBox } from './js/reach.js?v=456da8a8';
@@ -137,7 +137,7 @@ import {
 } from './js/legalize-it.js?v=7ec63cac';
 import { HALL, HALL_LAYOUT, HALL_QUESTIONS } from './js/bureaucratic-hall.js?v=db500184';
 import { STATION_X, stationArrival, stationScreen, surfaceStation } from './js/subway.js?v=ea6921ff';
-import { ALLEY, SHADY, drawAlley, inEnteredBox } from './js/quest-rooms/back-alley-set.js?v=8885d1e8';
+import { ALLEY, SHADY, drawAlley, inEnteredBox } from './js/quest-rooms/back-alley-set.js?v=d0bcc308';
 import { WINTER_WALK_BOUNDS, WINTER_WALK_PASSAGE } from './js/winter-walk-streets.js?v=c921bf92';
 import {
   WINTER_HAVEN_STREET_ID,
@@ -832,7 +832,7 @@ import { easeCameraAxis } from './js/camera-feel.js?v=e668afc5';
 import { renderResolution, resolutionCap, RESOLUTION_STEP, phoneZoomResolution } from './js/render-density.js?v=74c6f5f9';
 // g458: low energy and mood turn amber and red, and a click offers something from the pack.
 import { makingNeeds, vitalMenuEmpty, vitalMenuHeading, vitalSnacks } from './js/vitals.js?v=85a51302';
-import { DEFAULT_VP_H, LOCATION_VIEW_W, VIEW_CEIL_H, stageFor, sceneViewCap, sceneViewWidthCap, zoomMovesStage, phoneZoomSpan, phoneCameraAnchor, phoneFeetWorldHeight, phoneGroundWorldHeight, reachableFloorY, sceneBottomLine, sceneGroundLine, shortSceneBand, stageRoomBeside } from './js/location-view.js?v=ded0e52b';
+import { DEFAULT_VP_H, LOCATION_VIEW_W, VIEW_CEIL_H, stageFor, sceneViewCap, sceneViewWidthCap, zoomMovesStage, phoneZoomSpan, phoneCameraAnchor, phoneFeetWorldHeight, phoneGroundWorldHeight, reachableFloorY, sceneBottomLine, sceneGroundLine, shortSceneBand, stageRoomBeside } from './js/location-view.js?v=af5bc629';
 import {
   levelInfoForXp,
   reconcilePlayerProgression,
@@ -863,12 +863,12 @@ import {
 import { momentMoreText } from './js/ui/moment-card.js?v=35252236';
 import { CHAT_MAX_CHARS, chatBubbleText } from './js/ui/chat-input.js?v=8f2479a3';
 // HUB: the hub is the Modern skin's; Classic owns X in its skin (js/classic/classic-hub.js).
-import { MODERN, onUiModeChange, readUiCache, uiState, writeUiCache } from './js/classic/ui-mode.js?v=40e0b73d';
+import { MODERN, onUiModeChange, readUiCache, uiState, writeUiCache } from './js/classic/ui-mode.js?v=1a13f4a8';
 // ZOOM: the world zoom (a device preference) and Classic's frame scale under it; both load before main().
 import { worldZoom, setWorldZoom, stepWorldZoom, onZoomChange, zoomKeyAction, zoomKeyToast, zoomFixed, setZoomFixed, onZoomFixedChange, phoneZoom } from './js/world-zoom.js?v=38816228';
 import { nightTint, nightTintOn, onNightTintChange, worldTintOpacity } from './js/night-tint.js?v=1dfc9c89';
 import { streetMapSetting, toggleStreetMap } from './js/ui/street-minimap.js?v=86d4a812';
-import './js/classic/classic-zoom.js?v=3f502a78';
+import './js/classic/classic-zoom.js?v=ee9fc77f';
 import { mountImaginationHub } from './js/ui/imagination-hub.js?v=6928c5b7';
 import { newDayBubble, shuffleNewDayMessages, waitForScreenGates } from './js/screen-queue.js?v=cf0132c0';
 import { applyFamiliarLook, familiarCardHeading, familiarLook, skillArtFor, skillLearnedActivity } from './js/familiar.js?v=b9597cd3';
@@ -1129,12 +1129,12 @@ import { contextNeedsResume, createAudioResumer } from './js/audio-resume.js?v=7
 import { bubbleMs } from './js/read-time.js?v=3151fb1a';
 import { mountNotifyView } from './js/notify-view.js?v=0fbfad68';
 import { mountSocialDrawer } from './js/ui/social-drawer.js?v=84248d73';
-import { installPhonePill, mountPhoneLayout, socialPillCount } from './js/ui/phone-layout.js?v=d29bc134';
+import { installPhonePill, mountPhoneLayout, socialPillCount } from './js/ui/phone-layout.js?v=a5d80ed7';
 import { bindChatLinks } from './js/chat-links.js?v=b717fac7';
 import { SIDE_SHEET_IDS, bindTabs, inSideSheet, mountPanelShell, sheetKeyToWorld } from './js/ui/panel-shell.js?v=06a0d3fe';
 import { createQuestSheet, failedQuestPin, questLogNeedsSwap, questStep, visibleRowCount } from './js/ui/quest-sheet.js?v=b612c898';
 import { resolveQuestPins } from './js/features/quest-pins-feature.js?v=0e07d9a1';
-import { createQuestTracker } from './js/ui/quest-tracker.js?v=8ccc1b54';
+import { createQuestTracker } from './js/ui/quest-tracker.js?v=54c1d111';
 import { bindContextTrigger, createContextMenu, isContextMenuKey as isMenuKey, MORE_KEYS_LABEL } from './js/ui/context-menu.js?v=dee0ecde';
 import { bindCountField, countKeyValue, countStepMarkup, createCountChooser, heldPress, typedCount } from './js/ui/count-chooser.js?v=c268eefe';
 import { createScrollKeep } from './js/ui/scroll-keep.js?v=2898b5b1';
@@ -1177,7 +1177,7 @@ import { filterText } from './js/word-filter.js?v=9a7a7ebb'; // the remake's own
 import { mountStartStreet } from './js/start-street.js?v=7d8ce49c'; // #349: the start card names the save's street
 import { arrangeMapCards, fitMapExtras } from './js/map-extras.js?v=16e261b1'; // the Map's Shortcuts
 // The interface skin (js/classic/ui-mode.js) sets <html data-ui> as it loads: before main(), so before the boot cover lifts.
-import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=50a5b01e';
+import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=97131699';
 import { standOnFeet, anchorBottomCentre } from './js/sprite-feet.js?v=16f962c0';
 import { markLeaving, packPicks, takeCopies } from './js/copy-picks.js?v=01de4c58';
 import { holdKeepsBusy } from './js/instance-holds.js?v=ff3a63a3';

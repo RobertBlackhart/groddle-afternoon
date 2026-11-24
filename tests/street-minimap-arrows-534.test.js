@@ -8,7 +8,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { PHONE_SIGN_DEAD, PHONE_SIGN_DIRS, PHONE_SIGN_NEAR, phoneSignDir, phoneSignRefresh, phoneSignRows } from '../public/js/features/street-minimap-feature.js?v=d167c7e4';
+import { PHONE_SIGN_DEAD, PHONE_SIGN_DIRS, PHONE_SIGN_NEAR, phoneSignDir, phoneSignRefresh, phoneSignRows } from '../public/js/features/street-minimap-feature.js?v=4a2f04dc';
 
 const root = join(import.meta.dirname, '..');
 const feature = readFileSync(join(root, 'public/js/features/street-minimap-feature.js'), 'utf8');

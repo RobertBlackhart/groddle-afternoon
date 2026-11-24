@@ -18,7 +18,7 @@ import { FAR_SHARP_BUDGET_BYTES, FAR_SLACKS, SHARP_SLACK, SVG_MAX_PIXELS, SVG_MA
 import { resolutionOfUrl } from '../public/js/textures.js?v=729b29ea';
 import { landscapeArt } from '../public/js/features/homes-feature.js?v=29db359b';
 import { EXTERIOR_STYLES, INTERIOR_STYLES, streetLook, yardLook } from '../public/js/home-styles.js?v=ec5d2f69';
-import { layoutArtPath } from '../public/js/home-layout.js?v=e6344281';
+import { layoutArtPath } from '../public/js/home-layout.js?v=fe79c8ea';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const decoDir = join(root, 'public/assets/decos/groddle');

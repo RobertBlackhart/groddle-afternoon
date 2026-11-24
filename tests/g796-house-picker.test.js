@@ -60,7 +60,7 @@ describe('the Customize window on a phone (G1178)', () => {
   });
 
   it('the street fits the room the sheet leaves, the whole house in it, for every house', async () => {
-    const { stageFor, stageRoomBeside } = await import('../public/js/location-view.js?v=ded0e52b');
+    const { stageFor, stageRoomBeside } = await import('../public/js/location-view.js?v=af5bc629');
     const { HOUSE_HEADROOM, HOUSE_STYLE_IDS, houseFitViewH, houseLot } = await import('../public/js/home-house.js?v=3c88c47c');
     assert.deepEqual(stageRoomBeside(402, 812, null), { width: 402, height: 812, left: 0 });
     assert.deepEqual(stageRoomBeside(402, 812, { side: 'bottom', css: 357 }), { width: 402, height: 455, left: 0 });

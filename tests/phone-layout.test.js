@@ -25,7 +25,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
   GAP, PILL_IDS, STICK, TAP_H, boxesOverlap, fullScreenWay, layoutProblems, menuRoomOf, phoneRegions, pillBadge, socialPillCount, stickRegionOf, streetFloorOf,
-} from '../public/js/ui/phone-layout.js?v=d29bc134';
+} from '../public/js/ui/phone-layout.js?v=a5d80ed7';
 import { phonePins } from '../public/js/ui/quest-pin-button.js?v=ec4d53fa';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

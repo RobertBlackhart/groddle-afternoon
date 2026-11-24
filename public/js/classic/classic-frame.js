@@ -18,8 +18,8 @@
  *   player's own Modern choice; leaving Classic hands it back (restore()).
  * - window.groddleClassic for QA: the mode, the measured view and the pure layout.
  */
-import { uiState, onUiModeChange } from './ui-mode.js?v=40e0b73d';
-import { classicLayout, railFor } from './classic-layout.js?v=93a1a347';
+import { uiState, onUiModeChange } from './ui-mode.js?v=1a13f4a8';
+import { classicLayout, railFor } from './classic-layout.js?v=87437016';
 import { worldZoom } from '../world-zoom.js?v=38816228';
 
 const VARS = ['--cv-x', '--cv-y', '--cv-w', '--cv-h', '--cv-right', '--cband-h', '--cu-n'];
