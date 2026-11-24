@@ -84,7 +84,7 @@ import {
   teleportRank,
   teleportToPoint,
   useScript,
-} from '../teleportation.js?v=1bbe1ab3';
+} from '../teleportation.js?v=cbbc673f';
 import { energyMax, forceMetabolic, loseEnergy, topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import { HOME_STREET_TSID } from '../homes.js?v=10f6604f';
 import { readVisitScene } from '../neighbours-mp.js?v=a336ee09';

@@ -23,9 +23,9 @@ import {
   setToolRemaining,
   toolCopies,
 } from '../public/js/tools.js?v=4156bba8';
-import { copyNote, copyPicks, copyWire, markLeaving, packPicks, pickKey, pickRanks, takeCopies } from '../public/js/copy-picks.js?v=01de4c58';
-import { scriptTag } from '../public/js/teleportation.js?v=1bbe1ab3';
-import { playerMailFeature } from '../public/js/features/player-mail-feature.js?v=387abe17';
+import { copyNote, copyPicks, copyWire, markLeaving, packPicks, pickKey, pickRanks, takeCopies } from '../public/js/copy-picks.js?v=b368fd49';
+import { scriptTag } from '../public/js/teleportation.js?v=cbbc673f';
+import { playerMailFeature } from '../public/js/features/player-mail-feature.js?v=83620459';
 import { MAIL_COMPANIONS, createMailboxState, sendMail } from '../public/js/mailbox.js?v=d50d0d05';
 
 const root = join(import.meta.dirname, '..');

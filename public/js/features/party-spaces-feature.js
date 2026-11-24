@@ -53,7 +53,7 @@
  */
 
 import { addItem, countItem, ensureItem, removeItem, ITEM_CATALOG, itemIcon } from '../inventory.js?v=6414dbdc';
-import { teleportEnergyCost } from '../teleportation.js?v=1bbe1ab3';
+import { teleportEnergyCost } from '../teleportation.js?v=cbbc673f';
 import {
   PARTY_GUESTS,
   PARTY_PACKS,

@@ -26,7 +26,7 @@
  * A stack that is gone (used up, moved away) marks nothing: the class's usual order decides.
  */
 import { TOOL_CONDITION_CATALOG, copyTags, takeToolCopy, toolCopies } from './tools.js?v=4156bba8';
-import { markLeaving, takeCopies } from './copy-picks.js?v=01de4c58';
+import { markLeaving, takeCopies } from './copy-picks.js?v=b368fd49';
 import { unitRankAt } from './pack-slots.js?v=d9ab4a0b';
 import { answerWaitMs } from './online-request.js?v=2a5117ff';
 

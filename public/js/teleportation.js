@@ -69,8 +69,8 @@ export const SCRIPT_ITEM = Object.freeze({
   desc: 'A lovingly handcrafted Teleportation Script (Or "a magical location incantation scribbled on some Paper with a Quill). This will zip you on a one-way ticket to somewhere specific… as long as you have a Teleportation Token or the energy to pay for your ride.',
   baseCost: 5,
   stackMax: 1,
-  sellable: false,
-  donatable: false,
+  // #657: any vendor buys one and any shrine takes one, as Glitch's did (teleportation_script.js
+  // tags only teleportation_script, no_rube and bureaucracy: no no_vendor, no no_donate).
 });
 
 export const QUILL_ITEM = Object.freeze({

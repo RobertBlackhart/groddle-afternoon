@@ -24,7 +24,7 @@
  * so the picker never shows it; Give still sends the Plop's seeds along as a drop does (G605).
  */
 import { TOOL_CONDITION_CATALOG, cleanCopyTag, copyTags, leavingCopyTag, leavingToolWear, pickToolCopies, receiveToolCopy, takeToolCopy, toolCopies } from './tools.js?v=4156bba8';
-import { scriptFromTag, scriptLabel } from './teleportation.js?v=1bbe1ab3';
+import { scriptFromTag, scriptLabel } from './teleportation.js?v=cbbc673f';
 import { favorGiantName } from './potions.js?v=4f4c996d';
 
 const sameTag = (a, b) => JSON.stringify(a ?? null) === JSON.stringify(b ?? null);

@@ -111,13 +111,13 @@ import { createMinnAccount } from '../minn-account.js?v=83127c18';
 import { runStreetTransition } from '../screen-fx.js?v=39954e0b';
 import { STREET_INDEX } from '../street-loader.js?v=10376267';
 import { ITEM_CATALOG, addItem, countItem, listPackItemSlots, removeItem } from '../inventory.js?v=6414dbdc';
-import { copyPicks, leavingWire, markLeaving, receiveWire, takeCopies } from '../copy-picks.js?v=01de4c58';
+import { copyPicks, leavingWire, markLeaving, receiveWire, takeCopies } from '../copy-picks.js?v=b368fd49';
 import { cultivationDef, homeStreetLayout } from '../home-cultivation.js?v=9e6e217b';
 import { getPlot, tickGarden } from '../garden.js?v=0cbb65f0';
 import { BUTLER_RIG_SCALE, ButlerPainter, butlerRigNow, loadButlerRig } from '../butler-rig.js?v=3acda854';
 import { BUTLER, BUTLER_INFO, butlerInfoText, butlerPostRx, normalizeButlerParts } from '../butler.js?v=6c66ebf5';
-import { butlerApi } from './butler-feature.js?v=2800f11c';
-import { homesFeature, visitorHomeScene, visitorHomeState } from './homes-feature.js?v=c3719057';
+import { butlerApi } from './butler-feature.js?v=b4f1f01c';
+import { homesFeature, visitorHomeScene, visitorHomeState } from './homes-feature.js?v=1827fb0c';
 import { homeMusicFile } from '../homes.js?v=10f6604f';
 import { visitGardenPlots, visitSceneKey } from '../home-live.js?v=9c7abae7';
 import {
@@ -178,9 +178,9 @@ import {
   visitSceneTsid,
 } from '../neighbours-mp.js?v=a336ee09';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { butlerCarries, registerButlerDrop } from '../butler-drop.js?v=aa314c0a';
-import { takeDragged } from '../drag-stack.js?v=536cddfb';
-import { worldPoint } from './world-drop-feature.js?v=1cada149';
+import { butlerCarries, registerButlerDrop } from '../butler-drop.js?v=c7a7e6fa';
+import { takeDragged } from '../drag-stack.js?v=c837d72e';
+import { worldPoint } from './world-drop-feature.js?v=21c11fe4';
 import { clampToExpansion, elevatorStops, floorJobFor, TOWER_JOBS } from '../home-tower.js?v=84d99af0';
 
 export const NEIGHBOURS_MP_FEATURE_ID = 'neighbours-mp';

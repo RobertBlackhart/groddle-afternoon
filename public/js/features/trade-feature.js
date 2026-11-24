@@ -42,7 +42,7 @@
 
 import { ITEM_CATALOG, addItem, countItem, itemIcon, listPackSlots, removeItem } from '../inventory.js?v=6414dbdc';
 import { TOOL_CONDITION_CATALOG, copyTagKind, copyTags, leavingToolWear, moveToolCopy, receiveToolCopies, receiveToolCopy, setCopyTag, setToolRemaining, toolCopies } from '../tools.js?v=4156bba8';
-import { scriptFromTag, scriptLabel } from '../teleportation.js?v=1bbe1ab3';
+import { scriptFromTag, scriptLabel } from '../teleportation.js?v=cbbc673f';
 import { saveStore, savedThrough } from '../save-store.js?v=4e720735';
 import { playOverlay } from '../overlays.js?v=1f5027a3';
 import {
@@ -72,7 +72,7 @@ import {
 } from '../trade.js?v=5fb43d2f';
 import { UNNAMED_PLAYER } from '../player-names.js?v=f9b78094';
 import { beginDrag, registerDropTarget } from '../drop-targets.js?v=59e6edb4';
-import { draggedCount, draggedStack, takeDragged } from '../drag-stack.js?v=536cddfb';
+import { draggedCount, draggedStack, takeDragged } from '../drag-stack.js?v=c837d72e';
 
 export const TRADE_FEATURE_ID = 'trade';
 export const TRADE_VERB = 'trade_start';
