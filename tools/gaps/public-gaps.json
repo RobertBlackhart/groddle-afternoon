@@ -5280,6 +5280,16 @@
         "server:5ad5a36",
         "site:587253a"
       ]
+    },
+    {
+      "id": "G1240",
+      "area": "Snaps",
+      "text": "Snaps were saved small, cropped in the album, and could not be opened full size, downloaded or shared.",
+      "show": "fixing",
+      "commits": [
+        "game:77e10de7e94",
+        "site:4cab442"
+      ]
     }
   ]
 }

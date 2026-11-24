@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.64.0",
+  "release": "v0.65.0",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -42,7 +42,7 @@
     "fixing": 3,
     "known": 15,
     "unreleased": 0,
-    "fixed": 524,
+    "fixed": 525,
     "lost": 5,
     "purpose": 17,
     "idea": 10
@@ -3827,6 +3827,17 @@
           "text": "Things in a display box could only be moved out through the pack, not set down on the floor beside it.",
           "state": "fixed",
           "version": "v0.59.0"
+        }
+      ]
+    },
+    {
+      "name": "Snaps",
+      "items": [
+        {
+          "id": "G1240",
+          "text": "Snaps were saved small, cropped in the album, and could not be opened full size, downloaded or shared.",
+          "state": "fixed",
+          "version": "v0.65.0"
         }
       ]
     }
