@@ -100,7 +100,7 @@
  */
 
 import { countItem, ensureItem, ITEM_CATALOG, removeItem } from '../inventory.js?v=6414dbdc';
-import { likeStackAt, mergeDroppedStacks, pickupCountTitle } from '../world-items.js?v=d703d2c1';
+import { likeStackAt, mergeDroppedStacks, pickupCountTitle } from '../world-items.js?v=5101fb03';
 import { groundKey, groundStacks, ownGroundRows, ownGroundState } from '../ground-stacks.js?v=22792362';
 import { keepsOwnStack } from '../tools.js?v=4156bba8';
 import { createCountChooser } from '../ui/count-chooser.js?v=c268eefe';
@@ -175,7 +175,7 @@ import {
   placeCostText,
   swatchFilters,
   trayFilters,
-} from '../ui/home-builder.js?v=d73e840b';
+} from '../ui/home-builder.js?v=1e633de5';
 import { RECIPE_CATALOG } from '../making.js?v=1ec1075e';
 import {
   createBackYardState,
@@ -6237,12 +6237,14 @@ function moveStack(engine, id, p) {
   const target = stackSurfaceAt(decor, p.x, p.y);
   const into = moveJoins(engine, row, target);
   if (row.shared) return claimShared(engine, row, target, into);
-  const joined = into ? mergeDroppedStacks(ownGroundState(engine), groundKey(engine), id, into.id) : null;
+  const joined = into ? mergeDroppedStacks(ownGroundState(engine), groundKey(engine), id, into.id, { decor: true }) : null;
   if (!joined?.ok) {
     row.x = target.x + roomX0();
     row.y = target.y;
     if (target.on != null) row.on = target.on;
     else delete row.on;
+    // G1224: moved in Decoration Mode, it is the owner's decor now (the site's floor move leaves it).
+    row.decor = true;
   }
   engine.droppedItemsChanged?.();
   engine.playSound?.('ITEM_DROP', { volume: 0.45 });
@@ -6264,6 +6266,14 @@ function moveStack(engine, id, p) {
  * passes through the pack (#473: a full pack would split it); until the answer it stays where it was.
  */
 function claimShared(engine, row, target, into) {
+  // As Glitch: the floor is everyone's (takeable.js 29-44); only what the owner sets on furniture is
+  // locked to them (house_lock 179-198). Moved onto the floor, a shared stack stays where it was.
+  if (target.on == null) {
+    engine.toast(BUILDER_TEXT.sharedFloor);
+    engine.playSound?.('CLICK_FAILURE', { volume: 0.4 });
+    engine.setData('homeStackLast', `refused:${row.id}:floor`);
+    return { ok: false, reason: 'floor' };
+  }
   const res = engine.query?.('claimSharedStack', row.id, { tsid: groundKey(engine), x: target.x + roomX0(), y: target.y, on: target.on ?? null, into: into?.id ?? null }, engine);
   if (!res?.ok) {
     if (res?.msg) engine.toast(res.msg);

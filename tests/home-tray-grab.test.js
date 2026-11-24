@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { TRAY_GRAB_TEXT, TRAY_SWIPE_MIN, trayGesture } from '../public/js/ui/home-builder.js?v=d73e840b';
+import { TRAY_GRAB_TEXT, TRAY_SWIPE_MIN, trayGesture } from '../public/js/ui/home-builder.js?v=1e633de5';
 
 const root = join(import.meta.dirname, '..');
 const src = readFileSync(join(root, 'public/js/ui/home-builder.js'), 'utf8');

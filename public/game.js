@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=61432cc9';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=a6f7b4af';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=71092c0b';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE, playerClickBox } from './js/reach.js?v=456da8a8';
@@ -558,7 +558,7 @@ import {
   placeDroppedBag,
   setDownStack,
   takeDroppedRecord,
-} from './js/world-items.js?v=d703d2c1';
+} from './js/world-items.js?v=5101fb03';
 import {
   createPlayerSave,
   inspectPlayerSave,
@@ -14845,7 +14845,8 @@ const engine = {
     if (!n) return { ok: false, reason: 'missing', msg: 'That stack is no longer in your pack.' };
     beforeRemove?.(n);
     // Its words go down with it too (#285: a Still's hopper and Hooch), as Drop's do.
-    const result = dropInventoryStack(droppedItemState, inv, droppedStacksTsid(), classTsid, n, { x, y }, { now: Date.now(), mergeRadius: 12, ...(keepsOwnStack(classTsid) ? { merge: false } : {}), points: leavingToolPoints(classTsid, n), tags: leavingToolTags(classTsid, n) });
+    // G1224: marked as the owner's decor (the site's move of old floor drops leaves it in the save).
+    const result = dropInventoryStack(droppedItemState, inv, droppedStacksTsid(), classTsid, n, { x, y }, { now: Date.now(), mergeRadius: 12, ...(keepsOwnStack(classTsid) ? { merge: false } : {}), points: leavingToolPoints(classTsid, n), tags: leavingToolTags(classTsid, n), decor: true });
     if (!result.ok) return result;
     closePackPopover();
     saveDroppedItems();

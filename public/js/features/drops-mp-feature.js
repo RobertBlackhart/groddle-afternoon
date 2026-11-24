@@ -120,9 +120,21 @@ function createSession(engine, client) {
     engine.setData?.('dropEaten', lastEaten);
   }
 
+  /**
+   * G1224: one redraw for a burst of changes (a house's floor holds any number of stacks, and joining
+   * one the server may send many at once): every change asks, the stacks are drawn once, next frame.
+   */
+  let redrawDue = false;
   function redraw() {
-    engine.redrawDroppedStacks?.();
     publish();
+    if (redrawDue) return;
+    redrawDue = true;
+    const go = () => {
+      redrawDue = false;
+      engine.redrawDroppedStacks?.();
+    };
+    if (typeof requestAnimationFrame === 'function' && typeof document !== 'undefined' && !document.hidden) requestAnimationFrame(go);
+    else setTimeout(go, 0);
   }
 
   function tell(line, ms = 3200) {

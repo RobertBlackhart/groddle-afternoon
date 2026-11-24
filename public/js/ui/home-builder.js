@@ -136,6 +136,8 @@ export const BUILDER_TEXT = Object.freeze({
   // The remake's (the 2012 client said nothing): how a thing set down moves and comes back (Austin 2026-11-01).
   packHint: 'Drag things to set them down or move them • Drop them on your pack to pick up',
   stackHint: 'Drag it to move it, or drop it on your pack to pick it up.',
+  // G1224: a stack dropped for everyone moved onto the floor in Decoration Mode (ours; the floor is anyone's, as Glitch's).
+  sharedFloor: 'The floor is for everyone. Set it on a shelf or table to keep it, or pick it up.',
   dropInPack: 'Drop here to put it in your pack',
 });
 

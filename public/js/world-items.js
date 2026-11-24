@@ -118,6 +118,9 @@ function cleanRecord(row, streetTsid, fallbackId) {
     ...keep,
     // In a house: the placed piece (its id in that room's decor) the stack rests on (js/home-decor.js settleStacks).
     ...(Number.isInteger(row?.on) && row.on > 0 ? { on: row.on } : {}),
+    // G1224: set down in Decoration Mode (the owner's decor), not dropped: the site's move of old floor
+    // drops to the shared floor (HouseFloors) leaves it in the save.
+    ...(row?.decor === true ? { decor: true } : {}),
   };
 }
 
@@ -216,6 +219,7 @@ export function dropInventoryStack(state, inv, streetTsid, classTsid, requested,
     if (tags || merge.tags) merge.tags = [...pointsFor(merge.tags, merge.count), ...pointsFor(tags, count)];
     merge.count += count;
     merge.droppedAt = Math.max(0, Math.floor(finite(opts.now, Date.now())));
+    if (opts.decor === true) merge.decor = true;
     return { ok: true, count, stack: { ...merge }, merged: true, remaining: inv[item] || 0 };
   }
 
@@ -229,6 +233,7 @@ export function dropInventoryStack(state, inv, streetTsid, classTsid, requested,
     droppedAt: Math.max(0, Math.floor(finite(opts.now, Date.now()))),
     ...(points ? { points } : {}),
     ...(tags ? { tags } : {}),
+    ...(opts.decor === true ? { decor: true } : {}),
   };
   rows.push(stack);
   return { ok: true, count, stack: { ...stack }, merged: false, remaining: inv[item] || 0 };
@@ -286,6 +291,7 @@ export function mergeDroppedStacks(state, streetTsid, fromId, intoId, opts = {})
   if (from.tags || into.tags) into.tags = [...pointsFor(into.tags, had), ...pointsFor(from.tags, count)];
   into.count = had + count;
   into.droppedAt = Math.max(0, Math.floor(finite(opts.now, Date.now())));
+  if (from.decor || opts.decor === true) into.decor = true;
   rows.splice(index, 1);
   return { ok: true, count, stack: { ...into } };
 }
@@ -300,7 +306,7 @@ export function mergeDroppedStacks(state, streetTsid, fromId, intoId, opts = {})
  */
 export function setDownStack(state, streetTsid, classTsid, requested, position = {}, opts = {}) {
   const n = cleanCount(requested);
-  const placed = dropInventoryStack(state, { [cleanClassTsid(classTsid)]: n }, streetTsid, classTsid, n, position, { now: opts.now, merge: false, points: opts.points, tags: opts.tags });
+  const placed = dropInventoryStack(state, { [cleanClassTsid(classTsid)]: n }, streetTsid, classTsid, n, position, { now: opts.now, merge: false, points: opts.points, tags: opts.tags, decor: true });
   if (!placed.ok) return placed;
   const street = cleanStreetTsid(streetTsid);
   const row = state.streets[street].find((r) => r.id === placed.stack.id);

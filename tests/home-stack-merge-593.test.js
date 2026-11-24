@@ -14,7 +14,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { likeStackAt, mergeDroppedStacks, normalizeDroppedItemState, PLACED_MERGE_RADIUS } from '../public/js/world-items.js?v=d703d2c1';
+import { likeStackAt, mergeDroppedStacks, normalizeDroppedItemState, PLACED_MERGE_RADIUS } from '../public/js/world-items.js?v=5101fb03';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');
@@ -86,7 +86,7 @@ describe('a stack moved onto a like stack joins it (#593)', () => {
     const homes = read('public/js/features/homes-feature.js');
     const mv = homes.slice(homes.indexOf('function moveStack('), homes.indexOf('function pickUpStack('));
     // R50: a shared stack is claimed (tests/ground-stacks.test.js); the save's own joins here.
-    assert.match(mv, /const into = moveJoins\(engine, row, target\);\s+if \(row\.shared\) return claimShared\(engine, row, target, into\);\s+const joined = into \? mergeDroppedStacks\(ownGroundState\(engine\), groundKey\(engine\), id, into\.id\) : null;/);
+    assert.match(mv, /const into = moveJoins\(engine, row, target\);\s+if \(row\.shared\) return claimShared\(engine, row, target, into\);\s+const joined = into \? mergeDroppedStacks\(ownGroundState\(engine\), groundKey\(engine\), id, into\.id, \{ decor: true \}\) : null;/);
     assert.ok(mv.indexOf('mergeDroppedStacks(') < mv.indexOf('engine.droppedItemsChanged?.();'), 'saved after it joins');
     const joins = homes.slice(homes.indexOf('function moveJoins('), homes.indexOf('function moveStack('));
     assert.match(joins, /keepsOwnStack\(row\.classTsid\)/, 'a class that keeps its own stack never joins, as its pack drop');

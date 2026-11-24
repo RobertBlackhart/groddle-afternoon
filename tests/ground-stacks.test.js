@@ -18,7 +18,7 @@ import assert from 'node:assert/strict';
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { groundKey, groundStacks, ownGroundPlaces, ownGroundRows, ownGroundState, pruneOwnGround, sharedGroundStacks } from '../public/js/ground-stacks.js?v=22792362';
-import { createDroppedItemState, setDownStack } from '../public/js/world-items.js?v=d703d2c1';
+import { createDroppedItemState, setDownStack } from '../public/js/world-items.js?v=5101fb03';
 import { dropsMpFeature } from '../public/js/features/drops-mp-feature.js?fresh=groundstacks';
 import { homeLivePrints, changedHomeKinds } from '../public/js/home-live.js?v=9c7abae7';
 import { GAME_DIR } from '../tools/repos.mjs';
@@ -173,11 +173,11 @@ describe('Decoration Mode at the owner\'s own house online', () => {
     assert.equal(engine.inv.honey, undefined);
   });
 
-  it('an emblem stack set on the floor alone becomes the owner\'s own there', () => {
-    dropsMpFeature.claimSharedStack(OP2, { tsid: 'RH_HOME_INT', x: 820, y: 620, on: null, into: null }, engine);
+  it('an emblem stack set on a table alone becomes the owner\'s own decor there', () => {
+    dropsMpFeature.claimSharedStack(OP2, { tsid: 'RH_HOME_INT', x: 820, y: 500, on: 3, into: null }, engine);
     client.emit('msg:ground_taken', { op: `${OP2}-t`, id: OP2, status: 'settled', item: { c: 'emblem_alph', n: 12 } });
     const row = state.streets.RH_HOME_INT.find((r) => r.classTsid === 'emblem_alph');
-    assert.deepEqual([row.count, row.x, row.y, row.on], [12, 820, 620, undefined]);
+    assert.deepEqual([row.count, row.x, row.y, row.on, row.decor], [12, 820, 500, 3, true]);
     assert.equal(groundStacks(engine).find((s) => s.id === row.id).shared, undefined, 'in the save, so drawn as decor');
   });
 
@@ -249,5 +249,7 @@ describe('nothing reads the save\'s floor store but js/ground-stacks.js', () => 
     assert.match(src, /function stackAt\(engine, p\) \{\n\s+const rows = roomStacks\(engine\);/);
     assert.match(src, /function stackRow\(engine, id\) \{\n\s+return roomStacks\(engine\)/);
     assert.match(src, /if \(row\.shared\) return claimShared\(engine, row, target, into\);/);
+    // As Glitch, the floor is everyone's: only furniture takes a shared stack as the owner's decor.
+    assert.match(src, /function claimShared\(engine, row, target, into\) \{[\s\S]{0,300}if \(target\.on == null\) \{\n\s+engine\.toast\(BUILDER_TEXT\.sharedFloor\);/);
   });
 });
