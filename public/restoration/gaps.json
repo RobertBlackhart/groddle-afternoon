@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.62.0",
+  "release": "v0.63.0",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -42,7 +42,7 @@
     "fixing": 3,
     "known": 15,
     "unreleased": 0,
-    "fixed": 512,
+    "fixed": 522,
     "lost": 5,
     "purpose": 16,
     "idea": 10
@@ -684,6 +684,18 @@
           "text": "A mined-out rock left a faint ghost of itself until it reformed.",
           "state": "fixed",
           "version": "v0.61.0"
+        },
+        {
+          "id": "G1231",
+          "text": "Dino and subway entrances were missing from the street map and the loading picture.",
+          "state": "fixed",
+          "version": "v0.63.0"
+        },
+        {
+          "id": "G1232",
+          "text": "The Bureaucratic Hall was missing its office furniture, and its ceiling light drew over the TV.",
+          "state": "fixed",
+          "version": "v0.63.0"
         }
       ]
     },
@@ -979,6 +991,12 @@
           "version": "v0.48.0"
         },
         {
+          "id": "G1233",
+          "text": "Old Teleportation Scripts couldn't be sold or given to a shrine.",
+          "state": "fixed",
+          "version": "v0.63.0"
+        },
+        {
           "id": "G174",
           "text": "A few dozen items in the encyclopedia have no icon, because their art was never archived.",
           "state": "lost"
@@ -1221,6 +1239,24 @@
           "text": "Glitch's neighbourhoods of houses were gone: there was nowhere to see other players' houses side by side.",
           "state": "fixed",
           "version": "v0.62.0"
+        },
+        {
+          "id": "G1224",
+          "text": "Things dropped in a house after floors became shared couldn't be moved in Decoration Mode, and older floor items stayed locked to their owner.",
+          "state": "fixed",
+          "version": "v0.63.0"
+        },
+        {
+          "id": "G1225",
+          "text": "Back yard Piggies could walk into the house and eat things off its floor.",
+          "state": "fixed",
+          "version": "v0.63.0"
+        },
+        {
+          "id": "G1227",
+          "text": "Every home street shared one \"last visited\" time on the loading card.",
+          "state": "fixed",
+          "version": "v0.63.0"
         },
         {
           "id": "G48",
@@ -2349,6 +2385,18 @@
           "text": "On a narrow phone an open bag's last column ran off the right edge.",
           "state": "fixed",
           "version": "v0.61.0"
+        },
+        {
+          "id": "G1228",
+          "text": "On a phone, closing a menu left the camera low, with your Glitch under the pack row.",
+          "state": "fixed",
+          "version": "v0.63.0"
+        },
+        {
+          "id": "G1229",
+          "text": "On streets with low platforms, a phone's camera put your Glitch under the stick and buttons.",
+          "state": "fixed",
+          "version": "v0.63.0"
         }
       ]
     },
@@ -2982,6 +3030,12 @@
           "text": "With a larger browser font, the Social panel cut off its tabs and its buttons scrolled sideways.",
           "state": "fixed",
           "version": "v0.55.1"
+        },
+        {
+          "id": "G1234",
+          "text": "The Buddies list opened near the bottom and shifted as people came and went.",
+          "state": "fixed",
+          "version": "v0.63.0"
         }
       ]
     },
@@ -3046,6 +3100,12 @@
           "text": "The subway platform's Red Button faced the opposite way from Glitch's.",
           "state": "fixed",
           "version": "v0.62.0"
+        },
+        {
+          "id": "G1226",
+          "text": "Teleporting was refused while visiting another player's home street.",
+          "state": "fixed",
+          "version": "v0.63.0"
         }
       ]
     },

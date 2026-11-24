@@ -5157,6 +5157,98 @@
         "server:41cc9a7",
         "site:3ef3033"
       ]
+    },
+    {
+      "id": "G1224",
+      "area": "Homes",
+      "text": "Things dropped in a house after floors became shared couldn't be moved in Decoration Mode, and older floor items stayed locked to their owner.",
+      "show": "fixing",
+      "commits": [
+        "game:f71ba20f5b6",
+        "site:1e1aa1b",
+        "server:e656d47"
+      ]
+    },
+    {
+      "id": "G1225",
+      "area": "Homes",
+      "text": "Back yard Piggies could walk into the house and eat things off its floor.",
+      "show": "fixing",
+      "commits": [
+        "game:287ad8ec0a1"
+      ]
+    },
+    {
+      "id": "G1226",
+      "area": "Transit",
+      "text": "Teleporting was refused while visiting another player's home street.",
+      "show": "fixing",
+      "commits": [
+        "game:106fc4c9496"
+      ]
+    },
+    {
+      "id": "G1228",
+      "area": "Phones",
+      "text": "On a phone, closing a menu left the camera low, with your Glitch under the pack row.",
+      "show": "fixing",
+      "commits": [
+        "game:9f330650be3"
+      ]
+    },
+    {
+      "id": "G1231",
+      "area": "Streets",
+      "text": "Dino and subway entrances were missing from the street map and the loading picture.",
+      "show": "fixing",
+      "commits": [
+        "game:8f92b47a038"
+      ]
+    },
+    {
+      "id": "G1232",
+      "area": "Streets",
+      "text": "The Bureaucratic Hall was missing its office furniture, and its ceiling light drew over the TV.",
+      "show": "fixing",
+      "commits": [
+        "game:74df8bd3bc0"
+      ]
+    },
+    {
+      "id": "G1233",
+      "area": "Items",
+      "text": "Old Teleportation Scripts couldn't be sold or given to a shrine.",
+      "show": "fixing",
+      "commits": [
+        "game:7c30b5ea554"
+      ]
+    },
+    {
+      "id": "G1234",
+      "area": "Social",
+      "text": "The Buddies list opened near the bottom and shifted as people came and went.",
+      "show": "fixing",
+      "commits": [
+        "game:533cec1be01"
+      ]
+    },
+    {
+      "id": "G1227",
+      "area": "Homes",
+      "text": "Every home street shared one \"last visited\" time on the loading card.",
+      "show": "fixing",
+      "commits": [
+        "game:daf829bb888"
+      ]
+    },
+    {
+      "id": "G1229",
+      "area": "Phones",
+      "text": "On streets with low platforms, a phone's camera put your Glitch under the stick and buttons.",
+      "show": "fixing",
+      "commits": [
+        "game:c15c56d8680"
+      ]
     }
   ]
 }
