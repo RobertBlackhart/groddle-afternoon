@@ -28,6 +28,12 @@
  * - Signposts: teensy_signpost art for posts with a visible connection; hidden and invisible
  *   posts are skipped (maybeAddSignpost 398-418). The tip lists where it goes, one per line
  *   (getTip 923-970).
+ * - SHARP MARKS (Austin 2026-11-24, iPhone sideways: "The mobile signs on the map are blurry"):
+ *   teensy_signpost is 10 x 15 and map_icon_subway 24 x 23, and the phone sheet draws them about
+ *   33 x 50 CSS px, ten times over on a 3x screen. Where a mark is scaled up (the phone sheet, the
+ *   Modern card) it draws their vector traces (teensy_signpost_hd, map_icon_subway_hd,
+ *   tools/classic-art/hd-art.mjs: the same shape, colours and box); Classic keeps the bitmap at 1x
+ *   and takes the trace on a high-DPI screen through srcset (markArt).
  * - no_map: the street hides the map (Location.show_map, changeMiniMapVisibility). fog_map: a
  *   70% black wash over the picture and "No map: You're on your own" (addGraphic 330-337).
  * - The picture: the client snapped the street itself (TSFrontController.resnapMiniMap:
@@ -633,12 +639,29 @@ const easeIn = (k) => k ** 3;
 
 /** G1232: a door mark's icon (ours: the client has no map icon for a door). */
 export const DOOR_SVG = '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 11.5V3.2C2.5 1.7 4 .5 6 .5s3.5 1.2 3.5 2.7v8.3z" fill="#7a5130" stroke="#3d2a14" stroke-width="1" /><circle cx="7.6" cy="7" r=".9" fill="#f0d27a" /></svg>';
+/**
+ * PURE (SHARP MARKS): a mark's <img> for the 1x piece `name`. With a high-resolution trace
+ * (artHd(name)) a crisp view draws the trace; otherwise the bitmap at 1x and the trace from 2x
+ * (srcset), so Classic stays pixel for pixel at 1x and is sharp on retina.
+ */
+export function markArt(name, { artUrl = () => '', artHd = () => null, crisp = true } = {}) {
+  const one = artUrl(name);
+  const hd = artHd(name);
+  if (!hd) return `<img alt="" src="${esc(one)}" />`;
+  if (crisp) return `<img alt="" src="${esc(hd)}" />`;
+  return `<img alt="" src="${esc(one)}" srcset="${esc(one)} 1x, ${esc(hd)} 2x" />`;
+}
+
 const MAP_SVG = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 5l5-2 5 2 5-2v12l-5 2-5-2-5 2z" /><path d="M7.5 3v12M12.5 5v12" /></svg>';
 
 /**
  * The street map's DOM in `host` (#game-root): the card (#street-minimap) and its show button
  * (#street-minimap-show). `opts`:
  *   artUrl(name)       the classic art's url (js/classic/classic-art.js classicArtUrl)
+ *   artHd(name)        SHARP MARKS: its high-resolution trace's url, or null (classicArtHd)
+ *   crisp()            true: the marks draw their traces (the Modern card, the phone sheet);
+ *                      false: the 1x bitmap with the trace from 2x (Classic). refreshArt()
+ *                      re-reads it when the skin changes
  *   reducedMotion()    true: expand and contract without the tween
  *   onHide()           the card's hide button (the setting goes off)
  *   onShow()           the show button (the setting goes on)
@@ -650,6 +673,7 @@ const MAP_SVG = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stro
  */
 export function createStreetMinimap(doc, host, opts = {}) {
   const artUrl = opts.artUrl || (() => '');
+  const artOpts = () => ({ artUrl, artHd: opts.artHd || (() => null), crisp: opts.crisp ? Boolean(opts.crisp()) : true });
   const reducedMotion = opts.reducedMotion || (() => false);
   const now = opts.now || (() => performance.now());
   const raf = opts.raf || ((fn) => (typeof requestAnimationFrame === 'function' ? requestAnimationFrame(fn) : setTimeout(() => fn(now()), 16)));
@@ -1035,8 +1059,10 @@ export function createStreetMinimap(doc, host, opts = {}) {
     el.className = kind === 'sign' ? 'smm-sign' : kind === 'station' ? 'smm-sign smm-station' : kind === 'door' ? 'smm-sign smm-door' : `smm-dot smm-${kind}`;
     el.dataset.mark = id;
     el.dataset.kind = kind;
-    if (kind === 'sign') el.innerHTML = `<img alt="" src="${esc(artUrl('teensy_signpost'))}" />`;
-    if (kind === 'station') el.innerHTML = `<img alt="" src="${esc(artUrl('map_icon_subway'))}" />`;
+    if (kind === 'sign' || kind === 'station') {
+      el.dataset.art = kind === 'sign' ? 'teensy_signpost' : 'map_icon_subway';
+      el.innerHTML = el.artHtml = markArt(el.dataset.art, artOpts());
+    }
     if (kind === 'door') el.innerHTML = DOOR_SVG;
     return el;
   }
@@ -1243,6 +1269,15 @@ export function createStreetMinimap(doc, host, opts = {}) {
       dest = next;
       root.dataset.dest = dest ? `${Math.round(dest.x)}` : '';
       placeAll();
+    },
+    /** SHARP MARKS: the marks' art again, for a new skin (crisp() changed). */
+    refreshArt() {
+      const o = artOpts();
+      for (const { el } of signs.values()) {
+        if (!el.dataset.art) continue;
+        const html = markArt(el.dataset.art, o);
+        if (el.artHtml !== html) el.innerHTML = el.artHtml = html;
+      }
     },
     relayout() {
       if (!shown || !street) return;

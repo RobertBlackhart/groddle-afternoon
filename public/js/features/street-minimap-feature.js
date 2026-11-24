@@ -70,8 +70,8 @@
  */
 
 import { STREET_ENTITY_KINDS } from '../street-render.js?v=4f5425d0';
-import { DOOR_SVG, createPictureCache, createStreetMinimap, doorMarks, minimapVisibility, onStreetMapChange, sceneDoorMarks, sceneSignMarks, setStreetMap, signpostMarks, snapshotStreetView, snapsWithScene, stationMarks, streetMapOn } from '../ui/street-minimap.js?v=9e4ae55e';
-import { classicArtUrl } from '../classic/classic-art.js?v=5f713e7d';
+import { DOOR_SVG, createPictureCache, createStreetMinimap, doorMarks, markArt, minimapVisibility, onStreetMapChange, sceneDoorMarks, sceneSignMarks, setStreetMap, signpostMarks, snapshotStreetView, snapsWithScene, stationMarks, streetMapOn } from '../ui/street-minimap.js?v=cf66d461';
+import { classicArtHd, classicArtUrl } from '../classic/classic-art.js?v=87cb1722';
 import { onUiModeChange } from '../classic/ui-mode.js?v=1a13f4a8';
 import { focusBack } from '../ui/focus-return.js?v=da190597';
 import { isPhoneDevice } from '../touch-controls.js?v=b10f17bb';
@@ -651,7 +651,8 @@ function phoneOpen(engine) {
       b.dataset.side = row.side;
       b.dataset.signId = row.id;
       b.dataset.kind = row.kind;
-      b.innerHTML = `${row.kind === 'door' ? DOOR_SVG : `<img alt="" src="${classicArtUrl(row.kind === 'station' ? 'map_icon_subway' : 'teensy_signpost')}" />`}<span></span>`;
+      // SHARP MARKS: the row's icon is the trace (14 x 21 CSS px from a 10 x 15 bitmap, 3x on a phone).
+      b.innerHTML = `${row.kind === 'door' ? DOOR_SVG : markArt(row.kind === 'station' ? 'map_icon_subway' : 'teensy_signpost', { artUrl: classicArtUrl, artHd: classicArtHd, crisp: true })}<span></span>`;
       b.querySelector('span').textContent = row.text;
       phone.signs.push({ el: b, x: row.x, y: row.y, side: row.side });
       b.setAttribute('aria-label', row.kind === 'station' ? `Walk to ${row.text}` : row.kind === 'door' ? `Walk to the door to ${row.text}` : `Walk to the signpost to ${row.text}`);
@@ -676,6 +677,8 @@ function phoneOpen(engine) {
   const availH = Math.max(120, (mapBox.clientHeight || gameRoot.clientHeight * 0.6));
   view = createStreetMinimap(doc, mapBox, {
     artUrl: classicArtUrl,
+    artHd: classicArtHd,
+    crisp: () => true,
     reducedMotion: () => true,
     onHide: () => phoneClose(engine),
     onShow: () => {},
@@ -784,6 +787,10 @@ export const streetMinimapFeature = {
     if (!host || view) return;
     view = createStreetMinimap(document, host, {
       artUrl: classicArtUrl,
+      // SHARP MARKS: the Modern card scales the marks up (u 1.2); Classic draws them 1:1 and
+      // takes the traces on a high-DPI screen.
+      artHd: classicArtHd,
+      crisp: () => document.documentElement.dataset.ui !== 'classic',
       reducedMotion,
       onHide: () => setStreetMap(false),
       onShow: () => {
@@ -805,7 +812,10 @@ export const streetMinimapFeature = {
       // The show button for a keyboard player, the world after a click (js/ui/focus-return.js).
       if (!on && view.root.contains(document.activeElement)) focusBack(view.showBtn, { doc: document, byOpener: false });
     });
-    onUiModeChange(() => setTimeout(() => view?.relayout(), 0));
+    onUiModeChange(() => setTimeout(() => {
+      view?.refreshArt();
+      view?.relayout();
+    }, 0));
     globalThis.addEventListener?.('resize', () => view?.relayout());
     engine.setData?.('streetMap', 'hidden');
   },

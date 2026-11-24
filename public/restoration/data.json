@@ -2814,9 +2814,14 @@
   "deployed": "2026-11-24"
  },
  "git": {
-  "commits": 3359,
+  "commits": 3360,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-24",
+    "kind": "fix",
+    "text": "Signposts on the phone street map are sharp, not blurry"
+   },
    {
     "date": "2026-11-24",
     "kind": "fix",
@@ -2931,14 +2936,9 @@
     "date": "2026-11-23",
     "kind": "fix",
     "text": "Teleporting works from someone else's home street, house and Tower"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "Back yard Piggies stay in the yard and no longer walk into the house to eat off its floor"
    }
   ]
  },
- "tests": 1334,
+ "tests": 1335,
  "generatedAt": "2026-11-24"
 }

@@ -27,6 +27,8 @@
       "assets/badges/pld_plume_fluffer_1.webp": "a8c01f02",
       "assets/badges/pld_plume_fluffer_2.webp": "109312b7",
       "assets/badges/pld_plume_fluffer_3.webp": "c1b65138",
+      "assets/classic/map_icon_subway_hd.svg": "4ed4cb04",
+      "assets/classic/teensy_signpost_hd.svg": "3f27f279",
       "assets/content/achievements.json": "af2fc915",
       "assets/content/ambient-music.json": "fd84e46f",
       "assets/content/badge-icons-generated.json": "ba972f66",

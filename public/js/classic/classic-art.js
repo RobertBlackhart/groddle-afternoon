@@ -89,6 +89,7 @@ export const CLASSIC_ART = Object.freeze({
   map_icon_shop: {"url":"assets/classic/map_icon_shop.webp","w":14,"h":14,"bytes":176,"sha1":"b123f18f98ffa51f7554bb645de4c359ac1de067","kind":"copy","src":"graphics/map_icon_shop.png"},
   map_icon_shrine: {"url":"assets/classic/map_icon_shrine.webp","w":14,"h":14,"bytes":160,"sha1":"3ccf76a0edc3ef2eab842488883a70563847cf81","kind":"copy","src":"graphics/map_icon_shrine.png"},
   map_icon_subway: {"url":"assets/classic/map_icon_subway.webp","w":24,"h":23,"bytes":1646,"sha1":"584bc8d82ba6d1feebcad63306e857192fc0e9cb","kind":"copy","src":"graphics/map_icon_subway.png"},
+  map_icon_subway_hd: {"url":"assets/classic/map_icon_subway_hd.svg","w":24,"h":23,"bytes":1497,"sha1":"0985a18ad23b4d1ebdeffaa055fce68f9f2c7f80","kind":"hd","of":"map_icon_subway"},
   no_sign: {"url":"assets/classic/no_sign.webp","w":79,"h":79,"bytes":538,"sha1":"006c198cd69aaff2f2d1b8d3dbc0ac339c3875a2","kind":"copy","src":"graphics/no_sign.png"},
   pack_tool_broken: {"url":"assets/classic/pack_tool_broken.webp","w":10,"h":10,"bytes":128,"sha1":"e397f773eeb40a2e58aa170ece8fb71f48c15d9b","kind":"copy","src":"graphics/pack_tool_broken.png"},
   player_face_empty: {"url":"assets/classic/player_face_empty.webp","w":71,"h":71,"bytes":682,"sha1":"961d05c07234f45622b2a2d62947b5806d1bba62","kind":"copy","src":"graphics/player_face_empty.png"},
@@ -116,6 +117,7 @@ export const CLASSIC_ART = Object.freeze({
   spinner: {"url":"assets/classic/spinner.svg","w":40,"h":40,"bytes":5694,"sha1":"5ef1e838df1b45afaa90705e0c4bab50180d46c1","kind":"svg","src":"swfs/spinner.swf","loop":{"steps":12,"ms":1500},"frame":37},
   super_search_no_results: {"url":"assets/classic/super_search_no_results.webp","w":30,"h":32,"bytes":338,"sha1":"02d65aa3eadfcd266c6f38aaacbd319152a55302","kind":"copy","src":"graphics/super_search_no_results.png"},
   teensy_signpost: {"url":"assets/classic/teensy_signpost.webp","w":10,"h":15,"bytes":208,"sha1":"12f688d88b7572e1220e93892eb19353186b380e","kind":"copy","src":"graphics/teensy_signpost.png"},
+  teensy_signpost_hd: {"url":"assets/classic/teensy_signpost_hd.svg","w":10,"h":15,"bytes":459,"sha1":"30f0ca277df32d4c023148c570ef5eca18b4edbb","kind":"hd","of":"teensy_signpost"},
   upgrade_icon: {"url":"assets/classic/upgrade_icon.webp","w":122,"h":70,"bytes":10440,"sha1":"e1dadcc8bed8e4c7e40141f6559ef5c470f20cf4","kind":"copy","src":"graphics/upgrade_icon.png"},
   warning: {"url":"assets/classic/warning.webp","w":18,"h":18,"bytes":414,"sha1":"1d3a501765275ac2c5d83b3d4a6d26cf4937c438","kind":"copy","src":"graphics/warning.png"},
 });
@@ -125,4 +127,10 @@ export function classicArtUrl(name) {
   const a = CLASSIC_ART[name];
   if (!a) throw new Error(`no Classic art named ${name}`);
   return a.url;
+}
+
+/** The url of a 1x piece's high-resolution trace (kind hd, tools/classic-art/hd-art.mjs), or null. */
+export function classicArtHd(name) {
+  for (const a of Object.values(CLASSIC_ART)) if (a.kind === 'hd' && a.of === name) return a.url;
+  return null;
 }

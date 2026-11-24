@@ -1,5 +1,5 @@
 {
-  "about": "The Classic interface's chrome art: Tiny Speck's CC0 glitch-client (TSEngineAssets/src/assets), rendered by tools/classic-art/build.mjs into public/assets/classic/. copy: PNGs shipped byte for byte (1x, the browser scales them). reuse: art the remake already ships, verified against the same source and not copied again. svg: vector symbols exported with FFDec (sprite: one DefineSprite by id; frame: one stage frame; strip: every stage frame side by side). Left out on purpose: the logo (logo_glitch.png, glitch_logo.swf), the 2011 slot and mood art, hotkeys.png (the sheet is redrawn as text), the daily-limits calendar, staff badges, the hub map buttons and the speech bubbles (they stay in Pixi).",
+  "about": "The Classic interface's chrome art: Tiny Speck's CC0 glitch-client (TSEngineAssets/src/assets), rendered by tools/classic-art/build.mjs into public/assets/classic/. copy: PNGs shipped byte for byte (1x, the browser scales them). reuse: art the remake already ships, verified against the same source and not copied again. svg: vector symbols exported with FFDec (sprite: one DefineSprite by id; frame: one stage frame; strip: every stage frame side by side). hd: high-resolution vector traces of 1x copies the street map scales up (of: the copy), from tools/classic-art/hd-art.mjs. Left out on purpose: the logo (logo_glitch.png, glitch_logo.swf), the 2011 slot and mood art, hotkeys.png (the sheet is redrawn as text), the daily-limits calendar, staff badges, the hub map buttons and the speech bubbles (they stay in Pixi).",
   "copy": [
     { "name": "imagination_button_down", "src": "graphics/imagination_button_down.png", "use": "iMG button while its menu is open (ImaginationButton.as)" },
     { "name": "imagination_button_clouds", "src": "graphics/imagination_button_clouds.png", "use": "cloud puff left of the iMG button" },
@@ -121,5 +121,9 @@
     { "name": "cloud_skills_large", "swf": "swfs/imagination_clouds.swf", "sprite": 20, "use": "skills screen backdrop" },
     { "name": "spinner", "swf": "swfs/spinner.swf", "frame": 37, "use": "waiting spinner: frame 37 is the loop's first (37-72, 3 frames a bar at 24 fps), so CSS turns it in 12 steps every 1.5 s", "loop": { "steps": 12, "ms": 1500 } },
     { "name": "avatar_rain", "swf": "swfs/avatar_rain.swf", "strip": true, "frames": 10, "use": "rain over the face under 20% mood: 10 frames side by side, CSS steps(10) at 24 fps" }
+  ],
+  "hd": [
+    { "name": "teensy_signpost_hd", "of": "teensy_signpost", "use": "the street map's signpost where it is scaled up or the screen is high-DPI (phone sheet, Modern card, Classic on retina): a vector trace of teensy_signpost in its own 10 x 15 grid" },
+    { "name": "map_icon_subway_hd", "of": "map_icon_subway", "use": "the street map's subway entrance where it is scaled up or the screen is high-DPI: the hub map's trace of map_icon_subway (js/map-graph.js MAP_ICON_ART, G584)" }
   ]
 }

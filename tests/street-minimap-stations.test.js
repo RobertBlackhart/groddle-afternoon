@@ -9,8 +9,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { STATION_MARK, markHasMenu, stationMarks, tipFor } from '../public/js/ui/street-minimap.js?v=9e4ae55e';
-import { phoneSignRows } from '../public/js/features/street-minimap-feature.js?v=3e22fe38';
+import { STATION_MARK, markHasMenu, stationMarks, tipFor } from '../public/js/ui/street-minimap.js?v=cf66d461';
+import { phoneSignRows } from '../public/js/features/street-minimap-feature.js?v=b0a6c2ba';
 import { subwayFeature } from '../public/js/features/subway-feature.js?v=30115b44';
 import { STATIONS } from '../public/js/subway.js?v=ea6921ff';
 
@@ -61,7 +61,8 @@ describe('subway entrances on the street map (#463)', () => {
   it('the corner map draws it as a button with the hub map\'s subway icon, sized in CSS', () => {
     const view = read('public/js/ui/street-minimap.js');
     assert.match(view, /for \(const mark of stationMarks\(street\)\) addSign\(mark\)|const stations = stationMarks\(street\);\s*for \(const mark of stations\) addSign\(mark\);/);
-    assert.match(view, /kind === 'station'\) el\.innerHTML = `<img alt="" src="\$\{esc\(artUrl\('map_icon_subway'\)\)\}" \/>`/);
+    // SHARP MARKS (tests/street-minimap-hd.test.js): the icon through markArt, its trace where it is scaled up.
+    assert.match(view, /el\.dataset\.art = kind === 'sign' \? 'teensy_signpost' : 'map_icon_subway';\s+el\.innerHTML = el\.artHtml = markArt\(el\.dataset\.art, artOpts\(\)\);/);
     assert.match(read('public/style.css'), /\.street-minimap \.smm-sign\.smm-station \{ width: calc\(12px \* var\(--mm-u\)\); height: calc\(12px \* var\(--mm-u\)\); \}/);
   });
 
@@ -79,7 +80,7 @@ describe('subway entrances on the street map (#463)', () => {
     const feature = read('public/js/features/street-minimap-feature.js');
     assert.match(feature, /\.\.\.stationMarks\(engine\.street\), \.\.\.doorMarks\(engine\.street\)/);
     assert.match(feature, /walkFromMap\(engine, \{ kind: row\.kind, id: row\.id, x: row\.x, y: row\.y \}/);
-    assert.match(feature, /classicArtUrl\(row\.kind === 'station' \? 'map_icon_subway' : 'teensy_signpost'\)/);
+    assert.match(feature, /markArt\(row\.kind === 'station' \? 'map_icon_subway' : 'teensy_signpost', \{ artUrl: classicArtUrl, artHd: classicArtHd, crisp: true \}\)/);
   });
 
   it('is registered as an invention', () => {

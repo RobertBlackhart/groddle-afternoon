@@ -18,6 +18,10 @@
  *           a stage export loses the stage's background rect, and a viewBox is
  *           added so CSS can scale it. Never rasterise these with ImageMagick: its
  *           SVG renderer drops their colour.
+ *   hd      high-resolution vector traces of 1x copies the street map scales up (`of` names
+ *           the copy): vector traces in the bitmap's own pixel grid, written from
+ *           tools/classic-art/hd-art.mjs (no Java). The page draws the copy at 1x and
+ *           the trace where it is scaled up or the screen is high-DPI.
  *
  * The trademark never ships: a name, source path or file whose name or content
  * says "glitch" is refused, and so are the logo's bytes (logo_glitch.png,
@@ -25,6 +29,7 @@
  * the one exception: only the part under TSEngineAssets/src/assets is checked.)
  *
  * Usage: node tools/classic-art/build.mjs           render (needs Java 21 + FFDec for the SVGs)
+ *        node tools/classic-art/build.mjs --hd      only the hd traces and the module (no Java)
  *        node tools/classic-art/build.mjs --check   no Java: the files, the module and the
  *                                                   sources (when glitch-client is beside the game)
  * The SWFs are data: FFDec reads them, nothing runs them.
@@ -37,6 +42,8 @@ import { dirname, join, relative } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { imageSize } from '../image-size.mjs';
 import { encodeLosslessWebp, pngBufferToWebp } from '../webp-lossless.mjs';
+import { decodePng } from '../builder/art-image.mjs';
+import { HD_ART, hdSvg, signpostSampleProblems } from './hd-art.mjs';
 import { JAVA } from '../java.mjs'; // $GRODDLE_JAVA, else the first Homebrew JDK (tools/java.json)
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -84,13 +91,19 @@ export function trademarkProblems(name, buf) {
 
 export function readManifest() {
   const m = JSON.parse(readFileSync(MANIFEST, 'utf8'));
+  m.hd = m.hd || [];
   const names = new Set();
   const problems = [];
-  for (const e of [...m.copy, ...m.reuse, ...m.svg]) {
+  for (const e of [...m.copy, ...m.reuse, ...m.svg, ...m.hd]) {
     if (!/^[a-z0-9_]+$/.test(e.name)) problems.push(`${e.name}: names are lower case, digits and _`);
     if (names.has(e.name)) problems.push(`${e.name}: listed twice`);
     names.add(e.name);
     for (const s of [e.name, e.src || '', e.swf || '', e.path || '']) if (TRADEMARK.test(s)) problems.push(`${e.name}: "${s}" carries the trademark`);
+  }
+  for (const e of m.hd) {
+    if (!HD_ART[e.name]) problems.push(`${e.name}: tools/classic-art/hd-art.mjs has no such trace`);
+    else if (HD_ART[e.name].of !== e.of) problems.push(`${e.name}: hd-art.mjs traces ${HD_ART[e.name].of}, the manifest says ${e.of}`);
+    if (!m.copy.some((c) => c.name === e.of)) problems.push(`${e.name}: ${e.of} is not a copy`);
   }
   if (problems.length) throw new Error(`manifest:\n  ${problems.join('\n  ')}`);
   return m;
@@ -173,6 +186,7 @@ export function moduleText(m) {
   for (const e of m.copy) rows.push({ name: e.name, file: `${URL_DIR}/${e.name}.webp`, kind: 'copy', src: e.src, ...meta(e) });
   for (const e of m.reuse) rows.push({ name: e.name, file: e.path, kind: 'reuse', src: e.src });
   for (const e of m.svg) rows.push({ name: e.name, file: `${URL_DIR}/${e.name}.svg`, kind: 'svg', src: e.swf, ...meta(e) });
+  for (const e of m.hd) rows.push({ name: e.name, file: `${URL_DIR}/${e.name}.svg`, kind: 'hd', of: e.of });
   rows.sort((a, b) => a.name.localeCompare(b.name));
   const lines = rows.map((r) => {
     const buf = readFileSync(join(SPIKE, 'public', r.file));
@@ -193,6 +207,12 @@ export function classicArtUrl(name) {
   if (!a) throw new Error(\`no Classic art named \${name}\`);
   return a.url;
 }
+
+/** The url of a 1x piece's high-resolution trace (kind hd, tools/classic-art/hd-art.mjs), or null. */
+export function classicArtHd(name) {
+  for (const a of Object.values(CLASSIC_ART)) if (a.kind === 'hd' && a.of === name) return a.url;
+  return null;
+}
 `;
 }
 
@@ -205,6 +225,7 @@ export function check() {
   const shipped = new Map();
   for (const e of m.copy) shipped.set(`${e.name}.webp`, e);
   for (const e of m.svg) shipped.set(`${e.name}.svg`, e);
+  for (const e of m.hd) shipped.set(`${e.name}.svg`, e);
   const onDisk = existsSync(OUT_DIR) ? readdirSync(OUT_DIR) : [];
   for (const f of onDisk) {
     if (!shipped.has(f)) problems.push(`${URL_DIR}/${f}: not in the manifest`);
@@ -215,6 +236,12 @@ export function check() {
   for (const e of m.reuse) {
     const p = join(SPIKE, 'public', e.path);
     if (!existsSync(p)) problems.push(`${e.path}: the remake no longer ships it`);
+  }
+  for (const e of m.hd) {
+    const p = join(OUT_DIR, `${e.name}.svg`);
+    if (existsSync(p) && readFileSync(p, 'utf8') !== hdSvg(e.name)) problems.push(`${URL_DIR}/${e.name}.svg is stale (run node tools/classic-art/build.mjs --hd)`);
+    const of = existsSync(join(OUT_DIR, `${e.of}.webp`)) ? artSize(readFileSync(join(OUT_DIR, `${e.of}.webp`)), e.of) : null;
+    if (of && (of[0] !== HD_ART[e.name].w || of[1] !== HD_ART[e.name].h)) problems.push(`${e.name}: ${HD_ART[e.name].w} x ${HD_ART[e.name].h}, but ${e.of} is ${of[0]} x ${of[1]}`);
   }
   if (problems.length) return problems;
   // Sources, when glitch-client is beside the game: copies are its pictures as lossless WebP
@@ -231,11 +258,27 @@ export function check() {
       if (want && sha1(e.path.endsWith('.webp') ? pngBufferToWebp(want) : want) !== sha1(readFileSync(join(SPIKE, 'public', e.path)))) problems.push(`${e.path} differs from ${e.src}`);
     }
     for (const e of m.svg) if (!existsSync(join(ASSETS, e.swf))) problems.push(`${e.swf}: no such source`);
+    const teensy = join(ASSETS, 'graphics/teensy_signpost.png');
+    if (m.hd.some((e) => e.of === 'teensy_signpost') && existsSync(teensy)) problems.push(...signpostSampleProblems(decodePng(readFileSync(teensy))));
   }
   const want = moduleText(m);
   const have = existsSync(OUT_JS) ? readFileSync(OUT_JS, 'utf8') : '';
   if (want !== have) problems.push(`${relative(SPIKE, OUT_JS)} is stale (run node tools/classic-art/build.mjs)`);
   return problems;
+}
+
+/** The hd traces and the module (no Java, no other file touched). */
+export function writeHd(m = readManifest()) {
+  mkdirSync(OUT_DIR, { recursive: true });
+  for (const e of m.hd) {
+    const buf = Buffer.from(hdSvg(e.name), 'utf8');
+    const bad = trademarkProblems(e.name, buf);
+    if (bad.length) throw new Error(bad.join('\n'));
+    writeFileSync(join(OUT_DIR, `${e.name}.svg`), buf);
+  }
+  mkdirSync(dirname(OUT_JS), { recursive: true });
+  writeFileSync(OUT_JS, moduleText(m));
+  return m.hd.length;
 }
 
 export function build({ keep = false } = {}) {
@@ -263,8 +306,7 @@ export function build({ keep = false } = {}) {
     if (!keep) rmSync(work, { recursive: true, force: true });
     else console.log(`work kept in ${work}`);
   }
-  mkdirSync(dirname(OUT_JS), { recursive: true });
-  writeFileSync(OUT_JS, moduleText(m));
+  writeHd(m);
   const files = readdirSync(OUT_DIR);
   const bytes = files.reduce((n, f) => n + readFileSync(join(OUT_DIR, f)).length, 0);
   return { files: files.length, bytes, reuse: m.reuse.length };
@@ -278,6 +320,9 @@ if (import.meta.url === pathToFileURL(process.argv[1] || '').href) {
       process.exit(1);
     }
     console.log(`${relative(SPIKE, OUT_JS)} and ${URL_DIR}/ are current`);
+  } else if (process.argv.includes('--hd')) {
+    const n = writeHd();
+    console.log(`${n} hd traces in ${URL_DIR}/, ${relative(SPIKE, OUT_JS)} written`);
   } else {
     const r = build({ keep: process.argv.includes('--keep') });
     console.log(`${r.files} files, ${r.bytes} bytes in ${URL_DIR}/ (+ ${r.reuse} reused), ${relative(SPIKE, OUT_JS)} written`);
