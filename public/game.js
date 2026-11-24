@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=61432cc9';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=755ba418';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=01d28025';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE, playerClickBox } from './js/reach.js?v=456da8a8';
@@ -556,8 +556,9 @@ import {
   pickupCountToAsk,
   pickupDroppedStack,
   placeDroppedBag,
+  setDownStack,
   takeDroppedRecord,
-} from './js/world-items.js?v=46eb505b';
+} from './js/world-items.js?v=d703d2c1';
 import {
   createPlayerSave,
   inspectPlayerSave,
@@ -1148,7 +1149,7 @@ import { HOME_SCREEN_TIP_CACHE, iosSafari, mountHomeScreenTip, runsStandalone } 
 import { EAT_PICK_TEXT, bestFoodIndex, eatChoices, eatTip } from './js/eat-pick.js?v=8fb763d0';
 import { heldDirection, installHeldKeyGuard, isMacPlatform } from './js/held-keys.js?v=a28eb293';
 import { isOneClickDoor, oneClickChoice, signpostArmRows, worldContextAction } from './js/world-context-menu.js?v=e4c99c05';
-import { blockedPlayerVerbs, listPlayerTarget, opensPlayerMenu, playerMenuRows } from './js/ui/player-menu.js?v=202e86b4';
+import { blockedPlayerVerbs, listPlayerTarget, opensPlayerMenu, playerMenuRows } from './js/ui/player-menu.js?v=1ee4dfbe';
 import { forgetTexture, frameTexture, isFailed, isLoaded, onFailed, onLoaded, textureFromUrl, whenLoaded } from './js/textures.js?v=729b29ea';
 import { FALLBACK_MAX as WORLD_ART_FALLBACK_MAX, worldArtFor } from './js/world-art.js?v=2b3cf8d5';
 import { HOME_PIP_PX, drawLockPip, homeMarkNote, homePipShown, homeStackMark } from './js/home-stack-marks.js?v=0ff4c29f';
@@ -14913,7 +14914,21 @@ const engine = {
   pickUpCountAsked(id) {
     return pickupCountAsked(interactables.find((t) => t.classId === 'dropped_item' && t.worldItemId === id));
   },
-  /** Every street's dropped stacks (js/world-items.js state), for features that fetch from the ground. */
+  /**
+   * R50 (G1224, #655): a stack the owner claimed off their shared house or Tower floor in Decoration
+   * Mode, set down in the save at `tsid` (that room's own key) at (x, y) on `on`, or into the like
+   * stack `into` there (js/world-items.js setDownStack). No pack changes: the site moved it out of
+   * the shared floor. Returns { ok, id, count, merged }.
+   */
+  placeOwnStack(tsid, classTsid, count, { x = 0, y = 0, on = null, into = null, points, tags } = {}) {
+    const key = String(tsid || '');
+    const result = setDownStack(droppedItemState, key, classTsid, count, { x, y }, { now: Date.now(), on, into, points, tags });
+    if (!result.ok) return result;
+    saveDroppedItems();
+    if (key === droppedStacksTsid()) refreshDroppedWorldItems();
+    return result;
+  },
+  /** Every street's dropped stacks (js/world-items.js state): read them through js/ground-stacks.js (R50). */
   get droppedItems() {
     return droppedItemState;
   },

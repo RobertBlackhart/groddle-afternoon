@@ -116,7 +116,7 @@ import { batterflyBaseY, batterflyResponseFor, flightFloorFor } from '../street-
 import { loseEnergy, shiftMetabolic, topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import { textureFromUrl } from '../textures.js?v=729b29ea';
 import { PIGGY_DEATH_DROPS, PIGGY_DEATH_PUFF, SAD_BABY, forcedRoll, isSadIn } from '../animal-mood.js?v=a49495fc';
-import { animalCrowdChanged, animalCrowdSad, animalPlaceIsDepressing, crowdLimit, ownsPlace, smokePuff as sharedSmokePuff } from './animal-mood-feature.js?v=fe8442e0';
+import { animalCrowdChanged, animalCrowdSad, animalPlaceIsDepressing, crowdLimit, ownsPlace, smokePuff as sharedSmokePuff } from './animal-mood-feature.js?v=31408d90';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { followYardPath, freeYardSpot, holdYardWalk } from '../yard-wander.js?v=7da3769e';
@@ -125,6 +125,7 @@ import { chickenWaitPose } from '../chicken-idles.js?v=eef0279b';
 import { PACKED_SHEETS } from '../packed-sheets-data.js?v=192c6f15';
 import { createPackedLoader } from '../packed-sheets.js?v=177aef6a';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
+import { ownGroundRows, pruneOwnGround } from '../ground-stacks.js?v=22792362';
 
 export const HUSBANDRY_FEATURE_ID = 'animal-husbandry';
 export const BATTERFLY_GROUP = 'batterfly';
@@ -1056,7 +1057,7 @@ function advanceYardNow(engine) {
  * and the Magic Pig Stick's range for the stacks.
  */
 function yardFood(engine) {
-  const stacks = engine.droppedItems?.streets?.[YARD_TSID] || [];
+  const stacks = ownGroundRows(engine, YARD_TSID);
   const plots = engine.streetSlot?.('patches', YARD_TSID)?.plots || {};
   const trees = Object.values(plots)
     .filter((p) => p?.stage === 'tree' && p.tree?.classId && p.tree.classId !== 'wood_tree' && p.tree.state)
@@ -1067,11 +1068,8 @@ function yardFood(engine) {
 
 /** Drop emptied stacks and save what the herd ate. */
 function settleYardFood(engine, food) {
-  const streets = engine.droppedItems?.streets;
-  const rows = streets?.[YARD_TSID];
-  if (Array.isArray(rows)) {
-    for (let i = rows.length - 1; i >= 0; i -= 1) if (!(rows[i]?.count > 0)) rows.splice(i, 1);
-    if (!rows.length) delete streets[YARD_TSID];
+  if (ownGroundRows(engine, YARD_TSID).length) {
+    pruneOwnGround(engine, YARD_TSID);
     engine.droppedItemsChanged?.();
   }
   engine.save();

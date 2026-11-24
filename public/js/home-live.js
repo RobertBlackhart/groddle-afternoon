@@ -28,6 +28,10 @@
  *   rockImgDay, magicRock).
  * - boxes: what each placed cabinet holds (contents), for an open
  *   key-holder's window (M33).
+ * - The owner's own stacks in the house and on the Tower's floors (the save's
+ *   droppedItems entry, which the site's Neighbours::stackRows reads; R50,
+ *   G1224) count as "home": a stack the owner sets down or claims in
+ *   Decoration Mode is seen, locked, by visitors there now.
  *
  * Pure: no DOM, no engine. features/home-live-feature.js runs it.
  */
@@ -67,8 +71,26 @@ function decorContents(decor) {
   return placed.filter((row) => Array.isArray(row?.contents)).map((row) => [row.id, row.contents]);
 }
 
-/** The parts of a save visitors read, by kind (null: this save has no home to show). */
-export function homeLiveParts(save) {
+/** The places whose own stacks visitors see (the site's Neighbours::stackRows: the house, Tower floors 0-9). */
+export const HOME_LIVE_STACK_PLACES = Object.freeze(['RH_HOME_INT', ...Array.from({ length: 10 }, (_, f) => `RH_HOME_TOWER_${f}`)]);
+
+/** The look of the owner's own stacks in those places (`places`: key -> rows, js/ground-stacks.js ownGroundRows). */
+function stackLook(places) {
+  const p = obj(places);
+  if (!p) return null;
+  const out = {};
+  for (const key of HOME_LIVE_STACK_PLACES) {
+    const rows = Array.isArray(p[key]) ? p[key] : [];
+    if (rows.length) out[key] = rows.filter(obj).map((r) => [r.id, r.classTsid, r.count, Math.round(Number(r.x) || 0), Math.round(Number(r.y) || 0), r.on ?? null]);
+  }
+  return out;
+}
+
+/**
+ * The parts of a save visitors read, by kind (null: this save has no home to show). `stacks`: the
+ * owner's own stacks by place (HOME_LIVE_STACK_PLACES), from the save's droppedItems entry.
+ */
+export function homeLiveParts(save, stacks = null) {
   const systems = obj(save?.systems);
   if (systems?.home?.owned !== true) return null;
   const features = obj(systems.features) || {};
@@ -102,14 +124,15 @@ export function homeLiveParts(save) {
       yardStyle: homes.yardStyle || '',
       towerDecor: towerDecor.map(decorLook),
       tower: tower.built === true ? Object.fromEntries(TOWER_LOOK.filter((k) => k in tower).map((k) => [k, tower[k]])) : null,
+      ...(stacks ? { stacks: stackLook(stacks) } : {}),
     },
     boxes: [decorContents(homes.decor), ...towerDecor.map(decorContents)],
   };
 }
 
 /** One print per kind ({} without a home). */
-export function homeLivePrints(save) {
-  const parts = homeLiveParts(save);
+export function homeLivePrints(save, stacks = null) {
+  const parts = homeLiveParts(save, stacks);
   if (!parts) return {};
   return Object.fromEntries(HOME_LIVE_KINDS.map((k) => [k, stablePrint(parts[k])]));
 }

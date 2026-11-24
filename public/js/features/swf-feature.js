@@ -67,6 +67,7 @@ import {
   swfVerbs,
   wrangleMessage,
 } from '../swf.js?v=6dd72036';
+import { ownGroundRows, pruneOwnGround } from '../ground-stacks.js?v=22792362';
 
 export const SWF_FEATURE_ID = 'swf';
 
@@ -170,14 +171,13 @@ function dropSwf(engine, classTsid, index) {
 
 /** onFinishCreateGame: apiDelete each SWF wherever it is now. */
 function deleteSwfs(engine, drops) {
-  const streets = engine.droppedItems?.streets || {};
   let ground = false;
   for (const d of drops) {
-    const rows = streets[d.tsid];
-    const i = Array.isArray(rows) ? rows.findIndex((r) => r.id === d.id) : -1;
+    const rows = ownGroundRows(engine, d.tsid);
+    const i = rows.findIndex((r) => r.id === d.id);
     if (i >= 0) {
       rows.splice(i, 1);
-      if (!rows.length) delete streets[d.tsid];
+      if (!rows.length) pruneOwnGround(engine, d.tsid);
       ground = true;
     } else if (countItem(engine.inv, d.classTsid) > 0) {
       // Picked back up before the end: it still goes.

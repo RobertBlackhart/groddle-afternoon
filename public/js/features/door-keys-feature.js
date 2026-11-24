@@ -22,7 +22,6 @@
  */
 
 import { addItem } from '../inventory.js?v=6414dbdc';
-import { listDroppedStacks } from '../world-items.js?v=46eb505b';
 import { DOOR_KEYS, doorKeyClass } from '../doors.js?v=727d0e0b';
 import {
   KEY_RESPAWN_MS,
@@ -34,6 +33,7 @@ import {
   normalizeKeySpawnState,
   soloKeyStep,
 } from '../door-key-spawns.js?v=8e6b40bb';
+import { ownGroundRows } from '../ground-stacks.js?v=22792362';
 
 export const DOOR_KEYS_FEATURE_ID = 'door-keys';
 const TICK_MS = 400;
@@ -106,7 +106,7 @@ function publish(engine, last) {
 /* ------------------------------------------------------------------ */
 
 function stackOnGround(engine, street, id) {
-  return listDroppedStacks(engine.droppedItems, street).some((s) => s.id === id);
+  return ownGroundRows(engine, street).some((s) => s.id === id && s.count > 0);
 }
 
 /** One pass over a street's spots: note a pickup, put a key down when it is due. */

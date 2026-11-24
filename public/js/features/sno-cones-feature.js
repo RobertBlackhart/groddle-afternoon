@@ -20,7 +20,7 @@
 
 import { addItem, countItem, removeItem } from '../inventory.js?v=6414dbdc';
 import { getGameDayKey } from '../game-day.js?v=a532775d';
-import { listDroppedStacks } from '../world-items.js?v=46eb505b';
+import { listDroppedStacks } from '../world-items.js?v=d703d2c1';
 import { XP_FOR_LEVEL } from '../progression.js?v=05ff0260';
 import {
   SNO_CONES,
@@ -33,6 +33,7 @@ import {
   snoConeMelted,
   snoConeVerbLine,
 } from '../sno-cones.js?v=64e34b89';
+import { ownGroundRows, ownGroundState, ownGroundPlaces, pruneOwnGround } from '../ground-stacks.js?v=22792362';
 
 export const SNO_CONES_FEATURE_ID = 'sno-cones';
 export const BEMOAN_VERB = 'sno_cone_bemoan';
@@ -96,18 +97,15 @@ export function eatPackedSnoCone(engine, classTsid, rng = Math.random) {
 function stackOf(engine, target) {
   const id = target?.state?.id || target?.worldItemId;
   // G226: a Tower floor's stacks have their own key (engine.dropTsid).
-  const rows = engine.droppedItems?.streets?.[engine.dropTsid ?? engine.streetTsid] || [];
-  return rows.find((row) => row.id === id) || null;
+  return ownGroundRows(engine).find((row) => row.id === id) || null;
 }
 
 function removeStack(engine, stackId, tsid = engine.dropTsid ?? engine.streetTsid) {
-  const streets = engine.droppedItems?.streets;
-  const rows = streets?.[tsid];
-  if (!Array.isArray(rows)) return false;
+  const rows = ownGroundRows(engine, tsid);
   const index = rows.findIndex((row) => row.id === stackId);
   if (index < 0) return false;
   rows.splice(index, 1);
-  if (!rows.length) delete streets[tsid];
+  if (!rows.length) pruneOwnGround(engine, tsid);
   return true;
 }
 
@@ -130,11 +128,11 @@ export function bemoanDroppedSnoCone(engine, target) {
 
 /** onMelt for every dropped cone on every street; redraws the street you stand on. */
 export function meltSnoCones(engine, now = Date.now()) {
-  const streets = engine.droppedItems?.streets || {};
+  const streets = ownGroundPlaces(engine);
   let here = false;
   let any = false;
   for (const tsid of Object.keys(streets)) {
-    for (const stack of listDroppedStacks(engine.droppedItems, tsid)) {
+    for (const stack of listDroppedStacks(ownGroundState(engine), tsid)) {
       if (!snoConeMelted(stack, now)) continue;
       removeStack(engine, stack.id, tsid);
       any = true;

@@ -100,7 +100,8 @@
  */
 
 import { countItem, ensureItem, ITEM_CATALOG, removeItem } from '../inventory.js?v=6414dbdc';
-import { likeStackAt, mergeDroppedStacks, pickupCountTitle } from '../world-items.js?v=46eb505b';
+import { likeStackAt, mergeDroppedStacks, pickupCountTitle } from '../world-items.js?v=d703d2c1';
+import { groundKey, groundStacks, ownGroundRows, ownGroundState } from '../ground-stacks.js?v=22792362';
 import { keepsOwnStack } from '../tools.js?v=4156bba8';
 import { createCountChooser } from '../ui/count-chooser.js?v=c268eefe';
 import { isBagClass } from '../pack-slots.js?v=d9ab4a0b';
@@ -1045,7 +1046,7 @@ function syncHouseShift(engine) {
 function shiftShownRoom(engine, room, dx) {
   if (!dx) return 0;
   const tsid = room === 'interior' ? HOME_INTERIOR_TSID : HOME_STREET_TSID;
-  let moved = shiftInteriorRows(engine.droppedItems?.streets?.[tsid], dx);
+  let moved = shiftInteriorRows(ownGroundRows(engine, tsid), dx);
   if (room === 'street') moved += shiftHusbandryRows(engine.streetSlot?.('animal-husbandry', HOME_STREET_TSID), dx);
   // Features answer null so every one of them hears it.
   engine.query?.('homeRoomShifted', room, dx, engine);
@@ -1065,8 +1066,8 @@ function shiftShownRoom(engine, room, dx) {
  */
 const STACK_WALL_MARGIN = 36;
 function keepStacksInHouse(engine) {
-  const rows = engine.droppedItems?.streets?.[HOME_INTERIOR_TSID];
-  if (!rows?.length) return 0;
+  const rows = ownGroundRows(engine, HOME_INTERIOR_TSID);
+  if (!rows.length) return 0;
   const hi = houseX0() + interiorWidth(houseDecor) - INTERIOR.endCapW - STACK_WALL_MARGIN;
   const moved = clampRowsX(rows, STACK_WALL_MARGIN, hi);
   if (moved) engine.save?.();
@@ -6132,14 +6133,22 @@ function wireDropTargets(engine) {
 let stackCarry = null; // { id } a stack carried after its Move button, set down by the next click
 let stackHintShown = false;
 
-/** This room's dropped-stack records (live: game.js droppedItemState, this room's key). */
+/** This room's own dropped-stack records, the owner's decor (live: the save's, js/ground-stacks.js). */
 function roomStackRows(engine) {
-  const rows = engine?.droppedItems?.streets?.[engine.dropTsid ?? engine.streetTsid];
-  return Array.isArray(rows) ? rows : [];
+  return ownGroundRows(engine);
+}
+
+/**
+ * R50 (G1224, #655): every stack on this room's floor, the save's own and online the ones dropped
+ * here for everyone (G1190, the server's: `shared`). Decoration Mode selects, moves and stacks both,
+ * as HandOfDecorator.as startWithItemFromLocation 1250-1323 dragged any stack you could pick up.
+ */
+function roomStacks(engine) {
+  return groundStacks(engine);
 }
 
 function stackRow(engine, id) {
-  return roomStackRows(engine).find((row) => row.id === id) || null;
+  return roomStacks(engine).find((row) => row.id === id) || null;
 }
 
 /** A stack's drawn box in world px (js/world-art.js: its art at its own size, bottom centre on its point). */
@@ -6153,7 +6162,7 @@ function stackBox(row) {
 
 /** The stack under a world point (the last drawn first), or null. */
 function stackAt(engine, p) {
-  const rows = roomStackRows(engine);
+  const rows = roomStacks(engine);
   for (let i = rows.length - 1; i >= 0; i -= 1) {
     const b = stackBox(rows[i]);
     if (p.x >= b.x - 6 && p.x <= b.x + b.w + 6 && p.y >= b.y - 6 && p.y <= b.y + b.h + 4) return rows[i];
@@ -6163,7 +6172,7 @@ function stackAt(engine, p) {
 
 /** Every stack in the room rests on what holds it now (js/home-decor.js settleStacks). */
 function settleRoomStacks(engine) {
-  if (!scene?.furnitureLayer || scene.room !== 'interior' || !engine?.droppedItems) return 0;
+  if (!scene?.furnitureLayer || scene.room !== 'interior' || !ownGroundState(engine)) return 0;
   const moved = settleStacks(decor, roomStackRows(engine), roomX0());
   if (moved) engine.droppedItemsChanged?.();
   return moved;
@@ -6210,7 +6219,8 @@ function overPack(clientX, clientY) {
  */
 function moveJoins(engine, row, target) {
   if (!row || !target || keepsOwnStack(row.classTsid)) return null;
-  return likeStackAt(roomStackRows(engine), row, target.x + roomX0(), target.on);
+  // A shared stack set down here becomes the owner's own (claimShared), so it joins as one of theirs would.
+  return likeStackAt(roomStackRows(engine), row.shared ? { ...row, shared: false } : row, target.x + roomX0(), target.on);
 }
 
 /**
@@ -6225,7 +6235,8 @@ function moveStack(engine, id, p) {
   closeStackCount(engine);
   const target = stackSurfaceAt(decor, p.x, p.y);
   const into = moveJoins(engine, row, target);
-  const joined = into ? mergeDroppedStacks(engine.droppedItems, engine.dropTsid ?? engine.streetTsid, id, into.id) : null;
+  if (row.shared) return claimShared(engine, row, target, into);
+  const joined = into ? mergeDroppedStacks(ownGroundState(engine), groundKey(engine), id, into.id) : null;
   if (!joined?.ok) {
     row.x = target.x + roomX0();
     row.y = target.y;
@@ -6242,6 +6253,28 @@ function moveStack(engine, id, p) {
   drawStackSelection(engine);
   renderBar(engine);
   return { ok: true, target, ...(joined?.ok ? { merged: into.id } : {}) };
+}
+
+/**
+ * R50 (G1224, #655): a stack dropped here for everyone (G1190) moved by the owner in Decoration Mode
+ * becomes their decor, locked to them as what they set on furniture was (house_lock, takeable.js
+ * 179-198): drops-mp-feature claimSharedStack asks the server for all of it, and the site's answer
+ * sets it down at `target` in the owner's save, joining the like stack `into` there (#593). It never
+ * passes through the pack (#473: a full pack would split it); until the answer it stays where it was.
+ */
+function claimShared(engine, row, target, into) {
+  const res = engine.query?.('claimSharedStack', row.id, { tsid: groundKey(engine), x: target.x + roomX0(), y: target.y, on: target.on ?? null, into: into?.id ?? null }, engine);
+  if (!res?.ok) {
+    if (res?.msg) engine.toast(res.msg);
+    engine.playSound?.('CLICK_FAILURE', { volume: 0.4 });
+    engine.setData('homeStackLast', `refused:${row.id}:${res?.reason || 'shared'}`);
+    return { ok: false, reason: res?.reason || 'shared' };
+  }
+  engine.setData('homeStackLast', `claiming:${row.id}:${target.on ?? 'floor'}`);
+  selected = null;
+  drawStackSelection(engine);
+  renderBar(engine);
+  return { ok: true, target, claiming: row.id };
 }
 
 /**
@@ -6294,6 +6327,15 @@ function stackIntoBox(engine, id, hit) {
       renderBar(engine);
       engine.save();
     }
+  } else if (row.shared) {
+    // R50: a stack dropped here for everyone is the server's: its Pick up brings it to the pack when
+    // the site says it moved (drops-mp-feature), and from there it goes in the box like any other.
+    const ok = Boolean(engine.pickUpDroppedStack?.(id));
+    engine.setData('homeStackLast', ok ? `picking:${id}` : `refused:${id}:pack`);
+    if (selected?.kind === 'stack') selected = null;
+    drawStackSelection(engine);
+    publish(engine);
+    return ok ? { ok: true, reason: 'pack' } : { ok: false, reason: 'pack' };
   } else {
     const had = Number(engine.inv[cls]) || 0;
     if (!engine.pickUpDroppedStack?.(id)) {
@@ -7909,7 +7951,7 @@ function liftOldStreetSave(engine) {
   if (savedStreetGround === STREET_GROUND_Y) return;
   const from = savedStreetGround;
   savedStreetGround = STREET_GROUND_Y;
-  let moved = liftOldStreetRows(engine.droppedItems?.streets?.[HOME_STREET_TSID], from);
+  let moved = liftOldStreetRows(ownGroundRows(engine, HOME_STREET_TSID), from);
   const husbandry = engine.streetSlot?.('animal-husbandry', HOME_STREET_TSID);
   moved += liftOldStreetRows(husbandry?.guano, from) + liftOldStreetRows(husbandry?.plops, from);
   if (moved) engine.save?.();
@@ -8651,6 +8693,23 @@ export const homesFeature = {
    */
   roomWorldX() {
     return savedHouseX ?? houseX0();
+  },
+
+  /**
+   * R50 (drops-mp-feature): a stack claimed in Decoration Mode is down in the save as `id` (null: the
+   * claim was refused); still decorating, it is the one selected, to move on or pick up.
+   */
+  homeStackClaimed(id, engine) {
+    if (!engine || mode !== 'decorate') return null;
+    settleRoomStacks(engine);
+    if (id && stackRow(engine, id)) {
+      selected = { kind: 'stack', id };
+      engine.setData('homeStackLast', `claimed:${id}`);
+    }
+    drawStackSelection(engine);
+    renderBar(engine);
+    publish(engine);
+    return null;
   },
 
   /** G226: game.js dropped-stack key; each Tower floor has its own. */

@@ -14,7 +14,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { likeStackAt, mergeDroppedStacks, normalizeDroppedItemState, PLACED_MERGE_RADIUS } from '../public/js/world-items.js?v=46eb505b';
+import { likeStackAt, mergeDroppedStacks, normalizeDroppedItemState, PLACED_MERGE_RADIUS } from '../public/js/world-items.js?v=d703d2c1';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');
@@ -85,11 +85,12 @@ describe('a stack moved onto a like stack joins it (#593)', () => {
   it('Decoration Mode\'s move joins it and saves; the drag marker sits on the stack it joins', () => {
     const homes = read('public/js/features/homes-feature.js');
     const mv = homes.slice(homes.indexOf('function moveStack('), homes.indexOf('function pickUpStack('));
-    assert.match(mv, /const into = moveJoins\(engine, row, target\);\s+const joined = into \? mergeDroppedStacks\(engine\.droppedItems, engine\.dropTsid \?\? engine\.streetTsid, id, into\.id\) : null;/);
+    // R50: a shared stack is claimed (tests/ground-stacks.test.js); the save's own joins here.
+    assert.match(mv, /const into = moveJoins\(engine, row, target\);\s+if \(row\.shared\) return claimShared\(engine, row, target, into\);\s+const joined = into \? mergeDroppedStacks\(ownGroundState\(engine\), groundKey\(engine\), id, into\.id\) : null;/);
     assert.ok(mv.indexOf('mergeDroppedStacks(') < mv.indexOf('engine.droppedItemsChanged?.();'), 'saved after it joins');
     const joins = homes.slice(homes.indexOf('function moveJoins('), homes.indexOf('function moveStack('));
     assert.match(joins, /keepsOwnStack\(row\.classTsid\)/, 'a class that keeps its own stack never joins, as its pack drop');
-    assert.match(joins, /likeStackAt\(roomStackRows\(engine\), row, target\.x \+ roomX0\(\), target\.on\)/);
+    assert.match(joins, /likeStackAt\(roomStackRows\(engine\), row\.shared \? \{ \.\.\.row, shared: false \} : row, target\.x \+ roomX0\(\), target\.on\)/);
     const drag = homes.slice(homes.indexOf('function moveStackDrag('), homes.indexOf('function endStackDrag('));
     assert.match(drag, /const join = moveJoins\(engine, row, target\);\s+drawPackMarker\(engine, join \? \{ x: join\.x - roomX0\(\), y: join\.y \} : target, row\);/);
   });

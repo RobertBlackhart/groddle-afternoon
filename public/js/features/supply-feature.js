@@ -103,6 +103,7 @@ import { setMetalMakingMusic } from '../sound-moments.js?v=3e66996f';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import { standOnFeet } from '../sprite-feet.js?v=16f962c0';
+import { ownGroundRows } from '../ground-stacks.js?v=22792362';
 
 export const SUPPLY_FEATURE_ID = 'supply';
 export const CLERK_CLASS = 'npc_bureaucrat';
@@ -177,8 +178,8 @@ function stopPackStills(engine, now) {
  * street online is not one (drops-mp keeps a Still the player's own: js/drops-mp.js shareReason).
  */
 function groundRows(engine, tsid = engine?.dropTsid) {
-  const rows = tsid ? engine?.droppedItems?.streets?.[tsid] : null;
-  return Array.isArray(rows) ? rows.filter((r) => r?.classTsid === STILL.classTsid && !r.shared && r.count === 1) : [];
+  const rows = tsid ? ownGroundRows(engine, tsid) : [];
+  return rows.filter((r) => r?.classTsid === STILL.classTsid && !r.shared && r.count === 1);
 }
 
 function groundRecord(engine, id, tsid = engine?.dropTsid) {

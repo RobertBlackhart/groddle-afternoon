@@ -68,6 +68,10 @@ export const DROP_TEXT = Object.freeze({
   dropped: (n, label) => `You dropped ${n}× ${label}.`, // the game's own drop line (game.js dropPackItem)
   picked: (n, label) => `You picked up ${n}× ${label}.`, // the game's own pickup line
   back: (n, label) => `Nobody picked up your ${n}× ${label}, so it came back to your pack.`, // ours
+  // R50: Decoration Mode set a stack dropped here for everyone down as the owner's own (game.js dropPackStackAt's line).
+  claimed: (n, label) => `You set down ${n}× ${label}.`,
+  notHome: 'Only the owner can set that down here.', // ours: Decoration Mode is the owner's
+  picking: 'Wait a moment, you are still picking something up.', // ours, one pickup at a time (drops.go)
   by: (name) => `Dropped by ${name}`, // ours
   busy: 'Wait a moment, you are still dropping something.', // drops.go
   slow: 'Slow down a little.', // drops.go allow (slow_down)

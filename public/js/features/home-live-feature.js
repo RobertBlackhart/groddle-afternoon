@@ -25,7 +25,8 @@
 
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import { saveStore, savedThrough } from '../save-store.js?v=4e720735';
-import { HOME_LIVE_WAIT_MS, changedHomeKinds, homeLivePrints, homeRefreshFrames } from '../home-live.js?v=cebb24d4';
+import { HOME_LIVE_STACK_PLACES, HOME_LIVE_WAIT_MS, changedHomeKinds, homeLivePrints, homeRefreshFrames } from '../home-live.js?v=9c7abae7';
+import { ownGroundRows } from '../ground-stacks.js?v=22792362';
 
 export const HOME_LIVE_FEATURE_ID = 'home-live';
 
@@ -90,7 +91,9 @@ export function createHomeLive({ store = saveStore, now = () => Date.now(), time
 
   return {
     saved(save, engine) {
-      const prints = homeLivePrints(save);
+      // R50: the owner's own stacks in the house and Tower, as the site shows them to visitors.
+      const stacks = engine ? Object.fromEntries(HOME_LIVE_STACK_PLACES.map((k) => [k, ownGroundRows(engine, k)])) : null;
+      const prints = homeLivePrints(save, stacks);
       if (!prints.yard) {
         published = null;
         latest = null;

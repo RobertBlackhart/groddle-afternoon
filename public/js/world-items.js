@@ -290,6 +290,28 @@ export function mergeDroppedStacks(state, streetTsid, fromId, intoId, opts = {})
   return { ok: true, count, stack: { ...into } };
 }
 
+/**
+ * R50 (G1224, #655): a stack that comes from no pack set down at a place, as dropInventoryStack lays
+ * one (its copies' wear in `points`, words in `tags`): on surface `on` (a piece id, Decoration Mode)
+ * at (x, y), or into the like stack `into` there when it can still take it (#593). The owner's claim
+ * of a stack dropped in their house for everyone (features/drops-mp-feature.js claimShared): the
+ * site already moved it out of the shared floor, so this only records it. Returns
+ * { ok, id, count, merged } or { ok: false, reason }.
+ */
+export function setDownStack(state, streetTsid, classTsid, requested, position = {}, opts = {}) {
+  const n = cleanCount(requested);
+  const placed = dropInventoryStack(state, { [cleanClassTsid(classTsid)]: n }, streetTsid, classTsid, n, position, { now: opts.now, merge: false, points: opts.points, tags: opts.tags });
+  if (!placed.ok) return placed;
+  const street = cleanStreetTsid(streetTsid);
+  const row = state.streets[street].find((r) => r.id === placed.stack.id);
+  if (opts.on != null && opts.on !== '') row.on = opts.on;
+  if (opts.into) {
+    const joined = mergeDroppedStacks(state, street, row.id, String(opts.into), { now: opts.now });
+    if (joined.ok) return { ok: true, id: joined.stack.id, count: placed.count, merged: true };
+  }
+  return { ok: true, id: row.id, count: placed.count, merged: false };
+}
+
 /** Move all or part of a street stack back into the pack. */
 export function pickupDroppedStack(state, inv, streetTsid, stackId, requested = Infinity) {
   const street = cleanStreetTsid(streetTsid);

@@ -131,6 +131,7 @@ import { TOOL_CONDITION_CATALOG, moveToolCopy, pickToolCopies, placeToolCopies }
 import { createMinnAccount } from '../minn-account.js?v=83127c18';
 import { BAG_NAME_MAX, BAG_RENAME_COPY, BAG_RENAME_HINT, bagLabel, canRenameBag, cleanBagName, renamedTo } from '../bag-names.js?v=bba085e1';
 import { openNamePrompt } from '../ui/name-prompt.js?v=4791b830';
+import { ownGroundRows } from '../ground-stacks.js?v=22792362';
 
 export const BAGS_FEATURE_ID = 'bags';
 export const BAG_DEMO_KIT = Object.freeze([
@@ -584,8 +585,7 @@ function askBagName(current, onName) {
 function droppedRecord(target, engine) {
   if (target?.classId !== 'dropped_item' || !canRenameBag(target?.state?.classTsid)) return null;
   const id = target.state.id || target.worldItemId;
-  const rows = engine?.droppedItems?.streets?.[engine.dropTsid];
-  return Array.isArray(rows) ? rows.find((r) => r.id === id && r.classTsid === target.state.classTsid) || null : null;
+  return ownGroundRows(engine, engine?.dropTsid).find((r) => r.id === id && r.classTsid === target.state.classTsid) || null;
 }
 
 /**

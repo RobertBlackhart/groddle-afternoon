@@ -162,6 +162,7 @@ import {
   sadPiggyClip,
   satePiggy,
 } from '../animal-mood.js?v=a49495fc';
+import { ownGroundRows, pruneOwnGround } from '../ground-stacks.js?v=22792362';
 
 export const ANIMAL_MOOD_FEATURE_ID = 'animal-mood';
 const YARD_TSID = 'RH_HOME_EXT';
@@ -572,7 +573,7 @@ function say(engine, target, text, ms, exact = false) {
 // —— Food on the street ————————————————————————————————————————————————————
 
 function streetStacks(engine) {
-  return engine.droppedItems?.streets?.[engine.streetTsid] || [];
+  return ownGroundRows(engine, engine.streetTsid);
 }
 
 function foodStacks(engine) {
@@ -609,7 +610,7 @@ function consumeStack(engine, row) {
   if (row.count <= 0) {
     const i = rows.indexOf(row);
     if (i >= 0) rows.splice(i, 1);
-    if (!rows.length && engine.droppedItems?.streets) delete engine.droppedItems.streets[engine.streetTsid];
+    if (!rows.length) pruneOwnGround(engine, engine.streetTsid);
   }
   knownStacks.set(row.id, Math.max(0, row.count));
   if (row.count <= 0) knownStacks.delete(row.id);

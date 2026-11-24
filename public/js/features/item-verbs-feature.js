@@ -33,7 +33,7 @@
 
 import { addItem, countItem, removeItem } from '../inventory.js?v=6414dbdc';
 import { energyMax, moodMax } from '../metabolics.js?v=48f784bf';
-import { listDroppedStacks } from '../world-items.js?v=46eb505b';
+import { listDroppedStacks } from '../world-items.js?v=d703d2c1';
 import {
   GARLIC_EAT_COUNTER,
   ITEM_VERBS,
@@ -45,13 +45,14 @@ import {
   itemVerbsFor,
   runItemVerb,
 } from '../item-verbs.js?v=ecade42e';
-import { homesFeature } from './homes-feature.js?v=29db359b';
+import { homesFeature } from './homes-feature.js?v=8490f095';
 import { CROWNS_STREET } from '../game-of-crowns.js?v=e32f35f5';
 import { HOG_HAUL_STREET_ID } from '../hog-haul.js?v=50d2e072';
 import { isRaceSceneTsid } from '../races.js?v=ab22a079';
 import { WINTER_HAVEN_STREET_ID, WINTER_WALK_STREET_ID } from '../winter-walk.js?v=89f8dc32';
 import { ROOK_WOODS_STREET_ID } from '../rook-woods.js?v=0aab151e';
 import { questSceneTsid } from '../quest-instance.js?v=8858d29d';
+import { ownGroundState, sharedGroundStacks } from '../ground-stacks.js?v=22792362';
 
 export const ITEM_VERBS_FEATURE_ID = 'item-verbs';
 /** Gwendolyn's Outer Mind (quest-rooms/gwendolyn.js INSTANCES.outer_mind: tower_quest_headspace) as a scene. */
@@ -78,9 +79,16 @@ export function isTrophyClass(classTsid) {
   return /^trophy_/.test(String(classTsid || '')) && !/_piece\d+$/.test(classTsid);
 }
 
-/** Trophies standing on your home street and in your house: dropped stacks, and `placed` set down through Decorate. */
-export function homeTrophyCount(droppedState, placed = 0) {
+/**
+ * Trophies standing on your home street and in your house: dropped stacks, and `placed` set down
+ * through Decorate. `sharedHere`: online, the stacks dropped for everyone where you stand at home
+ * (G1190, R50: js/ground-stacks.js), which stand there too.
+ */
+export function homeTrophyCount(droppedState, placed = 0, sharedHere = []) {
   let n = Math.max(0, Math.floor(Number(placed) || 0));
+  for (const row of Array.isArray(sharedHere) ? sharedHere : []) {
+    if (isTrophyClass(row?.classTsid)) n += Math.max(0, Math.floor(Number(row.count) || 0));
+  }
   for (const tsid of HOME_STREETS) {
     for (const row of listDroppedStacks(droppedState, tsid)) {
       if (isTrophyClass(row.classTsid)) n += Math.max(0, Math.floor(Number(row.count) || 0));
@@ -154,7 +162,7 @@ function checkHome(engine, now) {
   if (!home?.inHome || !home.owned) return;
   if (now - homeCheckAt < 2000) return;
   homeCheckAt = now;
-  if (homeTrophyCount(engine.droppedItems, engine.query?.('homeTrophiesPlaced')) >= TROPHIES_FOR_BRAGGING && !(engine.unlockedAchievements || []).includes('humble_bragger')) {
+  if (homeTrophyCount(ownGroundState(engine), engine.query?.('homeTrophiesPlaced'), engine.homeContext?.()?.inHome ? sharedGroundStacks(engine) : []) >= TROPHIES_FOR_BRAGGING && !(engine.unlockedAchievements || []).includes('humble_bragger')) {
     engine.achievement('trophy:placed_eleven', 1);
   }
   if (home.room !== 'street') return;

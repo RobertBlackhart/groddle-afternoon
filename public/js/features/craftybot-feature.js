@@ -52,8 +52,8 @@
 import { ITEM_CATALOG, addItem, countItem, ensureItem, itemIcon, removeItem } from '../inventory.js?v=6414dbdc';
 import { canUseTool, getToolCondition, setToolRemaining } from '../tools.js?v=4156bba8';
 import { MAKING_TOOL_SKILLS, listRecipes, recipeKnown, TOOL_CATALOG } from '../making.js?v=1ec1075e';
-import { listDroppedStacks } from '../world-items.js?v=46eb505b';
-import { BACK_YARD_GROUND_Y, homesFeature } from './homes-feature.js?v=29db359b';
+import { listDroppedStacks } from '../world-items.js?v=d703d2c1';
+import { BACK_YARD_GROUND_Y, homesFeature } from './homes-feature.js?v=8490f095';
 import { cabinetTake, isCabinetClass } from '../home-storage.js?v=b0225465';
 import {
   CRAFTYBOT,
@@ -96,6 +96,7 @@ import { displayTopOf, itemstackOverlayPoint, playSheetOverlay } from '../overla
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { countFromField, typedCount } from '../ui/count-chooser.js?v=c268eefe';
 import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=16f962c0';
+import { ownGroundRows, ownGroundState, pruneOwnGround } from '../ground-stacks.js?v=22792362';
 
 export const CRAFTYBOT_FEATURE_ID = 'craftybot';
 const HOME_STREET_TSID = 'RH_HOME_EXT';
@@ -226,7 +227,7 @@ function interiorDecor() {
 
 function locationRows(engine, where) {
   const tsid = homeTsid(where);
-  const rows = listDroppedStacks(engine.droppedItems, tsid).map((s) => ({ id: s.id, cls: s.classTsid, count: s.count, x: s.x, sdb: false }));
+  const rows = listDroppedStacks(ownGroundState(engine), tsid).map((s) => ({ id: s.id, cls: s.classTsid, count: s.count, x: s.x, sdb: false }));
   if (where === 'interior') {
     // G226: furniture sits in room x; the bot and the dropped stacks in world x.
     const x0 = homesFeature.roomWorldX?.() || 0;
@@ -337,14 +338,14 @@ function makeWorld(engine) {
         dirty = 'sdb';
         return k;
       }
-      const list = engine.droppedItems?.streets?.[tsid];
-      const i = Array.isArray(list) ? list.findIndex((r) => r.id === id) : -1;
+      const list = ownGroundRows(engine, tsid);
+      const i = list.findIndex((r) => r.id === id);
       if (i < 0) return 0;
       const row = list[i];
       const k = Math.min(row.count, n);
       row.count -= k;
       if (row.count <= 0) list.splice(i, 1);
-      if (!list.length) delete engine.droppedItems.streets[tsid];
+      if (!list.length) pruneOwnGround(engine, tsid);
       dirty = dirty || 'ground';
       return k;
     },
@@ -384,7 +385,7 @@ function makeWorld(engine) {
         engine.refreshPack?.();
         return;
       }
-      const state = engine.droppedItems;
+      const state = ownGroundState(engine);
       if (!state) return;
       state.streets[tsid] ||= [];
       state.streets[tsid].push({ id: `world-item-${state.nextId++}`, streetTsid: tsid, classTsid: cls, count: n, x: Math.round(x), y: engine.groundY || 620, droppedAt: Date.now() });
@@ -1738,7 +1739,7 @@ function demoSetup(engine) {
     if (kind === 'pack') addItem(inv, BOT, 1);
     else {
       // Cherries and the machine on the ground to the right of the bot (the yard, then the floor).
-      const state = engine.droppedItems;
+      const state = ownGroundState(engine);
       state.streets[HOME_INTERIOR_TSID] = (state.streets[HOME_INTERIOR_TSID] || []).filter((r) => !['cherry', 'fruit_changing_machine'].includes(r.classTsid));
       const drop = (cls, n, x) => state.streets[HOME_INTERIOR_TSID].push({ id: `world-item-${state.nextId++}`, streetTsid: HOME_INTERIOR_TSID, classTsid: cls, count: n, x, y: groundYAt(engine, x, 'interior'), droppedAt: Date.now() });
       drop('cherry', 12, bot.x + 260);
@@ -1780,7 +1781,7 @@ function autoplayStep(engine) {
     case 'opening': {
       if (!bot.owned) return later(300);
       // Drop the Cherries and the machine from the pack onto the floor, right of the bot.
-      const state = engine.droppedItems;
+      const state = ownGroundState(engine);
       const tsid = homeTsid(bot.where);
       state.streets[tsid] ||= [];
       for (const [cls, n, dx] of [['cherry', 9, 260], ['fruit_changing_machine', 1, 420]]) {

@@ -34,11 +34,19 @@
  * Piggies (animal-mood-feature) still eat only the stacks in
  * engine.droppedItems, the player's own.
  *
+ * Decoration Mode (R50, G1224 #655): the owner moving a stack dropped in their house or on a
+ * Tower floor for everyone claims it (claimSharedStack): the server's first pickup has it whole,
+ * as HandOfDecorator.as dragged any stack the owner could pick up, and the site's answer sets it
+ * down where it was moved, in the owner's save and locked to them (house_lock, takeable.js
+ * 179-198), joining a like stack it was laid on (#593). The pack never holds it, so a full pack
+ * splits nothing; an answer that never came comes through the site's list on the next connect and
+ * lands in the pack (sync): nothing is made twice or lost.
+ *
  * The pack's drop prompt (game.js asks sharedDropPrompt) reads the drop
  * verb's tooltip, "Drop it on the ground.", when the stack is dropped for
  * everyone: shared stacks never merge.
  *
- * QA: canvas data sharedStacks, dropState (none|dropping|picking), dropLast,
+ * QA: canvas data sharedStacks, dropState (none|dropping|picking|claiming), dropLast,
  * dropEaten (the last bite: id:left:pig);
  * window.groddleDrops.
  */
@@ -47,7 +55,7 @@ import { ITEM_CATALOG, addItem, countItem, removeItem } from '../inventory.js?v=
 import { TOOL_CONDITION_CATALOG, leavingCopyTag, leavingToolWear, receiveToolCopy, takeToolCopy } from '../tools.js?v=4156bba8';
 import { createMinnAccount } from '../minn-account.js?v=83127c18';
 import { saveStore, savedThrough } from '../save-store.js?v=4e720735';
-import { DROP_OP, DROP_QUEUE_MAX, DROP_TEXT, bucketTake, dropEffect, dropRefusalText, eatenStack, groundFrom, homePlaceOf, isPublicStreet, normalizeGroundStack, normalizeMine, pickupAsk, pigAnimalKey, shareReason, stackAt, stackLeft } from '../drops-mp.js?v=102a2372';
+import { DROP_OP, DROP_QUEUE_MAX, DROP_TEXT, bucketTake, dropEffect, dropRefusalText, eatenStack, groundFrom, homePlaceOf, isPublicStreet, normalizeGroundStack, normalizeItem, normalizeMine, pickupAsk, pigAnimalKey, shareReason, stackAt, stackLeft } from '../drops-mp.js?v=3b0174f2';
 
 export const DROPS_MP_FEATURE_ID = 'drops-mp';
 const TABLE_URL = 'assets/content/trade-items.json';
@@ -106,7 +114,7 @@ function createSession(engine, client) {
 
   function publish() {
     engine.setData?.('sharedStacks', String(stacks.size));
-    engine.setData?.('dropState', dropping ? 'dropping' : picking ? 'picking' : 'none');
+    engine.setData?.('dropState', dropping ? 'dropping' : picking?.claim ? 'claiming' : picking ? 'picking' : 'none');
     engine.setData?.('dropQueue', String(queue.length));
     engine.setData?.('dropLast', lastLine);
     engine.setData?.('dropEaten', lastEaten);
@@ -169,9 +177,36 @@ function createSession(engine, client) {
     if (copy < countItem(engine.inv, c)) takeToolCopy(engine.toolState, c, { copy });
   }
 
-  /** One settled op: true when it was applied now (`copy`: the tool chosen for a drop). */
-  function apply(op, side, item, at = null, copy = null) {
+  /**
+   * R50: a claimed stack (Decoration Mode) set down in the owner's save where it was moved: true when
+   * it is down. Its tool wear and one copy's words go with it, as an own drop keeps them (dropOwn).
+   */
+  function setDownClaim(claim, item) {
+    const it = normalizeItem(item);
+    if (!it || !claim?.tsid || typeof engine.placeOwnStack !== 'function') return false;
+    const res = engine.placeOwnStack(claim.tsid, it.c, it.n, {
+      x: claim.x,
+      y: claim.y,
+      on: claim.on ?? null,
+      into: claim.into ?? null,
+      ...(it.r != null ? { points: Array(it.n).fill(it.r) } : {}),
+      ...(it.t != null && it.n === 1 ? { tags: [it.t] } : {}),
+    });
+    if (!res?.ok) return false;
+    engine.playSound?.('ITEM_DROP', { volume: 0.45 });
+    engine.save?.();
+    tell(DROP_TEXT.claimed(it.n, it.n === 1 ? itemLabel(it.c) : itemLabel(it.c, it.n)));
+    engine.query?.('homeStackClaimed', res.id, engine);
+    return true;
+  }
+
+  /**
+   * One settled op: true when it was applied now (`copy`: the tool chosen for a drop; `claim`: where
+   * Decoration Mode sets a stack taken whole, R50; when it can't go there it comes to the pack).
+   */
+  function apply(op, side, item, at = null, copy = null, claim = null) {
     if (!op || engine.query?.('ledgerReceipt', op, engine) !== true) return false;
+    if (side === 'took' && claim && setDownClaim(claim, item)) return true;
     const fx = dropEffect(side, item, itemLabel);
     if (!fx) return false;
     const inv = engine.inv;
@@ -280,13 +315,15 @@ function createSession(engine, client) {
   });
 
   client.on('msg:ground_taken', (msg) => {
+    const claim = picking?.claim && picking.id === String(msg.id || '') ? picking.claim : null;
     picking = null;
     if (msg.status !== 'settled') {
       tell(String(msg.text || DROP_TEXT.gone));
+      if (claim) engine.query?.('homeStackClaimed', null, engine);
       return;
     }
     const s = stacks.get(String(msg.id || ''));
-    apply(String(msg.op || ''), 'took', msg.item, shown(s) || engine.player);
+    apply(String(msg.op || ''), 'took', msg.item, shown(s) || engine.player, null, claim);
   });
 
   client.on('msg:ground_back', (msg) => {
@@ -321,6 +358,8 @@ function createSession(engine, client) {
         const m = normalizeMine(row);
         if (!m) continue;
         if (m.side === 'dropped' && dropping) continue; // its answer may still come
+        // A claim's answer may still come, to set it down where Decoration Mode moved it (R50).
+        if (m.side === 'took' && picking?.claim && picking.id === m.id && Date.now() - picking.at < WAIT_MS) continue;
         apply(m.op, m.side, m.item);
       }
     } catch (err) {
@@ -446,6 +485,34 @@ function createSession(engine, client) {
     return true;
   }
 
+  /**
+   * R50 (G1224, #655): Decoration Mode moved a shared stack at the owner's own home: ask for the
+   * whole of it, to be set down at `to` ({ tsid: the room's own key, x, y, on, into }) in the
+   * owner's save when the site says it moved (ground_taken). { ok } or { ok: false, reason, msg }.
+   */
+  function claim(id, to = {}) {
+    const p = here();
+    const sid = String(id || '');
+    if (!DROP_OP.test(sid)) return null;
+    if (!p?.ownHome || !homePlaceOf(p.street)) return { ok: false, reason: 'place', msg: DROP_TEXT.notHome };
+    const s = stacks.get(sid);
+    if (!s) {
+      redraw();
+      return { ok: false, reason: 'gone', msg: DROP_TEXT.gone };
+    }
+    if (client.state !== 'online') return { ok: false, reason: 'offline', msg: DROP_TEXT.offline };
+    if (picking && Date.now() - picking.at < WAIT_MS) return { ok: false, reason: 'busy', msg: DROP_TEXT.picking };
+    const tsid = String(to.tsid || '');
+    const x = Number(to.x);
+    const y = Number(to.y);
+    if (!tsid || !Number.isFinite(x) || !Number.isFinite(y)) return { ok: false, reason: 'where' };
+    if (!bucketTake(rate, Date.now()).ok) return { ok: false, reason: 'slow', msg: DROP_TEXT.slow };
+    picking = { id: sid, n: null, at: Date.now(), claim: { tsid, x: Math.round(x), y: Math.round(y), on: to.on ?? null, into: to.into ? String(to.into) : null, c: s.classTsid } };
+    client.send('ground_pickup', { id: sid, ...(p.ox ? { ox: p.ox } : {}) });
+    publish();
+    return { ok: true };
+  }
+
   /** Whether a pack stack of this class would be dropped for everyone here now. */
   function wouldShare(classTsid) {
     const p = here();
@@ -475,6 +542,7 @@ function createSession(engine, client) {
     get picking() { return picking; },
     drop,
     pickup,
+    claim,
     list,
     wouldShare,
     here,
@@ -530,6 +598,12 @@ export const dropsMpFeature = {
   sharedPickup(target, engine, count) {
     if (!multiplayer || !session || engine?.mode !== 'multiplayer') return null;
     return session.pickup(target, count);
+  },
+
+  /** R50 (homes-feature Decoration Mode): the owner moved a shared stack; it is set down in their save when the site says it moved. */
+  claimSharedStack(id, to, engine) {
+    if (!multiplayer || !session || engine?.mode !== 'multiplayer') return null;
+    return session.claim(id, to);
   },
 
   /** game.js pack drop prompt: the drop verb's own words when the stack goes to everyone (shared stacks never merge). */

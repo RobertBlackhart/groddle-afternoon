@@ -32,7 +32,6 @@
 
 import { addItem, countItem, removeItem } from '../inventory.js?v=6414dbdc';
 import { STREET_INDEX } from '../street-loader.js?v=10376267';
-import { listDroppedStacks } from '../world-items.js?v=46eb505b';
 import {
   MUSICBLOCK_CATALOG,
   MUSICBLOCK_ENDGAME_GIFT,
@@ -42,6 +41,7 @@ import {
   endgameGiftDue,
   startStreetMusicblockDue,
 } from '../musicblocks.js?v=fd84b634';
+import { groundStacks } from '../ground-stacks.js?v=22792362';
 
 const SYNC_MS = 1_000;
 const BLOCK_IDS = Object.keys(MUSICBLOCK_CATALOG);
@@ -100,7 +100,7 @@ function startDue(engine, tsid) {
     made: Boolean(st.startBlock),
     onStartStreet: Boolean(tsid) && startStreets(engine).includes(tsid) && engine.streetTsid === tsid,
     inv: engine.inv,
-    stacks: listDroppedStacks(engine.droppedItems, engine.dropTsid),
+    stacks: groundStacks(engine, engine.dropTsid),
   });
 }
 
