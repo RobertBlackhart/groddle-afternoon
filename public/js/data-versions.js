@@ -9013,7 +9013,7 @@
       "assets/ui/rook_star_stars.png": "a0b900d9",
       "contribute/data.json": "70ed4b4a",
       "encyclopedia/items/data.json": "180d9ae5",
-      "encyclopedia/search.json": "e1761998",
+      "encyclopedia/search.json": "bd627848",
       "landing/card-explore.webp": "7a2c1124",
       "landing/full/card-explore.webp": "cbce4e96",
       "restoration/gaps.json": "49171106",
