@@ -2814,9 +2814,14 @@
   "deployed": "2026-11-24"
  },
  "git": {
-  "commits": 3375,
+  "commits": 3376,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-24",
+    "kind": "improve",
+    "text": "Piles in your house and on your Tower floors have no stack limit for any item"
+   },
    {
     "date": "2026-11-24",
     "kind": "improve",
@@ -2931,11 +2936,6 @@
     "date": "2026-11-23",
     "kind": "fix",
     "text": "Max Luck always finds a gem while mining, as in Glitch"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "A learning quoin reads its seconds, as Glitch's did, instead of a refusal"
    }
   ]
  },
