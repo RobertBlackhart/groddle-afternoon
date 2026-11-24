@@ -58,7 +58,7 @@ describe('the open bag follows a repair (Austin 2026-11-01: its wear bar changed
 
   it('the tray is keyed on its stacks\' own row signature and draws the same entries', () => {
     const fn = fnSrc('renderOpenBagRow');
-    assert.match(fn, /sig: JSON\.stringify\(\[box\.key, box\.label, box\.capacity, packRowSignature\(entries, rowOpts\)\]\)/);
+    assert.match(fn, /sig: JSON\.stringify\(\[box\.key, box\.label, box\.capacity, box\.sort \|\| '', packRowSignature\(entries, rowOpts\)\]\)/);
     assert.match(fn, /if \(tray\?\.slots\) renderPackRow\(tray\.slots, entries, rowOpts\);/);
     // The row signature carries each tool's wear and break.
     assert.match(fnSrc('packRowSignature'), /c\.tracked \? \[c\.remaining, c\.broken\] : 0/);
