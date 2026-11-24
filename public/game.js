@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=7ef2b106';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=848f05c0';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=1e416a2b';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE, playerClickBox } from './js/reach.js?v=456da8a8';
@@ -558,8 +558,8 @@ import {
   placeDroppedBag,
   setDownStack,
   takeDroppedRecord,
-} from './js/world-items.js?v=220d7a7a';
-import { ownRowToSharedFloor, packToSharedFloor } from './js/home-floor-share.js?v=aacb6044';
+} from './js/world-items.js?v=b984e516';
+import { ownRowToSharedFloor, packToSharedFloor } from './js/home-floor-share.js?v=c272558b';
 import {
   createPlayerSave,
   inspectPlayerSave,
@@ -1150,7 +1150,7 @@ import { HOME_SCREEN_TIP_CACHE, iosSafari, mountHomeScreenTip, runsStandalone } 
 import { EAT_PICK_TEXT, bestFoodIndex, eatChoices, eatTip } from './js/eat-pick.js?v=8fb763d0';
 import { heldDirection, installHeldKeyGuard, isMacPlatform } from './js/held-keys.js?v=a28eb293';
 import { isOneClickDoor, oneClickChoice, signpostArmRows, worldContextAction } from './js/world-context-menu.js?v=e4c99c05';
-import { blockedPlayerVerbs, listPlayerTarget, opensPlayerMenu, playerMenuRows } from './js/ui/player-menu.js?v=c2289b8b';
+import { blockedPlayerVerbs, listPlayerTarget, opensPlayerMenu, playerMenuRows } from './js/ui/player-menu.js?v=cb901a1c';
 import { forgetTexture, frameTexture, isFailed, isLoaded, onFailed, onLoaded, textureFromUrl, whenLoaded } from './js/textures.js?v=b8e38103';
 import { FALLBACK_MAX as WORLD_ART_FALLBACK_MAX, worldArtFor } from './js/world-art.js?v=a67514c8';
 import { HOME_PIP_PX, drawLockPip, homeMarkNote, homePipShown, homeStackMark } from './js/home-stack-marks.js?v=0ff4c29f';
@@ -14850,7 +14850,7 @@ const engine = {
    * was a piece's (house_lock only for plats[i].source, items/include/takeable.js 179-198): it goes
    * through the server as Drop does (features/drops-mp-feature.js sharedDrop) and `beforeShare(n)`
    * marks the dragged stack for the server's answer; `into` the like shared stack it was set on (it
-   * joins it, below its stackmax), `merge: false` beside one. On a shelf or table, or wherever the floor is
+   * joins it, up to its pile: no stack limit at home), `merge: false` beside one. On a shelf or table, or wherever the floor is
    * not shared (solo, offline, a class the server does not carry), it stays the owner's own decor.
    */
   dropPackStackAt(classTsid, count, x, y, { beforeRemove = null, floor = false, beforeShare = null, into = null, merge = true } = {}) {
@@ -16149,7 +16149,7 @@ function dropPackItem(classTsid, requested = 1) {
     count,
     { x, y },
     // A script is one to a stack on the ground too (js/tools.js ownStack). In the house (any floor, a Tower
-    // floor too) a one-per-stack class piles up (Austin 2026-11-24; js/world-items.js pileMaxOf).
+    // floor too) a pile has no stack limit (Austin 2026-11-24; js/world-items.js pileMaxOf).
     { now: Date.now(), points: leavingToolPoints(classTsid, count), tags: leavingToolTags(classTsid, count), ...(currentStreetTsid === HOME_INTERIOR_TSID ? { pile: true } : {}), ...(keepsOwnStack(classTsid) ? { merge: false } : {}) }
   );
   closePackPopover();

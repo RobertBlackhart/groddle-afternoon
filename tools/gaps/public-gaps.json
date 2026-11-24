@@ -1944,7 +1944,7 @@
       "id": "P7",
       "area": "Items",
       "show": "purpose",
-      "text": "Emblems and other things that come one to a stack pile up together on house and Tower floors, shelves and tables. In Glitch each one lay on its own."
+      "text": "At home, on house and Tower floors, shelves and tables, a pile of the same thing has no stack limit, so emblems and moonstones pile up as high as you like. Your pack still keeps the usual stack sizes. In Glitch every pile stopped at its stack size, so emblems lay one by one and moonstones stopped at 3."
     },
     {
       "id": "G63",

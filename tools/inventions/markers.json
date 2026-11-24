@@ -297,7 +297,6 @@
     "ours: ${label}, so it came back to your pack.`, // ours": "remake-copy",
     "ours: 'Only the owner can set that down here.', // ours: Decoration Mode is the": "home-stack-marks",
     "ours: * Ours: a class the ledger does not carry (the trade": "ours-drops",
-    "ours: * ours: Austin 2026-11-24, one-per-stack things": "ours-floor-piles",
     "ours: * there. Ours there: a stack's x is kept from the house (the": "ours-drops",
     "ours: a moment, you are still moving something.', // ours, one move at a time": "ours-drops",
     "ours: by: (name) => `Dropped by ${name}`, // ours": "remake-copy",
@@ -1391,7 +1390,7 @@
   },
   "public/js/world-items.js": {
     "ours: * Ours: a bag with contents or a name comes back whole": "ours-world-items",
-    "ours: * ours: Austin 2026-11-24, one-per-stack things": "ours-floor-piles"
+    "ours: * ours: Austin 2026-11-24, \"Let's remove the pile": "ours-floor-piles"
   },
   "public/js/yard-fixtures-mp.js": {
     "ours: * Ours: a visitor only looks. In the source a": "ours-yard-fixtures"

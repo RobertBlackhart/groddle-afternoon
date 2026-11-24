@@ -68,8 +68,8 @@ import { TOOL_CONDITION_CATALOG, leavingCopyTag, leavingToolWear, receiveToolCop
 import { createMinnAccount } from '../minn-account.js?v=c6a70577';
 import { saveStore, savedThrough } from '../save-store.js?v=4e720735';
 import { ownGroundRows } from '../ground-stacks.js?v=22792362';
-import { pileMaxOf } from '../world-items.js?v=220d7a7a';
-import { DROP_OP, DROP_QUEUE_MAX, DROP_TEXT, bucketTake, dropEffect, dropRefusalText, eatenStack, floorPileMax, groundFrom, homePlaceOf, isFloorPlace, isPublicStreet, likeSharedStack, normalizeGroundStack, normalizeItem, normalizeMine, pickupAsk, pigAnimalKey, shareReason, stackAt, stackLeft } from '../drops-mp.js?v=dec58c3d';
+import { pileMaxOf } from '../world-items.js?v=b984e516';
+import { DROP_OP, DROP_QUEUE_MAX, DROP_TEXT, bucketTake, dropEffect, dropRefusalText, eatenStack, groundFrom, homePlaceOf, isFloorPlace, isPublicStreet, likeSharedStack, normalizeGroundStack, normalizeItem, normalizeMine, pickupAsk, pigAnimalKey, shareReason, stackAt, stackLeft } from '../drops-mp.js?v=d8821458';
 
 export const DROPS_MP_FEATURE_ID = 'drops-mp';
 const TABLE_URL = 'assets/content/trade-items.json';
@@ -630,7 +630,7 @@ function createSession(engine, client) {
     // A tool goes down with its wear, a class with words may carry them: drawn on its own (the answer may join it).
     const words = Boolean(TOOL_CONDITION_CATALOG[c] || row?.tag);
     const t = likeSharedStack([...view(p).values()], p.street, { c, x: sx, y: sy, by: me().id, into, merge, words }, row);
-    const joinN = t ? Math.max(0, Math.min(n, floorPileMax(row) - t.count)) : 0;
+    const joinN = t ? Math.max(0, Math.min(n, pileMaxOf(c) - t.count)) : 0;
     pendN += 1;
     const q = { key: pendN, id: `pend-${pendN}`, street: p.street, c, n, sx, y: sy, target: t?.id || null, joinN, restN: n - joinN, op: null, at: Date.now(), done: false };
     pending.push(q);
@@ -861,7 +861,7 @@ function createSession(engine, client) {
     const sx = Math.round(x) - (p.ox || 0);
     const row = table?.items?.[s.classTsid];
     const t = into ? likeSharedStack([...view(p).values()], p.street, { c: s.classTsid, by: s.by?.id, into, words: s.r != null || s.t != null }, row) : null;
-    const k = t ? Math.max(0, Math.min(s.count, floorPileMax(row) - t.count)) : 0;
+    const k = t ? Math.max(0, Math.min(s.count, pileMaxOf(s.classTsid) - t.count)) : 0;
     moving = { id: sid, at: Date.now(), sx, y: Math.round(y), into: t ? into : null, k, joinSeen: false, settled: false, until: 0 };
     client.send('ground_move', { id: sid, x: Math.round(x), y: Math.round(y), ...(p.ox ? { ox: p.ox } : {}), ...(into ? { into } : {}) });
     engine.playSound?.('ITEM_DROP', { volume: 0.45 });
@@ -882,15 +882,16 @@ function createSession(engine, client) {
 
   /**
    * Whether `count` of a class goes to the shared floor here as one stack: shared here, and no more
-   * than the server takes in one drop (drops.go dropFrame: the trade table's max, its stackmax).
+   * than the server takes in one drop (drops.go dropMaxN: on a street the trade table's max, its
+   * stackmax; at home its pile, pileMaxOf, never less than the stackmax).
    */
   function fits(classTsid, count) {
     const c = String(classTsid || '');
     const n = Math.floor(Number(count) || 0);
     if (n < 1 || !wouldShare(c)) return false;
-    // In a house or on a Tower floor a one-per-stack class goes down as one pile (floorPileMax).
+    // In a house or on a Tower floor a pile goes down whole (pileMaxOf: no stack limit at home).
     const row = table?.items?.[c];
-    const max = isFloorPlace(here()?.street) && row ? floorPileMax(row) : Number(row?.max);
+    const max = isFloorPlace(here()?.street) && row ? Math.max(pileMaxOf(c), Number(row.max) || 1) : Number(row?.max);
     return !(Number.isFinite(max) && max > 0 && n > max);
   }
 

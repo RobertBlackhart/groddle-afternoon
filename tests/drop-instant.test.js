@@ -23,7 +23,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { layoutHeld, layoutPack } from '../public/js/pack-slots.js?v=11aa0ad5';
-import { createDroppedItemState, setDownStack } from '../public/js/world-items.js?v=220d7a7a';
+import { createDroppedItemState, setDownStack } from '../public/js/world-items.js?v=b984e516';
 import { ITEM_CATALOG } from '../public/js/inventory.js?v=6414dbdc';
 import { GAME_DIR } from '../tools/repos.mjs';
 
@@ -151,7 +151,7 @@ describe('a drop on your house floor shows at once and settles to the server\'s 
     assert.deepEqual([r.floor('gem_moonstone')[0].count, r.engine.inv.gem_moonstone, r.inPack('gem_moonstone')], [3, 2, 2]);
   });
 
-  it('an emblem joins your pile with no cap (Austin 2026-11-24), shown so at once; a full Moonstone stack takes none', async () => {
+  it('an emblem joins your pile, and a Moonstone your stack of 3 (Austin 2026-11-24: no pile limits at home), shown so at once', async () => {
     r.feature.sharedDrop({ classTsid: 'emblem_mab', count: 1, x: 1650, y: 620 }, r.engine);
     assert.deepEqual(r.floor('emblem_mab').map((x) => x.count), [2], 'the emblem shows on the pile of 1');
     await wait();
@@ -159,10 +159,12 @@ describe('a drop on your house floor shows at once and settles to the server\'s 
     r.client.emit('msg:ground_added', { stack: stack(hex(2), 'emblem_mab', 2, 900) });
     r.client.emit('msg:ground_dropped', { op: hex(12), ref: d.ref, status: 'settled', stack: null, item: { c: 'emblem_mab', n: 1 }, into: hex(2) });
     r.feature.sharedDrop({ classTsid: 'gem_moonstone', count: 1, x: 1050, y: 620 }, r.engine);
-    assert.deepEqual(r.floor('gem_moonstone').map((x) => x.count).sort(), [1, 3], 'beside the full stack, on its own');
+    assert.deepEqual(r.floor('gem_moonstone').map((x) => x.count), [4], 'shown on the stack of 3, past the stackmax');
     await wait();
     const m = r.drops().at(-1);
-    r.client.emit('msg:ground_dropped', { op: hex(13), ref: m.ref, status: 'settled', stack: stack(hex(13), 'gem_moonstone', 1, 300) });
+    r.client.emit('msg:ground_added', { stack: stack(hex(1), 'gem_moonstone', 4, 300) });
+    r.client.emit('msg:ground_dropped', { op: hex(13), ref: m.ref, status: 'settled', stack: null, item: { c: 'gem_moonstone', n: 1 }, into: hex(1) });
+    assert.deepEqual([r.floor('gem_moonstone').map((x) => x.count), r.engine.inv.gem_moonstone], [[4], 1], 'one pile of 4, counted once');
   });
 
   it('a Teleportation Script keeps its own stack, shown on its own', async () => {

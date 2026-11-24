@@ -100,7 +100,7 @@
  */
 
 import { countItem, ensureItem, ITEM_CATALOG, removeItem } from '../inventory.js?v=6414dbdc';
-import { likeStackAt, mergeDroppedStacks, pickupCountTitle } from '../world-items.js?v=220d7a7a';
+import { likeStackAt, mergeDroppedStacks, pickupCountTitle } from '../world-items.js?v=b984e516';
 import { groundKey, groundStacks, ownGroundRows, ownGroundState } from '../ground-stacks.js?v=22792362';
 import { keepsOwnStack } from '../tools.js?v=4156bba8';
 import { createCountChooser } from '../ui/count-chooser.js?v=c268eefe';
@@ -218,7 +218,7 @@ import { DISPATCHER_HALF, DISPATCHER_TEXT, MOVABLE_FIXTURES, MOVABLE_FIXTURE_IDS
 import { displayTopOf, itemstackOverlayPoint, overlayAlpha, overlayLifeMs, playPoofIn, trackOverlay } from '../overlay-art.js?v=e50bacca';
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d787e3c3';
 import { fadeInNewNear } from '../poof-fade.js?v=57db6aea';
-import { projectApi } from './street-jobs-feature.js?v=60c0523b';
+import { projectApi } from './street-jobs-feature.js?v=3cc8c23d';
 import { TOWER_CHASSIS, TOWER_CONFIG, TOWER_DOOR_DX, TOWER_GEO, TOWER_PROTO, normalizeTowerState } from '../home-tower.js?v=84d99af0';
 import { drawTowerBench, drawTowerElevator, drawTowerExit, towerApi, visitorTowerView } from './home-tower-feature.js?v=7de4d00a';
 import { pieceUrl, roomPieces, surfaceAt, swatchPiece, wallTargetAt } from '../home-wallpaper.js?v=99228166';
@@ -6137,7 +6137,7 @@ function packDropOpts(engine, was, target) {
 /**
  * The like stack on the shared floor (G1190) a stack set on the floor at `target` lands on, or null: its
  * id. The same rule as a save stack's (js/world-items.js likeStackAt: its class, 12 px, below its
- * stackmax, a one-per-stack class's pile uncapped); a class whose copies keep their own stack never joins (js/tools.js keepsOwnStack).
+ * pile, no stack limit at home); a class whose copies keep their own stack never joins (js/tools.js keepsOwnStack).
  */
 function sharedLikeAt(engine, row, target) {
   if (!row || !target || target.on != null || keepsOwnStack(row.classTsid)) return null;

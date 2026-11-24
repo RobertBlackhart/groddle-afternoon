@@ -15,8 +15,8 @@ import { createInventory, countItem } from '../public/js/inventory.js?v=6414dbdc
 import { copyForVerb, copyTags, createToolConditionState, keepsOwnStack, setCopyTag } from '../public/js/tools.js?v=4156bba8';
 import { STILL, STILL_TEXT, createStillState, distillInStill, stillCollectCheck, stillDistillCheck } from '../public/js/machines.js?v=5d749d26';
 import { supplyFeature } from '../public/js/features/supply-feature.js?v=6d475c3f';
-import { createDroppedItemState, dropInventoryStack, pickupDroppedStack } from '../public/js/world-items.js?v=220d7a7a';
-import { shareReason } from '../public/js/drops-mp.js?v=dec58c3d';
+import { createDroppedItemState, dropInventoryStack, pickupDroppedStack } from '../public/js/world-items.js?v=b984e516';
+import { shareReason } from '../public/js/drops-mp.js?v=d8821458';
 import { dropFor } from '../public/js/world-drop.js?v=a8956ae5';
 import { STILL_ART, STILL_ART_CELL, stillArtFrame, stillArtState, stillSheetDef } from '../public/js/still-art.js?v=2eeb65ff';
 

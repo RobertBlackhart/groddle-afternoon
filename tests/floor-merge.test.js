@@ -1,5 +1,5 @@
 /**
- * #655: on a house or Tower floor a drop joins a like stack there, below its stackmax, and the owner's
+ * #655: on a house or Tower floor a drop joins a like stack there, and the owner's
  * Decoration Mode move of a shared floor stack keeps it shared (Austin's ruling: "the house floor is
  * shared, as Glitch").
  *
@@ -7,10 +7,13 @@
  * there while count < stackmax (items/include/takeable.js 202-207; Eleven's rebuild, Location.addItem
  * 475-503, within 100 px); Decoration Mode's move (main.js doModifyItem 4852-4890) moved any stack in the
  * house and merged it into a like one it was set on (HandOfDecorator.as shouldMerge 1656-1670 sent
- * no_merge otherwise). A Moonstone's stackmax is 3 (gem_moonstone.js:15): 3 then 1 more stay two stacks.
+ * no_merge otherwise). A Moonstone's stackmax is 3 (gem_moonstone.js:15): 3 then 1 more stayed two stacks.
+ * Ours (Austin 2026-11-24, "Let's remove the pile limits"): a pile at home has no stack limit for any
+ * class, only the most a stack holds anywhere (9999), the rest lying beside it; tools and things with
+ * words never join.
  *
  * - The site (groddle-afternoon-site src/LedgerDrop.php): the merge in the drop's own transaction, the
- *   stackmax, who may join whom, the owner's floor move, and a part taken from a stack a merge grew gets a
+ *   pile (no stack limit, 9999), who may join whom, the owner's floor move, and a part taken from a stack a merge grew gets a
  *   new id (<op>-t<from>-g<gen>): an id recorded before the rise is never answered "as recorded" for a new
  *   take. tests/fixtures/drops/ledger-drop-merge.php runs it on a throwaway MariaDB database.
  * - The game (features/drops-mp-feature.js) names the like stack it set a drop on, applies what left the
@@ -28,8 +31,8 @@ import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { createFeatureHost } from '../public/js/feature-host.js?v=b87e2cbc';
 import { dropsMpFeature } from '../public/js/features/drops-mp-feature.js?fresh=floormerge';
-import { isTakeOp, normalizeMine } from '../public/js/drops-mp.js?v=dec58c3d';
-import { packToSharedFloor } from '../public/js/home-floor-share.js?v=aacb6044';
+import { isTakeOp, normalizeMine } from '../public/js/drops-mp.js?v=d8821458';
+import { packToSharedFloor } from '../public/js/home-floor-share.js?v=c272558b';
 import { GAME_DIR, SITE_DIR } from '../tools/repos.mjs';
 
 const OP = 'drop-00000000000000a1';
@@ -226,11 +229,20 @@ describe('the site merges on a house floor, once and atomically (LedgerDrop)', {
     assert.equal(r.afterSecondRetry.ledger[ADA], 4);
   });
 
-  it('no more than the stackmax: 9 onto 3 (max 10) fills it, 2 lie on their own; a full stack takes none', () => {
-    assert.deepEqual(r.cap, { status: 'settled', into: r.a, joined: 7, in: 10, n: 2 });
-    assert.deepEqual([r.afterCap.a.count, r.afterCap.c.count, r.afterCap.c.status], [10, 2, 'ground']);
+  it('no stack limit at home (Austin 2026-11-24): 9 onto 3 all join, whatever max a server from before tells', () => {
+    assert.deepEqual(r.cap, { status: 'settled', into: r.a, joined: 9, in: 12, n: 0 });
+    assert.deepEqual([r.afterCap.a.count, r.afterCap.c9.count, r.afterCap.c9.status], [12, 0, 'merged']);
     assert.deepEqual(r.full, { status: 'settled' });
-    assert.deepEqual([r.afterFull.a.count, r.afterFull.d.count], [10, 1]);
+    assert.deepEqual([r.afterFull.a.count, r.afterFull.c.count, r.afterFull.d.count], [12, 2, 1]);
+  });
+
+  it('3 Moonstones (stackmax 3) and 1 more make one pile of 4; past 9999 the rest lies beside the pile', () => {
+    const m = r.moon;
+    assert.deepEqual([m.join.joined, m.join.in, m.join.n, m.row.count], [1, 4, 0, 4], 'one pile of 4');
+    assert.deepEqual(m.over, { status: 'settled', into: m.over.into, joined: 1, in: 9999, n: 2 });
+    assert.deepEqual([m.big.count, m.rest.count, m.rest.status], [9999, 2, 'ground'], 'filled to 9999, 2 beside it');
+    assert.deepEqual(m.full, { status: 'settled' }, 'a full pile takes none');
+    assert.equal(m.ownerLeft, 0, 'every Moonstone left the ledger once');
   });
 
   it('only one player\'s own stacks join (Austin 2026-11-24): not a visitor\'s onto the owner\'s, nor the owner\'s onto a visitor\'s; a street never merges', () => {
@@ -253,15 +265,15 @@ describe('the site merges on a house floor, once and atomically (LedgerDrop)', {
     assert.deepEqual(r.moveCalls, [null, null, true], 'a street, or a drop op as a move op, is no move');
   });
 
-  it('one-per-stack things pile up on a house or Tower floor with no cap (Austin 2026-11-24), never tools, things with words or on a street', () => {
+  it('emblems pile up on a house or Tower floor with no cap (Austin 2026-11-24), never tools, things with words or on a street', () => {
     const p = r.pile;
-    assert.deepEqual([p.join0.joined, p.join1.joined, p.join2.joined, p.join2.in, p.join2.n], [1, 1, 3, 6, 0], 'emblems (told max 1) join one pile, three at once too');
+    assert.deepEqual([p.join0.joined, p.join1.joined, p.join2.joined, p.join2.in, p.join2.n], [1, 1, 3, 6, 0], 'emblems (told max 1 by a server from before) join one pile, three at once too');
     assert.deepEqual([p.row.count, p.row.status, p.row.dropper_id], [6, 'ground', 7]);
-    assert.equal(p.call.max, 1, 'the server tells the class stackmax; the site piles it up itself');
+    assert.deepEqual([/^drop-/.test(p.call.into), p.call.max], [true, undefined], 'the stack is named; the site reads the pile from its own table');
     assert.deepEqual(p.script, { status: 'settled' }, 'a Teleportation Script keeps its own stack');
     assert.deepEqual(p.pick, { status: 'settled' }, 'a tool keeps its own stack');
     assert.deepEqual(p.street, { status: 'settled' }, 'a street never merges');
-    assert.deepEqual(p.caps, [9999, 3, 1, 1, 1], 'emblem, Moonstone (capped at 3), script, Still, Pick');
+    assert.deepEqual(p.caps, [9999, 9999, 9999, 1, 1, 1], 'emblem, Moonstone, honey; a script, a Still and a Pick never join');
     assert.deepEqual([p.part.op.endsWith('-t6-g3'), p.part.item, p.part.n], [true, { n: 2, c: 'emblem_mab' }, 4], 'part of the pile');
     assert.deepEqual(p.whole.item, { c: 'emblem_mab', n: 4 }, 'the rest of the pile, whole');
     assert.deepEqual([p.adaEmblems, p.ownerEmblems], [6, 0], 'nothing made or lost');

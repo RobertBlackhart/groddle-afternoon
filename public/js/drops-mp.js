@@ -54,6 +54,7 @@
  */
 
 import { cleanCopyTag } from './tools.js?v=4156bba8';
+import { pileMaxOf } from './world-items.js?v=b984e516';
 
 /** Where the site and server ids come from (drops.go dropOpRe). */
 export const DROP_OP = /^drop-[0-9a-f]{16}$/;
@@ -181,22 +182,6 @@ export function isFloorPlace(street) {
   return room === 'interior' || room === 'tower';
 }
 
-/** The most one pile of a one-per-stack class holds on a house or Tower floor (drops.go dropPileMax). */
-export const FLOOR_PILE_MAX = 9999;
-
-/**
- * How many of a class (its trade table row: max, pts, tag) one stack on a house or Tower floor holds:
- * its stackmax (Eleven Location.addItem 475-503), except a class of one per stack, which piles up.
- * ours: Austin 2026-11-24, one-per-stack things (emblems) pile up on floors, shelves and tables;
- * Glitch's stackmax 1 kept them apart. Never a tool (pts, its wear) or a class whose copies carry
- * words (tag; js/tools.js keepsOwnStack classes are tagged). drops.go pileMax, the site's
- * LedgerDrop::pileCap and js/world-items.js pileMaxOf (the save's shelves and tables) agree.
- */
-export function floorPileMax(row) {
-  const max = Math.max(1, Math.floor(finite(row?.max, 1)));
-  return max !== 1 || finite(row?.pts) > 0 || row?.tag ? max : FLOOR_PILE_MAX;
-}
-
 /** The radius a drop on a house or Tower floor joins a like stack in (drops.go dropMergeRadius). */
 export const DROP_MERGE_RADIUS = 100;
 
@@ -204,12 +189,13 @@ export const DROP_MERGE_RADIUS = 100;
  * PURE: the like stack a drop joins on a house or Tower floor, as drops.go mergeTarget decides it, or
  * null. `stacks`: the place's stacks as the server keeps them ({ id, classTsid, count, x, y, by, r?, t? });
  * `drop`: { c, x, y (server x, without the house's ox), by (the dropper's id), into (the stack it was
- * set on), merge (false: beside one), words (it carries wear or words) }; `row`: the class's trade row.
- * A like stack: the same class, no wear or words, below the class's pile (floorPileMax), the dropper's own.
+ * set on), merge (false: beside one), words (it carries wear or words) }; `row`: the class's trade row
+ * (none: the table is not loaded). A like stack: the same class, no wear or words, below the class's pile
+ * (js/world-items.js pileMaxOf: at home no stack limit, drops.go pileMax), the dropper's own.
  */
 export function likeSharedStack(stacks, street, drop = {}, row = null) {
   if (!isFloorPlace(street) || drop.words || !row) return null;
-  const limit = floorPileMax(row);
+  const limit = pileMaxOf(drop.c);
   if (limit < 2) return null;
   const like = (s) => s && s.classTsid === drop.c && s.r == null && s.t == null && s.count < limit && Number(s.by?.id) === Number(drop.by);
   const list = Array.isArray(stacks) ? stacks : [...(stacks?.values?.() || [])];

@@ -18,12 +18,12 @@
  *   goes down the same way. A refusal leaves it in the pack, never gone; one the shared floor can't
  *   carry stays in the save (the caller moves it there); a full pack refuses.
  *
- * `into` names the like shared stack it was set on (drops.go "Merging": it joins it below its stackmax);
+ * `into` names the like shared stack it was set on (drops.go "Merging": it joins it up to its pile, no stack limit at home);
  * `merge: false` sets it down on its own (HandOfDecorator.as shouldMerge 1656-1670 sent no_merge off a stack).
  *
  * `features` is the game's feature host (js/feature-host.js query), `engine` what the hooks take.
  */
-import { dropInventoryStack, pickupDroppedStack } from './world-items.js?v=220d7a7a';
+import { dropInventoryStack, pickupDroppedStack } from './world-items.js?v=b984e516';
 
 /** Whether `count` of a pack class set down at (x, y) went to the shared floor (true: the server weighs it). */
 export function packToSharedFloor(features, engine, { classTsid, count, x, y, floor = false, into = null, merge = true } = {}) {

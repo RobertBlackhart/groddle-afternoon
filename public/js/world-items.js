@@ -70,25 +70,24 @@ function pointsFor(points, count) {
 }
 
 /**
- * The most one pile of a one-per-stack class holds on a house or Tower floor, a shelf or a table:
- * the count a stack may hold anywhere (MakingSlot.as:25 MAX_COUNT; the realtime server's tradeSlotMax
- * and the site's ledger take no more in one drop or one take).
+ * The most one pile holds in a house or on a Tower floor, a shelf or a table: the count a stack may
+ * hold anywhere (MakingSlot.as:25 MAX_COUNT; the realtime server's tradeSlotMax and the site's ledger
+ * take no more in one drop or one take).
  */
 export const FLOOR_PILE_MAX = 9999;
 
 /**
- * How many of a class one stack holds when it is set down in a house or on a Tower floor (on the
- * floor, a shelf or a table): its stackmax (Eleven Location.addItem 475-503), except a class of one
- * per stack, which piles up with no cap (FLOOR_PILE_MAX).
- * ours: Austin 2026-11-24, one-per-stack things (emblems) pile up on floors, shelves and tables;
- * Glitch's stackmax 1 kept them apart. Never things whose copies keep their own identity: a tool
- * (its wear), a class whose copies carry words (js/tools.js copyTagKind), one that keeps its own
- * stack (keepsOwnStack: a Still, a Teleportation Script). The realtime server (drops.go pileMax)
- * and the site (LedgerDrop::pileCap) read the same rule from the trade table's max, pts and tag.
+ * How many of a class one pile holds when it is set down at home (in a house or on a Tower floor: on
+ * the floor, a shelf or a table): FLOOR_PILE_MAX for every class, except one whose copies keep their
+ * own identity, which never joins (1): a tool (its wear), a class whose copies carry words (js/tools.js
+ * copyTagKind), one that keeps its own stack (keepsOwnStack: a Still, a Teleportation Script). A bag
+ * with contents or a name never joins either (joinable). What would pass it lies beside the pile.
+ * ours: Austin 2026-11-24, "Let's remove the pile limits": piles at home have no limit for any class;
+ * Glitch's stackmax capped every pile (Eleven Location.addItem 475-503: emblems 1, moonstones 3). The
+ * pack keeps Glitch's stackmax (js/pack-slots.js). The realtime server (drops.go pileMax) and the site
+ * (LedgerDrop::pileCap) read the same rule from the trade table's pts and tag.
  */
 export function pileMaxOf(classTsid) {
-  const max = stackMaxOf(classTsid);
-  if (max !== 1) return max;
   return TOOL_CONDITION_CATALOG[classTsid] || copyTagKind(classTsid) || keepsOwnStack(classTsid) ? 1 : FLOOR_PILE_MAX;
 }
 
@@ -227,8 +226,8 @@ export function dropInventoryStack(state, inv, streetTsid, classTsid, requested,
   const rows = state.streets[street] || (state.streets[street] = []);
   const mergeRadius = Math.max(0, finite(opts.mergeRadius, DEFAULT_MERGE_RADIUS));
   // A like stack takes no more than its class's stackmax (Eleven's Location.addItem 475-503, it.count < it.stackmax):
-  // a full one takes none, and what does not fit lies as its own stack. `pile`: in a house or on a Tower
-  // floor, where a one-per-stack class piles up (pileMaxOf).
+  // a full one takes none, and what does not fit lies as its own stack. `pile`: at home (a house or a Tower
+  // floor), where a pile has no stack limit (pileMaxOf).
   const max = opts.pile === true ? pileMaxOf(item) : stackMaxOf(item);
   const merge = opts.merge !== false
     ? rows
@@ -252,7 +251,7 @@ export function dropInventoryStack(state, inv, streetTsid, classTsid, requested,
     return { ok: true, count, stack: { ...merge }, merged: true, remaining: inv[item] || 0 };
   }
   if (merge && joins > 0) {
-    // Part fills the like stack to its stackmax; the rest lies beside it as its own stack.
+    // Part fills the like stack to its limit (`max`); the rest lies beside it as its own stack.
     if (points || merge.points) merge.points = [...pointsFor(merge.points, merge.count), ...pointsFor(points, count).slice(0, joins)];
     if (tags || merge.tags) merge.tags = [...pointsFor(merge.tags, merge.count), ...pointsFor(tags, count).slice(0, joins)];
     merge.count += joins;
@@ -305,8 +304,7 @@ export function likeStackAt(rows, stack, x, on, radius = PLACED_MERGE_RADIUS) {
   let best = null;
   for (const row of rows) {
     if (row === stack || row.id === stack.id || row.classTsid !== stack.classTsid || !joinable(row)) continue;
-    // A full stack takes no more (its class's stackmax, Eleven's Location.addItem 475-503; a
-    // one-per-stack class piles up in a house: pileMaxOf).
+    // A full pile takes no more (pileMaxOf: at home no stack limit, only the most a stack holds).
     if (cleanCount(row.count) >= pileMaxOf(row.classTsid)) continue;
     if ((row.on ?? null) !== surface) continue;
     const d = Math.abs(finite(row.x, Infinity) - px);
@@ -329,8 +327,8 @@ export function mergeDroppedStacks(state, streetTsid, fromId, intoId, opts = {})
   if (!from || !into) return { ok: false, reason: 'missing' };
   if (from.classTsid !== into.classTsid || !joinable(from) || !joinable(into)) return { ok: false, reason: 'unlike' };
   const had = cleanCount(into.count);
-  // No more than its class's stackmax (Eleven's Location.addItem 475-503; a one-per-stack class piles
-  // up in a house, pileMaxOf): a full stack takes none, and what does not fit stays in the stack moved (`left`).
+  // No more than its pile (pileMaxOf: at home no stack limit, only the most a stack holds): a full pile
+  // takes none, and what does not fit stays in the stack moved (`left`).
   const room = pileMaxOf(into.classTsid) - had;
   if (room < 1) return { ok: false, reason: 'full' };
   const all = cleanCount(from.count);

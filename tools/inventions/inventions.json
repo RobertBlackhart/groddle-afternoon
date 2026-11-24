@@ -2220,21 +2220,17 @@
   },
   {
    "id": "ours-floor-piles",
-   "title": "One-per-stack things (emblems) pile up on house and Tower floors, shelves and tables, with no stack limit",
+   "title": "Piles at home (house and Tower floors, shelves and tables) have no stack limit for any item",
    "kind": "behaviour",
    "status": "kept",
    "where": [
     {
      "file": "public/js/world-items.js",
      "symbol": "pileMaxOf"
-    },
-    {
-     "file": "public/js/drops-mp.js",
-     "symbol": "floorPileMax"
     }
    ],
-   "why": "Austin asked for it: dropped emblems lay one to a stack, so a house floor or shelf of them could not hold a pile. Glitch's stackmax 1 kept them apart. Tools, things with words and one-to-a-stack classes (Stills, Teleportation Scripts) still keep their own stacks; streets never merge. The realtime server (drops.go pileMax) and the site (LedgerDrop::pileCap) apply the same rule.",
-   "ruling": "Austin 2026-11-24: one-per-stack things (emblems) pile up on floors, shelves and tables; Glitch's stackmax 1 kept them apart",
+   "why": "Austin asked for it after a player pointed out the old rule was arbitrary: emblems piled past 1 at home while moonstones stopped at 3. Glitch's stackmax capped every pile. Now a pile at home grows to 9999 (the most a stack holds anywhere) and the rest lies beside it. Tools with wear, things with words, Stills, Teleportation Scripts and bags with contents still keep their own stacks; public and home streets never merge; the pack keeps Glitch's stack limits. The realtime server (drops.go pileMax) and the site (LedgerDrop::pileCap) apply the same rule.",
+   "ruling": "Austin 2026-11-24: piles at home (floors, shelves, tables) have no limit for any class except those that keep their own wear, contents or words; the pack keeps Glitch's stack limits. Glitch's stackmax capped every pile (emblems 1, moonstones 3).",
    "rows": []
   },
   {

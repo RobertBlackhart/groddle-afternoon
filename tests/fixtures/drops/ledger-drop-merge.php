@@ -2,7 +2,7 @@
 /**
  * Runs the site repo's shared floor stacks (groddle-afternoon-site src/LedgerDrop.php) against a
  * throwaway MariaDB database and prints what happened as JSON (tests/floor-merge.test.js): on a house
- * floor a drop joins a like stack up to the class's stackmax, a part taken from a stack a merge grew
+ * floor a drop joins a like stack with no stack limit up to 9999 (Austin 2026-11-24), a part taken from a stack a merge grew
  * gets a new id (never answered "as recorded" from before the rise), who may join whom, and the
  * owner's floor-to-floor move with and without a merge. The database is made here
  * (test_groddle_merge_<hex>, from the site's minn.json declarations) and dropped at the end.
@@ -37,6 +37,7 @@ const BO = 11;
 const HOUSE = 'HOUSE-7';
 const STREET = 'LA5101HF7F429V';
 const TOWER = 'TOWER-7-1';
+const TOWER3 = 'TOWER-7-3';
 
 function connect(string $host, string $user, string $pass, ?string $db = null): mysqli
 {
@@ -58,7 +59,7 @@ try {
     $db = new Db($conn, PREFIX);
     $now = time();
     $saveOf = static fn (array $state): string => (string) json_encode(['kind' => 'groddle-multiplayer', 'format' => 1, 'entries' => ['playerState' => json_encode($state)]]);
-    foreach ([OWNER => ['cherry' => 60, 'emblem_mab' => 8, 'teleportation_script' => 2, 'pick' => 2], ADA => ['apple' => 1], BO => ['cherry' => 5]] as $id => $inv) {
+    foreach ([OWNER => ['cherry' => 60, 'emblem_mab' => 8, 'teleportation_script' => 2, 'pick' => 2, 'gem_moonstone' => 8], ADA => ['apple' => 1], BO => ['cherry' => 5]] as $id => $inv) {
         $db->execute('INSERT INTO ' . $db->table('groddle_mp_saves') . ' (user_id, data, version, updated_at) VALUES (?, ?, 1, ?)', [$id, $saveOf(['inventory' => $inv, 'player' => ['currants' => 0]]), gmdate('Y-m-d H:i:s')]);
     }
     $ledger = new Ledger($db, Economy::shared(), Ledger::RATE, Ledger::CAPACITY);
@@ -106,13 +107,17 @@ try {
     $out['secondRetry'] = $give($a, ADA, 2, 5);
     $out['afterSecondRetry'] = ['ledger' => $cherries(), 'a' => $row($a), 'newTrades' => $trades() - $before];
 
-    // —— Stackmax: 9 onto the 3 (max 10) fills it to 10, 2 lie on their own; then a full stack takes none ——
+    // —— No stack limit at home (Austin 2026-11-24, "Let's remove the pile limits"): 9 onto the 3 all join,
+    // whatever "max" a realtime server from before tells (the stackmax, here 10); then 2 lie on their own (c),
+    // and 1 on its own (d) ——
+    $c9 = $op();
+    $out['cap'] = $drop(['op' => $c9, 'id' => OWNER, 'street' => HOUSE, 'c' => 'cherry', 'n' => 9, 'into' => $a, 'max' => 10]);
+    $out['afterCap'] = ['a' => $row($a), 'c9' => $row($c9)];
     $c = $op();
-    $out['cap'] = $drop(['op' => $c, 'id' => OWNER, 'street' => HOUSE, 'c' => 'cherry', 'n' => 9, 'into' => $a, 'max' => 10]);
-    $out['afterCap'] = ['a' => $row($a), 'c' => $row($c)];
+    $drop(['op' => $c, 'id' => OWNER, 'street' => HOUSE, 'c' => 'cherry', 'n' => 2]);
     $d = $op();
-    $out['full'] = $drop(['op' => $d, 'id' => OWNER, 'street' => HOUSE, 'c' => 'cherry', 'n' => 1, 'into' => $a, 'max' => 10]);
-    $out['afterFull'] = ['a' => $row($a), 'd' => $row($d)];
+    $out['full'] = $drop(['op' => $d, 'id' => OWNER, 'street' => HOUSE, 'c' => 'cherry', 'n' => 1]);
+    $out['afterFull'] = ['a' => $row($a), 'c' => $row($c), 'd' => $row($d)];
 
     // —— Who joins whom: only one player's own stacks (Austin 2026-11-24): a visitor's drop onto the owner's stack and the owner's onto a visitor's lie on their own ——
     $bo = $op();
@@ -154,8 +159,8 @@ try {
     $state = json_decode($caught['entries']['playerState'], true);
     $out['caughtUp'] = ['cherry' => $state['inventory']['cherry'] ?? 0, 'applied' => $state['systems']['features']['trade']['applied'] ?? []];
     $out['ledger'] = $cherries();
-    // —— Austin 2026-11-24 ("Let them pile up on floors"): on a Tower floor emblems (stackmax 1, told "max": 1)
-    // join the owner's pile with no cap; a pile set down whole joins too; a Teleportation Script (words of its
+    // —— Austin 2026-11-24 ("Let's remove the pile limits"): on a Tower floor emblems (stackmax 1; a realtime
+    // server from before told "max": 1) join the owner's pile with no cap; a pile set down whole joins too; a Teleportation Script (words of its
     // own) and a Pick (wear) never join; a street still never merges ——
     $em = $op();
     $out['pile'] = ['first' => $drop(['op' => $em, 'id' => OWNER, 'street' => TOWER, 'c' => 'emblem_mab', 'n' => 1])];
@@ -173,12 +178,27 @@ try {
     $ep = $op();
     $drop(['op' => $ep, 'id' => OWNER, 'street' => STREET, 'c' => 'emblem_mab', 'n' => 1]);
     $out['pile']['street'] = $drop(['op' => $op(), 'id' => OWNER, 'street' => STREET, 'c' => 'emblem_mab', 'n' => 1, 'into' => $ep, 'max' => 1]);
-    $out['pile']['caps'] = [LedgerDrop::pileCap('emblem_mab', 1), LedgerDrop::pileCap('gem_moonstone', 3), LedgerDrop::pileCap('teleportation_script', 1), LedgerDrop::pileCap('still', 1), LedgerDrop::pileCap('pick', 1)];
+    $out['pile']['caps'] = array_map(static fn (string $c): int => LedgerDrop::pileCap($c), ['emblem_mab', 'gem_moonstone', 'honey', 'teleportation_script', 'still', 'pick']);
     // Ada takes 2 of the pile of 6, then the rest whole.
     $out['pile']['part'] = $give($em, ADA, 2, 6);
     $out['pile']['whole'] = $give($em, ADA);
     $out['pile']['adaEmblems'] = (int) (((array) ($ledger->peek(ADA)['items'] ?? []))['emblem_mab'] ?? 0);
     $out['pile']['ownerEmblems'] = (int) (((array) ($ledger->peek(OWNER)['items'] ?? []))['emblem_mab'] ?? 0);
+
+    // —— 3 Moonstones (stackmax 3) and 1 more make one pile of 4 on a Tower floor; a pile at 9999 takes up to
+    // 9999 and the rest lies beside it; a full pile takes none ——
+    $ms = $op();
+    $drop(['op' => $ms, 'id' => OWNER, 'street' => TOWER3, 'c' => 'gem_moonstone', 'n' => 3]);
+    $out['moon'] = ['join' => $drop(['op' => $op(), 'id' => OWNER, 'street' => TOWER3, 'c' => 'gem_moonstone', 'n' => 1, 'into' => $ms])];
+    $out['moon']['row'] = $row($ms);
+    $big = $op();
+    $db->execute('INSERT INTO ' . $db->table(LedgerDrop::TABLE) . " (id, dropper_id, street, x, y, class_tsid, count, status, created_at) VALUES (?, ?, ?, 300, 620, 'gem_moonstone', ?, 'ground', ?)", [$big, OWNER, TOWER3, LedgerDrop::PILE_MAX - 1, gmdate('Y-m-d H:i:s', $now)]);
+    $over = $op();
+    $out['moon']['over'] = $drop(['op' => $over, 'id' => OWNER, 'street' => TOWER3, 'c' => 'gem_moonstone', 'n' => 3, 'into' => $big]);
+    $out['moon']['big'] = $row($big);
+    $out['moon']['rest'] = $row($over);
+    $out['moon']['full'] = $drop(['op' => $op(), 'id' => OWNER, 'street' => TOWER3, 'c' => 'gem_moonstone', 'n' => 1, 'into' => $big]);
+    $out['moon']['ownerLeft'] = (int) (((array) ($ledger->peek(OWNER)['items'] ?? []))['gem_moonstone'] ?? 0);
 } catch (Throwable $e) {
     $out['error'] = get_class($e) . ': ' . $e->getMessage() . ' @' . $e->getFile() . ':' . $e->getLine();
 } finally {
