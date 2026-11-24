@@ -22,11 +22,11 @@ import { after, before, describe, it } from 'node:test';
 
 import { HOME_LIMITS } from '../public/js/homes-catalog.js?v=f3fe838d';
 import { YARD_SEGMENT_W, HOUSE_LOT_W } from '../public/js/home-cultivation.js?v=9e6e217b';
-import { interiorWidth } from '../public/js/home-decor.js?v=a918562f';
+import { interiorWidth } from '../public/js/home-decor.js?v=4abc83ab';
 import { EXTERIOR_STYLES, INTERIOR_STYLES, streetLook, yardLook } from '../public/js/home-styles.js?v=ec5d2f69';
 import { cameraLocationViewWidth, cameraTargetX } from '../public/js/movement.js?v=f4be1a05';
 import { LANDSCAPE_VIEW_W, cameraEnds, landscapeWindow, rowRange } from '../public/js/landscape-reach.js?v=2f2d7cb3';
-import { BACK_YARD_GROUND_Y, STREET_GROUND_Y, drawLandscape, landscapeItemHalf } from '../public/js/features/homes-feature.js?v=d92c5081';
+import { BACK_YARD_GROUND_Y, STREET_GROUND_Y, drawLandscape, landscapeItemHalf } from '../public/js/features/homes-feature.js?v=f8151dfb';
 import { buildNeighbourBackground } from '../public/js/features/neighbour-scene.js?v=bb2a6a3e';
 import { NEIGHBOUR_SCENE } from '../public/js/neighbours.js?v=13f35acd';
 import { Display, FakeEl, fakePixi } from './fake-scene.js';

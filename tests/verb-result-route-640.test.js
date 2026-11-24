@@ -14,7 +14,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { RESULT_FLOAT_MAX_CHARS, resultLineRoute } from '../public/js/verb-result-route.js?v=61b4fc9d';
-import { runVerb } from '../public/content.js?v=f41be695';
+import { runVerb } from '../public/content.js?v=c76a3f3f';
 import { createMineRock } from '../public/js/mining.js?v=c3bd3675';
 import { createInventory } from '../public/js/inventory.js?v=6414dbdc';
 

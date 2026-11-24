@@ -12,7 +12,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { bagHolding, packSlotFor } from '../public/js/pack-slot-qa.js?v=1d74bf2d';
-import { layoutPack } from '../public/js/pack-slots.js?v=d9ab4a0b';
+import { layoutPack } from '../public/js/pack-slots.js?v=11aa0ad5';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

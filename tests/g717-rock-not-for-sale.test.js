@@ -10,9 +10,9 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { layoutPack, stackMaxOf } from '../public/js/pack-slots.js?v=d9ab4a0b';
+import { layoutPack, stackMaxOf } from '../public/js/pack-slots.js?v=11aa0ad5';
 import { createVendorSellQuote, listSellOffers, vendorSell } from '../public/js/vendor.js?v=6baaef80';
-import { bagsFeature, rockChanges } from '../public/js/features/bags-feature.js?v=7ff05117';
+import { bagsFeature, rockChanges } from '../public/js/features/bags-feature.js?v=48b2582a';
 
 const root = join(import.meta.dirname, '..');
 const singles = (n) => Object.fromEntries(Array.from({ length: n }, (_, i) => [`zz_single_${i}`, 1]));

@@ -23,7 +23,7 @@
  *
  * `features` is the game's feature host (js/feature-host.js query), `engine` what the hooks take.
  */
-import { dropInventoryStack, pickupDroppedStack } from './world-items.js?v=f5f9e017';
+import { dropInventoryStack, pickupDroppedStack } from './world-items.js?v=220d7a7a';
 
 /** Whether `count` of a pack class set down at (x, y) went to the shared floor (true: the server weighs it). */
 export function packToSharedFloor(features, engine, { classTsid, count, x, y, floor = false, into = null, merge = true } = {}) {
