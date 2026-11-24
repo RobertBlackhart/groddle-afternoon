@@ -2814,9 +2814,34 @@
   "deployed": "2026-11-23"
  },
  "git": {
-  "commits": 3315,
+  "commits": 3321,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-23",
+    "kind": "improve",
+    "text": "Decoration Mode keeps the house floor shared, and a floor full of stacks draws in one pass"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "Each home street, house and Tower floor you visit remembers your own last visit there"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "Teleporting works from someone else's home street, house and Tower"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "Back yard Piggies stay in the yard and no longer walk into the house to eat off its floor"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "Decorate can move things dropped in the house since shared floors, onto shelves and onto older stacks"
+   },
    {
     "date": "2026-11-23",
     "kind": "fix",
@@ -2911,34 +2936,9 @@
     "date": "2026-11-23",
     "kind": "new",
     "text": "Marylpole Mount Quarter, a shared street of house lots: claim one and your house stands there for everyone"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "Mining a Metal Rock no longer shows its line as a notice under the rock's bubble (#640 follow-up)"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "A mined-out rock is gone until it reforms, instead of a faint ghost of itself"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "new",
-    "text": "Tower and street project parts say what making them takes, such as Furnituremaking II for Wall Segments"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "Mining a Metal Rock shows only the rock's bubble, not a second notice at the top"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "A long chat line in Global, Help, Trade, groups and IMs shows in full instead of cut short"
    }
   ]
  },
- "tests": 1317,
+ "tests": 1322,
  "generatedAt": "2026-11-23"
 }
