@@ -2814,9 +2814,14 @@
   "deployed": "2026-11-24"
  },
  "git": {
-  "commits": 3373,
+  "commits": 3375,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-24",
+    "kind": "improve",
+    "text": "The Snaps viewer no longer teleports you to your own Snaps"
+   },
    {
     "date": "2026-11-24",
     "kind": "fix",
@@ -2931,11 +2936,6 @@
     "date": "2026-11-23",
     "kind": "fix",
     "text": "A learning quoin reads its seconds, as Glitch's did, instead of a refusal"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "A Sloth up in its tree shows Feed greyed with its reason, not an empty menu"
    }
   ]
  },

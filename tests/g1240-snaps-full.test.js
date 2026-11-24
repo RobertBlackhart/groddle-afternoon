@@ -8,7 +8,7 @@
  *   view at the renderer's own resolution, up to the site's 1920x1200, smaller only to fit 1 MB.
  * - The viewer's pure helpers (viewerStep, viewerActions, savedActions) and the viewer itself on a fake
  *   page: opens from a card, Previous and Next and the arrow keys, Escape, the actions for a public and a
- *   private Snap, Make public, Delete's confirm step, Go there needing a Camera.
+ *   private Snap, Make public, Delete's confirm step, and no Go there (Austin 2026-11-24).
  * - The site (groddle-afternoon-site src/Snaps.php, src/PlayerPages.php) on a throwaway MariaDB
  *   database (tests/fixtures/snaps/snaps-routes.php): a new Snap is private, the owner toggles it, the
  *   profile lists public ones only, a private Snap's picture, page and download answer only its owner,
@@ -27,7 +27,7 @@ import { join } from 'node:path';
 import {
   SNAP_MAX_H, SNAP_MAX_W, SNAP_QUALITY, SNAP_QUALITY_LOW, SNAP_WIDTHS,
   isSnapUrl, savedActions, snapResolution, snapShareUrl, snapSteps, viewerActions, viewerStep,
-} from '../public/js/snaps.js?v=42fd955b';
+} from '../public/js/snaps.js?v=11f3e41b';
 import { snapsFeature } from '../public/js/features/snaps-feature.js?fresh=g1240';
 import { GAME_DIR, SITE_DIR } from '../tools/repos.mjs';
 
@@ -111,10 +111,10 @@ describe('the viewer\'s rules', () => {
   });
 
   it('a private Snap has no link to copy; a public one does, and says Make private', () => {
-    assert.deepEqual(viewerActions(snapRow(1)), ['go', 'download', 'public', 'delete']);
-    assert.deepEqual(viewerActions(snapRow(1, { public: true, page: '/players/zz-ada/snaps/1/' })), ['go', 'download', 'copy', 'private', 'delete']);
-    assert.deepEqual(viewerActions(snapRow(1, { street: '' })), ['download', 'public', 'delete'], 'a private place: no Go there');
-    assert.deepEqual(viewerActions(snapRow(1, { public: true, page: 'https://evil.example/' })), ['go', 'download', 'private', 'delete'], 'only the site\'s own page is copied');
+    assert.deepEqual(viewerActions(snapRow(1)), ['download', 'public', 'delete']);
+    assert.deepEqual(viewerActions(snapRow(1, { public: true, page: '/players/zz-ada/snaps/1/' })), ['download', 'copy', 'private', 'delete']);
+    assert.deepEqual(viewerActions(snapRow(1, { street: '' })), ['download', 'public', 'delete'], 'no Go there from your own Snaps');
+    assert.deepEqual(viewerActions(snapRow(1, { public: true, page: 'https://evil.example/' })), ['download', 'private', 'delete'], 'only the site\'s own page is copied');
     assert.deepEqual(viewerActions(null), []);
   });
 
@@ -302,18 +302,18 @@ describe('the album and the full-size viewer (fake page)', () => {
     assert.equal(viewer().querySelector('[data-snap-viewer-caption]').textContent, 'Snap 2');
     assert.match(viewer().querySelector('[data-snap-viewer-meta]').textContent, /November 24, 2026 · 2 of 3$/);
     assert.equal(log.data.snapViewer, '1');
-    assert.deepEqual(actions(), ['go', 'download', 'public', 'delete'], 'private: no Copy link');
+    assert.deepEqual(actions(), ['download', 'public', 'delete'], 'private: no Copy link');
 
     key('ArrowLeft');
     assert.equal(viewer().querySelector('[data-snap-viewer-caption]').textContent, 'Snap 3');
-    assert.deepEqual(actions(), ['go', 'download', 'copy', 'private', 'delete'], 'public: Copy link and Make private');
+    assert.deepEqual(actions(), ['download', 'copy', 'private', 'delete'], 'public: Copy link and Make private');
     assert.equal(viewer().querySelector('[data-snap-step="prev"]').disabled, true, 'the first has no Previous');
     key('ArrowLeft');
     assert.equal(viewer().querySelector('[data-snap-viewer-caption]').textContent, 'Snap 3', 'stops at the first');
     viewer().querySelector('[data-snap-step="next"]').click();
     viewer().querySelector('[data-snap-step="next"]').click();
     assert.equal(viewer().querySelector('[data-snap-viewer-caption]').hidden, true, 'no caption: none shown');
-    assert.deepEqual(actions(), ['download', 'public', 'delete'], 'a private place: no Go there');
+    assert.deepEqual(actions(), ['download', 'public', 'delete'], 'no Go there from your own Snaps');
     assert.equal(viewer().querySelector('[data-snap-step="next"]').disabled, true);
 
     key('Escape');
@@ -330,12 +330,12 @@ describe('the album and the full-size viewer (fake page)', () => {
     viewer().querySelector('[data-snap-action="public"]').click();
     await flush();
     assert.deepEqual(calls.at(-1), { url: 'https://groddle.localhost/wp-json/groddle/v1/snaps/2/public', method: 'POST', body: { public: true } });
-    assert.deepEqual(actions(), ['go', 'download', 'copy', 'private', 'delete']);
+    assert.deepEqual(actions(), ['download', 'copy', 'private', 'delete']);
     assert.equal(viewer().querySelector('[data-snap-viewer-msg]').textContent, 'This snap is public now.');
     viewer().querySelector('[data-snap-action="private"]').click();
     await flush();
     assert.deepEqual(calls.at(-1).body, { public: false });
-    assert.deepEqual(actions(), ['go', 'download', 'public', 'delete']);
+    assert.deepEqual(actions(), ['download', 'public', 'delete']);
   });
 
   it('Delete asks first; Keep it keeps it, Yes deletes and shows the next', async () => {
@@ -356,26 +356,6 @@ describe('the album and the full-size viewer (fake page)', () => {
     assert.deepEqual(calls.filter((c) => c.method === 'DELETE').map((c) => c.url), ['https://groddle.localhost/wp-json/groddle/v1/snaps/3']);
     assert.equal(viewer().querySelector('[data-snap-viewer-caption]').textContent, 'Snap 2', 'the next one shows');
     assert.match(viewer().querySelector('[data-snap-viewer-meta]').textContent, /1 of 2$/);
-  });
-
-  it('Go there is the Camera\'s snap travel: it needs a Camera and recharges it', async () => {
-    const { engine, log } = fakeEngine();
-    snapsFeature.init(engine);
-    await globalThis.groddleSnaps.album();
-    globalThis.groddleSnaps.openViewer(1);
-    const go = viewer().querySelector('[data-snap-action="go"]');
-    assert.equal(go.disabled, true, 'no Camera in the pack');
-    assert.match(go.attrs.title, /uses a Camera/);
-    engine.inv = { camera: 1 };
-    key('ArrowRight');
-    key('ArrowLeft');
-    viewer().querySelector('[data-snap-action="go"]').click();
-    assert.equal(viewer(), null, 'the viewer closes');
-    assert.deepEqual(log.buffs, [['camera_recharging', {}]]);
-    assert.deepEqual(log.hits, [['hit1', 1000]]);
-    mock.timers.tick(500);
-    await flush();
-    assert.deepEqual(log.enters, [['GLI3272LOTD1B1F', { spawnX: 100, spawnY: -80 }]]);
   });
 
   it('Tab stays inside the viewer', async () => {

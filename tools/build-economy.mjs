@@ -118,7 +118,7 @@ import { HOG_HAUL_QUEST_ID } from '../public/js/hog-haul.js?v=50d2e072';
 import { ILMENSKIE_QUEST_ID } from '../public/js/ilmenskie-quest.js?v=0e9809ac';
 // G979: Buy a Bag starts with the first skill learned, without its prerequisites (learn_first_skill.js 74-76).
 import { FIRST_SKILL_QUEST_ID } from '../public/js/quest-offers.js?v=32d4127e';
-import { CAMERA_OFFER } from '../public/js/snaps.js?v=42fd955b';
+import { CAMERA_OFFER } from '../public/js/snaps.js?v=11f3e41b';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 export const OUT = sitePath('data', 'economy.json');

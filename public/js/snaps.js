@@ -140,9 +140,6 @@ export const SNAP_COPY = Object.freeze({
   viewer: 'Snap',
   prev: 'Previous',
   next: 'Next',
-  goThere: 'Go there',
-  goNeedCamera: 'Go there uses a Camera. Buy one from a Toy Vendor.',
-  goNowhere: 'This snap was taken somewhere a Camera can\'t take you.',
   download: 'Download',
   copyLink: 'Copy link',
   copied: 'Link copied.',
@@ -251,15 +248,13 @@ export function viewerStep(count, index, dir) {
 }
 
 /**
- * The viewer's actions for one of your Snaps, in order: Go there (only when
- * it was taken on a street the Camera can lead to), Download, Copy link
+ * The viewer's actions for one of your Snaps, in order: Download, Copy link
  * (only when public: a private Snap has no page to share), Make public or
  * Make private, Delete.
  */
 export function viewerActions(snap) {
   if (!snap) return [];
   const out = [];
-  if (isSnapStreet(snap.street)) out.push('go');
   if (isSnapDownload(snap.download)) out.push('download');
   const pub = snap.public === true;
   if (pub && isSnapPage(snap.page)) out.push('copy');

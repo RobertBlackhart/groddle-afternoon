@@ -13,9 +13,9 @@
  * - Menu, Snaps: your snaps, each in its own shape (the website's
  *   snaps/manage). A click opens the viewer (G1240): the picture whole on a
  *   dark scrim, its caption, street and date, Previous and Next (arrow keys,
- *   a swipe), and Go there (the Camera's snap travel, so it needs a Camera
- *   and recharges it), Download, Copy link (public only), Make public or
- *   Make private, and Delete with a confirm step. After Save, "Snap Saved!"
+ *   a swipe), Download, Copy link (public only), Make public or Make private,
+ *   and Delete with a confirm step (Austin 2026-11-24: no Go there from your
+ *   own Snaps; only the Camera's random Snap of someone else's travels). After Save, "Snap Saved!"
  *   offers View, Download and Make public / Copy link, as
  *   GlitchrSavedDialog.as 165-169 offered the photo's page, a download and a
  *   short URL. A Snap starts private; a public one shows on your profile
@@ -59,7 +59,7 @@ import {
   CAMERA_CLASS, CAPTION_MAX, FORGET_RECHARGE_SEC, RECHARGE_BUFF, SNAP_COPY as T, SNAP_MAX_BYTES, TRAVEL,
   albumSnaps, base64Bytes, canSnap, cleanCaption, isSnapDownload, isSnapUrl, jpegBase64, savedActions, snapAuthor, snapDate, snapPlace,
   snapResolution, snapShareUrl, snapSteps, snapStreet, takePictureState, viewerActions, viewerStep, withCamera,
-} from '../snaps.js?v=42fd955b';
+} from '../snaps.js?v=11f3e41b';
 import { VINTAGE_TEXT, applyFilter, filterComponents, filtersFor } from '../snap-filters.js?v=32315cf1';
 
 export const SNAPS_FEATURE_ID = 'snaps';
@@ -750,15 +750,6 @@ function focusables(root) {
   return root.all ? root.all().filter((n) => (n.tag === 'button' || n.tag === 'a' || n.tag === 'input') && !n.disabled && !n.hidden) : [...root.querySelectorAll('button:not([disabled]), a[href], input')].filter((n) => !n.closest('[hidden]'));
 }
 
-/** Whether a Go there could start now (the Camera's rules, items/camera.js 104-111): the reason when not. */
-function goState(engine, snap) {
-  const meta = streetMeta(snap?.street);
-  if (!meta) return { enabled: false, reason: T.goNowhere };
-  if (countItem(engine.inv, CAMERA_CLASS) < 1) return { enabled: false, reason: T.goNeedCamera };
-  const st = takePictureState({ recharging: Boolean(engine.hasBuff?.(RECHARGE_BUFF)), dead: dead(engine) });
-  return st.enabled ? { enabled: true, reason: '' } : st;
-}
-
 /**
  * The full-size viewer over everything: the Snap uncropped on a dark scrim,
  * its caption, street and date, Previous and Next (arrow keys, a swipe),
@@ -790,7 +781,7 @@ function openViewer(engine, s, index = 0, returnTo = null) {
   s.viewer = v;
 
   const current = () => list()[v.index] || null;
-  const off = new Set(); // buttons that stay disabled (Go there without a Camera)
+  const off = new Set(); // buttons that stay disabled
   const setBusy = (on) => {
     v.busy = on;
     for (const b of actions.children) if ('disabled' in b || b.tagName === 'BUTTON') b.disabled = on || off.has(b);
@@ -830,11 +821,7 @@ function openViewer(engine, s, index = 0, returnTo = null) {
     actions.replaceChildren();
     off.clear();
     for (const action of viewerActions(snap)) {
-      if (action === 'go') {
-        const st = goState(engine, snap);
-        const b = button('go', T.goThere, () => goThere(engine, s, snap), { title: st.reason || null });
-        if (!st.enabled) { b.disabled = true; off.add(b); }
-      } else if (action === 'download') {
+      if (action === 'download') {
         actions.append(el('a', { class: 'snap-viewer-btn', href: snap.download, download: '', 'data-snap-action': 'download' }, T.download));
       } else if (action === 'copy') {
         button('copy', T.copyLink, () => copyLink(current(), msg));
@@ -940,20 +927,6 @@ function openViewer(engine, s, index = 0, returnTo = null) {
   stage.addEventListener('click', (e) => { if (e.target === stage) closeViewer(engine, s); });
   draw();
   x.focus?.({ preventScroll: true });
-  return true;
-}
-
-/** Go there from the viewer: the Camera's snap travel to one of your own Snaps (doGo's rules and costs). */
-function goThere(engine, s, snap) {
-  const st = goState(engine, snap);
-  if (!st.enabled) {
-    engine.toast?.(st.reason, 2600);
-    return false;
-  }
-  const target = { tsid: resolveIndexTsid(snap.street), x: Number(snap.x), y: Number(snap.y) };
-  if (!travelTo(engine, s, target)) return false;
-  closeViewer(engine, s);
-  if (s.win) { s.win.remove(); s.win = null; }
   return true;
 }
 
