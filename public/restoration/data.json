@@ -2814,9 +2814,14 @@
   "deployed": "2026-11-23"
  },
  "git": {
-  "commits": 3338,
+  "commits": 3340,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-24",
+    "kind": "fix",
+    "text": "Things set on your house floor are for everyone again, not locked"
+   },
    {
     "date": "2026-11-23",
     "kind": "fix",
@@ -2931,14 +2936,9 @@
     "date": "2026-11-23",
     "kind": "fix",
     "text": "Closing a menu or panel on a phone brings the camera back, the avatar no longer sinks under the pack row"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "improve",
-    "text": "Achievement badges are sharp on phones and retina screens"
    }
   ]
  },
- "tests": 1328,
- "generatedAt": "2026-11-23"
+ "tests": 1329,
+ "generatedAt": "2026-11-24"
 }

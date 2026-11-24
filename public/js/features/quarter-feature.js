@@ -26,7 +26,7 @@ import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 import { createMinnAccount } from '../minn-account.js?v=ca9fb98e';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import { houseLot } from '../home-house.js?v=3c88c47c';
-import { houseContainer, houseOf } from './homes-feature.js?v=6e5b9ab2';
+import { houseContainer, houseOf } from './homes-feature.js?v=d7dd6c63';
 import {
   QUARTER_TEXT,
   isQuarterLot,
