@@ -15473,12 +15473,11 @@ body.is-booting .touch-controls { display: none; }
 :root.phone-layout[data-ui="modern"] .top-bar .top-actions :is(.more-menu, #more-btn) { order: 4 !important; }
 /* 32 px wide (44 tall, the thumb's height): the stats beside them keep their whole counts (#595). Not in the
    tutorial, whose own rules leave Sound alone there: the pill then is just as wide as Sound. */
-:root.phone-layout[data-ui="modern"] body:not(.nx-hide-actions) .top-bar .top-actions :is(#fullscreen-btn, #bug-btn, #social-btn, #more-btn) {
+:root.phone-layout[data-ui="modern"] body:not(.nx-hide-actions) .top-bar .top-actions :is(#fullscreen-btn:not([hidden]), #bug-btn, #social-btn, #more-btn) {
   display: inline-grid !important; place-items: center; flex: none !important; width: 32px !important; min-width: 0 !important; height: var(--slot); padding: 0; position: relative;
 }
 .phone-pill-btn { display: none; }
 :root.phone-layout[data-ui="modern"] .top-bar .phone-pill-btn svg { width: 22px; height: 22px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
-:root.phone-layout[data-ui="modern"] .top-bar #fullscreen-btn:disabled { opacity: 0.4; }
 :root.phone-layout[data-ui="modern"] .top-bar #social-btn .phone-pill-badge { top: 0; right: -4px; }
 :root.phone-layout[data-ui="modern"] .top-bar #social-btn .phone-pill-badge[hidden] { display: none; }
 /* The Menu's Quests row (Quests left the pill) carries the new quests' count. */

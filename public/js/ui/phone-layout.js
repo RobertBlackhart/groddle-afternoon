@@ -62,7 +62,7 @@ export const ACT = 60;
 export const PACK_H = 72;
 export const PIN_W = 200;
 
-/** The four icons of the pill, in order (installPhonePill); nothing else shows on it. */
+/** The four icons of the pill, in order (installPhonePill); nothing else shows on it (Full screen hides where it has no use). */
 export const PILL_IDS = Object.freeze(['fullscreen-btn', 'bug-btn', 'social-btn', 'more-btn']);
 
 const box = (left, top, right, bottom) => ({ left: Math.round(left), top: Math.round(top), right: Math.round(right), bottom: Math.round(bottom) });
@@ -259,13 +259,16 @@ export function pillBadge(n) {
 export const PILL_TEXT = Object.freeze({ full: 'Full screen', leave: 'Leave full screen', social: 'Social' });
 
 /**
- * PURE: how Full screen works here: 'hide' when the game already runs as a Home Screen app, 'api'
- * where the browser has full screen for a page, 'tip' where it has none (iPhone Safari: the Add to
- * Home Screen tip instead, js/home-screen-tip.js).
+ * PURE: how Full screen works here: 'hide' when the game is already full screen by itself (a Home
+ * Screen app: `standalone`, or display-mode fullscreen) or where there is no way to it, 'api' where
+ * the browser has full screen for a page, 'tip' where it has none but Add to Home Screen gives it
+ * (`canTip`, iPhone Safari: the tip instead, js/home-screen-tip.js). G1230 (#632): hidden, not
+ * greyed: in the iPhone Home Screen app the greyed button read as an empty square that did nothing.
  */
-export function fullScreenWay({ standalone = false, canRequest = false } = {}) {
-  if (standalone) return 'hide';
-  return canRequest ? 'api' : 'tip';
+export function fullScreenWay({ standalone = false, fullscreen = false, canRequest = false, canTip = true } = {}) {
+  if (standalone || fullscreen) return 'hide';
+  if (canRequest) return 'api';
+  return canTip ? 'tip' : 'hide';
 }
 
 const ICONS = {
@@ -277,11 +280,12 @@ const ICONS = {
 /**
  * The pill's own two icons (Full screen and Social), put in the actions pill before the Menu; the
  * page's Report a problem (features/bug-report-feature.js) and Menu make the four. style.css
- * (PHONE LAYOUT) shows only these four there. Returns { full, social, setBadge(n) }.
+ * (PHONE LAYOUT) shows only these four there; Full screen hides where the game is already full
+ * screen or cannot be (fullScreenWay). Returns { full, social, setBadge(n) }.
  * @param {Document} doc
- * @param {{ standalone?: boolean, showTip?: () => void, onSocial?: () => void }} o
+ * @param {{ standalone?: boolean, canTip?: boolean, showTip?: () => void, onSocial?: () => void }} o
  */
-export function installPhonePill(doc, { standalone = false, showTip = () => {}, onSocial = () => {} } = {}) {
+export function installPhonePill(doc, { standalone = false, canTip = true, showTip = () => {}, onSocial = () => {} } = {}) {
   const pill = doc?.querySelector?.('header.top-bar .top-actions');
   const menu = pill?.querySelector('.more-menu');
   if (!pill || !menu) return null;
@@ -298,10 +302,14 @@ export function installPhonePill(doc, { standalone = false, showTip = () => {}, 
   };
   const el = doc.documentElement;
   const request = el.requestFullscreen || el.webkitRequestFullscreen;
-  const way = fullScreenWay({ standalone, canRequest: typeof request === 'function' });
+  let fullscreen = false;
+  try {
+    fullscreen = Boolean(doc.defaultView?.matchMedia?.('(display-mode: fullscreen)')?.matches);
+  } catch { /* none */ }
+  const way = fullScreenWay({ standalone, fullscreen, canRequest: typeof request === 'function', canTip });
   const full = make('fullscreen-btn', PILL_TEXT.full, ICONS.full);
-  // In the Home Screen app it is already full screen: the button stays, off, so the pill keeps its four.
-  full.disabled = way === 'hide';
+  // G1230 (#632): already full screen (the Home Screen app), or no way to it: no button, the pill keeps three.
+  full.hidden = way === 'hide';
   const isFull = () => Boolean(doc.fullscreenElement || doc.webkitFullscreenElement);
   const paintFull = () => {
     const on = isFull();

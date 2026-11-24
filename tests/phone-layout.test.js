@@ -166,6 +166,16 @@ describe('phone layout: the regions (pure)', () => {
     assert.equal(fullScreenWay({ canRequest: true }), 'api');
     assert.equal(fullScreenWay({ canRequest: false }), 'tip');
     assert.equal(fullScreenWay({ standalone: true, canRequest: true }), 'hide');
+    // G1230 (#632): already full screen (display-mode fullscreen) or no way to it (no API, no Add to Home
+    // Screen: not iPhone Safari): hidden. The button is hidden, not greyed (an empty square in the Home Screen app).
+    assert.equal(fullScreenWay({ fullscreen: true, canRequest: true }), 'hide');
+    assert.equal(fullScreenWay({ canRequest: false, canTip: false }), 'hide');
+    const src = read('public/js/ui/phone-layout.js');
+    assert.match(src, /full\.hidden = way === 'hide';/);
+    assert.doesNotMatch(src, /full\.disabled/);
+    assert.match(css, /\.top-actions :is\(#fullscreen-btn:not\(\[hidden\]\), #bug-btn, #social-btn, #more-btn\) \{/);
+    assert.doesNotMatch(css, /#fullscreen-btn:disabled/);
+    assert.match(game, /canTip: iosSafari\(navigator\)/);
     const r = phoneRegions({ width: 402, height: 874, safe: { t: 62, b: 34 } });
     assert.ok(r.strip.top >= 62 && r.pack.bottom <= 874 - 34);
   });

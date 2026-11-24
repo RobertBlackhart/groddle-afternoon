@@ -1144,7 +1144,7 @@ import { clientKeyAction, createHotkeysSheet, emoteKeyAction, isHotkeySheetRelea
 import { ENCYCLOPEDIA_MENU_LABEL, createEncyclopedia, isEncyclopediaKey } from './js/encyclopedia-links.js?v=0c3b2863';
 import { createEncyclopediaSheet, isHomeScreenApp } from './js/ui/encyclopedia-sheet.js?v=987bd24f';
 import { bootStep } from './js/boot-progress.js?v=d84b898d';
-import { HOME_SCREEN_TIP_CACHE, mountHomeScreenTip, runsStandalone } from './js/home-screen-tip.js?v=f2287991';
+import { HOME_SCREEN_TIP_CACHE, iosSafari, mountHomeScreenTip, runsStandalone } from './js/home-screen-tip.js?v=f2287991';
 import { EAT_PICK_TEXT, bestFoodIndex, eatChoices, eatTip } from './js/eat-pick.js?v=8fb763d0';
 import { heldDirection, installHeldKeyGuard, isMacPlatform } from './js/held-keys.js?v=a28eb293';
 import { isOneClickDoor, oneClickChoice, signpostArmRows, worldContextAction } from './js/world-context-menu.js?v=e4c99c05';
@@ -1680,6 +1680,8 @@ function installPhoneLayout() {
   // FULL SCREEN (G1194 call 3): the browser's full screen; on an iPhone, the Add to Home Screen tip.
   const pill = installPhonePill(document, {
     standalone: runsStandalone(window),
+    // G1230: with no full screen for a page, only iPhone and iPad Safari have Add to Home Screen for it.
+    canTip: iosSafari(navigator),
     showTip: () => mountHomeScreenTip(document, { host: document.body, floating: true, force: true, store: { get: () => readUiCache(HOME_SCREEN_TIP_CACHE), set: (v) => writeUiCache(HOME_SCREEN_TIP_CACHE, v) } }),
     onSocial: () => socialDrawer?.toggle(),
   });
