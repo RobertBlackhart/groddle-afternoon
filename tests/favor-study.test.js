@@ -39,7 +39,7 @@ import {
   spendFavorOnStudy,
 } from '../public/js/shrines.js?v=01962b40';
 import { emblemUnlockSkillFor } from '../public/js/skill-tree.js?v=df9b7332';
-import { studyGiantsLine } from '../public/js/skills-panel.js?v=0d67b499';
+import { studyGiantsLine } from '../public/js/skills-panel.js?v=3a8ff188';
 import { EMITTED_EVENTS, routeQuestEvent, acceptOffer, requirementRoute } from '../public/js/quest-offers.js?v=32d4127e';
 import { createQuestState } from '../public/js/quests.js?v=90a2ee3d';
 import { getQuestCatalog } from '../public/js/content-catalogs.js?v=10b118dd';

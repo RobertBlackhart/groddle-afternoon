@@ -90,7 +90,7 @@ import {
   openPriceDialog,
   openStoreDialog,
   storageWindowKind,
-} from '../ui/storage-windows.js?v=5a6dbe0b';
+} from '../ui/storage-windows.js?v=10748089';
 import { anchorBottomCentre } from '../sprite-feet.js?v=11303931';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 

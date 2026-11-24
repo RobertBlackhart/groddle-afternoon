@@ -24,11 +24,11 @@ import { locationEventsFeature } from './location-events-feature.js?v=ac6acbc9';
 import { puzzlesFeature } from './puzzles-feature.js?v=0552752e';
 import { puzzleScenesFeature } from './puzzle-scenes-feature.js?v=70860e97';
 import { streetJobsFeature } from './street-jobs-feature.js?v=5002941d';
-import { imaginationFeature } from './imagination-feature.js?v=4c1334a3';
+import { imaginationFeature } from './imagination-feature.js?v=bf88e042';
 import { supplyFeature } from './supply-feature.js?v=6d475c3f';
 import { giantIconsFeature } from './giant-icons-feature.js?v=1d4cca1d';
 import { rubeFeature } from './rube-feature.js?v=95eeb033';
-import { unlearningFeature } from './unlearning-feature.js?v=1de46622';
+import { unlearningFeature } from './unlearning-feature.js?v=6f8a14d4';
 import { dropsFeature } from './drops-feature.js?v=be983fb0';
 import { masterGardenFeature } from './master-garden-feature.js?v=626a9190';
 import { animalHusbandryFeature } from './animal-husbandry-feature.js?v=46d21c0b';
@@ -187,7 +187,7 @@ import { chatReactionsFeature } from './chat-reactions-feature.js?v=704d27da'; F
 import { chatThreadsFeature } from './chat-threads-feature.js?v=7ed5df7b'; FEATURES.push(chatThreadsFeature);
 import { presenceMpFeature } from './presence-mp-feature.js?v=21272297'; FEATURES.push(presenceMpFeature);
 import { communityMpFeature } from './community-mp-feature.js?v=dffac45d'; FEATURES.push(communityMpFeature);
-import { questPlateFeature } from './quest-plate-feature.js?v=842d7fa8'; FEATURES.push(questPlateFeature);
+import { questPlateFeature } from './quest-plate-feature.js?v=3ab3fd3b'; FEATURES.push(questPlateFeature);
 import { aggressiveHoeingFeature } from './aggressive-hoeing-feature.js?v=977f9355'; FEATURES.push(aggressiveHoeingFeature);
 import { partyScrapingFeature } from './party-scraping-feature.js?v=66f3ff2a'; FEATURES.push(partyScrapingFeature);
 import { gardenGnomeFeature } from './garden-gnome-feature.js?v=60241f82'; FEATURES.push(gardenGnomeFeature);
@@ -204,12 +204,12 @@ import { skillBubblesFeature } from './skill-bubbles-feature.js?v=b8a598aa'; FEA
 import { homeCrewMpFeature } from './home-crew-mp-feature.js?v=ad36a0da'; FEATURES.push(homeCrewMpFeature);
 // TODAYCARD: the start card's Today panel and nudge for a returning player (asks solo-feats for startCardFeat).
 import { startTodayFeature } from './start-today-feature.js?v=326889da'; FEATURES.push(startTodayFeature);
-import { chickenScareFeature } from './chicken-scare-feature.js?v=02560d84'; FEATURES.push(chickenScareFeature);
+import { chickenScareFeature } from './chicken-scare-feature.js?v=0411e47c'; FEATURES.push(chickenScareFeature);
 import { gameTeleporterFeature } from './game-teleporter-feature.js?v=569b3719'; FEATURES.push(gameTeleporterFeature);
 import { levelUpMpFeature } from './level-up-mp-feature.js?v=22659e6d'; FEATURES.push(levelUpMpFeature);
 // G982 Pot Luck Day, part A: the chicken costumes (after seasons-feature, whose seasonOn it asks).
 import { potLuckFeature } from './pot-luck-feature.js?v=24662363'; FEATURES.push(potLuckFeature);
-import { potLuckFeastFeature } from './pot-luck-feast-feature.js?v=513cc9b7'; FEATURES.push(potLuckFeastFeature);
+import { potLuckFeastFeature } from './pot-luck-feast-feature.js?v=2188221d'; FEATURES.push(potLuckFeastFeature);
 // G1009 Thanksgiving Day's feast: eat-in-place piles of the week's table food (asks pot-luck-feast for its counts).
 import { feastDayFeature } from './feast-day-feature.js?v=fc0b54bb'; FEATURES.push(feastDayFeature);
 import { calendarFeature } from './calendar-feature.js?v=911e7478'; FEATURES.push(calendarFeature);

@@ -16,6 +16,10 @@
  * - homes: at home (the street, the house, its yard, a Tower floor) the home's buttons (Decorate,
  *   Cultivate, Change Style), or Decoration Mode's banner while it is open: a row under the caption at
  *   the left, the buttons wrapping in it, the buff strip under it (Austin's iPhone 2026-11-24);
+ * - play: a game's or a room's own bar while it shows (a party's clock and Leave party, a quest room's
+ *   card and the caption under its pill, Game of Crowns' board and clock, a race's board and Leave race):
+ *   top centre under the caption, the home's row and the buffs, one under another, the notices under
+ *   them (G1247: each had a fixed top from before layout C that never took the status bar inset);
  * - notices: the top-centre stack under the caption, down to the controls, the pinned quest or the
  *   open sheet; notices, tips and toasts go here and never land on the strip (js/notify-view.js
  *   `region`);
@@ -65,6 +69,19 @@ export const ACT = 60;
 export const PACK_H = 72;
 export const PIN_W = 200;
 
+/**
+ * G1247: the bars a game or a room puts top centre, in the order they stack: a party's (party-spaces),
+ * a quest room's card (quest-instances, when the quest pill hasn't folded it) and the caption under the
+ * pill (quest-plate), Game of Crowns' board and clock, a race's board and Leave race.
+ */
+export const PLAY_PIECES = Object.freeze([
+  ['party', '#party-hud'],
+  ['qroom', '#quest-instance-hud'],
+  ['qcap', '#quest-caption'],
+  ['crowns', '#crowns-hud'],
+  ['race', '#race-hud'],
+]);
+
 /** The four icons of the pill, in order (installPhonePill); nothing else shows on it (Full screen hides where it has no use). */
 export const PILL_IDS = Object.freeze(['fullscreen-btn', 'bug-btn', 'social-btn', 'more-btn']);
 
@@ -87,7 +104,7 @@ const num = (v, d = 0) => (Number.isFinite(Number(v)) ? Number(v) : d);
  * banner), null when none shows: its slot `homes` is under the caption at the left, the buff strip
  * under it (null in the result when none shows).
  */
-export function phoneRegions({ width, height, safe = {}, sheet = '', pack = null, packShown = true, bagTop = NaN, caption = null, captionUnder = null, pin = null, controls = null, buffs = null, homes = null } = {}) {
+export function phoneRegions({ width, height, safe = {}, sheet = '', pack = null, packShown = true, bagTop = NaN, caption = null, captionUnder = null, pin = null, controls = null, buffs = null, homes = null, play = [] } = {}) {
   const W = Math.max(0, num(width));
   const H = Math.max(0, num(height));
   const st = Math.max(0, num(safe.t));
@@ -193,7 +210,25 @@ export function phoneRegions({ width, height, safe = {}, sheet = '', pack = null
     buffBox = null;
     homesBox = null;
   }
-  const top = Math.max(under, capTaps, buffShown && buffBox ? buffBox.bottom : 0, homesBox ? homesBox.bottom : 0) + GAP;
+  let top = Math.max(under, capTaps, buffShown && buffBox ? buffBox.bottom : 0, homesBox ? homesBox.bottom : 0) + GAP;
+  // G1247: a game's or a room's bars (`play`, measured { id, w, h } in order): top centre in the notices'
+  // room, one under another; the notices start under the last. Under the Map they wait.
+  const playAt = {};
+  let playBox = null;
+  if (kind !== 'map') {
+    const roomR = W - sr - EDGE;
+    for (const p of Array.isArray(play) ? play : []) {
+      const ph = Math.max(0, num(p?.h));
+      const pw = Math.max(0, Math.min(num(p?.w), roomR - left));
+      if (!p?.id || !(ph > 0) || !(pw > 0)) continue;
+      const x = Math.max(left, Math.round((left + roomR) / 2 - pw / 2));
+      const b = box(x, top, x + pw, top + ph);
+      playAt[p.id] = b;
+      playBox = playBox ? box(Math.min(playBox.left, b.left), playBox.top, Math.max(playBox.right, b.right), b.bottom) : b;
+      top = b.bottom + GAP;
+    }
+  }
+  if (pinBox && playBox && boxesOverlap(pinBox, playBox)) pinBox = null;
   let bottom = floor - GAP;
   if (kind === 'map') bottom = top;
   else if (kind === 'half' && upright) bottom = sheetBox.top - GAP;
@@ -210,7 +245,7 @@ export function phoneRegions({ width, height, safe = {}, sheet = '', pack = null
       ? { side: 'bottom', css: H - sheetBox.top, zoom: true }
       : { side: 'left', css: sheetBox.right, zoom: true };
   }
-  return { upright, strip: stripBox, caption: captionBox, homes: homesBox, buffs: buffBox, notices, pin: pinBox, stick, act, jump, pack: packBox, sheet: sheetBox, dock };
+  return { upright, strip: stripBox, caption: captionBox, homes: homesBox, buffs: buffBox, play: playBox, playAt, notices, pin: pinBox, stick, act, jump, pack: packBox, sheet: sheetBox, dock };
 }
 
 /**
@@ -264,7 +299,7 @@ export function boxesOverlap(a, b) {
 }
 
 /** The pieces the layout keeps apart. */
-export const REGION_NAMES = Object.freeze(['strip', 'caption', 'homes', 'buffs', 'notices', 'pin', 'stick', 'act', 'jump', 'pack', 'sheet']);
+export const REGION_NAMES = Object.freeze(['strip', 'caption', 'homes', 'buffs', 'play', 'notices', 'pin', 'stick', 'act', 'jump', 'pack', 'sheet']);
 
 /**
  * PURE: what is wrong with a layout: every pair of named boxes that overlap and any box off the
@@ -540,6 +575,22 @@ export function mountPhoneLayout({ doc = globalThis.document, root, sheets = {},
       const foot = shown(note) ? Math.max(b.bottom, rectOf(note).bottom) : b.bottom;
       homes = { w: b.right - b.left, h: foot - b.top };
     }
+    // G1247: a game's or a room's own bars, measured with what hangs out of them (Leave race, the crowns clock).
+    const play = [];
+    for (const [id, sel] of PLAY_PIECES) {
+      const el = doc.querySelector(sel);
+      if (!shown(el) || el.classList.contains('is-covered')) continue;
+      const r = rectOf(el);
+      let { left: l, right: rt, bottom: b } = r;
+      for (const kid of el.querySelectorAll('.race-forfeit, [data-crowns-clock]')) {
+        if (!shown(kid)) continue;
+        const k = rectOf(kid);
+        l = Math.min(l, k.left);
+        rt = Math.max(rt, k.right);
+        b = Math.max(b, k.bottom);
+      }
+      play.push({ id, w: rt - l, h: b - r.top, dx: r.left - l });
+    }
     const regions = phoneRegions({
       width: rr.width,
       height: rr.height,
@@ -553,6 +604,7 @@ export function mountPhoneLayout({ doc = globalThis.document, root, sheets = {},
       pin: pins && !pins.hidden && pins.getClientRects().length ? { w: pins.offsetWidth, h: pins.offsetHeight } : null,
       buffs: shown(buffEl) ? { w: buffEl.offsetWidth, h: buffEl.offsetHeight } : null,
       homes,
+      play,
       controls: Object.fromEntries(['stick', 'act', 'jump'].map((k) => {
         const el = doc.querySelector(`#game-root .touch-${k}`);
         const r = el?.getClientRects().length ? shift(rectOf(el)) : null;
@@ -586,6 +638,14 @@ export function mountPhoneLayout({ doc = globalThis.document, root, sheets = {},
     if (homesAt) {
       set('--pr-homes-t', homesAt.top);
       set('--pr-homes-l', homesAt.left);
+    }
+    // G1247: each bar's spot (style.css PHONE LAYOUT): its top, left (the box less what hangs out at the left) and width.
+    for (const p of play) {
+      const b = regions.playAt[p.id];
+      if (!b) continue;
+      set(`--pr-${p.id}-t`, b.top);
+      set(`--pr-${p.id}-l`, b.left + p.dx);
+      set(`--pr-${p.id}-w`, b.right - b.left);
     }
     set('--pr-notice-t', regions.notices.top);
     set('--pr-sheet-t', sh ? sh.top : 0);

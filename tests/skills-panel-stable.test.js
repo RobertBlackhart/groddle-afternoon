@@ -11,7 +11,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { patchChildren } from '../public/js/skills-panel.js?v=0d67b499';
+import { patchChildren } from '../public/js/skills-panel.js?v=3a8ff188';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 

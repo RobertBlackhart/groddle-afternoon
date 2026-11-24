@@ -18,7 +18,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { bindCountField, countStepMarkup, focusedCountField, openCountField, restoreCountCaret, saveCountCaret } from '../public/js/ui/count-chooser.js?v=c268eefe';
+import { bindCountField, countStepMarkup, focusedCountField, openCountField, restoreCountCaret, saveCountCaret } from '../public/js/ui/count-chooser.js?v=75f69512';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

@@ -14,7 +14,7 @@ import { join } from 'node:path';
 import { getSkillCatalog, loadContentCatalogsFromDir, resetContentCatalogs } from '../public/js/content-catalogs.js?v=10b118dd';
 import { createSkillState, getStudyStatus, listStudyQueue, pauseSkillStudy, startSkillStudy } from '../public/js/skills.js?v=db7039d9';
 import { skillTitle } from '../public/js/skill-tree.js?v=df9b7332';
-import { patchChildren, studyQueueCards } from '../public/js/skills-panel.js?v=0d67b499';
+import { patchChildren, studyQueueCards } from '../public/js/skills-panel.js?v=3a8ff188';
 
 const root = join(import.meta.dirname, '..', 'public');
 

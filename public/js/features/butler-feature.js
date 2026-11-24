@@ -148,7 +148,7 @@ import {
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { STREET_INDEX } from '../street-loader.js?v=10376267';
 import { holdMs, longReadMs } from '../read-time.js?v=3151fb1a';
-import { createItemPicker } from '../ui/item-picker.js?v=53afad10';
+import { createItemPicker } from '../ui/item-picker.js?v=2a1f9c24';
 import { registerOwnButlerDrop } from '../butler-drop.js?v=a75b6019';
 import { takeDragged } from '../drag-stack.js?v=b4aa7198';
 import { worldPoint } from './world-drop-feature.js?v=0382e196';

@@ -35,7 +35,7 @@
  * interface), and the rules for them are in css/classic.css's "Classic skills" block.
  */
 import { uiState, onUiModeChange } from './ui-mode.js?v=069f076e';
-import { focusSkillInPanel, openOnlySkillInPanel, skillPanelUiState } from '../skills-panel.js?v=0d67b499';
+import { focusSkillInPanel, openOnlySkillInPanel, skillPanelUiState } from '../skills-panel.js?v=3a8ff188';
 import { formatStudyTime } from '../skills.js?v=db7039d9';
 import { SKILL_CATEGORIES, SKILL_CATEGORY_ORDER } from '../skill-tree.js?v=df9b7332';
 import { skillArtFor } from '../familiar.js?v=b9597cd3';

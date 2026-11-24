@@ -282,6 +282,15 @@ function hideCaption() {
   setData('questCaption', '');
 }
 
+/** G1247: the caption's spot from the phone layout (--pr-qcap-t / -l), or null off a phone. */
+function phoneSpot(el) {
+  const html = el.ownerDocument?.documentElement;
+  if (!html?.classList.contains('phone-layout')) return null;
+  const t = parseFloat(html.style.getPropertyValue('--pr-qcap-t'));
+  const l = parseFloat(html.style.getPropertyValue('--pr-qcap-l'));
+  return Number.isFinite(t) && Number.isFinite(l) ? { left: Math.round(l), top: Math.round(t) } : null;
+}
+
 /** The caption under the pill: waits while a conversation is up, then shows for captionMs. */
 function tickCaption(now) {
   const el = ui.caption;
@@ -308,8 +317,14 @@ function tickCaption(now) {
   const pr = plateRect();
   const w = el.offsetWidth || 0;
   const cx = pr.left + pr.width / 2 - hr.left;
-  const left = Math.round(Math.max(8, Math.min(cx - w / 2, hr.width - w - 8)));
-  const top = Math.round(Math.max(8, pr.bottom - hr.top + GAP));
+  let left = Math.round(Math.max(8, Math.min(cx - w / 2, hr.width - w - 8)));
+  let top = Math.round(Math.max(8, pr.bottom - hr.top + GAP));
+  // G1247: on a phone (layout C) the caption takes its spot in js/ui/phone-layout.js's regions, under the
+  // caption's taps, the home's row and the buffs, not just under the pill (it covered the buffs there).
+  const phone = phoneSpot(el);
+  if (phone) ({ left, top } = phone);
+  // Not laid out yet (its first frame): it waits unseen, so it never shows at the pill's foot first.
+  else if (el.ownerDocument?.documentElement?.classList.contains('phone-layout')) return;
   el.style.left = `${left}px`;
   el.style.top = `${top}px`;
   el.classList.add('is-on');

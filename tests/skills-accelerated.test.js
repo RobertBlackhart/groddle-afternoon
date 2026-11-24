@@ -26,7 +26,7 @@ import {
   startSkillStudy,
   tickSkillStudy,
 } from '../public/js/skills.js?v=db7039d9';
-import { switchStudyNote } from '../public/js/skills-panel.js?v=0d67b499';
+import { switchStudyNote } from '../public/js/skills-panel.js?v=3a8ff188';
 import { createUnlearnState, startUnlearning } from '../public/js/unlearning.js?v=db761d33';
 
 const root = join(import.meta.dirname, '..', 'public');

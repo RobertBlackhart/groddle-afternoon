@@ -490,7 +490,7 @@ import {
 } from './js/skills.js?v=db7039d9';
 import { skillTitle, skillTreeCounts, skillTreeEntry, spendEmblemForSkill, studyPillName } from './js/skill-tree.js?v=df9b7332';
 import { CARD_ART_LAYERS } from './js/imagination-data.js?v=4a85e7fe';
-import { renderSkillTreePanel, focusSkillInPanel } from './js/skills-panel.js?v=0d67b499';
+import { renderSkillTreePanel, focusSkillInPanel } from './js/skills-panel.js?v=3a8ff188';
 import {
   createBuffState,
   applyBuff,
@@ -1131,14 +1131,14 @@ import { contextNeedsResume, createAudioResumer } from './js/audio-resume.js?v=7
 import { bubbleMs } from './js/read-time.js?v=3151fb1a';
 import { mountNotifyView } from './js/notify-view.js?v=0fbfad68';
 import { mountSocialDrawer } from './js/ui/social-drawer.js?v=934e247f';
-import { installPhonePill, mountPhoneLayout, socialPillCount } from './js/ui/phone-layout.js?v=acb2751c';
+import { installPhonePill, mountPhoneLayout, socialPillCount } from './js/ui/phone-layout.js?v=2ab28c97';
 import { bindChatLinks } from './js/chat-links.js?v=b717fac7';
 import { SIDE_SHEET_IDS, bindTabs, inSideSheet, mountPanelShell, sheetKeyToWorld } from './js/ui/panel-shell.js?v=06a0d3fe';
 import { createQuestSheet, failedQuestPin, questLogNeedsSwap, questStep, visibleRowCount } from './js/ui/quest-sheet.js?v=b612c898';
 import { resolveQuestPins } from './js/features/quest-pins-feature.js?v=0e07d9a1';
 import { createQuestTracker } from './js/ui/quest-tracker.js?v=54c1d111';
 import { bindContextTrigger, createContextMenu, isContextMenuKey as isMenuKey, MORE_KEYS_LABEL } from './js/ui/context-menu.js?v=dee0ecde';
-import { bindCountField, countKeyValue, countStepMarkup, createCountChooser, focusedCountField, heldPress, keepCountCaret, openCountField, restoreCountCaret, saveCountCaret, typedCount } from './js/ui/count-chooser.js?v=c268eefe';
+import { bindCountField, countKeyValue, countStepMarkup, createCountChooser, focusedCountField, heldPress, keepCountCaret, openCountField, restoreCountCaret, saveCountCaret, typedCount } from './js/ui/count-chooser.js?v=75f69512';
 import { createScrollKeep } from './js/ui/scroll-keep.js?v=2898b5b1';
 import { actVerbMenu, bindVerbMenu, centerVerbMenu, chooseVerbRow, dropVerbMenuActs, fitPickGrid, fitVerbMenuRows, focusVerbRow, lockVerbMenuSize, makePickTile, makeVerbRow, pickGridCols, placeVerbMenu, plainWords, refuseVerbRow, setVerbMenuIcon, settleVerbMenu, stepVerbRow, syncVerbDetail, verbMenuKey, verbMenuWaiting, verbRowAttrs, verbRowInner, verbRowKeys } from './js/ui/verb-menu.js?v=424b9a35';
 import { createPromptSettler, promptId, promptSideStep } from './js/prompt-settle.js?v=cb790f3a';
@@ -1179,7 +1179,7 @@ import { filterText } from './js/word-filter.js?v=9a7a7ebb'; // the remake's own
 import { mountStartStreet } from './js/start-street.js?v=7d8ce49c'; // #349: the start card names the save's street
 import { arrangeMapCards, fitMapExtras } from './js/map-extras.js?v=16e261b1'; // the Map's Shortcuts
 // The interface skin (js/classic/ui-mode.js) sets <html data-ui> as it loads: before main(), so before the boot cover lifts.
-import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=61be70a2';
+import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=5b7e7560';
 import { standOnFeet, anchorBottomCentre } from './js/sprite-feet.js?v=11303931';
 import { markLeaving, packPicks, takeCopies } from './js/copy-picks.js?v=b368fd49';
 import { holdKeepsBusy } from './js/instance-holds.js?v=ff3a63a3';

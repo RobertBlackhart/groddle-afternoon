@@ -15676,6 +15676,16 @@ body.is-booting .touch-controls { display: none; }
 /* The street sign's and the Magic Rock's dialog (HouseSignDialog.as) stood at a fixed 132 px, over the
    caption and favor on a phone: it opens under them, at the notices' top. */
 :root.phone-layout[data-ui="modern"] #game-root #homes-sign { top: var(--pr-notice-t, calc(2 * var(--hud-h) + var(--space-4) + var(--safe-t))); }
+/* G1247: a game's or a room's own bar (a party's clock and Leave party, a quest room's card, Game of Crowns'
+   board and clock, a race's board and Leave race) had a fixed top from before layout C (52, 66, 76 px) that
+   never took the status bar inset: in the Home Screen app they stood in the status bar or over the stats.
+   js/ui/phone-layout.js gives each its spot top centre, under the caption, the home's row and the buffs,
+   one under another, the notices under them (the quest caption under the pill too: quest-plate-feature.js). */
+:root.phone-layout[data-ui="modern"] #game-root #party-hud { top: var(--pr-party-t, calc(2 * var(--hud-h) + var(--space-4) + var(--safe-t))); left: var(--pr-party-l, var(--sp-4)); max-width: var(--pr-party-w, calc(100% - 32px)); transform: none; }
+:root.phone-layout[data-ui="modern"] #game-root #quest-instance-hud { top: var(--pr-qroom-t, calc(2 * var(--hud-h) + var(--space-4) + var(--safe-t))); left: var(--pr-qroom-l, var(--sp-4)); max-width: var(--pr-qroom-w, calc(100% - 32px)); transform: none; }
+:root.phone-layout[data-ui="modern"] #game-root #crowns-hud { top: var(--pr-crowns-t, calc(2 * var(--hud-h) + var(--space-4) + var(--safe-t))); left: var(--pr-crowns-l, var(--sp-4)); max-width: var(--pr-crowns-w, calc(100% - 28px)); transform: none; }
+:root.phone-layout[data-ui="modern"] #game-root #race-hud { top: var(--pr-race-t, calc(2 * var(--hud-h) + var(--space-4) + var(--safe-t))); left: var(--pr-race-l, var(--sp-4)); max-width: var(--pr-race-w, calc(100% - 28px)); transform: none; }
+:root.phone-layout[data-ui="modern"][data-phone-sheet="map"] #game-root :is(#party-hud, #quest-instance-hud, #quest-caption, #crowns-hud, #race-hud) { visibility: hidden; }
 /* No room for the pinned quest clear of the controls (js/ui/phone-layout.js): it waits. */
 :root.phone-layout[data-ui="modern"][data-phone-pin="off"] #game-root #quest-pins { visibility: hidden; }
 /* A sheet or an open bag covers the street's floor: the controls and the pinned quest wait. */

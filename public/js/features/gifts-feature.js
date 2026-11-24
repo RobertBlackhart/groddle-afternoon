@@ -39,7 +39,7 @@ import { scriptFromTag, scriptLabel } from '../teleportation.js?v=cbbc673f';
 import { copyPicks, copyWire, markLeaving, packPicks, takeCopies } from '../copy-picks.js?v=b368fd49';
 import { unitRankAt } from '../pack-slots.js?v=11aa0ad5';
 import { createMinnAccount } from '../minn-account.js?v=c6a70577';
-import { createItemPicker } from '../ui/item-picker.js?v=53afad10';
+import { createItemPicker } from '../ui/item-picker.js?v=2a1f9c24';
 // The same key as features/index.js: one module instance holds the carried notes.
 import { giveCarriedNote, takeCarriedNote, writtenCarriedNotes } from './street-furniture-feature.js?v=ec605345';
 import {

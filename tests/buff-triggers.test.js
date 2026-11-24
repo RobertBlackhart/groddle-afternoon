@@ -27,7 +27,7 @@ import {
 import { MIRRORED_BUFFS, buffTriggersFeature } from '../public/js/features/buff-triggers-feature.js?v=62a7a900';
 import { meditationFeature } from '../public/js/features/meditation-feature.js?v=cfc4f8f0';
 import { teleportationFeature } from '../public/js/features/teleportation-feature.js?v=67bd0b27';
-import { rookAttackFeature } from '../public/js/features/rook-attack-feature.js?v=4ceb555a';
+import { rookAttackFeature } from '../public/js/features/rook-attack-feature.js?v=1a451de5';
 import { rubeFeature } from '../public/js/features/rube-feature.js?v=95eeb033';
 import { smugglingFeature } from '../public/js/features/smuggling-feature.js?v=85289940';
 import { normalizeHusbandryPack } from '../public/js/animal-husbandry.js?v=83779ca2';
