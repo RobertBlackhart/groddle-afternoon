@@ -33,7 +33,7 @@ import {
 import { HOUSE_STYLE_IDS, houseLot } from '../public/js/home-house.js?v=3c88c47c';
 import { doorSaleArt } from '../public/js/door-sign-art.js?v=69daffff';
 import { arrivalInTarget } from '../public/js/location-navigation.js?v=e9221d85';
-import { quarterFeature, _quarterState, _resetQuarter } from '../public/js/features/quarter-feature.js?v=8b99fcbc';
+import { quarterFeature, _quarterState, _resetQuarter } from '../public/js/features/quarter-feature.js?v=d075cada';
 import { quartersData } from '../tools/build-realtime-quarters.mjs';
 import { HAS_SERVER, HAS_SITE, SITE_DIR, serverPath } from '../tools/repos.mjs';
 import { Display, fakePixi } from './fake-scene.js';
@@ -183,7 +183,8 @@ function fakeEngine({ mode = 'solo', owned = true, client = null } = {}) {
     unregister(t) { targets.delete(t); },
     query: (hook, ...args) => {
       if (hook === 'realtimeClient') return client;
-      if (hook === 'visitHome') { log.visits.push(args.slice(0, 2)); return true; }
+      // neighbours-mp-feature visitHome(id, name, engine) answers null without the engine, as the real hook does.
+      if (hook === 'visitHome') { if (!args[2]) return null; log.visits.push(args.slice(0, 2)); return true; }
       return null;
     },
   };
@@ -253,7 +254,8 @@ describe('online: claims are the server\'s and the site\'s', () => {
       state: 'online',
       me: { id: 9 },
       on(kind, fn) { (handlers[kind] ||= []).push(fn); return () => {}; },
-      send(msg) { this.sent.push(msg); return true; },
+      // The realtime client's own shape (online-client send(kind, payload)): a message object is refused, as the real one does.
+      send(kind, payload = {}) { if (typeof kind !== 'string') return false; this.sent.push({ t: kind, ...payload }); return true; },
       emit(kind, msg) { for (const fn of handlers[kind] || []) fn(msg); },
     };
   }

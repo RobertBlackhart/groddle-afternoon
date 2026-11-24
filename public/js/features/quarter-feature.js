@@ -273,7 +273,7 @@ function claim(engine, lot) {
   }
   if (!ensureOnline(engine)) return tell(engine, QUARTER_TEXT.off);
   if (pending) return tell(engine, QUARTER_TEXT.busy);
-  if (online.client.send?.({ t: 'quarter_claim', lot }) === false) return tell(engine, QUARTER_TEXT.off);
+  if (online.client.send?.('quarter_claim', { lot }) === false) return tell(engine, QUARTER_TEXT.off);
   pending = 'claim';
   return true;
 }
@@ -290,7 +290,7 @@ function release(engine) {
   }
   if (!ensureOnline(engine)) return tell(engine, QUARTER_TEXT.off);
   if (pending) return tell(engine, QUARTER_TEXT.busy);
-  if (online.client.send?.({ t: 'quarter_release' }) === false) return tell(engine, QUARTER_TEXT.off);
+  if (online.client.send?.('quarter_release', {}) === false) return tell(engine, QUARTER_TEXT.off);
   pending = 'release';
   return true;
 }
@@ -302,7 +302,7 @@ function visit(engine, row) {
     engine.homeTravel?.('teleport');
     return true;
   }
-  if (engine.query?.('visitHome', row.owner.id, row.owner.name) == null) tell(engine, QUARTER_TEXT.off);
+  if (engine.query?.('visitHome', row.owner.id, row.owner.name, engine) == null) tell(engine, QUARTER_TEXT.off);
   return true;
 }
 
