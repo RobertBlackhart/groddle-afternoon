@@ -37,7 +37,7 @@ describe('the Reports list pages (groddle-afternoon-site)', { skip: skipWithoutS
   it('TicketStore::listAll pages by offset in the same order; listFor stays one page', () => {
     const store = src('src/TicketStore.php');
     assert.match(store, /public const LIST_MAX = 200;/);
-    assert.match(store, /public function listAll\(\?string \$status, int \$offset = 0\): array/);
+    assert.match(store, /public function listAll\(\?string \$status, int \$offset = 0, string \$q = ''\): array/);
     assert.match(store, /\$offset = max\(0, \$offset\);/);
     assert.match(store, /ORDER BY admin_unread DESC, FIELD\(status, 'open', 'working', 'answered', 'closed'\), last_message_at DESC, id DESC LIMIT " \. \(self::LIST_MAX \+ 1\) \. ' OFFSET ' \. \$offset/);
     assert.match(store, /'more' => count\(\$rows\) > self::LIST_MAX,/);
@@ -52,7 +52,7 @@ describe('the Reports list pages (groddle-afternoon-site)', { skip: skipWithoutS
     const index = php.slice(php.indexOf('public function index('), php.indexOf('public function show('));
     assert.match(index, /\$offset = \(string\) \(\$request->query\('offset'\) \?\? '0'\);/);
     assert.match(index, /if \(!ctype_digit\(\$offset\) \|\| strlen\(\$offset\) > 9\) \{\s*throw new RestError\('groddle_ticket_offset', '[^']+', 400\);/);
-    assert.match(index, /->listAll\(in_array\(\$status, TicketStore::STATUSES, true\) \? \$status : null, \(int\) \$offset\)/);
+    assert.match(index, /->listAll\(in_array\(\$status, TicketStore::STATUSES, true\) \? \$status : null, \(int\) \$offset, \$q\)/);
     assert.match(index, /'more' => \$list\['more'\],\s*'total' => \$list\['total'\],/);
     assert.match(php, /admin\/tickets\?status=open\|answered\|working\|closed\|all&offset=n .*"more":bool,"total":n/);
   });
@@ -96,11 +96,14 @@ echo json_encode($out);
     const js = src('console/console.js');
     assert.match(js, /\$\('\[data-console-tickets-count\]'\)\.textContent = reportsCount\(tickets\);/);
     assert.match(js, /\$\('\[data-console-tickets-more\]'\)\.hidden = !tickets\.more;/);
-    assert.match(js, /admin\/tickets\?status=\$\{status\}\$\{rows\.length \? `&offset=\$\{rows\.length\}` : ''\}/);
+    // The query from ticketsParams: status, the search (2026-11-24) and the offset past the first page.
+    assert.match(js, /admin\/tickets\?\$\{ticketsParams\(\{ status, q, offset: rows\.length \}\)\}/);
+    assert.equal(mod.ticketsParams({ status: 'open', offset: 200 }), 'status=open&offset=200');
+    assert.equal(mod.ticketsParams({ status: 'all' }), 'status=all');
     assert.match(js, /const rows = older \? tickets\.list\.slice\(\) : \[\];/);
     // The poll and actions refresh as many rows as are shown, so Show older's rows stay.
     assert.match(js, /\} while \(r\.more && rows\.length < keep\);/);
-    assert.match(js, /if \(ask !== ticketsAsked \|\| status !== tickets\.status\) return;/);
+    assert.match(js, /if \(ask !== ticketsAsked \|\| status !== tickets\.status \|\| q !== tickets\.q\) return;/);
     assert.match(js, /tickets\.status = b\.dataset\.status;[\s\S]{0,200}Object\.assign\(tickets, \{ list: \[\], more: false, total: null \}\);\s*loadTickets\(\);/);
     assert.match(js, /\$\('\[data-console-tickets-more\]'\)\.addEventListener\('click', async \(e\) => \{[\s\S]{0,200}await loadTickets\(true\);[\s\S]{0,300}\.children\[had\]\?\.querySelector\('button'\)\?\.focus\(\);/);
     // The look: the console's own Older button style, with its focus ring.
