@@ -2814,9 +2814,44 @@
   "deployed": "2026-11-23"
  },
  "git": {
-  "commits": 3306,
+  "commits": 3315,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "No haze over the street's top under an iPhone's status bar in Safari, upright"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "improve",
+    "text": "Favor's Giant symbol on the phone's street caption reads on any street"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "improve",
+    "text": "The phone's Social badge counts chat and IMs only, the Activity log keeps its own small count"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "The phone's Full screen button hides in the Home Screen app and where full screen cannot be had"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "On a phone the camera keeps the avatar above the stick, Act and the pack row on low streets"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "The pinned quest on a phone sits just above the stick again, and a tap on it opens the quest"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "Closing a menu or panel on a phone brings the camera back, the avatar no longer sinks under the pack row"
+   },
    {
     "date": "2026-11-23",
     "kind": "improve",
@@ -2901,41 +2936,6 @@
     "date": "2026-11-23",
     "kind": "fix",
     "text": "A long chat line in Global, Help, Trade, groups and IMs shows in full instead of cut short"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "The Encyclopedia shows one page per rock, peat bog and tree, with every street that has one"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "An open bag on a narrow phone keeps every slot inside its window"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "On a phone menus keep off Act, so each tap on Act opens or chooses, and the caption's favor takes a tap"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "On a phone the pinned quest never covers the stick, and the action hint keeps off Act and Jump"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "The phone's top row keeps whole counts, and the tutorial's pill is only as wide as its icon"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "new",
-    "text": "Phones get a compact HUD in fixed regions: a four-icon pill, the street name as a caption, the pinned quest over the stick"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "improve",
-    "text": "Send report waits a moment before it can be pressed, so a report is never sent by a stray tap"
    }
   ]
  },
