@@ -5104,6 +5104,31 @@
    ]
   },
   {
+   "id": "buddy-sort-az",
+   "title": "An A to Z order for the Buddies list beside Glitch's online-first order, kept per browser (#646).",
+   "kind": "UI",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/buddies.js",
+     "symbol": "BUDDY_SORTS sortBuddies loadBuddySort saveBuddySort"
+    },
+    {
+     "file": "public/js/ui/social-drawer.js",
+     "symbol": "renderBuddies social-buddy-sort"
+    },
+    {
+     "file": "public/js/features/buddies-feature.js",
+     "symbol": "sortMode drawerView setSort"
+    }
+   ],
+   "why": "Glitch's contact list had one order (Online buddies over Offline, each by label, ContactList.as, BaseContacts.as 154); a player making friend rounds lost their place as people came and went (#646).",
+   "ruling": "Austin 2026-11-24 (G1234): add alphabetical sorting, Glitch's order the default",
+   "rows": [
+    "G1234"
+   ]
+  },
+  {
    "id": "map-building-no-dots",
    "title": "A street under construction is drawn on the hub map as an unbroken blue road on a dark edge with a road-works diamond at its middle, never Glitch's unvisited dots (#526, #626).",
    "kind": "UI",

@@ -14,7 +14,7 @@ import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=1
 import { MULTIPLAYER_QUESTS, creditedMultiplayerQuests } from '../public/js/quests-mp.js?v=e697cec3';
 import { ensureQuestOfferState, tickQuestTimers } from '../public/js/quest-offers.js?v=32d4127e';
 import { peatQuestMpFeature } from '../public/js/features/peat-quest-mp-feature.js?v=b6a10c1e';
-import { FEATURES } from '../public/js/features/index.js?v=23a56c5c';
+import { FEATURES } from '../public/js/features/index.js?v=6958771d';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => readFileSync(join(root, rel), 'utf8');

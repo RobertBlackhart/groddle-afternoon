@@ -79,8 +79,12 @@ import {
   freshReverse,
   isBuddy,
   isIgnoring,
+  loadBuddySort,
+  normalizeBuddySort,
   normalizeList,
-} from '../buddies.js?v=16407f62';
+  saveBuddySort,
+  sortBuddies,
+} from '../buddies.js?v=4457d8a4';
 import { UNNAMED_PLAYER } from '../player-names.js?v=f9b78094';
 import { PLAYER_REPORT_TEXT, playerReportView } from '../player-report.js?v=8d7e5653';
 import { openReportView } from '../note-view.js?v=c512b345';
@@ -154,6 +158,8 @@ function createSession(engine, client) {
   let last = '';
   /** id -> { name, street }: who on the watched lists the server says is online. */
   const online = new Map();
+  /** #646: the list's order, Glitch's online first or A to Z (js/buddies.js sortBuddies). */
+  let sortMode = loadBuddySort();
   /** Reverse entries already told ("added you"), so a refresh does not tell them twice. */
   const told = new Set();
   /** id -> prompt uid: the "Add them back?" prompts showing or queued. */
@@ -303,6 +309,13 @@ function createSession(engine, client) {
   function render() {
     publish();
     if (shade.hidden) return;
+    // #646: a presence change redraws the panel where you were in it.
+    const keepScroll = panel.scrollTop;
+    renderPanel();
+    panel.scrollTop = keepScroll;
+  }
+
+  function renderPanel() {
     panel.replaceChildren();
     const x = el('button', { type: 'button', class: 'buddies-close', 'aria-label': 'Close' }, '×');
     x.addEventListener('click', close);
@@ -312,8 +325,8 @@ function createSession(engine, client) {
       panel.append(el('p', {}, loading ? 'Loading…' : BUDDY_TEXT.failed));
     } else {
       const mine = el('ul', { 'data-buddies-list': '' });
-      // Online first (by name), then offline.
-      const sorted = [...list.buddies].sort((a, b) => Number(online.has(b.id)) - Number(online.has(a.id)) || a.name.localeCompare(b.name));
+      // #646: online first (by name, as Glitch's ContactList), or A to Z.
+      const sorted = sortBuddies(list.buddies, online, sortMode);
       // G328: Visit their home street (PlayerInfoDialog.as 155-160), when a feature can take you there.
       const visit = (b) => (engine.query?.('canVisitHomes', engine) ? [{ kind: 'visit', label: 'Visit', run: () => { close(); engine.query?.('visitHome', b.id, b.name, engine); } }] : []);
       // IM a buddy, online or not (player-im-feature; the source's buddy list opened the player menu with IM, ContactElement.as:270).
@@ -572,7 +585,7 @@ function createSession(engine, client) {
     close,
     isIgnoring: (id) => isIgnoring(list, Number(id)),
     /**
-     * The drawer's Buddies tab (js/ui/social-drawer.js): your buddies, online first,
+     * The drawer's Buddies tab (js/ui/social-drawer.js): your buddies, online first or A to Z (#646),
      * each with where they are; who added you (newAdds: the ones the site marks new);
      * null until the list is in.
      */
@@ -581,8 +594,7 @@ function createSession(engine, client) {
       const here = String(engine.streetTsid || '');
       const canVisit = Boolean(engine.query?.('canVisitHomes', engine));
       const canIm = Boolean(engine.query?.('imReady', engine));
-      const rows = [...list.buddies]
-        .sort((a, b) => Number(online.has(b.id)) - Number(online.has(a.id)) || a.name.localeCompare(b.name))
+      const rows = sortBuddies(list.buddies, online, sortMode)
         .map((b) => {
           const p = online.get(b.id);
           const on = Boolean(p);
@@ -601,6 +613,15 @@ function createSession(engine, client) {
         addedYou: back.map((r) => r.name),
         newAdds: back.filter((r) => r.isNew).map((r) => r.id),
         manage: () => open(),
+        // #646: the order, and a way to change it (kept in this browser).
+        sort: sortMode,
+        setSort: (mode) => {
+          sortMode = normalizeBuddySort(mode);
+          saveBuddySort(sortMode);
+          engine.setData?.('buddiesSort', sortMode);
+          publish();
+          if (!shade.hidden) render();
+        },
       };
     },
     verbs(target) {

@@ -10795,6 +10795,9 @@ html[data-street-cards] .notify-notices { visibility: hidden; }
 .social-chip:hover { background: var(--surface-parchment); }
 .social-chip:disabled { opacity: 0.55; cursor: default; }
 .social-manage { align-self: flex-start; }
+/* #646: the buddy list's order: Glitch's online first, or A to Z. */
+.social-buddy-sort { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin-bottom: var(--sp-2); }
+.social-buddy-sort .social-chip[aria-pressed="true"] { background: var(--surface-parchment); border-color: var(--text); }
 /* R5: a refused thread reply's "Send in Global instead" under its refusal. */
 .social-thread-offer { display: flex; flex-direction: column; align-items: flex-start; gap: var(--sp-2); margin-bottom: var(--sp-3); }
 .social-buddies { display: grid; gap: var(--sp-1); margin: 0; padding: 0; list-style: none; }

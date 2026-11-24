@@ -122,6 +122,7 @@ import { avatarOf, createBuddyFaces } from './buddy-face.js?v=cb11f179';
 import { WHOS_HERE_TEXT, streetOthers, whosHereView } from '../whos-here.js?v=cb52c987';
 import { DELETE_CONFIRM_FOCUS, DELETE_TEXT, deleteConfirmRows } from '../chat-delete.js?v=c55a1043';
 import { htmlToText } from '../html-text.js?v=6bbf4d1f';
+import { BUDDY_SORTS, BUDDY_SORT_TEXT } from '../buddies.js?v=4457d8a4';
 
 export const SOCIAL_STORE_KEY = 'groddle-social-drawer';
 /** The drawer opens by default at this window width and up (the mock's 1440 rule). */
@@ -1205,6 +1206,16 @@ export function mountSocialDrawer({
       return out;
     }
     if (!data.rows.length) out.push(el('p', { class: 'social-empty' }, data.empty || 'No buddies yet.'));
+    // #646: Glitch's order (online first, each A to Z) or A to Z alone, so no row moves as people come and go.
+    if (data.rows.length > 1 && typeof data.setSort === 'function') {
+      const bar = el('div', { class: 'social-buddy-sort', role: 'group', 'aria-label': BUDDY_SORT_TEXT.label, 'data-social-buddy-sort': data.sort });
+      for (const mode of BUDDY_SORTS) {
+        const b = el('button', { type: 'button', class: 'social-chip', 'data-sort': mode, 'aria-pressed': String(data.sort === mode) }, BUDDY_SORT_TEXT[mode]);
+        b.addEventListener('click', () => data.sort !== mode && data.setSort(mode));
+        bar.append(b);
+      }
+      out.push(bar);
+    }
     const list = el('ul', { class: 'social-buddies', 'data-social-buddies': '' });
     for (const r of data.rows) {
       // RIGHTCLICK: the row opens the buddy's menu (a click, a right-click, a long press; Enter or
@@ -1335,6 +1346,8 @@ export function mountSocialDrawer({
         : t.empty ? [el('p', { class: 'social-empty' }, t.empty)] : [];
       log.setAttribute('aria-live', 'polite');
     }
+    // #646: the buddy list keeps its place while it redraws (people coming and going).
+    const keepTop = log.scrollTop;
     // Only the rows that changed are touched: a selection in the others stays (Cmd+C copies it).
     reconcileChildren(log, nodes);
     log.setAttribute('aria-label', th ? `${THREAD_TEXT.head} in ${t.label}` : t.kind === 'activity' ? 'Activity log' : t.kind === 'buddies' ? 'Buddies' : t.kind === 'chats' ? 'Chats' : `${t.label} chat`);
@@ -1351,7 +1364,9 @@ export function mountSocialDrawer({
     const showCompose = Boolean(form) && t.compose && t.live !== false;
     compose.hidden = !showCompose;
     // After the input shows or hides: it changes the log's height, and the end is measured with it.
-    if (atEnd || log.dataset.jump) log.scrollTop = log.scrollHeight;
+    // #646: a list opens at its top and stays where you are; a log follows its newest line.
+    if (t.kind === 'buddies' && !th) log.scrollTop = log.dataset.jump ? 0 : keepTop;
+    else if (atEnd || log.dataset.jump) log.scrollTop = log.scrollHeight;
     delete log.dataset.jump;
     if (input && showCompose) {
       const street = streetName();

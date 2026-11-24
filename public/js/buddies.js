@@ -175,3 +175,43 @@ export function applyStatus(online, msg) {
   }
   return online;
 }
+
+/**
+ * #646: the buddy list's two orders. 'online' (the default) is Glitch's: ContactList.as builds
+ * Online buddies over Offline buddies, each section sorted by label, case-insensitively
+ * (BaseContacts.as 154: SortTools.vectorSortOn(contact_sort, ['label'], [Array.CASEINSENSITIVE])).
+ * 'az' is every buddy by name alone (a player's request), so no row moves when people come and go.
+ */
+export const BUDDY_SORTS = Object.freeze(['online', 'az']);
+export const BUDDY_SORT_TEXT = Object.freeze({ label: 'Sort buddies', online: 'Online first', az: 'A to Z' });
+/** The per-browser key the chosen order is kept under. */
+export const BUDDY_SORT_KEY = 'groddle.buddySort';
+
+/** PURE: a known order, else Glitch's. */
+export function normalizeBuddySort(v) {
+  return BUDDY_SORTS.includes(v) ? v : 'online';
+}
+
+const byName = (a, b) => String(a?.name || '').localeCompare(String(b?.name || ''), undefined, { sensitivity: 'base' }) || (Number(a?.id) || 0) - (Number(b?.id) || 0);
+
+/** PURE: the buddies in `mode`'s order (`online`: a Set or Map of online ids). */
+export function sortBuddies(buddies = [], online = new Set(), mode = 'online') {
+  const on = (b) => Number(Boolean(online?.has?.(b.id)));
+  const list = [...(buddies || [])];
+  return normalizeBuddySort(mode) === 'az' ? list.sort(byName) : list.sort((a, b) => on(b) - on(a) || byName(a, b));
+}
+
+/** The chosen order from storage (a blocked or missing storage: Glitch's). */
+export function loadBuddySort(storage = globalThis.localStorage) {
+  try {
+    return normalizeBuddySort(storage?.getItem?.(BUDDY_SORT_KEY));
+  } catch {
+    return 'online';
+  }
+}
+
+export function saveBuddySort(mode, storage = globalThis.localStorage) {
+  try {
+    storage?.setItem?.(BUDDY_SORT_KEY, normalizeBuddySort(mode));
+  } catch { /* a blocked storage keeps it for the session */ }
+}
