@@ -150,6 +150,17 @@ In the remake, Rebuilt (from footage), Reimagined, Adapted for solo, Partly
 in, In multiplayer, Not yet, Lost, Never finished. One sentence under the badge
 says what that means for this kind of entry (ours).
 
+Quests Tiny Speck never shipped (Austin 2026-11-23) are listed from
+`tools/encyclopedia/unshipped-quests.mjs`, which wins over the inventory for the
+quests it names: Never finished, Retired (live once, then taken out) and Staff
+only. Each page leads with a "Not in Groddle" band: what happened to it, what is
+missing (no steps, no giver), whether Groddle has it or plans to, what the
+reference library keeps (in words only, never its pictures) and, for a never
+finished quest, a link to the site's Ideas board (`/chat/ideas/`) to ask for it.
+The quests list has status chips and By status lists for these. GSJS quest files
+with no page carry a reason there (`NO_PAGE`: test stubs and non-quests);
+`tests/encyclopedia-unshipped-quests.test.js` checks every file has one or the other.
+
 ## Blank stubs are left out
 
 Austin, 2026-11-03: "leave the blank pages out of the encyclopedia" (the

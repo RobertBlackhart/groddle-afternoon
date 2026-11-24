@@ -14,6 +14,7 @@ import { INVENTORY_DB } from '../tools/catalog/build.mjs';
 import { BUILT_SECTIONS, loadEncyclopedia, portrait, readInventoryAll } from '../tools/encyclopedia/data.mjs';
 import { CREATURE_STILLS, STILLS_DIR } from '../tools/encyclopedia/creature-stills.mjs';
 import { pathOf } from '../tools/encyclopedia/parts.mjs';
+import { questStatusOf } from '../tools/encyclopedia/unshipped-quests.mjs';
 import { servedByMinn } from './minn-served.js';
 
 const spike = join(import.meta.dirname, '..');
@@ -51,7 +52,8 @@ describe('encyclopedia', () => {
       // Every kept row with Tiny Speck's data behind it (quests.json, skills.json, achievements.json) is listed.
       assert.ok(built.length >= kept.length - 12, `${sec}: ${built.length} of ${kept.length}`);
       for (const e of built) {
-        assert.equal(e.status, inv[kind].get(e.id).status, e.key);
+        // Quests Tiny Speck never shipped carry the encyclopedia's own status (unshipped-quests.mjs).
+        assert.equal(e.status, kind === 'quest' ? questStatusOf(e.id, inv[kind].get(e.id)?.status) : inv[kind].get(e.id).status, e.key);
         assert.match(read(pageOf(e.key)), new RegExp(`<span class="pill st-${e.status}">`), e.key);
       }
     }

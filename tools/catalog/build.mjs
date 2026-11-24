@@ -52,6 +52,7 @@ import { whereToFind } from '../encyclopedia/where-to-find.mjs';
 import { streetsWithIt } from '../encyclopedia/streets.mjs';
 import { entrySearch, inRemake, makeParts, sep } from '../encyclopedia/parts.mjs';
 import { neverReleased, neverReleasedNote, neverReleasedTag } from '../encyclopedia/never-released.mjs';
+import { UNSHIPPED_QUESTS, questStatusOf } from '../encyclopedia/unshipped-quests.mjs';
 import { loadCosts } from './costs.mjs';
 import { loadHero } from './hero.mjs';
 import { loadUses } from './uses.mjs';
@@ -755,7 +756,10 @@ export const QUEST_OFFERED = new Set(['source', 'rebuilt', 'solo', 'multiplayer'
 export function readQuestStatus(path = INVENTORY_DB) {
   const db = new DatabaseSync(path, { readOnly: true });
   try {
-    return new Map(db.prepare("SELECT id, status FROM entities WHERE kind = 'quest'").all().map((r) => [r.id, r.status]));
+    const status = new Map(db.prepare("SELECT id, status FROM entities WHERE kind = 'quest'").all().map((r) => [r.id, r.status]));
+    // The encyclopedia's own record of the quests Tiny Speck never shipped wins (unshipped-quests.mjs).
+    for (const id of Object.keys(UNSHIPPED_QUESTS)) status.set(id, questStatusOf(id, status.get(id)));
+    return status;
   } finally {
     db.close();
   }
@@ -1094,7 +1098,7 @@ ${usesHtml.length ? `          <ul class="cat-list">
   const QUEST_REL = { needs: 'needs it', tool: 'needs it as a tool', rewards: 'a reward', gives: 'given to you', mentions: 'named in it', involves: 'involves it' };
   const qRank = { needs: 0, tool: 1, rewards: 2, gives: 3, involves: 4, mentions: 5 };
   // G1021: a quest the game never offers is no way to get it: its reward or gift reads as what it is.
-  const NOT_OFFERED = { unbuilt_original: 'never offered in Glitch' };
+  const NOT_OFFERED = { unbuilt_original: 'never offered in Glitch', retired_original: 'retired by Tiny Speck', staff_only: 'only for Tiny Speck’s staff' };
   const unoffered = (b) => (b.rel === 'rewards' || b.rel === 'gives') && !QUEST_OFFERED.has(ctx.questStatus?.get(b.from.slice(7)));
   const questTiles = fromAll((b) => b.from.startsWith('quests:')).map((b) => ({ ...b, rel: backs.filter((x) => x.from === b.from).sort((x, y) => qRank[x.rel] - qRank[y.rel])[0].rel }))
     .map((b) => (unoffered(b) ? { ...b, rel: 'unoffered', sub: `${QUEST_REL[b.rel]}, ${NOT_OFFERED[ctx.questStatus?.get(b.from.slice(7))] || 'not offered in the remake'}` } : b))

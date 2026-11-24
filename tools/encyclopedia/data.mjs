@@ -34,6 +34,7 @@ import { addStreets, streetsSection } from './streets.mjs';
 import { addStores, storesSection } from './stores.mjs';
 import { addWhereToFind, GSJS_GIVER_HOW } from './where-to-find.mjs';
 import { CREATURE_STILLS, STILLS_DIR } from './creature-stills.mjs';
+import { UNSHIPPED_QUESTS, questStatusOf } from './unshipped-quests.mjs';
 
 const root = join(import.meta.dirname, '..', '..');
 export const PUB = join(root, 'public');
@@ -223,10 +224,14 @@ export async function loadEncyclopedia({ inventory = readInventoryAll() } = {}) 
   const bureaucracy = await import(js('bureaucracy.js'));
 
   /* Quests (inventory kind quest; street projects are a kind of their own). */
-  for (const [id, r] of live('quest')) {
+  // Quests Tiny Speck never shipped (unshipped-quests.mjs) are listed even where the inventory leaves
+  // them out, with that list's status: never finished, retired, staff only, or built in a season.
+  const questRows = new Map(live('quest'));
+  for (const id of Object.keys(UNSHIPPED_QUESTS)) if (!questRows.has(id)) questRows.set(id, { status: 'excluded', register: null });
+  for (const [id, r] of questRows) {
     if (!quests[id]) continue;
     const q = { ...quests[id], offerTriggers: ownOfferTriggers(id, quests[id].offerTriggers, skills) };
-    add('quests', id, { name: String(q.title).trim(), status: r.status, register: r.register, quest: q, icon: picture('assets/ui/quest-book.webp'), group: questGroup(id, q) });
+    add('quests', id, { name: String(q.title).trim(), status: questStatusOf(id, r.status), register: r.register, quest: q, icon: picture('assets/ui/quest-book.webp'), group: questGroup(id, q), unshipped: UNSHIPPED_QUESTS[id] || null });
   }
 
   /* Skills. */

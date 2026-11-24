@@ -23,6 +23,9 @@ export const STATUS = {
   missing: { label: 'Not yet', inRemake: false },
   lost: { label: 'Lost', inRemake: false },
   unbuilt_original: { label: 'Never finished', inRemake: false },
+  // Quests only (unshipped-quests.mjs): live once and retired by Tiny Speck, or only ever for their staff.
+  retired_original: { label: 'Retired', inRemake: false },
+  staff_only: { label: 'Staff only', inRemake: false },
   // Music and sounds (tools/encyclopedia/sounds.mjs): what the remake plays for a sound of the original.
   snd_original: { label: 'Original', inRemake: true },
   snd_standin: { label: 'Stand-in', inRemake: true },

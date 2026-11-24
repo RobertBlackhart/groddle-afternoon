@@ -3,10 +3,11 @@
  * behind them: Musicblocks and Street music are Minn pages (tools/musicblocks/
  * to-minn.mjs, tools/streetmusic/to-minn.mjs) over folders that hold only
  * their data, as does Contribute (tools/contribute/to-minn.mjs, its data and shrine script); Credits (tools/credits/to-minn.mjs) and the privacy policy (a page made in Minn Admin,
- * published 2026-10-29) have no folder at all. Tests that check a built page's links resolve to files skip
+ * published 2026-10-29) have no folder at all, and the community boards under chat/ are the site's own
+ * pages (groddle-afternoon-site src/CommunityPages.php; the encyclopedia links the Ideas board). Tests that check a built page's links resolve to files skip
  * these.
  */
-export const MINN_SECTIONS = ['musicblocks/', 'street-music/', 'credits/', 'privacy-policy/', 'contribute/'];
+export const MINN_SECTIONS = ['musicblocks/', 'street-music/', 'credits/', 'privacy-policy/', 'contribute/', 'chat/'];
 
 /** Whether a page-relative link points into a Minn-served section. */
 export function servedByMinn(ref) {

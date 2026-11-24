@@ -8,8 +8,8 @@
 .st-missing { --tone: var(--sun); }
 .st-multiplayer { --tone: var(--sky); }
 .st-lost { --tone: var(--plum); }
-.st-unbuilt_original { --tone: var(--stone); }
-.dot.st-source, .dot.st-missing, .dot.st-multiplayer, .dot.st-lost, .dot.st-unbuilt_original { background: var(--tone); }
+.st-unbuilt_original, .st-retired_original, .st-staff_only { --tone: var(--stone); }
+.dot.st-source, .dot.st-missing, .dot.st-multiplayer, .dot.st-lost, .dot.st-unbuilt_original, .dot.st-retired_original, .dot.st-staff_only { background: var(--tone); }
 
 /* —— The catalog —— */
 .cat-head { padding-bottom: 20px; }

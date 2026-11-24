@@ -28,6 +28,7 @@ import { GIANTS, PUB, SECTIONS, giantIcon, loadEncyclopedia, picture, questTakes
 import { SOUND_GROUPS } from './sounds.mjs';
 import { MORE_PAGES } from './sections.mjs';
 import { neverReleased, neverReleasedNote, neverReleasedTag } from './never-released.mjs';
+import { CAMERA_LINE, unshippedChip } from './unshipped-quests.mjs';
 import { tablesForSkill, timeLead, timeTableHtml } from './skill-times.mjs';
 import { STATUS, andList, article, badge, entrySearch, esc, fmt, inRemake, makeParts, pathOf, plainText, sep, statusLabel, tsHtml } from './parts.mjs';
 import { regionMoreStreets, regionStreetName, streetPage, streetsIndex, streetsWithIt } from './streets.mjs';
@@ -49,6 +50,8 @@ const STATUS_TEXT = {
     solo: 'You can do this quest in the remake, reworked so you can do it on your own.',
     multiplayer: 'This quest needs other players: you can do it in multiplayer.',
     unbuilt_original: 'Never finished in the original: Tiny Speck’s code has it, but the game never offered it.',
+    retired_original: 'Retired in the original: players had it once, then Tiny Speck took it out.',
+    staff_only: 'Only Tiny Speck’s staff were ever offered it.',
   },
   animals: {
     source: 'In the remake: you will meet it out in the world.',
@@ -158,7 +161,7 @@ function entryHead(e, P, { kickerExtra = '', subline = '', hero = '', frame = ''
         <div>
           <h1>${esc(e.name)}</h1>
           <p class="cat-plural">${subline || '&nbsp;'}</p>
-          <p class="cat-status">${badge(e.status)}${nr ? ` ${neverReleasedTag()}` : ''}${caption ? ` <span class="cat-register">${esc(caption)}</span>` : ''}</p>${nr ? `\n          ${neverReleasedNote(nr)}` : ''}
+          <p class="cat-status">${unshippedChip(e.unshipped) ? `<span class="pill st-${esc(e.status)}">${esc(unshippedChip(e.unshipped))}</span>` : badge(e.status)}${nr ? ` ${neverReleasedTag()}` : ''}${caption ? ` <span class="cat-register">${esc(caption)}</span>` : ''}</p>${nr ? `\n          ${neverReleasedNote(nr)}` : ''}
         </div>
       </div>
     </div>
@@ -167,7 +170,8 @@ function entryHead(e, P, { kickerExtra = '', subline = '', hero = '', frame = ''
 
 function remakeBand(e, extra = '') {
   const nr = neverReleased(e.key);
-  return band('remake-h', 'In the remake', `<div class="cat-remake-body"><p class="cat-status-text">${esc(nr ? nr.remake : statusText(e.section, e.status))}</p>${extra}</div>`, { alt: true });
+  const words = nr ? nr.remake : e.unshipped?.remake || statusText(e.section, e.status);
+  return band('remake-h', 'In the remake', `<div class="cat-remake-body"><p class="cat-status-text">${esc(words)}</p>${e.unshipped ? '' : extra}</div>`, { alt: true });
 }
 
 function pager(list, i, label) {
@@ -263,8 +267,40 @@ export async function buildEncyclopedia(data = null) {
 
 /* -- Quests ------------------------------------------------- */
 
-function questPage(e, P, { linkFor, backOf, uniqBy, info, d }) {
+/** Our words with `{quests:<id>}` links (unshipped-quests.mjs), as HTML. */
+function linkWords(text, P, info) {
+  return esc(text).replace(/\{(quests:[a-z0-9_]+)\}/g, (m, key) => (info(key) ? `<a href="${P.href(key)}">${esc(info(key).name)}</a>` : esc(key.slice(7))));
+}
+
+/** What players are told the status means, at the top of a quest Tiny Speck never shipped. */
+const UNSHIPPED_ABOUT = {
+  unbuilt_original: 'Tiny Speck wrote this quest but never finished it, and players were never offered it.',
+  retired_original: 'Players had this quest once, then Tiny Speck retired it.',
+  staff_only: 'Only Tiny Speck’s staff were ever offered this quest. Players never had it.',
+};
+
+/**
+ * The top band of a quest Tiny Speck never shipped (unshipped-quests.mjs): what happened to it, what
+ * is missing, whether Groddle has it, the camera line it belongs to, what the reference library keeps
+ * (in words only) and, for a never finished one, how to ask for it on the site's Ideas board
+ * (/chat/ideas/; the board's new-topic form takes no prefill, so the link opens the board).
+ */
+function unshippedBand(e, P, info, p) {
+  const u = e.unshipped;
+  const lines = [UNSHIPPED_ABOUT[e.status], u.replaced, u.half, u.remake].filter(Boolean).map((t) => `<p>${linkWords(t, P, info)}</p>`);
+  const i = CAMERA_LINE.indexOf(e.id);
+  const line = i < 0 ? '' : sub('The camera quests', `<p>Part ${i + 1} of ${CAMERA_LINE.length}. Tiny Speck wrote them as one line, none of them finished:</p>
+        <ol class="cat-list ency-quest-line">${CAMERA_LINE.map((id) => (id === e.id ? `<li><strong>${esc(e.name)}</strong></li>` : `<li>${linkWords(`{quests:${id}}`, P, info)}</li>`)).join('')}</ol>`);
+  const refs = u.refs ? sub('Reference', `<p>${linkWords(u.refs, P, info)}</p>`) : '';
+  const ask = u.ask ? sub('Ask for this one', `<p>Would you like Groddle to finish this quest? Tell us on the Ideas board: start a topic with the quest’s name, ${esc(e.name)}, so others can add their voice.</p>
+        ${P.chips([P.chip('Tell us on the Ideas board', { link: `${p}chat/ideas/`, cls: 'ency-ask' })])}`) : '';
+  return band('unshipped-h', inRemake(e.status) ? 'About this quest' : 'Not in Groddle', [lines.join(''), line, refs, ask].filter(Boolean).join('\n        '), { alt: true });
+}
+
+function questPage(e, P, { linkFor, backOf, uniqBy, info, d, kit }) {
   const q = e.quest;
+  const u = e.unshipped;
+  const playable = inRemake(e.status);
   const has = (key) => Boolean(info(key));
   // How to get it.
   const how = [];
@@ -304,6 +340,8 @@ function questPage(e, P, { linkFor, backOf, uniqBy, info, d }) {
       else if (c.value === 'no_butler') how.push('Only while you do not have a Butler yet.');
     }
   }
+  // A quest Tiny Speck never shipped says who gave it (or that nothing did) in place of the default line.
+  if (u?.gave) how.unshift(linkWords(u.gave, P, info));
   if (!how.length) how.push(q.autoComplete ? 'It starts and finishes by itself as you play.' : 'The game offers it as you play.');
 
   // Steps.
@@ -322,6 +360,7 @@ function questPage(e, P, { linkFor, backOf, uniqBy, info, d }) {
     else if (r.classId) { const k = keyOrStub(r.classId); if (k) parts.push(P.tiles([P.tile(k, { n: r.num })])); }
     return `<li><p class="ency-step-title">${title || 'Do what the quest asks.'}</p>${parts.join('')}</li>`;
   });
+  if (!steps.length && u) steps.push('<li><p class="ency-step-title">Tiny Speck never wrote its steps.</p></li>');
   if (q.timer?.durationSec) steps.push(`<li><p class="ency-step-title">All of it within ${learnTime(q.timer.durationSec * 10)}: a countdown runs from the moment you take the quest, and the quest fails if it runs out.</p></li>`);
 
   // Where to go.
@@ -335,6 +374,8 @@ function questPage(e, P, { linkFor, backOf, uniqBy, info, d }) {
   if (back2.length) { where.push(`Hand it in to ${andList(back2.map(name))}.`); back2.forEach((k) => whereTiles.push(P.tile(k, { sub: 'hand it in' }))); }
   // familiar_turnin (inc_quests.js quests_familiar_turnin): the Magic Rock takes what the steps hand in;
   // a quest with nothing to hand in (Legalize It's card is activated from the pack) just ends where you are.
+  // A quest nobody could play has no Magic Rock coming to end it: that line is the code's default.
+  else if (u && !playable) { /* nothing */ }
   else if (q.familiarTurnin && q.requirements.some((r) => r.type === 'item' && r.remove)) where.push('Hand it in to your Magic Rock, wherever you are.');
   else if (q.familiarTurnin) where.push('Nothing to hand in: when the last step is done, your Magic Rock comes to you with the end of the quest, wherever you are.');
 
@@ -364,13 +405,14 @@ function questPage(e, P, { linkFor, backOf, uniqBy, info, d }) {
 
   const solo = q.soloReason && SOLO_REASON[q.soloReason] ? `<p>${esc(SOLO_REASON[q.soloReason])}</p>` : '';
   const kinds = [q.isRepeatable && 'repeatable', q.isMultiplayer && 'with other players', q.timer && 'timed'].filter(Boolean);
+  const howTitle = !u || playable ? 'How to get this quest' : e.status === 'unbuilt_original' ? 'Who would give it' : 'How it was given';
   return `${entryHead(e, P, { subline: kinds.length ? esc(`Quest · ${kinds.join(' · ')}`) : 'Quest' })}
-  <main>${band('how-h', 'How to get this quest', `<ul class="cat-list">${how.map((h) => `<li>${h}</li>`).join('')}</ul>\n        ${P.tiles(howTiles)}`)}
+  <main>${u && !playable ? unshippedBand(e, P, info, kit.p) : ''}${band('how-h', howTitle, `<ul class="cat-list">${how.map((h) => `<li>${h}</li>`).join('')}</ul>\n        ${P.tiles(howTiles)}`)}
 ${band('steps-h', 'Steps', `<ol class="ency-steps">${steps.join('\n          ')}</ol>${where.length ? `\n        ${sub('Where to go', `<ul class="cat-list">${where.map((w) => `<li>${w}</li>`).join('')}</ul>${P.tiles(whereTiles)}`)}` : ''}`, { alt: true, lead: 'Each step in Tiny Speck’s words, with what it needs.' })}
 ${band('rewards-h', 'Rewards', `${P.chips(rewards)}${P.tiles(rewardTiles)}` || '', {})}
 ${band('rel-h', 'Linked to this quest', [sub('Comes next', P.tiles(leads)), sub('Things it involves', P.tiles(involved)), sub('Sounds', P.tiles(soundTiles(e.key, P, backOf, uniqBy)))].filter(Boolean).join('\n        '), { alt: true })}
 ${band('words-h', 'In Tiny Speck’s words', `${words}\n        <p class="cat-source">From Tiny Speck’s game code.</p>`)}
-${remakeBand(e, solo)}
+${u && !playable ? '' : remakeBand(e, solo)}
   </main>`;
 }
 
@@ -744,14 +786,43 @@ function stillMissingPage(list, info, nameOf) {
 
 const GROUP_WORD = { quests: 'Kind', animals: 'Kind', people: 'Kind', skills: 'Category', places: 'Kind', achievements: 'Category', sounds: 'Group', streets: 'Region', stores: 'Kind' };
 
+/**
+ * The quests list's status chips and its By status lists (anchors without JavaScript, as on Music and
+ * sounds): the quests not in the remake, so players can browse the never finished ones on their own.
+ */
+const QUEST_STATUS_MEANS = {
+  missing: 'Not in Groddle yet: the original had them, and they are on the list to bring back.',
+  lost: 'Lost for now: they needed other players or Tiny Speck’s own servers in a way Groddle does not bring back yet.',
+  unbuilt_original: 'Never finished by Tiny Speck: written, but never offered to players. Each page shows what survives, and you can ask for one on the Ideas board.',
+  retired_original: 'Retired by Tiny Speck: players had these once, before the game changed. What replaced them is in Groddle.',
+  staff_only: 'Only Tiny Speck’s staff were ever offered these.',
+};
+
+function questStatusParts(list) {
+  const order = Object.keys(STATUS).filter((st) => list.some((e) => e.status === st));
+  const n = (st) => list.filter((e) => e.status === st).length;
+  const chips = `<ul class="snd-status" role="group" aria-label="Status">${order.map((st) => `<li><a class="chip" href="#st-${st}" data-st="${st}"><span class="dot st-${st}" aria-hidden="true"></span><span>${esc(statusLabel(st))}</span> <span class="count">${fmt(n(st))}</span></a></li>`).join('')}</ul>`;
+  const lists = order.filter((st) => !inRemake(st)).map((st) => `<h3 id="st-${st}"><span class="dot st-${st}" aria-hidden="true"></span> ${esc(statusLabel(st))} <span class="count">${fmt(n(st))}</span></h3>
+        <p class="snd-blurb">${esc(QUEST_STATUS_MEANS[st] || `${statusLabel(st)}.`)}</p>
+        <ul class="snd-names">${list.filter((e) => e.status === st).map((e) => `<li><a href="${esc(e.id)}/">${esc(e.name)}</a></li>`).join('')}</ul>`);
+  // The chips of statuses in the remake have no list of their own: their anchor is the whole list.
+  const inAnchors = order.filter(inRemake).map((st) => `<span id="st-${st}"></span>`).join('');
+  const section = `<section class="snd-by-status" id="by-status" aria-labelledby="by-status-h">${inAnchors}
+        <h2 id="by-status-h">Not in the remake, by status</h2>
+        ${lists.join('\n        ')}
+      </section>`;
+  return { chips, section };
+}
+
 function sectionIndex(sec, list, info, nameOf) {
   const p = '../../';
   const P = makeParts(p, info, nameOf);
   const groups = [...new Set(list.map((e) => e.group))];
   const inCount = list.filter((e) => inRemake(e.status)).length;
+  const byStatus = sec.key === 'quests' ? questStatusParts(list) : null;
   const groupHtml = groups.map((g) => {
     // A section's tilePic draws its cards with another picture than the entry's icon (the Giants' portraits).
-    const rows = list.filter((e) => e.group === g).map((e) => P.tile(e.key, { sub: `<span class="cat-st st-${esc(e.status)}">${esc(statusLabel(e.status))}</span>${neverReleased(e.key) ? ` ${neverReleasedTag()}` : ''}`, ...(sec.tilePic?.(e) || {}) }).replace('<li>', `<li data-name="${esc(e.name.toLowerCase())}">`));
+    const rows = list.filter((e) => e.group === g).map((e) => P.tile(e.key, { sub: `<span class="cat-st st-${esc(e.status)}">${esc(statusLabel(e.status))}</span>${neverReleased(e.key) ? ` ${neverReleasedTag()}` : ''}`, ...(sec.tilePic?.(e) || {}) }).replace('<li>', `<li data-name="${esc(e.name.toLowerCase())}"${byStatus ? ` data-status="${esc(e.status)}"` : ''}>`));
     return `<section class="ency-group" aria-label="${esc(g)}" data-group="${esc(g)}"><h2>${esc(g)} <span class="count">${fmt(rows.length)}</span></h2>${P.tiles(rows, 'ency-grid')}</section>`;
   }).join('\n      ');
   const body = `
@@ -761,7 +832,7 @@ function sectionIndex(sec, list, info, nameOf) {
       <h1>${esc(sec.label)}</h1>
       <p class="lead">${esc(sec.blurb)}</p>
       <p class="cat-score"><strong>${fmt(inCount)}</strong> of ${fmt(list.length)}${sec.noun ? ` ${esc(sec.noun)}` : ''} are in the remake.${sec.scoreMore ? ` ${sec.scoreMore(list)}` : ''}</p>
-    </div>
+${byStatus ? `      ${byStatus.chips}\n` : ''}    </div>
   </header>
 
   <main class="band cat-main">
@@ -781,7 +852,7 @@ ${groups.map((g) => { const pic = list.find((e) => e.group === g && e.icon)?.ico
         </div>\n` : ''}
       </div>
       <p class="cat-count" id="count" aria-live="polite">${fmt(list.length)} ${esc(sec.noun || sec.label.toLowerCase())}</p>
-      ${groupHtml}
+      ${groupHtml}${byStatus ? `\n      ${byStatus.section}` : ''}
     </div>
   </main>
 `;
