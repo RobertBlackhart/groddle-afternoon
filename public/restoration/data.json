@@ -2814,9 +2814,19 @@
   "deployed": "2026-11-24"
  },
  "git": {
-  "commits": 3386,
+  "commits": 3389,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-24",
+    "kind": "improve",
+    "text": "The band over a short scene reads the screen only when the view moves"
+   },
+   {
+    "date": "2026-11-24",
+    "kind": "improve",
+    "text": "On an upright phone the top of the screen shows the scene, not a dark band"
+   },
    {
     "date": "2026-11-24",
     "kind": "new",
@@ -2926,16 +2936,6 @@
     "date": "2026-11-24",
     "kind": "fix",
     "text": "More of a thing set on its stack on your house floor joins it, and you can move floor stacks"
-   },
-   {
-    "date": "2026-11-24",
-    "kind": "fix",
-    "text": "Things set on your house floor are for everyone again, not locked"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "The Buddies list really opens at the top: the chat log's keep-at-the-end watcher leaves it alone"
    }
   ]
  },
