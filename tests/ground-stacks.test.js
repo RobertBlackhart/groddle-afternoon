@@ -18,7 +18,7 @@ import assert from 'node:assert/strict';
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { groundKey, groundStacks, ownGroundPlaces, ownGroundRows, ownGroundState, pruneOwnGround, sharedGroundStacks } from '../public/js/ground-stacks.js?v=22792362';
-import { createDroppedItemState, setDownStack } from '../public/js/world-items.js?v=5101fb03';
+import { createDroppedItemState, setDownStack } from '../public/js/world-items.js?v=f5f9e017';
 import { dropsMpFeature } from '../public/js/features/drops-mp-feature.js?fresh=groundstacks';
 import { homeLivePrints, changedHomeKinds } from '../public/js/home-live.js?v=9c7abae7';
 import { GAME_DIR } from '../tools/repos.mjs';
@@ -52,10 +52,10 @@ describe('the accessor', () => {
 
   it('a stack from no pack is set down on a surface, or joins the like stack named', () => {
     const state = createDroppedItemState({ streets: { RH_HOME_INT: [{ id: 'world-item-1', classTsid: 'honey', count: 3, x: 900, y: 400, on: 4 }] } });
-    const joined = setDownStack(state, 'RH_HOME_INT', 'honey', 48, { x: 905, y: 400 }, { on: 4, into: 'world-item-1', now: 5 });
-    assert.deepEqual(joined, { ok: true, id: 'world-item-1', count: 48, merged: true });
+    const joined = setDownStack(state, 'RH_HOME_INT', 'honey', 30, { x: 905, y: 400 }, { on: 4, into: 'world-item-1', now: 5 });
+    assert.deepEqual(joined, { ok: true, id: 'world-item-1', count: 30, merged: true });
     assert.equal(state.streets.RH_HOME_INT.length, 1);
-    assert.equal(state.streets.RH_HOME_INT[0].count, 51);
+    assert.equal(state.streets.RH_HOME_INT[0].count, 33);
     const alone = setDownStack(state, 'RH_HOME_INT', 'emblem_alph', 2, { x: 600, y: 300 }, { on: 7, into: 'world-item-1' });
     assert.equal(alone.merged, false, 'an unlike stack named does not take it');
     assert.equal(state.streets.RH_HOME_INT.find((r) => r.id === alone.id).on, 7);
@@ -134,7 +134,7 @@ describe('Decoration Mode at the owner\'s own house online', () => {
     dropsMpFeature.init(engine);
     dropsMpFeature.onTick(16, 0, engine);
     await tick();
-    client.emit('msg:ground_state', { street: 'HOUSE_7', stacks: [stack(OP, 'honey', 48, 300), stack(OP2, 'emblem_alph', 12, 500), stack(OP3, 'cherry', 2, 600)] });
+    client.emit('msg:ground_state', { street: 'HOUSE_7', stacks: [stack(OP, 'honey', 30, 300), stack(OP2, 'emblem_alph', 12, 500), stack(OP3, 'cherry', 2, 600)] });
   });
   after(() => {
     delete globalThis.document;
@@ -149,7 +149,7 @@ describe('Decoration Mode at the owner\'s own house online', () => {
     assert.equal(all.find((s) => s.id === OP).x, 1050, 'drawn from the house\'s left end, as Decoration Mode hits it');
   });
 
-  it('moving the 48 honey onto the shelf\'s older honey asks the server for all of it, and nothing moves yet', () => {
+  it('moving the 30 honey onto the shelf\'s older honey asks the server for all of it, and nothing moves yet', () => {
     const res = dropsMpFeature.claimSharedStack(OP, { tsid: 'RH_HOME_INT', x: 1004, y: 400, on: 4, into: 'world-item-1' }, engine);
     assert.deepEqual(res, { ok: true });
     assert.deepEqual(client.sent.at(-1), ['ground_pickup', { id: OP, ox: 750 }], 'the whole stack: no count');
@@ -160,16 +160,16 @@ describe('Decoration Mode at the owner\'s own house online', () => {
   it('the site\'s answer stacks it with the older honey in the save, locked to the owner, never through the pack', async () => {
     const pack = packCount();
     client.emit('msg:ground_gone', { id: OP, by: { id: 7, name: 'Ada' }, why: 'picked' });
-    client.emit('msg:ground_taken', { op: `${OP}-t`, id: OP, status: 'settled', item: { c: 'honey', n: 48 } });
+    client.emit('msg:ground_taken', { op: `${OP}-t`, id: OP, status: 'settled', item: { c: 'honey', n: 30 } });
     assert.equal(packCount(), pack, 'the pack never held it');
-    assert.deepEqual(state.streets.RH_HOME_INT.map((r) => [r.id, r.classTsid, r.count, r.on]), [['world-item-1', 'honey', 51, 4]]);
-    assert.equal(groundCount('honey'), 51, 'once');
+    assert.deepEqual(state.streets.RH_HOME_INT.map((r) => [r.id, r.classTsid, r.count, r.on]), [['world-item-1', 'honey', 33, 4]]);
+    assert.equal(groundCount('honey'), 33, 'once');
     assert.deepEqual(claimed, ['world-item-1']);
     // The same answer again, or the site's list on the next connect, applies nothing more.
-    client.emit('msg:ground_taken', { op: `${OP}-t`, id: OP, status: 'settled', item: { c: 'honey', n: 48 } });
-    siteDrops = [{ op: `${OP}-t`, id: OP, item: { c: 'honey', n: 48 } }];
+    client.emit('msg:ground_taken', { op: `${OP}-t`, id: OP, status: 'settled', item: { c: 'honey', n: 30 } });
+    siteDrops = [{ op: `${OP}-t`, id: OP, item: { c: 'honey', n: 30 } }];
     await globalThis.groddleDrops.sync();
-    assert.equal(groundCount('honey'), 51);
+    assert.equal(groundCount('honey'), 33);
     assert.equal(engine.inv.honey, undefined);
   });
 

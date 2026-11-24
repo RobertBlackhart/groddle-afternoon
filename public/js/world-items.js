@@ -8,7 +8,7 @@
  */
 import { addItem, ITEM_CATALOG, removeItem } from './inventory.js?v=6414dbdc';
 import { canRenameBag, cleanBagName } from './bag-names.js?v=bba085e1';
-import { bagKeep } from './pack-slots.js?v=d9ab4a0b';
+import { bagKeep, stackMaxOf } from './pack-slots.js?v=d9ab4a0b';
 import { ITEM_PLURALS } from './item-plurals-data.js?v=62e96051';
 
 export const WORLD_ITEM_STATE_VERSION = 1;
@@ -202,9 +202,12 @@ export function dropInventoryStack(state, inv, streetTsid, classTsid, requested,
   const y = finite(position?.y, 0);
   const rows = state.streets[street] || (state.streets[street] = []);
   const mergeRadius = Math.max(0, finite(opts.mergeRadius, DEFAULT_MERGE_RADIUS));
+  // A like stack takes no more than its class's stackmax (Eleven's Location.addItem 475-503, it.count < it.stackmax):
+  // a full one takes none, and what does not fit lies as its own stack.
+  const max = stackMaxOf(item);
   const merge = opts.merge !== false
     ? rows
-      .filter((row) => row.classTsid === item && !row.contents && !row.name && !row.sort)
+      .filter((row) => row.classTsid === item && !row.contents && !row.name && !row.sort && cleanCount(row.count) < max)
       .map((row) => ({ row, distance: Math.hypot(row.x - x, row.y - y) }))
       .filter((candidate) => candidate.distance <= mergeRadius)
       .sort((a, b) => a.distance - b.distance)[0]?.row
@@ -213,7 +216,8 @@ export function dropInventoryStack(state, inv, streetTsid, classTsid, requested,
   const points = cleanPoints(opts.points, count);
   const tags = cleanTags(opts.tags, count);
   if (!removeItem(inv, item, count)) return { ok: false, reason: 'missing' };
-  if (merge) {
+  const joins = merge ? Math.min(count, max - cleanCount(merge.count)) : 0;
+  if (merge && joins === count) {
     // Tools keep their own wear: a stack's points line up with its first tools, any without one are full.
     if (points || merge.points) merge.points = [...pointsFor(merge.points, merge.count), ...pointsFor(points, count)];
     if (tags || merge.tags) merge.tags = [...pointsFor(merge.tags, merge.count), ...pointsFor(tags, count)];
@@ -222,21 +226,32 @@ export function dropInventoryStack(state, inv, streetTsid, classTsid, requested,
     if (opts.decor === true) merge.decor = true;
     return { ok: true, count, stack: { ...merge }, merged: true, remaining: inv[item] || 0 };
   }
+  if (merge && joins > 0) {
+    // Part fills the like stack to its stackmax; the rest lies beside it as its own stack.
+    if (points || merge.points) merge.points = [...pointsFor(merge.points, merge.count), ...pointsFor(points, count).slice(0, joins)];
+    if (tags || merge.tags) merge.tags = [...pointsFor(merge.tags, merge.count), ...pointsFor(tags, count).slice(0, joins)];
+    merge.count += joins;
+    merge.droppedAt = Math.max(0, Math.floor(finite(opts.now, Date.now())));
+    if (opts.decor === true) merge.decor = true;
+  }
+  const rest = count - joins;
+  const restPoints = joins && points ? points.slice(joins) : points;
+  const restTags = joins && tags ? tags.slice(joins) : tags;
 
   const stack = {
     id: `world-item-${state.nextId++}`,
     streetTsid: street,
     classTsid: item,
-    count,
+    count: rest,
     x,
     y,
     droppedAt: Math.max(0, Math.floor(finite(opts.now, Date.now()))),
-    ...(points ? { points } : {}),
-    ...(tags ? { tags } : {}),
+    ...(restPoints?.some((r) => r != null) ? { points: restPoints } : {}),
+    ...(restTags?.some((t) => t != null) ? { tags: restTags } : {}),
     ...(opts.decor === true ? { decor: true } : {}),
   };
   rows.push(stack);
-  return { ok: true, count, stack: { ...stack }, merged: false, remaining: inv[item] || 0 };
+  return { ok: true, count, stack: { ...stack }, merged: joins > 0, remaining: inv[item] || 0, ...(joins ? { joined: joins, into: merge.id } : {}) };
 }
 
 /**
@@ -265,6 +280,8 @@ export function likeStackAt(rows, stack, x, on, radius = PLACED_MERGE_RADIUS) {
   let best = null;
   for (const row of rows) {
     if (row === stack || row.id === stack.id || row.classTsid !== stack.classTsid || !joinable(row)) continue;
+    // A full stack takes no more (its class's stackmax, Eleven's Location.addItem 475-503).
+    if (cleanCount(row.count) >= stackMaxOf(row.classTsid)) continue;
     if ((row.on ?? null) !== surface) continue;
     const d = Math.abs(finite(row.x, Infinity) - px);
     if (d <= radius && (!best || d < best.d)) best = { row, d };
@@ -285,13 +302,30 @@ export function mergeDroppedStacks(state, streetTsid, fromId, intoId, opts = {})
   const from = rows[index];
   if (!from || !into) return { ok: false, reason: 'missing' };
   if (from.classTsid !== into.classTsid || !joinable(from) || !joinable(into)) return { ok: false, reason: 'unlike' };
-  const count = cleanCount(from.count);
   const had = cleanCount(into.count);
-  if (from.points || into.points) into.points = [...pointsFor(into.points, had), ...pointsFor(from.points, count)];
-  if (from.tags || into.tags) into.tags = [...pointsFor(into.tags, had), ...pointsFor(from.tags, count)];
+  // No more than its class's stackmax (Eleven's Location.addItem 475-503): a full stack takes none,
+  // and what does not fit stays in the stack moved (`left`).
+  const room = stackMaxOf(into.classTsid) - had;
+  if (room < 1) return { ok: false, reason: 'full' };
+  const all = cleanCount(from.count);
+  const count = Math.min(all, room);
+  if (from.points || into.points) into.points = [...pointsFor(into.points, had), ...pointsFor(from.points, all).slice(0, count)];
+  if (from.tags || into.tags) into.tags = [...pointsFor(into.tags, had), ...pointsFor(from.tags, all).slice(0, count)];
   into.count = had + count;
   into.droppedAt = Math.max(0, Math.floor(finite(opts.now, Date.now())));
   if (from.decor || opts.decor === true) into.decor = true;
+  if (count < all) {
+    from.count = all - count;
+    if (Array.isArray(from.points)) {
+      from.points = from.points.slice(count);
+      if (!from.points.some((r) => r != null)) delete from.points;
+    }
+    if (Array.isArray(from.tags)) {
+      from.tags = from.tags.slice(count);
+      if (!from.tags.some((t) => t != null)) delete from.tags;
+    }
+    return { ok: true, count, stack: { ...into }, left: from.count };
+  }
   rows.splice(index, 1);
   return { ok: true, count, stack: { ...into } };
 }

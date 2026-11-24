@@ -20,7 +20,7 @@ import {
   placeDroppedBag,
   serializeDroppedItemState,
   takeDroppedRecord,
-} from '../public/js/world-items.js?v=5101fb03';
+} from '../public/js/world-items.js?v=f5f9e017';
 import { bindToolInventory, createToolConditionState, pickToolCopies, placeToolCopies, toolCopies } from '../public/js/tools.js?v=4156bba8';
 
 const root = join(import.meta.dirname, '..');
@@ -107,7 +107,8 @@ describe('the dropped bag on the ground (js/world-items.js)', () => {
     assert.notEqual(a.stack.id, b.stack.id);
     const inv = { bag_generic_blue: 1 };
     const merged = dropInventoryStack(state, inv, 'POL_home', 'bag_generic_blue', 1, { x: 100, y: 200 }, { now: 3 });
-    assert.equal(merged.merged, true, 'an empty bag still stacks on an empty one');
+    // A bag is one to a stack (bag_generic_blue.js:15 stackmax 1; Eleven Location.addItem 475-503 merges below it only).
+    assert.equal(merged.merged, false, 'an empty bag never stacks on another: stackmax 1');
     const back = parseDroppedItemState(serializeDroppedItemState(state));
     const full = back.streets.POL_home.find((r) => r.id === a.stack.id);
     assert.deepEqual(full.contents, [{ classTsid: 'plank', count: 30 }, { classTsid: 'pick', count: 1, points: [42] }]);

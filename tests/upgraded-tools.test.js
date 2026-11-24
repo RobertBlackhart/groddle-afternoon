@@ -41,7 +41,7 @@ import {
   setToolRemaining,
 } from '../public/js/tools.js?v=4156bba8';
 import { crushOre } from '../public/js/mining.js?v=c3bd3675';
-import { createDroppedItemState, dropInventoryStack } from '../public/js/world-items.js?v=5101fb03';
+import { createDroppedItemState, dropInventoryStack } from '../public/js/world-items.js?v=f5f9e017';
 import { MAKE_TOOL_SHEETS } from '../public/js/make-tool-sheets.js?v=6f758e09';
 import { clearPlot, createGarden, getPlot, hasHoe, hasWateringCan, plantPlot, waterPlot } from '../public/js/garden.js?v=0cbb65f0';
 import { performTrantCare, quoteTrantCare } from '../public/js/trant-care.js?v=cb7f539b';

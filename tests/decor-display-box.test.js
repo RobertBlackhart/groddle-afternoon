@@ -114,7 +114,7 @@ describe('a Storage Display Box takes things, as the original did', () => {
   });
 
   it('#473: forty emblems on the floor all go in, whatever room the pack has (capacity 1000 stacks, stackmax 1)', async () => {
-    const { createDroppedItemState, dropInventoryStack, pickupDroppedStack } = await import('../public/js/world-items.js?v=5101fb03');
+    const { createDroppedItemState, dropInventoryStack, pickupDroppedStack } = await import('../public/js/world-items.js?v=f5f9e017');
     const state = room();
     const dropped = createDroppedItemState();
     const inv = { emblem_alph: 40 };
@@ -152,7 +152,7 @@ describe('a Storage Display Box takes things, as the original did', () => {
  * side (ItemIconView.as 315-321), keeping its shape.
  */
 describe('#314 the shown item keeps its shape', async () => {
-  const { displayIconScale, SDB_ITEM_WH } = await import('../public/js/features/homes-feature.js?v=ce5bc123');
+  const { displayIconScale, SDB_ITEM_WH } = await import('../public/js/features/homes-feature.js?v=6e5b9ab2');
   it('fits the longer side into 34 px', () => {
     assert.equal(SDB_ITEM_WH, 34);
     const wine = displayIconScale(15, 48);
@@ -197,7 +197,7 @@ describe('G1205: Set down, from a box to the floor without the pack (#384)', () 
   const fn = homes.slice(homes.indexOf('function boxToFloor('), homes.indexOf('function expandHouse('));
 
   it('what the box holds goes onto the floor beside it, the pack never holding it', async () => {
-    const { createDroppedItemState, dropInventoryStack } = await import('../public/js/world-items.js?v=5101fb03');
+    const { createDroppedItemState, dropInventoryStack } = await import('../public/js/world-items.js?v=f5f9e017');
     const state = room();
     const inv = { emblem_alph: 40 };
     displayDeposit(state, inv, 8, 'emblem_alph', 40);

@@ -100,7 +100,7 @@
  */
 
 import { countItem, ensureItem, ITEM_CATALOG, removeItem } from '../inventory.js?v=6414dbdc';
-import { likeStackAt, mergeDroppedStacks, pickupCountTitle } from '../world-items.js?v=5101fb03';
+import { likeStackAt, mergeDroppedStacks, pickupCountTitle } from '../world-items.js?v=f5f9e017';
 import { groundKey, groundStacks, ownGroundRows, ownGroundState } from '../ground-stacks.js?v=22792362';
 import { keepsOwnStack } from '../tools.js?v=4156bba8';
 import { createCountChooser } from '../ui/count-chooser.js?v=c268eefe';
@@ -175,7 +175,7 @@ import {
   placeCostText,
   swatchFilters,
   trayFilters,
-} from '../ui/home-builder.js?v=1e633de5';
+} from '../ui/home-builder.js?v=48a63287';
 import { RECIPE_CATALOG } from '../making.js?v=1ec1075e';
 import {
   createBackYardState,
@@ -5987,7 +5987,8 @@ const decorateTarget = (engine) => ({
     const target = packDropTarget(engine, e);
     endPackDrag(engine);
     // The dragged stack is the one set down, with its own wear and words (game.js dropPackStackAt beforeRemove).
-    const res = engine.dropPackStackAt?.(was.classTsid, count, target.x + roomX0(), target.y, { beforeRemove: (n) => takeDragged(engine, was.ds, n) });
+    // On the floor it is a drop like any other: shared online at your own home (takeable.js 179-198).
+    const res = engine.dropPackStackAt?.(was.classTsid, count, target.x + roomX0(), target.y, packDropOpts(engine, was, target));
     if (!res?.ok) {
       if (res?.msg) engine.toast(res.msg);
       engine.playSound?.('CLICK_FAILURE', { volume: 0.4 });
@@ -6102,7 +6103,7 @@ const placeTarget = (engine) => ({
     const target = packDropTarget(engine, { clientX: at.x, clientY: at.y });
     endPlaceDrag(engine);
     const count = was.ds ? draggedCount(engine, was.ds) : was.count;
-    const res = engine.dropPackStackAt?.(was.classTsid, count, target.x + roomX0(), target.y, { beforeRemove: (n) => takeDragged(engine, was.ds, n) });
+    const res = engine.dropPackStackAt?.(was.classTsid, count, target.x + roomX0(), target.y, packDropOpts(engine, was, target));
     if (!res?.ok) {
       if (res?.msg) engine.toast(res.msg);
       engine.playSound?.('CLICK_FAILURE', { volume: 0.4 });
@@ -6113,6 +6114,21 @@ const placeTarget = (engine) => ({
     if (placeDrag) endPlaceDrag(engine);
   },
 });
+
+/**
+ * How a pack stack set down at `target` (packDropTarget) goes down (game.js dropPackStackAt): the
+ * dragged stack gives it (#515), and on the floor, with no piece under it, it is a drop like any other,
+ * shared online at your own home (G1190): Glitch's takeable_drop set house_lock only when the plat under
+ * the stack was a piece's (items/include/takeable.js 179-198). The server's answer takes it from the
+ * dragged stack (markDragged).
+ */
+function packDropOpts(engine, was, target) {
+  return {
+    beforeRemove: (n) => takeDragged(engine, was.ds, n),
+    floor: target?.on == null,
+    beforeShare: (n) => markDragged(engine, was.ds, n),
+  };
+}
 
 /** The home's drop targets (registered once; registering again replaces them with this engine). */
 let dropTargetsEngine = null;
@@ -6237,25 +6253,60 @@ function moveStack(engine, id, p) {
   const target = stackSurfaceAt(decor, p.x, p.y);
   const into = moveJoins(engine, row, target);
   if (row.shared) return claimShared(engine, row, target, into);
-  const joined = into ? mergeDroppedStacks(ownGroundState(engine), groundKey(engine), id, into.id, { decor: true }) : null;
-  if (!joined?.ok) {
+  // On the floor the lock comes off (doModifyItem deletes house_lock and sets it again only on a
+  // furniture plat, main.js 4852-4890): online at your own home it goes to the shared floor.
+  if (target.on == null) {
+    const shared = shareOwnStack(engine, row, target);
+    if (shared) return shared;
+  }
+  const joined = into ? mergeDroppedStacks(ownGroundState(engine), groundKey(engine), id, into.id, target.on != null ? { decor: true } : {}) : null;
+  if (!joined?.ok || joined.left) {
+    // Moved (or, its like stack full, what did not fit stays in it: its class's stackmax).
     row.x = target.x + roomX0();
     row.y = target.y;
     if (target.on != null) row.on = target.on;
     else delete row.on;
-    // G1224: moved in Decoration Mode, it is the owner's decor now (the site's floor move leaves it).
-    row.decor = true;
+    // G1224: set on a piece in Decoration Mode, it is the owner's decor (locked, the site's floor move
+    // leaves it); on the floor it is not (house_lock only on a furniture plat).
+    if (target.on != null) row.decor = true;
+    else delete row.decor;
   }
   engine.droppedItemsChanged?.();
   engine.playSound?.('ITEM_DROP', { volume: 0.45 });
   if (joined?.ok) {
     engine.setData('homeStackLast', `merged:${id}:${into.id}:${target.on ?? 'floor'}`);
-    id = into.id;
+    if (!joined.left) id = into.id;
   } else engine.setData('homeStackLast', `moved:${id}:${target.on ?? 'floor'}`);
   selected = { kind: 'stack', id };
   drawStackSelection(engine);
   renderBar(engine);
   return { ok: true, target, ...(joined?.ok ? { merged: into.id } : {}) };
+}
+
+/**
+ * One of the owner's own stacks (the save's) moved onto the floor at their own home online: it goes to
+ * the shared floor at `target` (game.js shareOwnStack), unlocked, as Glitch's move took house_lock off a
+ * stack set on the floor (main.js doModifyItem 4852-4890). Null when it stays the owner's own (solo,
+ * offline, a stack the shared floor can't carry): the caller moves it in the save. A full pack refuses.
+ */
+function shareOwnStack(engine, row, target) {
+  if (typeof engine.shareOwnStack !== 'function') return null;
+  const res = engine.shareOwnStack(row.id, target.x + roomX0(), target.y);
+  if (res?.ok) {
+    engine.playSound?.('ITEM_DROP', { volume: 0.45 });
+    engine.setData('homeStackLast', `shared:${row.id}:floor`);
+    selected = null;
+    drawStackSelection(engine);
+    renderBar(engine);
+    return { ok: true, target, shared: row.id };
+  }
+  if (res?.reason === 'full') {
+    engine.toast(BUILDER_TEXT.shareNeedsRoom);
+    engine.playSound?.('CLICK_FAILURE', { volume: 0.4 });
+    engine.setData('homeStackLast', `refused:${row.id}:full`);
+    return { ok: false, reason: 'full' };
+  }
+  return null;
 }
 
 /**

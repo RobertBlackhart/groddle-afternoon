@@ -138,6 +138,7 @@ export const BUILDER_TEXT = Object.freeze({
   stackHint: 'Drag it to move it, or drop it on your pack to pick it up.',
   // G1224: a stack dropped for everyone moved onto the floor in Decoration Mode (ours; the floor is anyone's, as Glitch's).
   sharedFloor: 'The floor is for everyone. Set it on a shelf or table to keep it, or pick it up.',
+  shareNeedsRoom: 'Make room in your pack to move this onto the floor.',
   dropInPack: 'Drop here to put it in your pack',
 });
 

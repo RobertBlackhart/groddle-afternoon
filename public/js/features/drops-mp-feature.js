@@ -536,6 +536,18 @@ function createSession(engine, client) {
     return !reasonAt(p, String(classTsid || ''));
   }
 
+  /**
+   * Whether `count` of a class goes to the shared floor here as one stack: shared here, and no more
+   * than the server takes in one drop (drops.go dropFrame: the trade table's max, its stackmax).
+   */
+  function fits(classTsid, count) {
+    const c = String(classTsid || '');
+    const n = Math.floor(Number(count) || 0);
+    if (n < 1 || !wouldShare(c)) return false;
+    const max = Number(table?.items?.[c]?.max);
+    return !(Number.isFinite(max) && max > 0 && n > max);
+  }
+
   function list(tsid) {
     const p = here();
     if (!p || tsid !== p.key || street !== p.street) return [];
@@ -557,6 +569,7 @@ function createSession(engine, client) {
     claim,
     list,
     wouldShare,
+    fits,
     here,
     sync,
     tick(now) {
@@ -622,6 +635,12 @@ export const dropsMpFeature = {
   sharedDropPrompt(classTsid, engine) {
     if (!multiplayer || engine?.mode !== 'multiplayer') return null;
     return ensure(engine)?.wouldShare(classTsid) ? DROP_TEXT.prompt : null;
+  },
+
+  /** game.js shareOwnStack: whether `count` of a class goes to the shared floor here as one stack. */
+  sharedDropFits(classTsid, count, engine) {
+    if (!multiplayer || engine?.mode !== 'multiplayer') return null;
+    return ensure(engine)?.fits(classTsid, count) ? true : null;
   },
 
   /**

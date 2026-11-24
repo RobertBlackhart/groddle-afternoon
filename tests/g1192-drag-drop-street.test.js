@@ -86,7 +86,7 @@ describe('in your own house, outside Decorate', () => {
   it('a stack (not furniture, a tool or a bag) goes on the shelf, table or floor under the pointer, whole', () => {
     assert.match(t, /st\.from === 'pack' && st\.cls && !st\.bag && !st\.tool && !FURNITURE_CATALOG\[st\.cls\] && boxDropHere\(engine\)/);
     assert.match(t, /const target = packDropTarget\(engine, \{ clientX: at\.x, clientY: at\.y \}\);/);
-    assert.match(t, /engine\.dropPackStackAt\?\.\(was\.classTsid, count, target\.x \+ roomX0\(\), target\.y, \{ beforeRemove: \(n\) => takeDragged\(engine, was\.ds, n\) \}\)/);
+    assert.match(t, /engine\.dropPackStackAt\?\.\(was\.classTsid, count, target\.x \+ roomX0\(\), target\.y, packDropOpts\(engine, was, target\)\)/);
     assert.match(homes, /registerDropTarget\(placeTarget\(engine\)\);/);
     // boxDropHere: your own house, not decorating (Decorate has its own drop, order 30).
     const here = homes.slice(homes.indexOf('function boxDropHere('), homes.indexOf('function endBoxDrag('));

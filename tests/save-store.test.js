@@ -41,10 +41,10 @@ import { persist as persistTrade } from '../public/js/features/trade-feature.js?
 import { persist as persistFeat } from '../public/js/features/solo-feats-feature.js?v=c48c2684';
 import { persist as persistMayhem } from '../public/js/features/mayhem-feature.js?v=63d13160';
 import { mpPersist as persistCrowns } from '../public/js/features/crowns-feature.js?v=b709fc82';
-import { flush as flushHomeStreet } from '../public/js/features/home-street-mp-feature.js?v=a2b53a82';
-import { flush as flushHomeStorage } from '../public/js/features/home-storage-feature.js?v=d89b10e3';
-import { persist as persistBoards } from '../public/js/features/boards-mp-feature.js?v=ebea18f6';
-import { persist as persistDrops } from '../public/js/features/drops-mp-feature.js?v=9bea1865';
+import { flush as flushHomeStreet } from '../public/js/features/home-street-mp-feature.js?v=c258acd0';
+import { flush as flushHomeStorage } from '../public/js/features/home-storage-feature.js?v=f41bde5e';
+import { persist as persistBoards } from '../public/js/features/boards-mp-feature.js?v=3146bd94';
+import { persist as persistDrops } from '../public/js/features/drops-mp-feature.js?v=0a784417';
 import { createOnlineRequests } from '../public/js/online-request.js?v=2a5117ff';
 import { AUDIO_MUTED_KEY } from '../public/js/audio-pref.js?v=80d433c3';
 import { STORAGE_KEY as APPEARANCE_KEY, APPEARANCE_PRESETS, appearanceToJson, loadAppearance, saveAppearance } from '../public/js/character-builder.js?v=03768e2e';

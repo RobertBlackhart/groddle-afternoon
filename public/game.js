@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=f41be695';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=b9f30b50';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=c94bff6a';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE, playerClickBox } from './js/reach.js?v=456da8a8';
@@ -558,7 +558,8 @@ import {
   placeDroppedBag,
   setDownStack,
   takeDroppedRecord,
-} from './js/world-items.js?v=5101fb03';
+} from './js/world-items.js?v=f5f9e017';
+import { ownRowToSharedFloor, packToSharedFloor } from './js/home-floor-share.js?v=703dac80';
 import {
   createPlayerSave,
   inspectPlayerSave,
@@ -14832,8 +14833,14 @@ const engine = {
    * rules, the same dropped-stack record): Decoration Mode's drag from the pack onto a shelf.
    * `beforeRemove(n)`: called once the drop will happen, just before the count goes down (#515: the
    * dragged stack gives them and its copies' wear and words go down, js/drag-stack.js takeDragged).
+   * `floor`: it lands on the floor, on no piece of furniture. Online at your own home that is the
+   * shared floor (G1190), as Glitch's takeable_drop left a stack anyone's unless the plat under it
+   * was a piece's (house_lock only for plats[i].source, items/include/takeable.js 179-198): it goes
+   * through the server as Drop does (features/drops-mp-feature.js sharedDrop) and `beforeShare(n)`
+   * marks the dragged stack for the server's answer. On a shelf or table, or wherever the floor is
+   * not shared (solo, offline, a class the server does not carry), it stays the owner's own decor.
    */
-  dropPackStackAt(classTsid, count, x, y, { beforeRemove = null } = {}) {
+  dropPackStackAt(classTsid, count, x, y, { beforeRemove = null, floor = false, beforeShare = null } = {}) {
     if (!state.started || !currentStreetTsid) return { ok: false, reason: 'not_started' };
     const blocked = packDropBlockReason(classTsid);
     // A class a feature puts down itself (the Crafty Bot): its own drop and its own reason.
@@ -14843,6 +14850,12 @@ const engine = {
     if (blocked) return { ok: false, reason: 'blocked', msg: blocked };
     const n = normalizeStackQuantity(count, inv[classTsid] || 0);
     if (!n) return { ok: false, reason: 'missing', msg: 'That stack is no longer in your pack.' };
+    // On the floor at your own home online: the shared floor, through the server (the pack changes on its answer).
+    if (packToSharedFloor(features, engine, { classTsid, count: n, x, y, floor })) {
+      beforeShare?.(n);
+      closePackPopover();
+      return { ok: true, shared: true, count: n };
+    }
     beforeRemove?.(n);
     // Its words go down with it too (#285: a Still's hopper and Hooch), as Drop's do.
     // G1224: marked as the owner's decor (the site's move of old floor drops leaves it in the save).
@@ -14871,6 +14884,26 @@ const engine = {
     if (!result.ok) return result;
     saveDroppedItems();
     refreshDroppedWorldItems();
+    return result;
+  },
+  /**
+   * #655 follow-up: one of the owner's own stacks here (the save's, locked to them) set down on the floor
+   * at their own home online goes to the shared floor at (x, y), as Glitch's doModifyItem deleted
+   * house_lock and set it again only on a furniture plat (main.js 4852-4890). It comes up into the pack
+   * and goes down as Drop's does (features/drops-mp-feature.js sharedDrop): the pack gives it up when the
+   * server says it is down, and a refusal leaves it in the pack, so nothing is lost. A stack the shared
+   * floor can't carry (a bag, a named stack, worn tools, a class or count the server does not take) or
+   * one the pack has no room for stays the owner's own: { ok: false, reason: 'own' | 'full' | 'gone' }.
+   */
+  shareOwnStack(id, x, y) {
+    if (!state.started || !currentStreetTsid) return { ok: false, reason: 'not_started' };
+    const result = ownRowToSharedFloor(features, engine, { state: droppedItemState, key: droppedStacksTsid(), inv, id, x, y });
+    if (result.reason === 'full') return { ...result, msg: PACK_COPY.pickupFull };
+    if (result.ok || result.reason === 'own') {
+      saveDroppedItems();
+      refreshDroppedWorldItems();
+      updateHud();
+    }
     return result;
   },
   /** Why a pack class can't go down here ('' when it can): Drop's own conditions (packDropBlockReason). */

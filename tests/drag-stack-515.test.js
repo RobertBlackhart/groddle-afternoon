@@ -139,12 +139,13 @@ describe('every drop target hands on the dragged stack (#515)', () => {
     const t = part(homes, "id: 'home-decorate',", "// --- #470");
     assert.match(t, /ds: draggedStack\(engine, st\)/);
     assert.match(t, /depositInBox\(engine, hit\.box, was\.classTsid, count, was\.ds\)/);
-    assert.ok(t.includes('dropPackStackAt?.(was.classTsid, count, target.x + roomX0(), target.y, { beforeRemove: (n) => takeDragged(engine, was.ds, n) })'));
+    assert.ok(t.includes('dropPackStackAt?.(was.classTsid, count, target.x + roomX0(), target.y, packDropOpts(engine, was, target))'));
+    assert.match(part(homes, 'function packDropOpts(', '/** The home\'s drop targets'), /beforeRemove: \(n\) => takeDragged\(engine, was\.ds, n\)/);
     assert.match(t, /markDragged\(engine, was\.ds, 1, [^)]*\);\s+const res = placeAtPointer/, 'furniture: the piece dragged');
     const dep = part(homes, 'function depositInBox(', '// --- pack items onto shelves');
     assert.ok(dep.indexOf('takeDragged(engine, ds, n)') < dep.indexOf('displayDeposit('), 'marked before the count goes down');
     const game = read('game.js');
-    const at = part(game, 'dropPackStackAt(classTsid, count, x, y, { beforeRemove = null } = {}) {', 'takeDroppedStack(id)');
+    const at = part(game, 'dropPackStackAt(classTsid, count, x, y, { beforeRemove = null, floor = false, beforeShare = null } = {}) {', 'takeDroppedStack(id)');
     assert.ok(at.indexOf('beforeRemove?.(n);') > 0 && at.indexOf('beforeRemove?.(n);') < at.indexOf('leavingToolPoints(classTsid, n)'), 'before the wear that goes down is read');
   });
 

@@ -9,7 +9,7 @@ import { join } from 'node:path';
 import { END_SEAM, roomPieces } from '../public/js/home-wallpaper.js?v=99228166';
 import { WALLPAPER_MAPS } from '../public/js/home-wallpaper-art.js?v=129c514f';
 import { DOCK_GAP, DOCK_W, dockedPickerSpot } from '../public/js/furniture-upgrade-picker.js?v=8cfd5db7';
-import { filterSwatches, swatchFilters } from '../public/js/ui/home-builder.js?v=1e633de5';
+import { filterSwatches, swatchFilters } from '../public/js/ui/home-builder.js?v=48a63287';
 import { listTextures } from '../public/js/home-decor.js?v=a918562f';
 import { salePlacementKey } from '../public/js/home-street-mp.js?v=fa2c57ff';
 import { beginHomeVisit, createHomeState, imagineHome } from '../public/js/homes.js?v=10f6604f';

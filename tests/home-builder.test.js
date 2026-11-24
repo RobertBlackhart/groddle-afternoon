@@ -28,7 +28,7 @@ import {
   placeCostText,
   touchTileMove,
   trayFilters,
-} from '../public/js/ui/home-builder.js?v=1e633de5';
+} from '../public/js/ui/home-builder.js?v=48a63287';
 import {
   INTERIOR,
   createHomeDecorState,
@@ -206,13 +206,13 @@ describe('pack items on shelves and tables (the dropped-stack model)', () => {
 
   it('drops through game.js as Drop does: the same block reasons and the same dropped-stack record', () => {
     const game = read('public/game.js');
-    const fn = game.slice(game.indexOf('dropPackStackAt(classTsid, count, x, y, { beforeRemove = null } = {}) {'));
+    const fn = game.slice(game.indexOf('dropPackStackAt(classTsid, count, x, y, { beforeRemove = null, floor = false, beforeShare = null } = {}) {'));
     assert.match(fn.slice(0, 1200), /const blocked = packDropBlockReason\(classTsid\);/);
-    assert.match(fn.slice(0, 1200), /dropInventoryStack\(droppedItemState, inv, droppedStacksTsid\(\), classTsid, n, \{ x, y \}/);
+    assert.match(fn.slice(0, 2000), /dropInventoryStack\(droppedItemState, inv, droppedStacksTsid\(\), classTsid, n, \{ x, y \}/);
     assert.match(fn.slice(0, 2400), /saveDroppedItems\(\);\s+refreshDroppedWorldItems\(\);/);
     const homes = read('public/js/features/homes-feature.js');
     // #515: the dragged stack's count, and that stack is the one set down (js/drag-stack.js).
-    assert.match(homes, /engine\.dropPackStackAt\?\.\(was\.classTsid, count, target\.x \+ roomX0\(\), target\.y, \{ beforeRemove: \(n\) => takeDragged\(engine, was\.ds, n\) \}\)/);
+    assert.match(homes, /engine\.dropPackStackAt\?\.\(was\.classTsid, count, target\.x \+ roomX0\(\), target\.y, packDropOpts\(engine, was, target\)\)/);
     // R9 (G967): the pack's drag reaches Decoration Mode's drop through the drop registry (js/drop-targets.js).
     assert.match(homes, /id: 'home-decorate',[\s\S]{0,300}if \(st\.from !== 'pack' \|\| st\.tool \|\| st\.bag \|\| mode !== 'decorate'/);
   });
