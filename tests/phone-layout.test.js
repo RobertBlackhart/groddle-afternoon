@@ -537,4 +537,70 @@ describe('phone layout: no overlaps on the real game (Chrome)', { skip: !chromiu
     assert.deepEqual(bad, []);
     assert.deepEqual(errors, []);
   });
+
+  /** A phone tab on Kala Close (its lowest floor sits low, close over the street's bottom: #654), the avatar standing still. */
+  async function kalaClose(width, height) {
+    const base = `http://127.0.0.1:${server.address().port}`;
+    const ctx = await chrome.browser.newContext({ viewport: { width, height }, isMobile: true, hasTouch: true, deviceScaleFactor: 1, userAgent: UA });
+    await ctx.addInitScript(() => { try { localStorage.setItem('groddle-play-device', 'qa-game'); } catch { /* none */ } });
+    const tab = await ctx.newPage();
+    const errors = [];
+    tab.on('pageerror', (e) => errors.push(e.message));
+    await tab.goto(`${base}/play/?autostart=1&questoffer=off&hstip=0`);
+    await tab.waitForFunction(() => !document.body.classList.contains('is-booting') && document.getElementById('overlay')?.classList.contains('hidden') && document.documentElement.classList.contains('phone-layout'), null, { timeout: 60_000 });
+    await tab.evaluate(() => {
+      for (const b of document.querySelectorAll('button')) if (b.textContent.trim() === 'Got it' && b.offsetParent) b.click();
+      return window.groddleQA.audio.travel('GIFGR4QG5IV1QPI');
+    });
+    await tab.waitForTimeout(2500);
+    return { ctx, tab, errors };
+  }
+  /** The avatar's feet and the tops of the controls and the pack row, in page px. */
+  const feetAndControls = (tab) => tab.evaluate(() => {
+    const c = document.querySelector('#game-root canvas');
+    const r = c.getBoundingClientRect();
+    const top = (sel) => {
+      const el = document.querySelector(sel);
+      return el && el.getClientRects().length ? el.getBoundingClientRect().top : NaN;
+    };
+    // The float stick's corner is taller than its ring (stickRegionOf); these tabs keep the fixed stick.
+    const controls = Math.min(top('#game-root .touch-stick'), top('#game-root .touch-act'), top('#game-root .touch-jump'));
+    return { feet: r.top + Number(c.dataset.playerScreenY) * Number(c.dataset.stageScale), controls, pack: top('#pack-row'), dock: c.dataset.phoneDock || '' };
+  });
+
+  it('G1228 (#653): closing a sheet, the Menu, Social or a bag gives the street back and the camera returns (the avatar never sinks under the pack row)', { timeout: 120_000 }, async () => {
+    const { ctx, tab, errors } = await kalaClose(384, 748);
+    const open = {
+      skills: () => document.getElementById('skills-btn').click(),
+      quests: () => document.getElementById('menu-quest-btn').click(),
+      social: () => document.getElementById('social-btn').click(),
+      menu: () => document.getElementById('more-btn').click(),
+      bag: () => document.querySelector('#pack-bags .pack-bag')?.click(),
+    };
+    const shut = {
+      skills: () => document.getElementById('skills-close').click(),
+      quests: () => document.getElementById('quest-close').click(),
+      social: () => window.groddleSocial.close(),
+      menu: () => document.getElementById('more-btn').click(),
+      bag: () => document.querySelector('#pack-bags .pack-bag')?.click(),
+    };
+    const bad = [];
+    const before = await feetAndControls(tab);
+    if (before.feet > before.pack - 8) bad.push(`street: the feet (${Math.round(before.feet)}) under the pack row (${Math.round(before.pack)})`);
+    for (const k of Object.keys(open)) {
+      await tab.evaluate(`(${open[k]})()`);
+      await tab.waitForTimeout(900);
+      const docked = await feetAndControls(tab);
+      if (!docked.dock) bad.push(`${k}: the stage did not dock`);
+      await tab.evaluate(`(${shut[k]})()`);
+      await tab.waitForTimeout(1500);
+      const after = await feetAndControls(tab);
+      if (after.dock) bad.push(`${k}: the dock stayed (${after.dock})`);
+      if (Math.abs(after.feet - before.feet) > 8) bad.push(`${k}: the feet at ${Math.round(after.feet)} after closing, ${Math.round(before.feet)} before`);
+      if (after.feet > after.pack - 8) bad.push(`${k}: the feet (${Math.round(after.feet)}) under the pack row (${Math.round(after.pack)})`);
+    }
+    await ctx.close();
+    assert.deepEqual(bad, []);
+    assert.deepEqual(errors, []);
+  });
 });

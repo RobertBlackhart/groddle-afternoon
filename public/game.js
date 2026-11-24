@@ -1701,6 +1701,10 @@ function installPhoneLayout() {
     setData: setCanvasData,
     active: () => modernUi(),
     onFrame: () => {
+      // G1228 (#653): the pack row's cover over the canvas as it stands now (the canvas docks and
+      // undocks, the row moves and resizes; measured only on a resize it went stale: after a sheet
+      // closed, and from the start, the feet sank under the row until a pinch measured again).
+      syncCameraPackCover();
       pill?.setBadge(socialDrawer ? socialDrawer.tabs.reduce((n, id) => n + (socialDrawer.unread(id) || 0), 0) : 0);
       // C4: the Menu's Quests row carries the new quests' count, as the bar's Quests button did.
       const n = countIn(document.querySelector('#quest-btn .quest-btn-count'));
@@ -33582,6 +33586,11 @@ async function main() {
   window.addEventListener('resize', () => {
     syncCameraSafeArea();
     syncLocationViewHeight();
+    // G1228 (#653): measure the pack row over the canvas again once the canvas has its new size. A
+    // sheet that closed gave the street its whole room back (engine.setStageDock), but the cover was
+    // measured against the docked canvas, which ends above the pack row (0 px covered), so the camera
+    // let the feet sink under the row until a pinch measured again.
+    syncCameraPackCover();
     syncRenderResolution();
     refreshPackPagers();
     if (player && Number.isFinite(WORLD_W) && !zoomRelaying) {
