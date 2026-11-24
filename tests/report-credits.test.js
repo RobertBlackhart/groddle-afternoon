@@ -31,14 +31,16 @@ const TOTALS = [
   { id: 5, points: 6, reports: 2, first: '2026-11-02 00:00:00' },
   { id: 6, points: 6, reports: 3, first: '2026-11-03 00:00:00' },
   { id: 7, points: 6, reports: 2, first: '2026-11-01 00:00:00' },
-  { id: 1, points: 99, reports: 9, first: '2026-10-01 00:00:00' },
+  { id: 1, points: 99, reports: 9, first: '2026-10-01 00:00:00', admin: true },
+  // An administrator's character (the site decides by capability, src/Team.php; Austin 2026-11-24): never on the board.
+  { id: 2, points: 30, reports: 5, first: '2026-10-02 00:00:00', admin: true },
   { id: 54, points: 50, reports: 9, first: '2026-10-01 00:00:00' },
   { id: 8, points: 40, reports: 9, first: '2026-10-01 00:00:00', banned: true },
   { id: 9, points: 0, reports: 0, first: null },
   { id: 3, points: 6, reports: 2, first: '2026-11-01 00:00:00' },
   ...Array.from({ length: 9 }, (_, i) => ({ id: 100 + i, points: 1, reports: 1, first: `2026-11-0${(i % 3) + 1} 00:00:00` })),
 ];
-// More points, then more reports, then the earliest first report, then the lower id; 1, 54, the banned 8 and the pointless 9 are left off.
+// More points, then more reports, then the earliest first report, then the lower id; the team (1, 2), 54, the banned 8 and the pointless 9 are left off.
 const ORDER = [6, 3, 7, 5, 100, 103, 106, 101, 104, 107];
 
 const proposal = (over = {}) => ({ ticket: 12, player: { id: 500, name: 'mr granberry' }, status: 'closed', subject: 'Picks', createdAt: '2026-10-31T20:50:08Z', kind: 'bug_fixed', points: 4, items: ['revives', 'picks'], reason: 'Two real bugs, fixed.', refs: ['game 3cfc9a44d', 'game v0.8.0'], ...over });
@@ -191,7 +193,12 @@ describe('the site keeps a score per report (groddle-afternoon-site)', { skip: s
     const php = src('src/ReportCredits.php');
     for (const [kind, n] of Object.entries(KINDS)) assert.match(php, new RegExp(`'${kind}' => ${n},`), kind);
     assert.match(php, /public const CAP = 8;/);
-    assert.match(php, /public const EXCLUDED = \[1, 54\];/);
+    // The team by capability (Team::of), never a list of ids; EXCLUDED keeps only the review account (Austin 2026-11-24).
+    assert.match(php, /public const EXCLUDED = \[54\];/);
+    assert.match(php, /&& empty\(\$t\['admin'\]\)/, 'rank leaves the team off');
+    assert.match(php, /\$team = array_flip\(Team::of\(\$db, array_map\(/, 'totals mark the team');
+    assert.match(src('src/Team.php'), /\$caps->can\(\$account, self::CAP\)/);
+    assert.match(src('src/Team.php'), /public const CAP = 'manage_options';/);
     assert.match(php, /public const BOARD = 10;/);
     assert.match(php, /'REPLACE INTO ' \. \$this->db->table\(self::TABLE\)/, 'scoring again replaces the row');
     assert.match(php, /AND t\.player_user_id NOT IN \(\?\) ORDER BY t\.id ASC', \[self::SCORABLE, self::EXCLUDED\]\);/, 'Austin\'s own reports are never waiting to be scored');
@@ -223,7 +230,9 @@ describe('the site keeps a score per report (groddle-afternoon-site)', { skip: s
     }
     assert.deepEqual(out.kinds, KINDS);
     assert.equal(out.cap, CAP);
-    assert.deepEqual(out.excluded, EXCLUDED);
+    // The site leaves the team off by capability; only the review account stays listed (the tool keeps 1 as well).
+    assert.deepEqual(out.excluded, [54]);
+    assert.ok(EXCLUDED.includes(54));
     const i = out.inputs;
     assert.deepEqual(i.kind, { kind: 'bug_fixed', points: 3, reason: 'Fixed the pick.', refs: ['game abc1234', 'game v0.8.0'], by: 'admin' });
     assert.deepEqual(i.kindPoints, { kind: 'bug_fixed', points: 5, reason: 'Two fixes', refs: ['game a1', 'game a2'], by: 'admin' });

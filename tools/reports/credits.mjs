@@ -117,7 +117,8 @@ export function totalsFrom(proposals, createdAt = {}) {
 /** The board (ReportCredits::rank): points, then reports, then the earliest first report, then the lower id; no banned, excluded or pointless players. */
 export function rank(totals, limit = 10) {
   return totals
-    .filter((t) => t.points > 0 && !t.banned && !EXCLUDED.includes(t.id))
+    // admin: the site's team (src/Team.php, by capability; Austin 2026-11-24), never on the board.
+    .filter((t) => t.points > 0 && !t.banned && !t.admin && !EXCLUDED.includes(t.id))
     .sort((a, b) => b.points - a.points || b.reports - a.reports || String(a.first ?? '9999').localeCompare(String(b.first ?? '9999')) || a.id - b.id)
     .slice(0, limit);
 }
