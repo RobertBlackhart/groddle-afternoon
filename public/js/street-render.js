@@ -1785,6 +1785,17 @@ export function skyGradientPlacement(layerTop, layerH, viewTop, viewH, capMin = 
 }
 
 /**
+ * PURE (Austin's iPhone 2026-11-24): the part of a view (top `viewTop`, `viewH` tall) below the
+ * street's bottom `streetH`, `{ y, h }`, or null when the view does not reach it. Painted in the
+ * street's ground colour behind every layer, so a camera past the bottom never shows the sky's.
+ */
+export function groundBelowSpan(streetH, viewTop, viewH) {
+  const top = Math.max(Number(viewTop) || 0, Number(streetH) || 0);
+  const h = (Number(viewTop) || 0) + Math.max(0, Number(viewH) || 0) - top;
+  return h > 0 ? { y: top, h } : null;
+}
+
+/**
  * PURE (G1167): the sky's colour at street-view y, as 0xrrggbb: the gradient's top colour above the
  * layer, its bottom colour below, a straight blend between (what Flash's linear fill draws).
  */
@@ -3276,6 +3287,20 @@ export function buildStreetView(street, PIXI, opts = {}) {
       gradient: new PIXI.Sprite(gradientTexture(PIXI, street.gradient.top, street.gradient.bottom)),
     };
     skyView.addChild(skyParts.base, skyParts.cap, skyParts.gradient);
+    // Austin's iPhone 2026-11-24 (upright, Xhola Mades): under the pack row a band of the sky's
+    // bottom colour (that street's yellow) showed below the dark earth. The bottom colour carried on
+    // under the whole view, and on a low street the camera goes past the street's bottom further than
+    // the ground skirt runs (c15c56d8680: the feet win over the street-bottom floor, #617/#654). Below
+    // the street's bottom the view is ground: its own colour (the skirt's, once built; till then the
+    // sky's bottom darkened, as skirtFadeColour does), behind every layer, the skirt and the art over
+    // it. `groundBelow`: the game's views (the level builder's renders keep their picture).
+    if (opts.groundBelow) {
+      const bottom = parseInt(String(street.gradient.bottom).replace(/^(#|0x)/i, ''), 16);
+      skyParts.ground = solid('000000');
+      skyParts.ground.tint = skirtFadeColour(Number.NaN, Number.isFinite(bottom) ? bottom : null, 0x6b8f3c);
+      skyParts.ground.label = 'ground-below';
+      skyView.addChild(skyParts.ground);
+    }
     root.addChild(skyView);
   }
 
@@ -3605,6 +3630,15 @@ export function buildStreetView(street, PIXI, opts = {}) {
     put(skyParts.gradient, at.gradient);
     skyParts.cap.visible = Boolean(at.cap);
     if (at.cap) put(skyParts.cap, at.cap);
+    // Below the street's bottom: ground, never the sky's bottom colour (groundBelow, above).
+    if (skyParts.ground) {
+      const span = groundBelowSpan(sourceH, camY, skyH);
+      skyParts.ground.visible = Boolean(span);
+      if (span) {
+        if (Number.isFinite(root.groundSkirt?.colour)) skyParts.ground.tint = root.groundSkirt.colour;
+        put(skyParts.ground, span);
+      }
+    }
   };
   /** QA (G1167): the gradient's layer and where it ran at the last placeSky. */
   root.skyStats = () => (skyParts ? {

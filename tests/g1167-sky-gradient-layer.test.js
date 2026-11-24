@@ -21,6 +21,8 @@ import {
   skyColourAt,
   skyGradientLayerIndex,
   skyGradientPlacement,
+  groundBelowSpan,
+  skirtFadeColour,
 } from '../public/js/street-render.js?v=55a4b28d';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -270,5 +272,46 @@ describe('G1167: the frame loop places the sky from the layer, not the view', ()
     assert.deepEqual([gradient.x, gradient.y, gradient.width, gradient.height], [0, skyLc.y, 6000, 1000]);
     assert.equal(cap.visible, false);
     assert.deepEqual([root.skyView.x, root.skyView.y, root.skyView.scale.x, root.skyView.scale.y], [0, 0, 1, 1]);
+  });
+});
+
+// Austin's iPhone 2026-11-24 (upright, Xhola Mades): under the pack row a band of the sky's bottom
+// colour (that street's FFC252 yellow) showed below the dark earth: the bottom colour ran under the
+// whole view, and on a low street the camera goes past the street's bottom further than the ground
+// skirt runs (c15c56d8680, #617/#654). Below the street's bottom the view is now ground.
+describe('below the street the view is ground, never the sky (Austin 2026-11-24)', () => {
+  const XHOLA = 'GIFU9C04IE72O8K';
+  const x = street(XHOLA);
+  const H = x.bounds.b - x.bounds.t;
+  const vpW = 700;
+  const vpH = 760;
+  it('groundBelowSpan: the view below the street bottom, none above it', () => {
+    assert.deepEqual(groundBelowSpan(1000, 400, 700), { y: 1000, h: 100 });
+    assert.equal(groundBelowSpan(1000, 200, 700), null);
+    assert.deepEqual(groundBelowSpan(1000, 1100, 500), { y: 1100, h: 500 }, 'a view all below it');
+  });
+  it("the game's view paints it in the ground's colour behind the layers, over the sky's yellow", () => {
+    assert.equal(x.gradient.bottom.toUpperCase(), 'FFC252', 'Xhola Mades: a yellow sky bottom');
+    const PIXI = fakePixi();
+    const root = withDocument(() => buildStreetView({ ...x, signposts: [] }, PIXI, { available: new Set(), groundBelow: true }));
+    const camY = H - vpH + 60; // the camera 60 px past the street's bottom (the feet win)
+    root.updateParallax(1000, camY, vpW, vpH, vpH + 80);
+    const ground = root.skyView.children.find((c) => c.label === 'ground-below');
+    assert.ok(ground, 'a ground part in the sky view (behind every layer)');
+    assert.equal(ground.visible, true);
+    assert.deepEqual([ground.y, ground.height, ground.width], [H, camY + vpH + 80 - H, vpW]);
+    assert.notEqual(ground.tint, 0xffc252, 'not the sky bottom colour');
+    assert.equal(ground.tint, skirtFadeColour(Number.NaN, 0xffc252, 0x6b8f3c), 'the sky bottom darkened till the skirt says its colour');
+    root.groundSkirt = { colour: 0x2b2116 };
+    root.updateParallax(1000, camY, vpW, vpH, vpH + 80);
+    assert.equal(ground.tint, 0x2b2116, "the skirt's own colour once it is built");
+    root.updateParallax(1000, 0, vpW, vpH, vpH + 80);
+    assert.equal(ground.visible, false, 'a view above the bottom shows none');
+  });
+  it("the game asks for it; the level builder's pictures do not", () => {
+    const PIXI = fakePixi();
+    const root = withDocument(() => buildStreetView({ ...x, signposts: [] }, PIXI, { available: new Set() }));
+    assert.equal(root.skyView.children.length, 3);
+    assert.match(read('public/game.js'), /skirtBelow: VIEW_H - LOCATION_VIEW_H,\n[^\n]*\n    groundBelow: true,/);
   });
 });

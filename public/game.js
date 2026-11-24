@@ -26992,6 +26992,8 @@ async function enterStreet(tsid, opts = {}) {
     cameraBottomPadding: cameraBottomSlack(LOCATION_VIEW_H),
     // The canvas runs on under the overlaid pack.
     skirtBelow: VIEW_H - LOCATION_VIEW_H,
+    // Below the street's bottom the view is ground, never the sky's bottom colour (street-render groundBelow).
+    groundBelow: true,
     // G582: and past the street's right end, where the camera stops with the end left of the
     // Social drawer (syncCameraSafeArea reserves at most 0.42 of the view; the view grows with zoom).
     skirtRight: SKIRT_RIGHT_PAD,
