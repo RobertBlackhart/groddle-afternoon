@@ -20,7 +20,7 @@ import {
   canSnap, cleanCaption, isSnapStreet, isSnapUrl, snapAuthor, snapPlace, snapStreet, takePictureState, withCamera,
 } from '../public/js/snaps.js?v=11f3e41b';
 import { snapsFeature } from '../public/js/features/snaps-feature.js?v=351a647c';
-import { FEATURES } from '../public/js/features/index.js?v=508db8be';
+import { FEATURES } from '../public/js/features/index.js?v=87d8950f';
 import { HAS_SITE, SITE_DIR, skipWithoutSite } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');

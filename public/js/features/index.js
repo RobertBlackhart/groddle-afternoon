@@ -122,7 +122,7 @@ import { purpleJourneyFeature } from './purple-journey-feature.js?v=35763ec3'; F
 import { smallItemsFeature } from './small-items-feature.js?v=1a33e8f5'; FEATURES.push(smallItemsFeature);
 import { crabsFeature } from './crabs-feature.js?v=b86e38d5'; FEATURES.push(crabsFeature);
 // G1245 (#661, ours): the Vine Radio on a home street, its Choose music sheet and its music.
-import { radioFeature } from './vine-radio-feature.js?v=3d5f996f'; FEATURES.push(radioFeature);
+import { radioFeature } from './vine-radio-feature.js?v=a744faf2'; FEATURES.push(radioFeature);
 import { fireDragonFeature } from './fire-dragon-feature.js?v=7c8fa722'; FEATURES.push(fireDragonFeature);
 import { hellBarFeature } from './hell-bar-feature.js?v=1c530f1d'; FEATURES.push(hellBarFeature);
 import { machineRoomsFeature } from './machine-rooms-feature.js?v=08daddeb'; FEATURES.push(machineRoomsFeature);
