@@ -499,6 +499,8 @@ export function drawLinesPicture(canvas, street, platforms = []) {
  *   `parallaxF` layer stretches over it (parallaxStretch, `viewW` the window's width); then
  *   `entities` ({ layer, keep(child) }) draws over it with only the children `keep` passes
  *   showing: the cultivations, fixtures and furniture, never a player (hidePCsTemporarily).
+ * - A real street (R51, #656): `entities` keeps the street's own things on the entity layer
+ *   (js/street-render.js STREET_ENTITY_KINDS: its doors), drawn over the view and under its front.
  */
 /** G844 (#393): whether a street map snapshot came back with nothing drawn (js/render-probe.js canvasTransparent). */
 export function snapshotEmpty(canvas, doc = globalThis.document) {
@@ -547,6 +549,8 @@ export function snapshotStreetView(PIXI, renderer, view, { width, height } = {},
     if (layer) {
       for (const child of layer.children || []) {
         if (child.visible && !entities.keep(child)) set(child, 'visible', false);
+        // R51: a kept thing off camera (a door the cull hid) is drawn too.
+        else if (child.culled) set(child, 'culled', false);
       }
     }
     const front = view.frontView && !view.frontView.destroyed ? view.frontView : null;

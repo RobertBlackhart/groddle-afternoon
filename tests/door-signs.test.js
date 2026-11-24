@@ -105,9 +105,10 @@ describe('For Sale art for houses that are for sale', () => {
     assert.ok(hayden.every((d) => d.for_sale === true));
   });
 
-  it('doors-feature draws the For Sale art only for a door with for_sale', () => {
-    const fx = read('public/js/features/doors-feature.js');
-    assert.match(fx, /const saleArt = !door\.src && !lockArt && hasArt && door\.for_sale \? doorSaleArt\(door\.sprite\) : null;/);
+  it('doors-feature draws the For Sale art only for a door with for_sale (js/door-view.js since R51)', () => {
+    const fx = read('public/js/door-view.js');
+    // After the src, art and lock checks have returned: a door with its own art or a lock never shows it.
+    assert.match(fx, /if \(lock\) return \{ art: 'lock', url: lock \};\n  const sale = door\.for_sale \? doorSaleArt\(door\.sprite\) : null;/);
   });
 });
 

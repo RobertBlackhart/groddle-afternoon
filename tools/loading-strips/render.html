@@ -24,7 +24,7 @@ const keyed = (name) => {
 const { installPixiFixes } = await import(keyed('pixi-fixes'));
 const textureUrls = await import(keyed('textures'));
 const { installHiresDecos } = await import(keyed('deco-hires'));
-const { buildStreetView, loadDecoManifest } = await import(keyed('street-render'));
+const { buildStreetEntities, buildStreetView, loadDecoManifest } = await import(keyed('street-render'));
 const { streetWidth, streetHeight } = await import(keyed('street-model'));
 
 const PIXI = globalThis.PIXI;
@@ -45,7 +45,7 @@ installPixiFixes(PIXI);
 installHiresDecos(textureUrls, { renderer: () => null });
 const app = new PIXI.Application();
 await app.init({ width: OUT_W * OVER, height: OUT_H * OVER, background: 0x8ec8e8, antialias: true, resolution: 1, preference: 'webgl', preserveDrawingBuffer: true });
-await loadDecoManifest();
+const available = await loadDecoManifest();
 
 function sprites(node, out = []) {
   if (node instanceof PIXI.Sprite) out.push(node);
@@ -87,7 +87,10 @@ window.renderStrip = async (file) => {
   // Layers above the middleground live in view.frontView since 71eea704 (they cover the avatars
   // in the game); the strip draws them over the view with its transform (G446: they had dropped out).
   const front = view.frontView || null;
-  const left = await settle(view) + (front ? await settle(front) : 0);
+  // R51 (#656): the street's things on the entity layer (its doors: the dinos, the subway
+  // entrances), drawn as the game draws them, between the view and its front layers.
+  const entities = buildStreetEntities(PIXI, street, available);
+  const left = await settle(view) + await settle(entities) + (front ? await settle(front) : 0);
   // Blurred and recoloured layers bake once their textures arrive.
   await new Promise((r) => setTimeout(r, 400));
   const s = (OUT_W * OVER) / W;
@@ -95,6 +98,9 @@ window.renderStrip = async (file) => {
   view.x = 0;
   view.y = OUT_H * OVER - H * s;
   app.stage.addChild(view);
+  entities.position.copyFrom(view.position);
+  entities.scale.copyFrom(view.scale);
+  app.stage.addChild(entities);
   if (front) {
     front.position.copyFrom(view.position);
     front.scale.copyFrom(view.scale);
@@ -138,6 +144,8 @@ window.renderStrip = async (file) => {
   const spread = Math.sqrt(Math.max(0, sq / n - (sum / n) ** 2));
   const drawn = view.decoDrawn;
   if (front) app.stage.removeChild(front);
+  app.stage.removeChild(entities);
+  entities.destroy({ children: true });
   app.stage.removeChild(view);
   view.destroy({ children: true });
   return { url, W, H, missing: left, drawn, spread: Math.round(spread * 10) / 10 };

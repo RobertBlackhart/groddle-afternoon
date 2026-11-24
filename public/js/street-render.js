@@ -21,6 +21,8 @@ import { QUAD_SPAN, quadSpans, wideRect } from './wide-quads.js?v=f34556e6';
 import { anchorBottomCentre } from './sprite-feet.js?v=16f962c0';
 import { signWords } from './deco-sign.js?v=e98e50f9';
 import { loadWorldFont, WORLD_FONT_FAMILY } from './world-text.js?v=6b49f88c';
+import { buildDoorSprite } from './door-view.js?v=67875ada';
+import { visibleDoors } from './doors.js?v=727d0e0b';
 
 const DECO_BASE = 'assets/decos/groddle/';
 /**
@@ -3777,6 +3779,52 @@ export function buildStreetView(street, PIXI, opts = {}) {
   root.cameraBottomPadding = cameraBottomPadding;
   root.missingSprites = missingSprites;
   return root;
+}
+
+/**
+ * R51 (#656, #645): everything a street draws, in one list. buildStreetView draws the `view`
+ * kinds itself (its layers, their decos, the signposts); the `entities` kinds stand on the entity
+ * layer with the avatars (the doors feature adds each door, js/door-view.js), each sprite marked
+ * with its kind (`streetEntity`). The street's snapshots draw every kind here: the street map
+ * (features/street-minimap-feature.js streetEntities keeps the entity layer's marked sprites)
+ * and the loading strip (tools/loading-strips/render.html, buildStreetEntities below). Glitch's
+ * own snapshot did the same: getSnapshot hid only the players and the itemstacks, and kept the
+ * doors and signposts (LocationRenderer.as 618-660, hiding a door only when it is hidden).
+ */
+export const STREET_DRAWN = Object.freeze({
+  view: Object.freeze(['layer', 'deco', 'signpost']),
+  entities: Object.freeze(['door']),
+});
+/** The entity kinds a street's snapshot keeps (a sprite's `streetEntity`). */
+export const STREET_ENTITY_KINDS = STREET_DRAWN.entities;
+
+/** Mark a sprite on the entity layer as one of the street's own things (STREET_ENTITY_KINDS). */
+export function markStreetEntity(sprite, kind) {
+  if (sprite && STREET_ENTITY_KINDS.includes(kind)) sprite.streetEntity = kind;
+  return sprite;
+}
+
+/**
+ * PURE (R51): the street's entity-layer things, from its JSON: every shown door (js/doors.js
+ * visibleDoors), as { kind, door }. Each kind is one of STREET_ENTITY_KINDS.
+ */
+export function streetEntityRows(street) {
+  return visibleDoors(street).map((door) => ({ kind: 'door', door }));
+}
+
+/**
+ * R51: the street's entity-layer things drawn as the game draws them (streetEntityRows), for a
+ * picture of the street with no game running (the loading strip), sorted as the entity layer
+ * sorts. `available` is the deco manifest.
+ */
+export function buildStreetEntities(PIXI, street, available = new Set()) {
+  const layer = new PIXI.Container();
+  layer.label = 'street-entities';
+  layer.sortableChildren = true;
+  for (const row of streetEntityRows(street)) {
+    if (row.kind === 'door') layer.addChild(markStreetEntity(buildDoorSprite(PIXI, row.door, available).sprite, 'door'));
+  }
+  return layer;
 }
 
 export { signpostNear, pickConnection, platformsScreen, worldToScreen };

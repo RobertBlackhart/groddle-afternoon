@@ -255,8 +255,9 @@ describe('home map: the wiring', () => {
     assert.match(game, /get viewWidth\(\) \{\n    return VIEW_W;/);
   });
 
-  it('the snapshot gets the street\'s size, the window\'s width and, in a live scene, its entities', () => {
-    assert.match(feature, /snapshotStreetView\(engine\.PIXI, engine\.renderer, engine\.streetView, size, \{\n    W: geom\?\.W,\n    H: geom\?\.H,\n    viewW: engine\.viewWidth,\n    entities: live \? sceneEntities\(engine\) : null,/);
+  it('the snapshot gets the street\'s size, the window\'s width and its entities (a live scene\'s; R51: a real street\'s own)', () => {
+    assert.match(feature, /snapshotStreetView\(engine\.PIXI, engine\.renderer, engine\.streetView, size, \{\n    W: geom\?\.W,\n    H: geom\?\.H,\n    viewW: engine\.viewWidth,\n    entities: snapshotEntities\(engine\),/);
+    assert.match(feature, /return isLiveScene\(engine\.streetView\) \? sceneEntities\(engine\) : streetEntities\(engine\);/);
   });
 
   it('re-snaps: the same street built again keeps its picture; a change settles, then at most once a second', () => {

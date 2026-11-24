@@ -29,7 +29,7 @@
 
 import { addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=6414dbdc';
 import { getGameDayKey } from '../game-day.js?v=a532775d';
-import { loadDecoManifest } from '../street-render.js?v=7c327017';
+import { loadDecoManifest } from '../street-render.js?v=4f5425d0';
 import {
   DOOR_KEYS,
   DOOR_KEY_BASE_COST,
@@ -41,21 +41,16 @@ import {
   doorKeyClass,
   doorSubtitle,
   doorTooltip,
-  drawnDoorStyle,
   keyDropDue,
   normalizeDoorState,
   visibleDoors,
 } from '../doors.js?v=727d0e0b';
-import { isLoaded, onLoaded, textureFromUrl } from '../textures.js?v=729b29ea';
-import { doorLockArt } from '../door-lock-art.js?v=e656851c';
-import { doorSaleArt } from '../door-sign-art.js?v=69daffff';
+import { DOOR_Z, buildDoorSprite } from '../door-view.js?v=67875ada';
 import { anchorBottomCentre } from '../sprite-feet.js?v=16f962c0';
 import { autoplayLog } from '../autoplay-log.js?v=55bb4823';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 
 export const DOORS_FEATURE_ID = 'doors';
-const DECO_BASE = 'assets/decos/groddle/';
-const DOOR_Z = 3;
 const NO_EXIT = 'This place has its own way out. The door will have to wait.';
 const UNLOCK_MS = 700;
 
@@ -78,56 +73,6 @@ function publish(engine) {
 /* Views                                                               */
 /* ------------------------------------------------------------------ */
 
-function drawnDoorTexture(PIXI, door) {
-  const w = Math.max(24, Math.round(door.w || 60));
-  const h = Math.max(40, Math.round(door.h || 110));
-  const canvas = document.createElement('canvas');
-  canvas.width = w;
-  canvas.height = h;
-  const g = canvas.getContext('2d');
-  const style = drawnDoorStyle(door.sprite);
-  const hex = (n) => `#${n.toString(16).padStart(6, '0')}`;
-  const r = Math.min(w / 2, h / 3);
-  g.beginPath();
-  g.moveTo(0, h);
-  g.lineTo(0, r);
-  g.arc(w / 2, r, w / 2, Math.PI, 0);
-  g.lineTo(w, h);
-  g.closePath();
-  g.fillStyle = hex(style.frame);
-  g.fill();
-  const inset = Math.max(4, Math.round(w * 0.08));
-  g.beginPath();
-  g.moveTo(inset, h);
-  g.lineTo(inset, r + inset * 0.3);
-  g.arc(w / 2, r + inset * 0.3, w / 2 - inset, Math.PI, 0);
-  g.lineTo(w - inset, h);
-  g.closePath();
-  g.fillStyle = hex(style.fill);
-  g.fill();
-  if (style.kind === 'door') {
-    g.strokeStyle = 'rgba(0,0,0,0.18)';
-    g.lineWidth = Math.max(1, w * 0.02);
-    for (const fx of [0.36, 0.64]) {
-      g.beginPath();
-      g.moveTo(w * fx, r + inset);
-      g.lineTo(w * fx, h - inset);
-      g.stroke();
-    }
-    g.fillStyle = '#e8cf7a';
-    g.beginPath();
-    g.arc(w * 0.74, h * 0.58, Math.max(2, w * 0.05), 0, Math.PI * 2);
-    g.fill();
-  }
-  return PIXI.Texture.from(canvas);
-}
-
-function applyRect(sprite, door) {
-  if (door.w > 0) sprite.width = door.w;
-  if (door.h > 0) sprite.height = door.h;
-  if (door.flip) sprite.scale.x = -Math.abs(sprite.scale.x);
-}
-
 function addExtra(engine, view, child) {
   child.zIndex = DOOR_Z + 1;
   child.eventMode = 'none';
@@ -137,32 +82,12 @@ function addExtra(engine, view, child) {
 
 function buildView(engine, door, available) {
   const { PIXI } = engine;
-  // `src`: art rendered at the door's own size (Jethimadh Room 16's mouth, tools/room-art), over the deco.
-  const hasArt = Boolean(door.src) || (door.sprite && available.has(door.sprite));
-  // A locked door shows only its key's keyhole (the deco's showLock(key_id), DoorView.as 243-244);
-  // any other door of a lock deco shows neither chains nor keyholes (hideLock(), 245-247: the
-  // Russula Involutii cliff door to Distant End). The plain deco has them all stacked
-  // (tools/deco-pipeline/door-locks.py; key 0 is the unlocked file).
-  const lockKey = door.key_id && door.is_locked !== false ? door.key_id : 0;
-  const lockArt = !door.src && hasArt ? doorLockArt(door.sprite, lockKey) : null;
-  // A house shows its For Sale sign only while it is for sale (the deco's `sign`, DoorView.as
-  // 228-232); the plain house decos have none (tools/deco-pipeline/door-signs.py).
-  const saleArt = !door.src && !lockArt && hasArt && door.for_sale ? doorSaleArt(door.sprite) : null;
-  const art = lockArt || saleArt;
-  const tex = door.src ? textureFromUrl(door.src) : art ? textureFromUrl(art) : hasArt ? textureFromUrl(`${DECO_BASE}${door.sprite}.png`) : drawnDoorTexture(PIXI, door);
-  const sprite = new PIXI.Sprite(tex);
-  anchorBottomCentre(sprite, 'deco');
-  sprite.x = door.x;
-  sprite.y = door.y;
-  sprite.rotation = ((Number(door.r) || 0) * Math.PI) / 180;
-  sprite.zIndex = DOOR_Z;
-  sprite.roundPixels = true;
-  applyRect(sprite, door);
-  if (!isLoaded(tex.source)) onLoaded(tex.source, () => !sprite.destroyed && applyRect(sprite, door));
+  // R51: drawn as the street's snapshots draw it (js/door-view.js buildDoorSprite).
+  const { sprite, art } = buildDoorSprite(PIXI, door, available);
   sprite._worldHitW = Math.max(40, door.w || 60);
   sprite._worldHitH = Math.max(60, door.h || 110);
   engine.entityLayer.addChild(sprite);
-  const view = { door, sprite, extras: [], target: null, art: lockArt ? 'lock' : saleArt ? 'sale' : hasArt ? 'deco' : 'drawn' };
+  const view = { door, sprite, extras: [], target: null, art };
 
   // Austin 2026-11-01: no key icon floats over a locked door any more (a remake addition; the
   // keyhole art above names the key, DoorView.as 243-244). Its subtitle still says which key.

@@ -291,7 +291,9 @@ describe('door rules', () => {
   it('draws no key icon over a locked door: its keyhole and its subtitle name the key (Austin 2026-11-01)', () => {
     const fx = readFileSync(join(here, '../public/js/features/doors-feature.js'), 'utf8');
     assert.doesNotMatch(fx, /assets\/sprites\/icons\/\$\{doorKeyClass/, 'the floating key badge is gone');
-    assert.match(fx, /const lockKey = door\.key_id && door\.is_locked !== false \? door\.key_id : 0;\s*const lockArt = !door\.src && hasArt \? doorLockArt\(door\.sprite, lockKey\) : null;/);
+    // R51: the art is picked in js/door-view.js doorArt (after a door's own src art and its deco's presence).
+    const view = readFileSync(join(here, '../public/js/door-view.js'), 'utf8');
+    assert.match(view, /if \(!hasArt\) return \{ art: 'drawn', url: null \};\n  const lockKey = door\.key_id && door\.is_locked !== false \? door\.key_id : 0;\n  const lock = doorLockArt\(door\.sprite, lockKey\);/);
     assert.match(fx, /subtitle: doorSubtitle\(door, \{ hasKey: hasKeyIn\(engine\) \}\)/);
   });
 

@@ -69,7 +69,8 @@
  * refused). QA: &streetmapexpand=1 expands it on each street.
  */
 
-import { createPictureCache, createStreetMinimap, minimapVisibility, onStreetMapChange, sceneSignMarks, setStreetMap, signpostMarks, snapshotStreetView, snapsWithScene, stationMarks, streetMapOn } from '../ui/street-minimap.js?v=86d4a812';
+import { STREET_ENTITY_KINDS } from '../street-render.js?v=4f5425d0';
+import { createPictureCache, createStreetMinimap, minimapVisibility, onStreetMapChange, sceneSignMarks, setStreetMap, signpostMarks, snapshotStreetView, snapsWithScene, stationMarks, streetMapOn } from '../ui/street-minimap.js?v=be7e822c';
 import { classicArtUrl } from '../classic/classic-art.js?v=5f713e7d';
 import { onUiModeChange } from '../classic/ui-mode.js?v=1a13f4a8';
 import { focusBack } from '../ui/focus-return.js?v=da190597';
@@ -196,11 +197,35 @@ export function sceneEntities(engine) {
   return { layer, keep: (child) => keep.has(child), rows };
 }
 
+/**
+ * R51 (#656): what a real street's snapshot draws from the entity layer: the street's own things
+ * the street renderer lists (js/street-render.js STREET_ENTITY_KINDS: its doors, the dinos and
+ * subway entrances among them), as getSnapshot kept the doors and hid the players and itemstacks.
+ */
+export function streetEntities(engine) {
+  const layer = engine.entityLayer;
+  if (!layer || layer.destroyed) return null;
+  const keep = new Set();
+  const rows = [];
+  for (const child of layer.children || []) {
+    if (!child || child.destroyed || !STREET_ENTITY_KINDS.includes(child.streetEntity)) continue;
+    keep.add(child);
+    rows.push(`${child.streetEntity}:${Math.round(child.x / 4)}:${Math.round(child.y / 4)}`);
+  }
+  if (engine.player) keep.delete(engine.player);
+  return { layer, keep: (child) => keep.has(child), rows };
+}
+
+/** R51: what the snapshot draws from the entity layer: a live scene's kept things, else the street's own. */
+export function snapshotEntities(engine) {
+  return isLiveScene(engine.streetView) ? sceneEntities(engine) : streetEntities(engine);
+}
+
 /** What the snapshot would draw, as a string: a change asks for a new one. */
 function liveKey(engine) {
   const v = engine.streetView;
-  if (!isLiveScene(v)) return '';
-  const ents = sceneEntities(engine);
+  if (!v || v.destroyed) return '';
+  const ents = snapshotEntities(engine);
   const b = engine.street?.bounds || {};
   return `${v.uid ?? ''}|${b.r - b.l}x${b.b - b.t}|${(ents?.rows || []).sort().join(',')}`;
 }
@@ -216,16 +241,15 @@ function snap(engine) {
   snapOwed = false;
   const size = view.pictureSize();
   const t0 = performance.now();
-  const live = isLiveScene(engine.streetView);
   const geom = view.geometry;
   const canvas = snapshotStreetView(engine.PIXI, engine.renderer, engine.streetView, size, {
     W: geom?.W,
     H: geom?.H,
     viewW: engine.viewWidth,
-    entities: live ? sceneEntities(engine) : null,
+    entities: snapshotEntities(engine),
   });
   lastSnapAt = performance.now();
-  snapKey = live ? liveKey(engine) : '';
+  snapKey = liveKey(engine);
   const ms = lastSnapAt - t0;
   engine.setData?.('streetMapSnapMs', ms.toFixed(1));
   // REVISIT: kept for a walk back once the art is all in (never a capped, half-loaded picture).
@@ -285,10 +309,8 @@ export function pendingArtSources(roots = [], { loaded = isLoaded, failed = isFa
 function artRoots(engine, v) {
   const roots = [v];
   if (v.frontView && !v.frontView.destroyed && v.frontView.parent !== v) roots.push(v.frontView);
-  if (isLiveScene(v)) {
-    const ents = sceneEntities(engine);
-    for (const child of ents?.layer.children || []) if (ents.keep(child)) roots.push(child);
-  }
+  const ents = snapshotEntities(engine);
+  for (const child of ents?.layer.children || []) if (ents.keep(child)) roots.push(child);
   return roots;
 }
 
@@ -412,8 +434,12 @@ function enterStreet(engine) {
   } else startArt(engine);
 }
 
-/** A live scene's own posts on the map, and a new snapshot when what it draws has changed. */
+/**
+ * A live scene's own posts on the map, and a new snapshot when what it draws has changed (R51: on
+ * a real street too, when its doors come in after the snap).
+ */
 function syncLiveScene(engine) {
+  if (snapKey && liveKey(engine) !== snapKey) requestResnap(engine);
   if (!isLiveScene(engine.streetView)) return;
   const marks = sceneSignMarks(engine.interactables || []);
   const signKey = marks.map((m) => `${m.x},${m.y},${m.tip}`).join('|');
@@ -422,7 +448,6 @@ function syncLiveScene(engine) {
     view.setSceneSigns(marks);
     engine.setData?.('streetMapSigns', view.root.dataset.signs || '0');
   }
-  if (snapKey && liveKey(engine) !== snapKey) requestResnap(engine);
 }
 
 function sync(engine, force = false) {
