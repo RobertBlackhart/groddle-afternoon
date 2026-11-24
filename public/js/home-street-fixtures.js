@@ -41,7 +41,14 @@
  * Put out Mail Dispatcher to stand it there again: at its last spot if that still fits, else at
  * the usual one (stepping aside as always). Saves without the flag keep it out. Nothing else needs
  * it: Write mail and parcels go from the Mailbox, and no quest or hint points at it.
+ *
+ * The Vine Radio (G1245, report #661, ours: js/vine-radio.js) moves the same way once its owner has
+ * it: Put out Vine Radio in Cultivate stands it at its usual spot (just right of the Butler Box) or
+ * its last one, then Move, Back to its usual spot and Put away, as the Mail Dispatcher. Saved with
+ * the street as `radioRx` and `radioOut` (only a saved true stands it out), so visitors see it there.
  */
+
+import { RADIO_CLASS, RADIO_HALF, RADIO_OUT_KEY, RADIO_TALL, RADIO_TEXT } from './vine-radio.js?v=5827b931';
 
 /** The dispatcher art's drawn half width (dispatcher_left.png: x 8..107 around its origin 59). */
 export const DISPATCHER_HALF = 52;
@@ -56,6 +63,8 @@ export const MAILBOX_HALF = 36;
 export const DOOR_HALF = 46;
 export const STREET_ROCK = Object.freeze({ houseDx: 221, half: 22 });
 export const BUTLER_BOX = Object.freeze({ houseDx: 300, half: 32 });
+/** G1245: the Vine Radio's usual spot, x from the house's centre: just right of the Butler Box. */
+export const RADIO_USUAL_DX = BUTLER_BOX.houseDx + BUTLER_BOX.half + DISPATCHER_GAP + RADIO_HALF + 130;
 
 export const DISPATCHER_TEXT = Object.freeze({
   label: 'Mail Dispatcher',
@@ -84,6 +93,11 @@ export const DISPATCHER_TEXT = Object.freeze({
 /** The street state key that says the Mail Dispatcher is put away (report 153). */
 export const DISPATCHER_AWAY_KEY = 'dispatcherAway';
 
+/** G1245: whether the owner's Vine Radio stands on the street (only a saved `true` counts). */
+export function radioOut(state) {
+  return state?.[RADIO_OUT_KEY] === true;
+}
+
 /** Whether the owner has put the Mail Dispatcher away (only a saved `true` counts). */
 export function dispatcherAway(state) {
   return state?.[DISPATCHER_AWAY_KEY] === true;
@@ -95,6 +109,7 @@ const FIXTURE_NAMES = Object.freeze({
   rock: 'Magic Rock',
   butler_box: 'Butler Box',
   dispatcher: 'Mail Dispatcher',
+  radio: RADIO_TEXT.name,
 });
 
 /**
@@ -106,6 +121,7 @@ export const MOVABLE_FIXTURES = Object.freeze({
   mailbox: Object.freeze({ id: 'mailbox', key: 'mailboxRx', half: MAILBOX_HALF, tall: 146, classId: 'npc_mailbox' }),
   rock: Object.freeze({ id: 'rock', key: 'rockRx', half: STREET_ROCK.half, tall: 80, classId: 'magic_rock' }),
   dispatcher: Object.freeze({ id: 'dispatcher', key: 'dispatcherRx', half: DISPATCHER_HALF, tall: 150, classId: 'npc_mail_dispatcher' }),
+  radio: Object.freeze({ id: 'radio', key: 'radioRx', half: RADIO_HALF, tall: RADIO_TALL, classId: RADIO_CLASS }),
 });
 export const MOVABLE_FIXTURE_IDS = Object.freeze(Object.keys(MOVABLE_FIXTURES));
 
@@ -121,6 +137,12 @@ const MOVE_TEXT = Object.freeze({
     sub: 'Move it anywhere along your street that is clear of your door and the other things on it.',
     resetTitle: 'Put it back just right of your door',
     bannerTitle: 'Pick up your Magic Rock and set it down somewhere else on your street',
+  }),
+  radio: Object.freeze({
+    label: RADIO_TEXT.name,
+    sub: 'Move it anywhere along your street that is clear of your door and the other things on it.',
+    resetTitle: 'Put it back just right of your Butler Box',
+    bannerTitle: 'Pick up your Vine Radio and set it down somewhere else on your street',
   }),
 });
 
@@ -152,7 +174,8 @@ export function signpostX(layout) {
  * The fixtures' spans, [x1, x2] in world x. `at` gives the drawn Mailbox and door x
  * (they follow the house style; `doorway` the door and its mat, homes-feature houseDoorway,
  * wins over `doorX`); without them they are left out. `rockX` is where the Magic Rock stands
- * (else its usual spot), `dispatcherX` the Mail Dispatcher (left out without it).
+ * (else its usual spot), `dispatcherX` the Mail Dispatcher and `radioX` the Vine Radio (each left
+ * out without it).
  */
 export function streetFixtures(layout, at = {}) {
   const rockX = Number.isFinite(at.rockX) ? at.rockX : layout.houseX + STREET_ROCK.houseDx;
@@ -165,6 +188,7 @@ export function streetFixtures(layout, at = {}) {
   if (Number.isFinite(at.doorway?.x1) && Number.isFinite(at.doorway?.x2)) rows.push({ id: 'door', x1: at.doorway.x1, x2: at.doorway.x2 });
   else if (Number.isFinite(at.doorX)) rows.push({ id: 'door', x1: at.doorX - DOOR_HALF, x2: at.doorX + DOOR_HALF });
   if (Number.isFinite(at.dispatcherX)) rows.push({ id: 'dispatcher', x1: at.dispatcherX - DISPATCHER_HALF, x2: at.dispatcherX + DISPATCHER_HALF });
+  if (Number.isFinite(at.radioX)) rows.push({ id: 'radio', x1: at.radioX - RADIO_HALF, x2: at.radioX + RADIO_HALF });
   return rows;
 }
 

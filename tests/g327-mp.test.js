@@ -31,11 +31,11 @@ import {
   yourSignLine,
 } from '../public/js/hi-signs-mp.js?v=ea50d4bb';
 import { HI_VARIANTS, HI_VARIANT_COLORS, HI_VARIANT_NAMES, hiDay } from '../public/js/hi-signs.js?v=7f3cab9c';
-import { hiSignsFeature } from '../public/js/features/hi-signs-feature.js?v=985aa645';
+import { hiSignsFeature } from '../public/js/features/hi-signs-feature.js?v=7a439025';
 import { powdersFeature, runPowder } from '../public/js/features/powders-feature.js?v=5f9ea423';
 import { addItem, countItem } from '../public/js/inventory.js?v=6414dbdc';
-import { applyAchievementProgress, createAchievementState, getAchievementProgress, seedAchievementNearCompletion } from '../public/js/achievements.js?v=054773be';
-import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
+import { applyAchievementProgress, createAchievementState, getAchievementProgress, seedAchievementNearCompletion } from '../public/js/achievements.js?v=47bd719d';
+import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=5ef6adb5';
 import { HAS_SERVER, serverPath } from '../tools/repos.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');

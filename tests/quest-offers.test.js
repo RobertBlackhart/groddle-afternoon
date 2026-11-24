@@ -13,7 +13,7 @@ import {
   resetContentCatalogs,
   getQuestCatalog,
   getContentMeta,
-} from '../public/js/content-catalogs.js?v=10b118dd';
+} from '../public/js/content-catalogs.js?v=5ef6adb5';
 import {
   createQuestState,
   assignQuest,
@@ -23,7 +23,7 @@ import {
   applyQuestRewards,
   questRewardSummary,
   listQuestLog,
-} from '../public/js/quests.js?v=90a2ee3d';
+} from '../public/js/quests.js?v=d0443973';
 import { builtInstanceQuests } from '../public/js/quest-rooms/catalog.js?v=10c8100d';
 import {
   OFFER_INTERVAL_MS,
@@ -53,7 +53,7 @@ import {
   tickQuestTimers,
   restartTimedQuest,
   questTimerStatus,
-} from '../public/js/quest-offers.js?v=32d4127e';
+} from '../public/js/quest-offers.js?v=4ca83fa9';
 import { XP_FOR_LEVEL } from '../public/js/progression.js?v=05ff0260';
 
 const CONTENT = join(dirname(fileURLToPath(import.meta.url)), '../public/assets/content');
@@ -75,8 +75,10 @@ function xpAt(level, fraction = 0.5) {
 describe('rebuilt quest catalog', () => {
   it('keeps meta counts in step and adds the previously unparsed quests', () => {
     const cat = getQuestCatalog();
-    assert.equal(Object.keys(cat).length, getContentMeta().counts.quests.output);
-    assert.equal(Object.keys(cat).length, 445);
+    // G1245: plus our own quest (Tunes for Crabs, js/vine-radio.js withOursQuests), not in quests.json.
+    assert.equal(Object.keys(cat).length, getContentMeta().counts.quests.output + 1);
+    assert.equal(getContentMeta().counts.quests.output, 445);
+    assert.equal(cat.vine_radio_crab_tunes?.ours, true);
     for (const id of ['le_miserable', 'orld_ugs_esara', 'build_a_tower', 'get_first_tool']) assert.ok(cat[id], id);
   });
 
@@ -107,7 +109,7 @@ describe('rebuilt quest catalog', () => {
 });
 
 describe('classifyQuests', () => {
-  it('splits 445 quests into solo, custom story, and excluded with reasons', () => {
+  it('splits 445 quests (and our one) into solo, custom story, and excluded with reasons', () => {
     const c = classifyQuests();
     // Rebuilt quest rooms (public/js/quest-rooms/catalog.js) move from
     // instance_unbuilt to solo as each room lands.
@@ -123,7 +125,9 @@ describe('classifyQuests', () => {
     // players (G451, Austin 2026-11-07; tests/g451-peter-out-peat.test.js).
     // Chasing Hubba Dubba Hugs, never offered and nothing sets its flags (orld_ugs_esara.js 18-50; rules-b 2026-11-12).
     const judgedOut = ['manor_mystery', 'bogspecialization_harvest_full_peat_bog_in_time_period', 'orld_ugs_esara'].length;
-    assert.equal(c.solo.length, 129 + built + featureQuests - judgedOut);
+    // G1245: our own Tunes for Crabs (a crab offers it) is solo too.
+    const ours = ['vine_radio_crab_tunes'].length;
+    assert.equal(c.solo.length, 129 + built + featureQuests - judgedOut + ours);
     assert.equal(c.custom.length, 21); // + 4 Gentle Island tutorial quests (newxp-feature.js); ezcooking_1 is a room now
     assert.equal(c.excluded.length, 294 - (built - wasCustom) - featureQuests + judgedOut);
     assert.equal(c.byReason.job.length, 200);
@@ -140,7 +144,7 @@ describe('classifyQuests', () => {
     assert.ok(c.byReason.needs_other_players.includes('kindly_randomness'));
     assert.ok(c.byReason.removed_feature.includes('say_cheese'));
     assert.ok(c.custom.some((row) => row.classTsid === 'phantom_glitch'));
-    assert.equal(questOfferIndex().length, 129 + built + featureQuests - judgedOut);
+    assert.equal(questOfferIndex().length, 129 + built + featureQuests - judgedOut + ours);
   });
 
   it('marks NPC-only quests whose giver the remake lacks as unreachable', () => {

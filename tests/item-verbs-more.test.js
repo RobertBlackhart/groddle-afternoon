@@ -71,11 +71,11 @@ import {
   wisdomCheck,
   wisdomMessage,
 } from '../public/js/potions.js?v=4f4c996d';
-import { potionsFeature, usePotionNow, pourSauce } from '../public/js/features/potions-feature.js?v=8dac3432';
+import { potionsFeature, usePotionNow, pourSauce } from '../public/js/features/potions-feature.js?v=4182db01';
 import { husbandryPack } from '../public/js/animal-husbandry.js?v=83779ca2';
 import { XP_FOR_LEVEL } from '../public/js/progression.js?v=05ff0260';
 import { moodScaledXp } from '../public/js/mood-xp.js?v=e311b45c';
-import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
+import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=5ef6adb5';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const publicRoot = join(here, '../public');

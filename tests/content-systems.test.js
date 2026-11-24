@@ -16,7 +16,7 @@ import {
   getBuffCatalog,
   getContentMeta,
   resetContentCatalogs,
-} from '../public/js/content-catalogs.js?v=10b118dd';
+} from '../public/js/content-catalogs.js?v=5ef6adb5';
 import {
   createQuestState,
   assignQuest,
@@ -25,7 +25,7 @@ import {
   listQuestLog,
   listQuestLogNewestFirst,
   listQuests,
-} from '../public/js/quests.js?v=90a2ee3d';
+} from '../public/js/quests.js?v=d0443973';
 import {
   createAchievementState,
   applyAchievementProgress,
@@ -34,7 +34,7 @@ import {
   browseAchievementLog,
   achievementCategories,
   getAchievementProgress,
-} from '../public/js/achievements.js?v=054773be';
+} from '../public/js/achievements.js?v=47bd719d';
 import {
   createSkillState,
   canLearnSkill,
@@ -45,7 +45,7 @@ import {
   grantSkill,
   listSkills,
   hasSkill,
-} from '../public/js/skills.js?v=db7039d9';
+} from '../public/js/skills.js?v=7fedc553';
 import {
   createBuffState,
   applyBuff,
@@ -53,7 +53,7 @@ import {
   listActiveBuffs,
   hasBuff,
   listBuffCatalog,
-} from '../public/js/buffs.js?v=2ed95a93';
+} from '../public/js/buffs.js?v=14eee338';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const CONTENT = join(__dirname, '../public/assets/content');
@@ -70,7 +70,8 @@ describe('mined catalogs from GSJS', () => {
     }
     const meta = getContentMeta();
     assert.ok(meta?.counts);
-    assert.equal(Object.keys(getQuestCatalog()).length, meta.counts.quests.output);
+    // Our own quests (js/vine-radio.js withOursQuests, G1245) are no GSJS output.
+    assert.equal(Object.keys(getQuestCatalog()).filter((id) => !getQuestCatalog()[id].ours).length, meta.counts.quests.output);
     // The badges the remake designed (tools/achievement-overrides.mjs DESIGNED_ACHIEVEMENTS, G982) are no GSJS output.
     assert.equal(Object.keys(getAchievementCatalog()).filter((id) => !DESIGNED_ACHIEVEMENTS[id]).length, meta.counts.achievements.output);
     // Better Learning I to V are added to the mined skills (better-learning.js, G62).

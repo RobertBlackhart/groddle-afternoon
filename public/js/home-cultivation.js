@@ -55,6 +55,9 @@
  *   `rockRx`); a fixture steps aside for a cultivation, never the other way round.
  *   Report 153: an owner may put the dispatcher away (`dispatcherAway`); then
  *   nothing keeps clear of it until it is put out again (putOutDispatcher).
+ *   G1245: the Vine Radio (ours, js/vine-radio.js) once its owner has it: out on
+ *   the street only while `radioOut`, at `radioRx`, and its music choice in
+ *   `radio` (normalizeRadioState), kept when it is put away.
  */
 
 import { CULTIVATION_CLASSES, HOME_LIMITS } from './homes-catalog.js?v=0367f90f';
@@ -71,16 +74,19 @@ import {
   DISPATCHER_HALF,
   MOVABLE_FIXTURES,
   MOVABLE_FIXTURE_IDS,
+  RADIO_USUAL_DX,
   STREET_ROCK,
   dispatcherDefaultRx,
   dispatcherAway,
   fixtureFits,
   fixtureName,
   fixtureSpot,
+  radioOut,
   savedFixtureRx,
   signpostX,
   streetFixtures,
-} from './home-street-fixtures.js?v=bad831a1';
+} from './home-street-fixtures.js?v=4a56a718';
+import { RADIO_HALF, RADIO_OUT_KEY, RADIO_STATE_KEY, normalizeRadioState } from './vine-radio.js?v=5827b931';
 import { gardenHalfWidth } from './garden-view.js?v=04fe8467';
 
 export const YARD_SEGMENT_W = 150;
@@ -203,6 +209,10 @@ export function normalizeCultivationState(seed = {}) {
     }
     // Report 153: put away by its owner (only a saved true; older saves keep it out).
     if (dispatcherAway(seed)) state[DISPATCHER_AWAY_KEY] = true;
+    // G1245: the Vine Radio out on the street, and its music (kept while it is put away).
+    if (radioOut(seed)) state[RADIO_OUT_KEY] = true;
+    const radio = normalizeRadioState(seed?.[RADIO_STATE_KEY]);
+    if (radio.pick || radio.on) state[RADIO_STATE_KEY] = radio;
   }
   settleGardens(state);
   return state;
@@ -413,6 +423,11 @@ export function placementCheck(state, protoClass, rx, excludeId = null, { dispat
   if (dispX != null && Math.abs(dispX - x) < half + DISPATCHER_HALF) {
     return { ok: false, reason: 'dispatcher', msg: 'Keep it clear of your Mail Dispatcher.' };
   }
+  // G1245: the Vine Radio, like the dispatcher (it steps aside when old saves settle).
+  const radX = !back && dispatcher ? fixtureRx(state, 'radio', { excludeId }) : null;
+  if (radX != null && Math.abs(radX - x) < half + RADIO_HALF) {
+    return { ok: false, reason: 'radio', msg: 'Keep it clear of your Vine Radio.' };
+  }
   for (const other of state.items) {
     if (other.id === excludeId) continue;
     if (Math.abs(other.rx - x) < half + footprint(other.protoClass)) {
@@ -431,6 +446,7 @@ export function usualFixtureRx(layout, id, at = {}) {
   if (id === 'mailbox') return Number.isFinite(at.mailboxX) ? Math.round(at.mailboxX - layout.houseX) : null;
   if (id === 'rock') return STREET_ROCK.houseDx;
   if (id === 'dispatcher') return dispatcherDefaultRx(layout);
+  if (id === 'radio') return RADIO_USUAL_DX;
   return null;
 }
 
@@ -443,10 +459,11 @@ export function fixtureObstacles(state, id, { excludeId = null, at = {} } = {}) 
   const layout = homeStreetLayout(state);
   const spot = (other) => {
     if (other === 'dispatcher' && dispatcherAway(state)) return undefined;
+    if (other === 'radio' && !radioOut(state)) return undefined;
     const rx = savedFixtureRx(state, other) ?? usualFixtureRx(layout, other, at);
     return rx == null ? undefined : layout.houseX + rx;
   };
-  const where = { ...at, mailboxX: spot('mailbox'), rockX: spot('rock'), dispatcherX: spot('dispatcher') };
+  const where = { ...at, mailboxX: spot('mailbox'), rockX: spot('rock'), dispatcherX: spot('dispatcher'), radioX: spot('radio') };
   const items = (state?.items || []).filter((row) => row.id !== excludeId).map((row) => ({
     x: layout.houseX + row.rx,
     half: footprint(row.protoClass),
@@ -466,6 +483,7 @@ export function fixtureObstacles(state, id, { excludeId = null, at = {} } = {}) 
 export function fixtureRx(state, id, { excludeId = null, at = {} } = {}) {
   if (isBackYard(state) || !MOVABLE_FIXTURES[id]) return null;
   if (id === 'dispatcher' && dispatcherAway(state)) return null;
+  if (id === 'radio' && !radioOut(state)) return null;
   const layout = homeStreetLayout(state);
   const saved = savedFixtureRx(state, id);
   const usual = usualFixtureRx(layout, id, at);
@@ -512,6 +530,49 @@ export function putOutDispatcher(state, { at = {} } = {}) {
     if (!kept) delete state[key];
   }
   return { ok: true, kept, rx: fixtureRx(state, 'dispatcher', { at }) };
+}
+
+/**
+ * G1245: the owner puts the Vine Radio away. Its spot and its music stay saved for when it is put
+ * out again. False when there is nothing to put away.
+ */
+export function putAwayRadio(state) {
+  if (!state || isBackYard(state) || !radioOut(state)) return false;
+  delete state[RADIO_OUT_KEY];
+  return true;
+}
+
+/**
+ * G1245: stand the Vine Radio on the street: at its last spot if it still fits there, else its
+ * usual one (just right of the Butler Box), stepping aside as the other fixtures do. Returns
+ * { ok, kept, rx } (rx: x from the house's centre), or { ok: false } when it is already out.
+ */
+export function putOutRadio(state, { at = {} } = {}) {
+  if (!state || isBackYard(state) || radioOut(state)) return { ok: false };
+  state[RADIO_OUT_KEY] = true;
+  const key = MOVABLE_FIXTURES.radio.key;
+  const saved = savedFixtureRx(state, 'radio');
+  let kept = false;
+  if (saved != null) {
+    const layout = homeStreetLayout(state);
+    kept = fixtureFits(layout, 'radio', layout.houseX + saved, fixtureObstacles(state, 'radio', { at })).ok;
+    if (!kept) delete state[key];
+  }
+  return { ok: true, kept, rx: fixtureRx(state, 'radio', { at }) };
+}
+
+/** G1245: the Vine Radio's music choice (cult.radio), normalized. */
+export function radioState(state) {
+  return normalizeRadioState(state?.[RADIO_STATE_KEY]);
+}
+
+/** G1245: keep a new music choice with the street (an empty one saves nothing). */
+export function setRadioState(state, next) {
+  if (!state || isBackYard(state)) return null;
+  const radio = normalizeRadioState(next);
+  if (radio.pick || radio.on) state[RADIO_STATE_KEY] = radio;
+  else delete state[RADIO_STATE_KEY];
+  return radio;
 }
 
 /** The nearest free spot to `rx` (searching outward), or null. */

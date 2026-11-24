@@ -10,7 +10,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { NOTICE_MIN_W, noRoomBeside } from '../public/js/notify-view.js?v=0fbfad68';
-import { mountPanelShell } from '../public/js/ui/panel-shell.js?v=06a0d3fe';
+import { mountPanelShell } from '../public/js/ui/panel-shell.js?v=5efb38c6';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const view = readFileSync(join(root, 'public/js/notify-view.js'), 'utf8');

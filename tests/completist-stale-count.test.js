@@ -12,8 +12,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { createAchievementState, applyAchievementProgress, unlockAchievement } from '../public/js/achievements.js?v=054773be';
-import { loadContentCatalogsFromDir, getAchievementCatalog } from '../public/js/content-catalogs.js?v=10b118dd';
+import { createAchievementState, applyAchievementProgress, unlockAchievement } from '../public/js/achievements.js?v=47bd719d';
+import { loadContentCatalogsFromDir, getAchievementCatalog } from '../public/js/content-catalogs.js?v=5ef6adb5';
 import { TRANSIT_STATIONS, applyStreetVisit, availableHubStreets, countsTowardHub, topUpCompletists } from '../public/js/exploration.js?v=8f19e25d';
 
 const here = dirname(fileURLToPath(import.meta.url));

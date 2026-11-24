@@ -152,7 +152,7 @@ describe('Classic skin: modules and copy', () => {
 
   it('Skills, Buffs, Badges, Quests and the Map in the 2012 window shell; Upgrades the hub\'s sub-screen', () => {
     const css = read(CSS);
-    const shell = /#skills-panel, #buffs-panel, #achieve-panel, #quest-panel, #projects-panel\) > \.side-card,\n:root\[data-ui="classic"\] #game-root #make-panel > \.make-card,\n:root\[data-ui="classic"\] #game-root #map-panel > \.map-card \{[^}]*border-radius: 4px;[^}]*0 0 0 1px color-mix\(in srgb, var\(--c-classic-ink\) 37%, transparent\),\n\s+0 0 1px 7px color-mix\(in srgb, var\(--c-classic-ink\) 15%, transparent\);/;
+    const shell = /#skills-panel, #buffs-panel, #achieve-panel, #quest-panel, #projects-panel, #vine-radio-panel\) > \.side-card,\n:root\[data-ui="classic"\] #game-root #make-panel > \.make-card,\n:root\[data-ui="classic"\] #game-root #map-panel > \.map-card \{[^}]*border-radius: 4px;[^}]*0 0 0 1px color-mix\(in srgb, var\(--c-classic-ink\) 37%, transparent\),\n\s+0 0 1px 7px color-mix\(in srgb, var\(--c-classic-ink\) 15%, transparent\);/;
     assert.match(css, shell);
     assert.match(css, /#map-panel > \.map-card \{ width: min\(calc\(764 \* var\(--cu\)\), 100%\); \}/);
     assert.match(css, /width: min\(calc\(615 \* var\(--cu\)\), 100%\);/);

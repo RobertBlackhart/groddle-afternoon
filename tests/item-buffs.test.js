@@ -10,7 +10,7 @@ import { fileURLToPath } from 'node:url';
 import {
   loadContentCatalogsFromDir,
   resetContentCatalogs,
-} from '../public/js/content-catalogs.js?v=10b118dd';
+} from '../public/js/content-catalogs.js?v=5ef6adb5';
 import {
   BUFF_ITEM_CATALOG,
   createBuffState,
@@ -25,10 +25,10 @@ import {
   hasBuff,
   consumeRewardBuff,
   studyBuffBlockReason,
-} from '../public/js/buffs.js?v=2ed95a93';
-import { accelerateActiveStudy, createSkillState, getStudyStatus, startSkillStudy } from '../public/js/skills.js?v=db7039d9';
-import { applyRewards } from '../public/js/quests.js?v=90a2ee3d';
-import { normalizeBuffSnapshot } from '../public/js/player-save.js?v=0b153c14';
+} from '../public/js/buffs.js?v=14eee338';
+import { accelerateActiveStudy, createSkillState, getStudyStatus, startSkillStudy } from '../public/js/skills.js?v=7fedc553';
+import { applyRewards } from '../public/js/quests.js?v=d0443973';
+import { normalizeBuffSnapshot } from '../public/js/player-save.js?v=d206c5f6';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '../public');
 

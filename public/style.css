@@ -13063,6 +13063,39 @@ body:has(#quest-dialogue:not([hidden])) .prompt-stack { z-index: calc(var(--z-mo
 [data-ui="modern"] #projects-list .pj-section { display: flex; flex-direction: column; gap: var(--space-2); }
 [data-ui="modern"] #projects-list .pj-section-title { margin: var(--space-2) 0 0; color: var(--text-muted); font-size: var(--fs-s); font-weight: var(--fw-heavy); letter-spacing: 0.04em; text-transform: uppercase; }
 [data-ui="modern"] #projects-list .pj-card { margin: 0; padding: var(--space-2) var(--space-3) var(--space-3); border: 1px solid var(--border); border-radius: var(--radius-m); background: var(--surface-raised); line-height: var(--lh-body); }
+/* G1245 Vine Radio (#661, ours; js/features/vine-radio-feature.js): Choose music, a side sheet (a bottom sheet on a phone, a window in Classic). */
+#vine-radio-panel .vr-body { display: flex; flex-direction: column; gap: var(--space-2); font-size: var(--fs-m); line-height: var(--lh-body); }
+#vine-radio-panel .vr-lead { margin: 0; color: var(--text-muted); }
+#vine-radio-panel .vr-now { display: grid; grid-template-columns: 1fr auto; gap: 0 var(--space-2); align-items: center; padding: var(--space-2) var(--space-3); border: 1px solid var(--border); border-radius: var(--radius-m); background: var(--surface-moss); }
+#vine-radio-panel .vr-now strong { grid-column: 1; }
+#vine-radio-panel .vr-now span { grid-column: 1; color: var(--text-muted); font-size: var(--fs-s); }
+#vine-radio-panel .vr-now .vr-stop { grid-column: 2; grid-row: 1 / span 2; }
+#vine-radio-panel .vr-tabs { display: flex; gap: var(--space-1); flex-wrap: nowrap; overflow-x: auto; }
+#vine-radio-panel .vr-tab { display: inline-flex; gap: var(--space-1); align-items: baseline; white-space: nowrap; }
+#vine-radio-panel .vr-count { color: var(--text-muted); font-size: var(--fs-xs); }
+#vine-radio-panel .vr-list { display: flex; flex-direction: column; gap: var(--space-1); }
+#vine-radio-panel .vr-heading { margin: var(--space-2) 0 0; color: var(--text-muted); font-size: var(--fs-s); font-weight: var(--fw-heavy); }
+#vine-radio-panel .vr-row { display: flex; align-items: stretch; gap: var(--space-1); }
+#vine-radio-panel .vr-pick { flex: 1 1 auto; display: flex; flex-direction: column; align-items: flex-start; min-height: 2.5rem; padding: var(--space-1) var(--space-3); border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface-raised); color: var(--text); text-align: left; cursor: pointer; }
+#vine-radio-panel .vr-pick:hover:not([disabled]) { background: var(--surface-hover); }
+#vine-radio-panel .vr-selected .vr-pick { border-color: var(--accent); background: var(--accent-soft); }
+#vine-radio-panel .vr-name { font-weight: var(--fw-heavy); }
+#vine-radio-panel .vr-sub { color: var(--text-muted); font-size: var(--fs-s); }
+#vine-radio-panel .vr-locked .vr-pick { opacity: 0.55; cursor: default; }
+#vine-radio-panel .vr-listen { flex: 0 0 auto; padding: 0 var(--space-3); border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface-parchment); color: var(--text); cursor: pointer; }
+#vine-radio-panel .vr-stop { padding: var(--space-1) var(--space-3); border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface-parchment); color: var(--text); cursor: pointer; }
+#vine-radio-panel .vr-listen[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); }
+#vine-radio-panel .vr-blocks { display: grid; grid-template-columns: repeat(auto-fill, minmax(3.5rem, 1fr)); gap: var(--space-1); margin-top: var(--space-2); }
+#vine-radio-panel .vr-block { display: flex; flex-direction: column; align-items: center; font-size: var(--fs-xs); color: var(--text-muted); }
+#vine-radio-panel .vr-block.vr-locked img { opacity: 0.3; filter: grayscale(1); }
+#vine-radio-panel .vr-foot { display: flex; gap: var(--space-2); flex-wrap: wrap; }
+#vine-radio-panel .vr-foot .vr-play { background: var(--accent); color: var(--accent-text); border-color: var(--accent); }
+#vine-radio-panel .vr-foot button[disabled] { opacity: 0.5; cursor: default; }
+:root.touch-phone #vine-radio-panel .vr-pick { min-height: 3rem; }
+:root.touch-phone #vine-radio-panel .vr-lead { display: none; }
+:root.touch-phone #vine-radio-panel .vr-foot { flex-wrap: nowrap; }
+:root.touch-phone #vine-radio-panel .vr-foot button { min-height: 3rem; }
+:root.touch-phone #vine-radio-panel .vr-foot .vr-play { flex: 1 1 auto; }
 [data-ui="modern"] #projects-list .pj-card.is-new { border-color: var(--accent); }
 [data-ui="modern"] #projects-list .pj-title { margin: 0; color: var(--text); font-size: var(--fs-l); font-weight: var(--fw-heavy); line-height: var(--lh-tight); }
 [data-ui="modern"] #projects-list .pj-new { display: inline-flex; align-items: center; height: 18px; padding: 0 var(--space-2); border-radius: var(--radius-pill); background: var(--accent-soft); color: var(--accent); font-size: var(--fs-xs); font-weight: var(--fw-heavy); vertical-align: middle; }

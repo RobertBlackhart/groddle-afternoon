@@ -31,10 +31,10 @@ import {
   createAchievementState,
   getAchievementProgress,
   seedAchievementNearCompletion,
-} from '../public/js/achievements.js?v=054773be';
-import { createShrineState, donateToShrine, quoteShrineDonation } from '../public/js/shrines.js?v=01962b40';
-import { applyBuff, createBuffState, tickBuffs } from '../public/js/buffs.js?v=2ed95a93';
-import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
+} from '../public/js/achievements.js?v=47bd719d';
+import { createShrineState, donateToShrine, quoteShrineDonation } from '../public/js/shrines.js?v=037613f7';
+import { applyBuff, createBuffState, tickBuffs } from '../public/js/buffs.js?v=14eee338';
+import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=5ef6adb5';
 
 const publicRoot = join(dirname(fileURLToPath(import.meta.url)), '../public');
 

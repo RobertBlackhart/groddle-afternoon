@@ -30,7 +30,7 @@ import {
 } from '../public/js/projects-tracker.js?v=28ac735e';
 import { PROJECTS_FILTER_KEY, PROJECTS_SORT_KEY, buildProjectsPanel, byRegion, keptSort, needRow, needsSummary, projectCard, projectsFilter, renderProjects } from '../public/js/ui/projects-sheet.js?v=54950af7';
 import { MENU_ROWS } from '../public/js/ui/topbar.js?v=86765c23';
-import { SIDE_SHEET_IDS } from '../public/js/ui/panel-shell.js?v=06a0d3fe';
+import { SIDE_SHEET_IDS } from '../public/js/ui/panel-shell.js?v=5efb38c6';
 import { hotkeySections, hotkeyText } from '../public/js/client-hotkeys.js?v=5c5a4301';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -460,9 +460,9 @@ describe('Projects panel wiring', () => {
   });
 
   it('Classic draws it as a 2012 window like the Quest Log; Modern styles the cards from tokens', () => {
-    assert.match(classic, /:is\(#skills-panel, #buffs-panel, #achieve-panel, #quest-panel, #projects-panel, #map-panel, #make-panel\):not\(\[hidden\]\)/);
-    assert.match(classic, /:is\(#skills-panel, #buffs-panel, #achieve-panel, #quest-panel, #projects-panel\) > \.side-card,/);
-    assert.match(classic, /:is\(#quest-panel, #projects-panel, #make-panel\) \.ui-sheet-body/);
+    assert.match(classic, /:is\(#skills-panel, #buffs-panel, #achieve-panel, #quest-panel, #projects-panel, #vine-radio-panel, #map-panel, #make-panel\):not\(\[hidden\]\)/);
+    assert.match(classic, /:is\(#skills-panel, #buffs-panel, #achieve-panel, #quest-panel, #projects-panel, #vine-radio-panel\) > \.side-card,/);
+    assert.match(classic, /:is\(#quest-panel, #projects-panel, #vine-radio-panel, #make-panel\) \.ui-sheet-body/);
     assert.match(classic, /#projects-list \.pj-card \{/);
     assert.match(style, /\[data-ui="modern"\] #projects-list \.pj-card \{/);
     assert.match(style, /\.more-menu:has\(\.pj-dot:not\(\[hidden\]\)\) \.more-btn::before/);

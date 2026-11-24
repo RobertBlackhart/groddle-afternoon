@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=0e701611';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=55fdafa2';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=508db8be';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE, playerClickBox } from './js/reach.js?v=456da8a8';
@@ -33,12 +33,12 @@ import {
   cleanQuestMarkup,
   questDoneAt,
   paidRewardBits,
-} from './js/quests.js?v=90a2ee3d';
+} from './js/quests.js?v=d0443973';
 // Quest copy is Flash htmlText: <b>/<i>/<br> drawn as formatting, the rest dropped, never innerHTML.
 import { questRequirementText, renderQuestText, withQuestMarkup } from './js/quest-text.js?v=4d0f8703';
 // G267: the world-verb quest counters skip offer-system quests; old saves drop the boot Moloko quest.
-import { dropSpiritRepeatOffers, SPIRIT_REPEAT_QUESTS } from './js/spirit-reminisce.js?v=c3d86a66';
-import { FIRST_SKILL_QUEST_ID, acceptOffer, claimFirstSkillQuest, dropBootStarterQuests, questMoveNote, routesCounter, worldVerbQuestEvents, gardenPlotEvents, makingUnitQuestEvents, shrineDonationQuestEvents } from './js/quest-offers.js?v=32d4127e';
+import { dropSpiritRepeatOffers, SPIRIT_REPEAT_QUESTS } from './js/spirit-reminisce.js?v=db767dfb';
+import { FIRST_SKILL_QUEST_ID, acceptOffer, claimFirstSkillQuest, dropBootStarterQuests, questMoveNote, routesCounter, worldVerbQuestEvents, gardenPlotEvents, makingUnitQuestEvents, shrineDonationQuestEvents } from './js/quest-offers.js?v=4ca83fa9';
 import {
   PHANTOM_QUEST_ID,
   REMEMBER_QUEST_ID,
@@ -134,7 +134,7 @@ import {
   qualificationVerb,
   requestLegalizeQualification,
   travelToGregarious,
-} from './js/legalize-it.js?v=7ec63cac';
+} from './js/legalize-it.js?v=2b6e3cac';
 import { HALL, HALL_LAYOUT, HALL_OFFICE, HALL_QUESTIONS } from './js/bureaucratic-hall.js?v=7ea53899';
 import { STATION_X, stationArrival, stationScreen, surfaceStation } from './js/subway.js?v=ea6921ff';
 import { ALLEY, SHADY, drawAlley, inEnteredBox } from './js/quest-rooms/back-alley-set.js?v=2b7a63a3';
@@ -450,7 +450,7 @@ import {
   resetAchievementCounter,
   purchaseAchievementUpdates,
   getAchievementProgress,
-} from './js/achievements.js?v=054773be';
+} from './js/achievements.js?v=47bd719d';
 import {
   applyStreetVisit,
   topUpCompletists,
@@ -487,10 +487,10 @@ import {
   grantSkillWithPrereqs,
   canLearnSkill,
   listLearnedSkills,
-} from './js/skills.js?v=db7039d9';
-import { skillTitle, skillTreeCounts, skillTreeEntry, spendEmblemForSkill, studyPillName } from './js/skill-tree.js?v=df9b7332';
+} from './js/skills.js?v=7fedc553';
+import { skillTitle, skillTreeCounts, skillTreeEntry, spendEmblemForSkill, studyPillName } from './js/skill-tree.js?v=9cddd020';
 import { CARD_ART_LAYERS } from './js/imagination-data.js?v=4a85e7fe';
-import { renderSkillTreePanel, focusSkillInPanel } from './js/skills-panel.js?v=3a8ff188';
+import { renderSkillTreePanel, focusSkillInPanel } from './js/skills-panel.js?v=3a38da6c';
 import {
   createBuffState,
   applyBuff,
@@ -510,7 +510,7 @@ import {
   formatBuffRemaining,
   consumeRewardBuff,
   studyBuffBlockReason,
-} from './js/buffs.js?v=2ed95a93';
+} from './js/buffs.js?v=14eee338';
 import { grantMoodXp, moodXpMultiplierFor, setMoodXpEnv } from './js/mood-xp.js?v=e311b45c';
 import {
   loadContentCatalogs,
@@ -519,7 +519,7 @@ import {
   getAchievementCatalog,
   getSkillCatalog,
   getBuffCatalog,
-} from './js/content-catalogs.js?v=10b118dd';
+} from './js/content-catalogs.js?v=5ef6adb5';
 import {
   createInventory,
   useItem,
@@ -565,7 +565,7 @@ import {
   inspectPlayerSave,
   serializePlayerSave,
   restorePlayerSave,
-} from './js/player-save.js?v=0b153c14';
+} from './js/player-save.js?v=d206c5f6';
 import {
   HOME_INTERIOR_TSID,
   HOME_STREET_TSID,
@@ -986,7 +986,7 @@ import {
   formatSpeedUpTime,
   learnFasterOpen,
   learnFasterSummary,
-} from './js/shrines.js?v=01962b40';
+} from './js/shrines.js?v=037613f7';
 import { shrineSheet, shrineVariantFor } from './js/shrine-variants.js?v=7f11c97d';
 import { giantDisplayName } from './js/giant-names.js?v=0e295891';
 import { shrinePowderOptions, shrinePowderAchievementCounters } from './js/powders.js?v=316a1f66';
@@ -1133,7 +1133,7 @@ import { mountNotifyView } from './js/notify-view.js?v=0fbfad68';
 import { mountSocialDrawer } from './js/ui/social-drawer.js?v=06c37291';
 import { installPhonePill, mountPhoneLayout, socialPillCount } from './js/ui/phone-layout.js?v=2ab28c97';
 import { bindChatLinks } from './js/chat-links.js?v=b717fac7';
-import { SIDE_SHEET_IDS, bindTabs, inSideSheet, mountPanelShell, sheetKeyToWorld } from './js/ui/panel-shell.js?v=06a0d3fe';
+import { SIDE_SHEET_IDS, bindTabs, inSideSheet, mountPanelShell, sheetKeyToWorld } from './js/ui/panel-shell.js?v=5efb38c6';
 import { createQuestSheet, failedQuestPin, questLogNeedsSwap, questStep, visibleRowCount } from './js/ui/quest-sheet.js?v=3e7ac77b';
 import { resolveQuestPins } from './js/features/quest-pins-feature.js?v=0e07d9a1';
 import { createQuestTracker } from './js/ui/quest-tracker.js?v=0f7ea620';
@@ -1179,7 +1179,7 @@ import { filterText } from './js/word-filter.js?v=9a7a7ebb'; // the remake's own
 import { mountStartStreet } from './js/start-street.js?v=7d8ce49c'; // #349: the start card names the save's street
 import { arrangeMapCards, fitMapExtras } from './js/map-extras.js?v=16e261b1'; // the Map's Shortcuts
 // The interface skin (js/classic/ui-mode.js) sets <html data-ui> as it loads: before main(), so before the boot cover lifts.
-import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=ce59e867';
+import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=7b610050';
 import { standOnFeet, anchorBottomCentre } from './js/sprite-feet.js?v=11303931';
 import { markLeaving, packPicks, takeCopies } from './js/copy-picks.js?v=b368fd49';
 import { holdKeepsBusy } from './js/instance-holds.js?v=ff3a63a3';
@@ -7716,6 +7716,8 @@ function playSound(key, opts = {}) {
   // G963: a verb's finish never plays again the tool sound its action loop just played.
   if (finishingVerb && toolLoopsEnded.repeats(finishingVerb.target, finishingVerb.verbId, key)) return null;
   const handle = audio.board.play(key, opts);
+  // G1245: a downloads-page track played as a sound (meditation, the Metalmaker, the Rube's song).
+  if (handle && /^assets\/audio\/ambient\//.test(audio.board.resolve?.(key)?.file || '')) noteMusicHeard(audio.board.resolve(key).file);
   if (app?.canvas && handle) {
     app.canvas.dataset.lastSound = handle.kind === 'loading' ? `${handle.key}:loading` : audio.board.stats.last;
   }
@@ -7725,6 +7727,9 @@ function playSound(key, opts = {}) {
 /** Repeat a key while an action runs; returns { stop() }. */
 function playSoundLoop(key, opts = {}) {
   if (state.muted || !audio.board) return { stop() {} };
+  // G1245: a downloads-page track looped as a sound (a running Metalmaker's song).
+  const file = audio.board.resolve?.(key)?.file || '';
+  if (/^assets\/audio\/ambient\//.test(file)) noteMusicHeard(file);
   return audio.board.loop(key, opts);
 }
 
@@ -7865,14 +7870,19 @@ let ambientPlaylistState = null;
  */
 function setAmbientForStreet(street, opts = {}) {
   if (!audio.ctx) return;
-  const theme = resolveAmbientTheme(street || {});
+  // G1245: on a home street with a Vine Radio playing, its music (features/vine-radio-feature.js
+  // streetMusicOverride); the house, the Tower floors and every other street keep their own.
+  const radio = features.query('streetMusicOverride', street || {}, engine);
+  const theme = radio?.tracks?.length ? `radio:${radio.key}` : resolveAmbientTheme(street || {});
   if (theme === SILENT_THEME) {
     // Keep the current track going but faded out; the next street fades in.
     ambientThemeId = theme;
     applyMute();
     return;
   }
-  const list = ambientPlaylist(theme, { hubId: street?.hubId });
+  const list = theme.startsWith('radio:')
+    ? { tracks: [...radio.tracks], start: Math.max(0, Math.min(radio.tracks.length - 1, Math.floor(Number(radio.start) || 0))), loop: radio.loop === true, gapSec: Math.max(0, Number(radio.gapSec) || 0) }
+    : ambientPlaylist(theme, { hubId: street?.hubId });
   if (!list.tracks.length) return;
   // Same theme (and, for a looped stand-in, the same track) already playing: leave it.
   const playing = audio.music && !audio.music.stopped && ambientPlaylistState?.theme === theme;
@@ -7881,9 +7891,19 @@ function setAmbientForStreet(street, opts = {}) {
     applyMute();
     return;
   }
-  ambientPlaylistState = { theme, tracks: list.tracks, index: list.start, loop: list.loop };
+  ambientPlaylistState = { theme, tracks: list.tracks, index: list.start, loop: list.loop, gapSec: list.gapSec || 0 };
   ambientThemeId = theme;
   startStreetTrack(list.tracks[list.start], list.loop, STREET_TRACK_FADE_SEC);
+}
+
+/**
+ * G1245: a downloads-page track the game played (street music, a cue, a sound) reaches the features
+ * (the Vine Radio's Theme tracks unlock by hearing them where the game plays them). The radio's own
+ * music never counts.
+ */
+function noteMusicHeard(url) {
+  if (!url || String(ambientThemeId).startsWith('radio:') && url === ambientTrackUrl) return;
+  features.collect('musicHeard', String(url), engine);
 }
 
 /**
@@ -7941,6 +7961,7 @@ function startStreetTrack(url, loop, fadeSec) {
   }
   ambientTrackUrl = url;
   if (app?.canvas) app.canvas.dataset.ambientTrack = url;
+  noteMusicHeard(url);
   // G918 (#447): muted, at Music 0 or with other apps' music let through, no <audio> element is made
   // (on an iPhone a playing one stops the player's own music); syncStreetMusic starts it later.
   if (!streetMusicAllowed()) {
@@ -7964,8 +7985,14 @@ function startStreetTrack(url, loop, fadeSec) {
     const list = ambientPlaylistState;
     if (!list || list.loop) return;
     // The next track of the set at once, round to the first (onSoundComplete 627-639).
-    list.index = (list.index + 1) % list.tracks.length;
-    startStreetTrack(list.tracks[list.index], false, 0.05);
+    const next = () => {
+      if (ambientPlaylistState !== list || audio.music !== voice || voice.stopped) return;
+      list.index = (list.index + 1) % list.tracks.length;
+      startStreetTrack(list.tracks[list.index], false, 0.05);
+    };
+    // G1245: the Vine Radio's musicblock medley leaves a short quiet between two tunes.
+    if (list.gapSec > 0) setTimeout(next, list.gapSec * 1000);
+    else next();
   });
   voice.play();
   applyMute(fadeSec);
@@ -8045,9 +8072,12 @@ function applyMute(trackFadeSec = STREET_MIX_FADE_SEC) {
   audio.buses.set(audioSettings());
   if (audio.trackGain) {
     const blockPause = Boolean(audio.musicblock && audio.musicblockPausesStreet);
-    const mix = ambientThemeId === SILENT_THEME
+    // G1245: the Vine Radio's music is louder near it (features/vine-radio-feature.js setStreetMusicNear).
+    const near = String(ambientThemeId).startsWith('radio:') ? audio.radioNear ?? 1 : 1;
+    const base = ambientThemeId === SILENT_THEME
       ? 0
       : blockPause ? MUSICBLOCK_PLAYBACK.streetMusicLevel : audio.musicblock ? 0.055 : STREET_MUSIC_MIX;
+    const mix = near * base;
     // The client fades the street music out (1 s) for a Musicblock and back in (1 s) after it.
     const fadeSec = blockPause === Boolean(audio.streetPausedForBlock)
       ? trackFadeSec
@@ -14932,6 +14962,47 @@ const engine = {
   /** GATESIGN: the Imagination menus' Back to world ({ tsid, label, hubName, tip, art, go }), or null out in the world. */
   homeWayOut: () => homeWayOut(),
   /**
+   * G1245 (the Vine Radio, features/vine-radio-feature.js): the street music now ({ theme, index, of,
+   * url }, theme 'radio:<key>' while a radio plays), or null before sound starts.
+   */
+  streetMusicNow() {
+    const list = ambientPlaylistState;
+    if (!audio.ctx || !list) return null;
+    return { theme: ambientThemeId, index: list.index, of: list.tracks.length, url: ambientTrackUrl, playing: Boolean(audio.music && !audio.music.stopped) };
+  },
+  /** G1245: the street's music again (the radio's choice changed); `next` steps on to the playlist's next track. */
+  refreshStreetMusic({ next = false } = {}) {
+    if (!audio.ctx || !state.started) return false;
+    const list = ambientPlaylistState;
+    if (next && list && list.tracks.length > 1 && String(ambientThemeId).startsWith('radio:')) {
+      list.index = (list.index + 1) % list.tracks.length;
+      startStreetTrack(list.tracks[list.index], false, STREET_TRACK_FADE_SEC);
+      return true;
+    }
+    setAmbientForStreet(currentStreet);
+    return true;
+  },
+  /** G1245: the radio's music is this loud here (0..1 of the street music's own mix; js/vine-radio.js radioNearLevel). */
+  setStreetMusicNear(level) {
+    const v = Math.max(0, Math.min(1, Math.round((Number(level) || 0) * 50) / 50));
+    if (audio.radioNear === v) return;
+    audio.radioNear = v;
+    applyMute(0.25);
+  },
+  /** G1245: the regions (hub ids) you have stood in: the streets you have visited (the hubs_visited counter's streets). */
+  visitedHubs() {
+    const out = new Set();
+    for (const tsid of Object.keys(persistentWorldState.streets || {})) {
+      const hub = STREET_INDEX.streets?.[tsid]?.hubId;
+      if (hub != null && hub !== '') out.add(String(hub));
+    }
+    for (const key of Object.keys(achieveState.groups || {})) {
+      const m = /^streets_visited_in_hub_(\d+)$/.exec(key);
+      if (m && achieveState.groups[key]?.length) out.add(m[1]);
+    }
+    return [...out];
+  },
+  /**
    * Slash commands (features/slash-commands-feature.js, main.js doChatCommand /home, /house, /leave):
    * the Home panel's own travel. 'teleport' | 'teleport-inside' | 'inside' | 'outside' | 'return'.
    */
@@ -15250,6 +15321,7 @@ const engine = {
   async playCue(url, { volume = 0.6, loop = false, effect = false } = {}) {
     const key = `cue:${url}`;
     if (!audio.ctx) return () => {};
+    noteMusicHeard(url);
     try {
       audio.buffers[key] ||= await audio.ctx.decodeAudioData(await (await fetch(url)).arrayBuffer());
     } catch {
@@ -15364,6 +15436,8 @@ const engine = {
       signposts: [],
       ownLight: Boolean(scene.ownLight),
       musicFile: scene.musicFile || null,
+      // G1245: a visited home street's Vine Radio (neighbours-mp-feature), its owner's choice.
+      homeRadio: scene.homeRadio || null,
       // G904: kept so resumeScene can put the avatar's tone back after a party.
       avatarFilters: scene.avatarFilters || null,
     };
@@ -36579,6 +36653,10 @@ async function main() {
         trackTime: audio.music ? Math.round(audio.music.time() * 10) / 10 : null,
         trackLoops: audio.music?.el?.loop ?? null,
         playlist: ambientPlaylistState ? { theme: ambientPlaylistState.theme, index: ambientPlaylistState.index, of: ambientPlaylistState.tracks.length } : null,
+        // G1245: the street track's own mix now and its target (the Vine Radio's nearness scales it).
+        trackGain: audio.trackGain?.gain.value ?? null,
+        trackMix: audio.trackTarget ?? null,
+        radioNear: audio.radioNear ?? 1,
         master: audio.master?.gain.value ?? null,
         music: audio.musicBus?.gain.value ?? null,
         sfx: audio.sfxGain?.gain.value ?? null,

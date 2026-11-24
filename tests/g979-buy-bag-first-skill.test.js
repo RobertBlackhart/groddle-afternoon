@@ -8,9 +8,9 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
-import { createQuestState, assignQuest } from '../public/js/quests.js?v=90a2ee3d';
-import { FIRST_SKILL_QUEST_ID, claimFirstSkillQuest, markOffered, declineOffer, pendingQuestOffers, questStatus } from '../public/js/quest-offers.js?v=32d4127e';
+import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=5ef6adb5';
+import { createQuestState, assignQuest } from '../public/js/quests.js?v=d0443973';
+import { FIRST_SKILL_QUEST_ID, claimFirstSkillQuest, markOffered, declineOffer, pendingQuestOffers, questStatus } from '../public/js/quest-offers.js?v=4ca83fa9';
 import { GATE_DEVIATIONS, SPECIAL_TRIGGERS, STAND_INS } from '../tools/quest-gates/table.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');

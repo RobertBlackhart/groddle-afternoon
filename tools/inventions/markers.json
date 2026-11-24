@@ -258,6 +258,9 @@
     "stand-in: row('GM4115NJ46G8M', 'Groddle Ladder', 2, 'stand-in', 'js/ladder-top-signposts.js: the spine": "teleporter-stand-ins",
     "stand-in: row('GUV174V0QUB3JT4', 'Ambu Jal', 1, 'stand-in', 'the buried Indri Slope post (y 75,": "teleporter-stand-ins"
   },
+  "public/js/content-catalogs.js": {
+    "ours: * The quest catalog also gets our own quests (G1245: Tunes for Crabs, the": "ours-vine-radio"
+  },
   "public/js/conversations.js": {
     "remake-own: * `heard` is the remake's own: when the player first opened": "ours-conversations",
     "stand-in: * street and position (the remake's stand-in for its itemstack tsid;": "ours-conversations"
@@ -365,6 +368,9 @@
   "public/js/features/camera-mode-feature.js": {
     "ours: the touch way in is ours.": "ours-camera-mode"
   },
+  "public/js/features/crabs-feature.js": {
+    "ours: * G1245 (ours, Austin 2026-11-24): every tune a crab hears": "ours-vine-radio"
+  },
   "public/js/features/crowns-feature.js": {
     "no-source: // The remake's own crown-time line (no source) goes to the activity log, not the": "ours-crowns",
     "remake-own: // The remake's own crown-time line (no source) goes to the activity": "ours-crowns",
@@ -411,6 +417,7 @@
   },
   "public/js/features/homes-feature.js": {
     "glitch-had-none: back of #473's floor-to-box drag (stackIntoBox). Glitch had no such verb": "decorate-box-set-down",
+    "ours: // G1245: so can the Vine Radio (ours); it keeps its music for when it is put out": "ours-vine-radio",
     "ours: // Report 153: the Mail Dispatcher (our own addition to the street) can be put": "ours-homes",
     "reimagined: // (reimagined); this reaches them from the": "ours-homes",
     "reimagined: HOMEMAIL: \"can I move my mail dispatcher?\"). Reimagined:": "ours-homes",
@@ -419,6 +426,9 @@
   },
   "public/js/features/imagination-feature.js": {
     "remake-own: * Where a card jump under x1 counts as x1: the remake's own layouts, built for the": "ours-imagination"
+  },
+  "public/js/features/index.js": {
+    "ours: G1245 (#661, ours): the Vine Radio on a home street, its Choose": "ours-vine-radio"
   },
   "public/js/features/interrogation-room-feature.js": {
     "ours: * past the booth; ours stops short of it (EDGE_ALPHA) so a visitor": "ours-interrogation-room"
@@ -589,6 +599,12 @@
   "public/js/features/tree-death-feature.js": {
     "stand-in: pours by itself: the drawn drops were its stand-in.": "not-an-invention"
   },
+  "public/js/features/vine-radio-feature.js": {
+    "glitch-had-none: * Ours: Glitch had no radio a player could": "ours-vine-radio",
+    "made-up: * player's home street, built from a made-up save, with its radio playing Alakol), sheet": "ours-vine-radio",
+    "made-up: another player's home street from a made-up save, its radio playing Alakol.": "ours-vine-radio",
+    "ours: * Ours: Glitch had no radio a player could": "ours-vine-radio"
+  },
   "public/js/fire-dragon.js": {
     "ours: * Tiny Speck's game: the rules and words are ours, and the art is AI-generated": "made-sprites"
   },
@@ -661,6 +677,9 @@
   "public/js/hidden-floors.js": {
     "not-source: * Inferred, not in source: every teleporter's box and landing point": "ours-hidden-floors"
   },
+  "public/js/home-cultivation.js": {
+    "ours: * G1245: the Vine Radio (ours, js/vine-radio.js) once its owner has it: out": "ours-vine-radio"
+  },
   "public/js/home-floors.js": {
     "ours: (building), 'up', 'down', or null (not one of ours).": "not-an-invention",
     "ours: // Ours (houses_extend": "ours-home-floors",
@@ -705,6 +724,7 @@
     "ours: with things in it in or out of a cabinet.', // ours (#108: the ledger moves": "remake-copy"
   },
   "public/js/home-street-fixtures.js": {
+    "ours: * The Vine Radio (G1245, report #661, ours: js/vine-radio.js) moves the same way once its": "ours-vine-radio",
     "ours: * is our own addition to the home street, and the Mailbox": "ours-home-street-fixtures",
     "ours: // Report 153: put it away, put it out again (our own": "remake-copy",
     "reimagined: * moved it. Reimagined: it stands just outside the signpost, past its": "ours-home-street-fixtures"
@@ -1019,6 +1039,7 @@
   },
   "public/js/quest-offers.js": {
     "ours: #83: the offer's line when accepting moves you (ours: the source's offer text was the only hint).": "ours-quest-offers",
+    "ours: // G1245 (ours): a world crab offers Tunes for Crabs, the Vine": "ours-vine-radio",
     "ours: G571: the nudge for a ready offered quest (ours).": "ours-quest-offers",
     "stand-in: // social stand-ins (emotional-bear.js with local companions;": "ours-quest-offers"
   },
@@ -1360,6 +1381,13 @@
     "no-source: the street, clear of its one signpost (x 766). No source x/y survives.": "ours-vicars-peak",
     "remake-own: of the minimap where Thornfad's door lands. Remake choice: Thornfad's sources (2012-10-16) do not list": "ours-vicars-peak"
   },
+  "public/js/vine-radio.js": {
+    "glitch-had-none: report #661; Austin's rulings 2026-11-24). Ours: Glitch had no": "ours-vine-radio",
+    "ours: report #661; Austin's rulings 2026-11-24). Ours: Glitch had": "ours-vine-radio",
+    "ours: tune (no end NPC: quest-offers-feature finish). Our own words, in": "ours-vine-radio",
+    "stand-in: * \"lively stand-in\" set is left": "ours-vine-radio",
+    "stand-in: attack picks ROOK_ATTACK, the party's lively stand-in is left out:": "ours-vine-radio"
+  },
   "public/js/water-cooler.js": {
     "ours: * lost, so where the cooler stands inside is ours.": "ours-water-cooler"
   },
@@ -1412,6 +1440,7 @@
   },
   "public/style.css": {
     "ours: G1246 (ours, Austin 2026-11-24): a sorted bag's badge, its": "ours-bag-sort-badge",
+    "ours: G1245 Vine Radio (#661, ours; js/features/vine-radio-feature.js): Choose": "ours-vine-radio",
     "reimagined: .avatar-reimagined-tag": "ours-style-css",
     "reimagined: .avatar-reimagined-tag #2": "ours-style-css",
     "reimagined: .badge-reimagined": "ours-style-css",

@@ -22,7 +22,7 @@ import {
   homeStreetLayout,
   normalizeCultivationState,
   placementCheck,
-} from '../public/js/home-cultivation.js?v=37e25292';
+} from '../public/js/home-cultivation.js?v=c50349f3';
 import {
   MOVABLE_FIXTURES,
   MOVABLE_FIXTURE_IDS,
@@ -30,8 +30,8 @@ import {
   fixtureFits,
   fixtureText,
   savedFixtureRx,
-} from '../public/js/home-street-fixtures.js?v=bad831a1';
-import { HOUSE_STYLE_KEYS, homesFeature, houseDoorway, houseFixtureX } from '../public/js/features/homes-feature.js?v=8d8007d3';
+} from '../public/js/home-street-fixtures.js?v=4a56a718';
+import { HOUSE_STYLE_KEYS, homesFeature, houseDoorway, houseFixtureX } from '../public/js/features/homes-feature.js?v=4a4a8862';
 
 const read = (rel) => readFileSync(join(import.meta.dirname, '..', 'public', 'js', rel), 'utf8');
 const atFor = (layout, style) => {
@@ -49,7 +49,8 @@ describe('moving the Mailbox and the Magic Rock (PORCH)', () => {
     assert.equal('rockRx' in normalizeCultivationState({ rockRx: 'right' }), false);
     assert.equal('mailboxRx' in createBackYardState({ mailboxRx: -300 }), false, 'the back yard has neither');
     assert.equal(fixtureRx(createBackYardState({}), 'rock'), null);
-    assert.deepEqual(MOVABLE_FIXTURE_IDS, ['mailbox', 'rock', 'dispatcher']);
+    // G1245: the Vine Radio moves the same way (tests/vine-radio.test.js).
+    assert.deepEqual(MOVABLE_FIXTURE_IDS, ['mailbox', 'rock', 'dispatcher', 'radio']);
   });
 
   it('round-trips through the homes save (solo and online, and the slice a visitor is shown)', () => {

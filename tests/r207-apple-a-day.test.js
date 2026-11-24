@@ -8,8 +8,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { before, describe, it } from 'node:test';
-import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
-import { applyBuff, createBuffState, tickBuffs } from '../public/js/buffs.js?v=2ed95a93';
+import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=5ef6adb5';
+import { applyBuff, createBuffState, tickBuffs } from '../public/js/buffs.js?v=14eee338';
 
 const pub = join(import.meta.dirname, '..', 'public');
 

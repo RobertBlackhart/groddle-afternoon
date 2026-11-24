@@ -9,7 +9,7 @@
  *   one of each thing the badge asks for. Canvas: collectionTrophies (the badges settled).
  */
 import { addItem, countItem, ensureItem } from '../inventory.js?v=6414dbdc';
-import { getAchievementCatalog } from '../content-catalogs.js?v=10b118dd';
+import { getAchievementCatalog } from '../content-catalogs.js?v=5ef6adb5';
 import { trophyGotText } from '../home-trophies.js?v=649b111e';
 import { COLLECTION_TROPHIES, COUNTED_ON_ARRIVAL, HELD_AT_ONCE, collectionClasses, heldChanges, planCollectionTrophies } from '../collection-trophies.js?v=e45565a7';
 

@@ -112,12 +112,13 @@ import { runStreetTransition } from '../screen-fx.js?v=39954e0b';
 import { STREET_INDEX } from '../street-loader.js?v=10376267';
 import { ITEM_CATALOG, addItem, countItem, listPackItemSlots, removeItem } from '../inventory.js?v=6414dbdc';
 import { copyPicks, leavingWire, markLeaving, receiveWire, takeCopies } from '../copy-picks.js?v=b368fd49';
-import { cultivationDef, homeStreetLayout } from '../home-cultivation.js?v=37e25292';
+import { cultivationDef, homeStreetLayout } from '../home-cultivation.js?v=c50349f3';
 import { getPlot, tickGarden } from '../garden.js?v=0cbb65f0';
 import { BUTLER_RIG_SCALE, ButlerPainter, butlerRigNow, loadButlerRig } from '../butler-rig.js?v=3acda854';
 import { BUTLER, BUTLER_INFO, butlerInfoText, butlerPostRx, normalizeButlerParts } from '../butler.js?v=6c66ebf5';
-import { butlerApi } from './butler-feature.js?v=15fef3c5';
-import { homesFeature, visitorHomeScene, visitorHomeState } from './homes-feature.js?v=8d8007d3';
+import { butlerApi } from './butler-feature.js?v=285faa16';
+import { homesFeature, visitorHomeScene, visitorHomeState } from './homes-feature.js?v=4a4a8862';
+import { visitRadio } from '../vine-radio.js?v=5827b931';
 import { homeMusicFile } from '../homes.js?v=dca6b2cd';
 import { streetStyleFor } from '../home-styles.js?v=ec5d2f69';
 import { visitGardenPlots, visitSceneKey } from '../home-live.js?v=9c7abae7';
@@ -458,6 +459,8 @@ function createSession(engine, client) {
       // #474: the visited home's own music, as at your own. #661: its street style now (the owner's
       // Change Style rebuilds this scene in place, G944), not the look it was bought in.
       musicFile: homeMusicFile(streetStyleFor(visitorHomeState(visit.view).streetStyle, visitorHomeState(visit.view).style)),
+      // G1245: the owner's Vine Radio, out on their street: its music plays here instead (street only).
+      homeRadio: room === 'street' ? visitRadio(visitorHomeState(visit.view).cult, { owner: visit.name, ownerId: visit.owner }) : null,
       // G944: rebuilt in place for the owner's change: the windows open here stay.
       keepWindows: quiet,
     };
@@ -479,6 +482,8 @@ function createSession(engine, client) {
       registerTargets(room, spots);
       // HOMES3 (features/home-street-mp-feature.js): the signpost, Note Poles, furniture for sale and restorations here.
       if (room !== 'tower') engine.query?.('homeStreetVisit', { owner: visit.owner, name: visit.name, room, key: visit.key, view: visit.view, built, spots }, engine);
+      // G1245: the owner's Vine Radio (features/vine-radio-feature.js draws it, its notes and label; null when none stands here).
+      engine.query?.('homeRadioVisit', { owner: visit.owner, name: visit.name, room, radio: room === 'street' ? spots?.radio || null : null, quiet: quiet === true }, engine);
       if (room === 'street') {
         spawnVisitorButler(built.groundY);
         // location.js:160-168: another player's home street (not their house), one label per street.

@@ -16,10 +16,10 @@ import { fileURLToPath } from 'node:url';
 
 import { readImage } from '../tools/builder/art-image.mjs';
 import { HOME_LIMITS } from '../public/js/homes-catalog.js?v=0367f90f';
-import { YARD_SEGMENT_W, HOUSE_LOT_W } from '../public/js/home-cultivation.js?v=37e25292';
+import { YARD_SEGMENT_W, HOUSE_LOT_W } from '../public/js/home-cultivation.js?v=c50349f3';
 import { EXTERIOR_STYLES, INTERIOR_STYLES, streetLook, yardLook } from '../public/js/home-styles.js?v=ec5d2f69';
 import { SOIL_JOIN, soilTiles } from '../public/js/landscape-reach.js?v=2f2d7cb3';
-import { BACK_YARD_GROUND_Y, STREET_GROUND_Y, drawLandscape } from '../public/js/features/homes-feature.js?v=8d8007d3';
+import { BACK_YARD_GROUND_Y, STREET_GROUND_Y, drawLandscape } from '../public/js/features/homes-feature.js?v=4a4a8862';
 import { buildNeighbourBackground } from '../public/js/features/neighbour-scene.js?v=a86c78cb';
 import { FakeEl, fakePixi } from './fake-scene.js';
 

@@ -34,6 +34,12 @@
  * insult, pinch, drink (drink a Crabato Juice), hold (freeze the reaction
  * clips for screenshots). &crabsom=1 starts in a Crab State of Mind.
  * Canvas: crabs, crabLast, crabClip, crabOutcome, crabMemory, crabTalk.
+ *
+ * G1245 (ours, Austin 2026-11-24): every tune a crab hears counts for Tunes for Crabs
+ * (CRAB_TUNES_COUNTER, js/vine-radio.js), whatever it thinks of it. A home owner who has not taken
+ * that quest is offered it by the crab once it has had its say about a tune (the game's quest
+ * dialogue; "Not right now" lets the crab ask again another time). Accepting counts the tune just
+ * played. &crabautoplay=...,radioquest answers the offer with Deal!
  */
 
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d787e3c3';
@@ -43,7 +49,9 @@ import { gainMetabolic, loseMood, shiftMetabolic } from '../metabolics.js?v=48f7
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { slugsFromEffects } from '../speech-slugs.js?v=e79cecfa';
 import { getGameDayKey } from '../game-day.js?v=a532775d';
-import { cleanQuestMarkup } from '../quests.js?v=90a2ee3d';
+import { cleanQuestMarkup } from '../quests.js?v=d0443973';
+import { acceptOffer, npcQuestOffers } from '../quest-offers.js?v=4ca83fa9';
+import { CRAB_TUNES_COUNTER, RADIO_QUEST_ID } from '../vine-radio.js?v=5827b931';
 import { followPath } from '../street-creatures.js?v=2d47da2d';
 import { followFloorY, walkSurfaceY } from '../walk-surface.js?v=3c919d5b';
 import { isStandable } from '../street-model.js?v=a9a05f9d';
@@ -420,6 +428,8 @@ function live(row) {
 function onListen(engine, row) {
   const heard = crabHearBlock(row.memory, row.block, now());
   lastOutcome = heard.outcome;
+  // G1245: Tunes for Crabs counts every tune a crab hears (the quest system routes the counter).
+  engine.achievement?.(CRAB_TUNES_COUNTER, 1);
   if (heard.achievement) engine.grantAchievement(heard.achievement);
   // npc_crab.js blockListenCallback 465 / 482+495 / 495 / 509: animal_love
   // +1 a repeat, +8 Make a Crab Happy, +3 a known tune, +5 a new one (G143).
@@ -476,6 +486,58 @@ function onSettle(engine, row) {
   engine.refreshPack();
   engine.save();
   last = `settled:${row.heard.outcome}`;
+  // G1245: then, to a home owner without it, the crab offers Tunes for Crabs.
+  if (radioQuestCard(engine)) pending.push({ ...row, at: now() + CRAB_REPLY_MS, kind: 'offer' });
+}
+
+/* ------------------------------------------------------------------ G1245: Tunes for Crabs */
+
+function radioQuestCtx(engine) {
+  return { level: engine.pc?.level, xp: engine.pc?.xp, skills: engine.learnedSkills, achievements: engine.unlockedAchievements, inv: engine.inv, pc: engine.pc, hub: engine.street?.hubId || '', now: Date.now() };
+}
+
+/** The crab's offer card for Tunes for Crabs, when this player may take it now (a home of their own, not taken yet). */
+function radioQuestCard(engine) {
+  if (!engine.questState || engine.homeOwned?.() !== true) return null;
+  return npcQuestOffers(engine.questState, CRAB_CLASS, engine.pc, radioQuestCtx(engine)).offered.find((c) => c.classTsid === RADIO_QUEST_ID) || null;
+}
+
+let radioOfferOpen = false;
+
+function offerRadioQuest(engine) {
+  const card = radioOfferOpen ? null : radioQuestCard(engine);
+  if (!card || typeof engine.offerQuestDialogue !== 'function') return;
+  radioOfferOpen = true;
+  last = 'radio-offer';
+  const finish = (accepted) => {
+    if (!radioOfferOpen) return;
+    radioOfferOpen = false;
+    if (!accepted) {
+      // An NPC's offer declined records nothing: the crab asks again another time (quest-offers declineOffer).
+      last = 'radio-offer:later';
+      publish(engine);
+      return;
+    }
+    const result = acceptOffer(engine.questState, RADIO_QUEST_ID, radioQuestCtx(engine));
+    if (!result.ok) return;
+    engine.pushActivity(`New quest: ${card.def.title}`);
+    // The tune it just heard counts.
+    engine.achievement?.(CRAB_TUNES_COUNTER, 1);
+    engine.updateHud?.();
+    engine.save();
+    last = 'radio-offer:accepted';
+    publish(engine);
+  };
+  engine.offerQuestDialogue({
+    title: card.def.title,
+    kicker: CRAB_COPY.label,
+    beats: card.beats,
+    acceptLabel: card.acceptLabel,
+    declineLabel: card.declineLabel,
+    onAccept: () => finish(true),
+    onDecline: () => finish(false),
+  });
+  if (String(engine.param?.('crabautoplay') || '').split(',').includes('radioquest')) setTimeout(() => engine.acceptOpenOffer?.(), 600);
 }
 
 function runPending(engine) {
@@ -484,7 +546,10 @@ function runPending(engine) {
   const due = pending.filter((row) => row.at <= t);
   if (!due.length) return;
   pending = pending.filter((row) => row.at > t);
-  for (const row of due) (row.kind === 'listen' ? onListen : onSettle)(engine, row);
+  for (const row of due) {
+    if (row.kind === 'offer') offerRadioQuest(engine);
+    else (row.kind === 'listen' ? onListen : onSettle)(engine, row);
+  }
 }
 
 // —— Verbs ——————————————————————————————————————————————————————————————

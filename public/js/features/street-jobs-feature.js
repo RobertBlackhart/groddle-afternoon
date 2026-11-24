@@ -56,9 +56,9 @@ import { ecologyForStreet } from '../street-ecology.js?v=ff90efe4';
 import { worldToScreen } from '../street-model.js?v=a9a05f9d';
 import { signArmWidth } from '../street-render.js?v=680cca90';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
-import { getSkillCatalog } from '../content-catalogs.js?v=10b118dd';
+import { getSkillCatalog } from '../content-catalogs.js?v=5ef6adb5';
 import { listRecipesProducing } from '../making.js?v=1ec1075e';
-import { GIANTS } from '../shrines.js?v=01962b40';
+import { GIANTS } from '../shrines.js?v=037613f7';
 import { giantDisplayName } from '../giant-names.js?v=0e295891';
 import { teleportationFeature } from './teleportation-feature.js?v=520fbd2d';
 import {
@@ -119,10 +119,10 @@ import {
 } from '../street-jobs.js?v=3fc80dcd';
 import { gateTerms } from '../subway.js?v=ea6921ff';
 import { forceMetabolic, gainMetabolic, loseEnergy } from '../metabolics.js?v=48f784bf';
-import { holdNote, placeIndex, questHold, questStoryKey } from '../quest-reach.js?v=f94a0350';
+import { holdNote, placeIndex, questHold, questStoryKey } from '../quest-reach.js?v=13a444bb';
 import { fewestClosures, loadStreetGraph, reachableStreets, streetGraph, worldRoads } from '../street-graph.js?v=dcc5cae4';
 import { openWorld } from '../open-roads.js?v=597feeb5';
-import { getQuestCatalog as questCatalog } from '../content-catalogs.js?v=10b118dd';
+import { getQuestCatalog as questCatalog } from '../content-catalogs.js?v=5ef6adb5';
 import { saveStore, savedThrough } from '../save-store.js?v=4e720735';
 import {
   HALL_TEXT,
@@ -162,7 +162,7 @@ import { TELEPORTERS } from '../hidden-floors.js?v=18714dfa';
 import { WINTRY_PORTAL_TELEPORTERS } from '../wintry-portal.js?v=1437deda';
 import { PROJECTS_TEXT, aheadEntries, aheadRegions, contributedJobs, mineTotal, projectEntry, projectList } from '../projects-tracker.js?v=28ac735e';
 import { PROJECTS_PANEL_ID, buildProjectsPanel, renderAhead, renderProjects } from '../ui/projects-sheet.js?v=54950af7';
-import { SIDE_SHEET_IDS } from '../ui/panel-shell.js?v=06a0d3fe';
+import { SIDE_SHEET_IDS } from '../ui/panel-shell.js?v=5efb38c6';
 import { trophyGotText } from '../home-trophies.js?v=649b111e';
 import { FEATURED_TEXT, featuredChanged, featuredFromServer, featuredNeedsLine, featuredToast, featuredWaitMins, readFeaturedMemo, writeFeaturedMemo } from '../featured-project.js?v=5b2ee7c1';
 import { featuredStore, renderFeaturedLine, renderFeaturedRow } from '../ui/featured-project.js?v=ed9eded9';

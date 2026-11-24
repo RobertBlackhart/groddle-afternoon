@@ -211,23 +211,28 @@ import {
   nudgeCultivation,
   placementCheck,
   putAwayDispatcher,
+  putAwayRadio,
   putOutDispatcher,
+  putOutRadio,
   quoteYardExpansion,
+  radioState,
+  setRadioState,
   removeCultivation,
   towerItem,
-} from '../home-cultivation.js?v=37e25292';
+} from '../home-cultivation.js?v=c50349f3';
 import { PROTO_DEPLETED_ART } from '../home-proto-art.js?v=9309e9f3';
-import { DISPATCHER_HALF, DISPATCHER_TEXT, MOVABLE_FIXTURES, MOVABLE_FIXTURE_IDS, dispatcherAway, fixtureFits, fixtureText, savedFixtureRx, signpostX } from '../home-street-fixtures.js?v=bad831a1';
+import { DISPATCHER_HALF, DISPATCHER_TEXT, MOVABLE_FIXTURES, MOVABLE_FIXTURE_IDS, dispatcherAway, fixtureFits, fixtureText, radioOut, savedFixtureRx, signpostX } from '../home-street-fixtures.js?v=4a56a718';
+import { RADIO_TEXT, radioOwned } from '../vine-radio.js?v=5827b931';
 import { displayTopOf, itemstackOverlayPoint, overlayAlpha, overlayLifeMs, playPoofIn, trackOverlay } from '../overlay-art.js?v=e50bacca';
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d787e3c3';
 import { fadeInNewNear } from '../poof-fade.js?v=57db6aea';
-import { projectApi } from './street-jobs-feature.js?v=719c8995';
+import { projectApi } from './street-jobs-feature.js?v=db9f3f5f';
 import { TOWER_CHASSIS, TOWER_CONFIG, TOWER_DOOR_DX, TOWER_GEO, TOWER_PROTO, normalizeTowerState } from '../home-tower.js?v=84d99af0';
-import { drawTowerBench, drawTowerElevator, drawTowerExit, towerApi, visitorTowerView } from './home-tower-feature.js?v=dd2d113a';
+import { drawTowerBench, drawTowerElevator, drawTowerExit, towerApi, visitorTowerView } from './home-tower-feature.js?v=fef88525';
 import { pieceUrl, roomPieces, surfaceAt, swatchPiece, wallTargetAt } from '../home-wallpaper.js?v=99228166';
 import { maxTextureSizeOf, sharpDeco, wantsHiresDecos } from '../deco-hires.js?v=34f36d77';
 import { SHARP_DECOS } from '../deco-sharp-list.js?v=7d615f20';
-import { resourceNodesFeature } from './resource-nodes-feature.js?v=aca90bbf';
+import { resourceNodesFeature } from './resource-nodes-feature.js?v=528fdce8';
 import { patchesFeature } from './patches-feature.js?v=fb7eeee3';
 import { GROWN_TREE_LABELS, createPlot, growTree, plotLabel } from '../patches.js?v=3f6b9b05';
 import { WOTD_DEPLETE_MS, WOTD_TEXT, nearestPourTarget, pourButton, pourConditions, pourConfirmText } from '../wine-pour.js?v=6daa23a7';
@@ -599,7 +604,7 @@ let tab = 'furniture';
 let placing = null; // { kind: 'furniture'|'cultivation'|'fixture', classTsid|protoClass, moveId?, id? (a fixture's) }
 let selected = null; // { kind, id }
 // QA: the last move of each movable fixture (moved:<rx> | usual | refused:<why>), by id.
-const fixtureLast = { mailbox: '', rock: '', dispatcher: '' };
+const fixtureLast = { mailbox: '', rock: '', dispatcher: '', radio: '' };
 let stamping = null; // { kind: 'wall'|'floor'|'ceiling', key } while a swatch is on the cursor
 let stampHover = null; // { kind, segment?, center? } under the cursor
 let scene = null; // live scene context while a home room is shown
@@ -712,6 +717,11 @@ function publish(engine) {
   }
   // Report 153: whether the owner has put the Mail Dispatcher away (saved with the street).
   engine.setData('homeDispatcherAway', dispatcherAway(cult) ? '1' : '0');
+  // G1245: the Vine Radio's spot (world x and saved spot or usual), whether it is out, its last move.
+  const radioX = fixtureWorldX('radio');
+  engine.setData('homeRadioSpot', radioX == null ? '' : `${Math.round(radioX)}:${savedFixtureRx(cult, 'radio') ?? 'usual'}`);
+  engine.setData('homeRadioOut', radioOut(cult) ? '1' : '0');
+  engine.setData('homeRadioMove', fixtureLast.radio);
   // G358: placed pieces' upgrades (class:id), the open picker and the last upgrade.
   engine.setData('furnupPlaced', decor.placed.filter((p) => p.upgradeId).map((p) => `${p.classTsid}:${p.upgradeId}`).join(','));
   engine.setData('furnupStored', Object.entries(decor.styles || {}).map(([c, rows]) => rows.map((r) => `${c}:${r.upgradeId || 0}`).join(',')).filter(Boolean).join(','));
@@ -2404,7 +2414,7 @@ function canMoveFixture(engine, id) {
 /** The movable fixture whose drawn art is under a world point, or null. */
 function fixtureAt(engine, p) {
   if (scene?.room !== 'street') return null;
-  for (const id of ['dispatcher', 'mailbox', 'rock']) {
+  for (const id of ['dispatcher', 'mailbox', 'rock', 'radio']) {
     const s = fixtureTarget(engine, id)?.sprite;
     const meta = MOVABLE_FIXTURES[id];
     if (s && Math.abs(p.x - s.x) <= meta.half && p.y <= s.y + 10 && p.y >= s.y - meta.tall) return id;
@@ -2530,6 +2540,13 @@ function fixturePop(engine) {
       },
       // Report 153: the Mail Dispatcher (our own addition to the street) can be put away.
       ...(id === 'dispatcher' ? [dispatcherPutAwayAction(engine)] : []),
+      // G1245: so can the Vine Radio (ours); it keeps its music for when it is put out again.
+      ...(id === 'radio' ? [{
+        label: RADIO_TEXT.putAway,
+        title: RADIO_TEXT.putAwayTitle,
+        attrs: { 'data-home-action': 'radio-put-away', 'data-home-radio': 'put-away' },
+        onClick: () => putAwayHomeRadio(engine),
+      }] : []),
     ],
   };
 }
@@ -2607,9 +2624,58 @@ function putOutHomeDispatcher(engine) {
   return { ok: true, kept: out.kept, rx: out.rx };
 }
 
+/** G1245: does the player own the Vine Radio (the crabs' quest done)? QA: &radiodemo makes it so. */
+function ownsRadio(engine) {
+  return radioOwned(engine?.questState) || engine?.query?.('vineRadioOwned', engine) === true;
+}
+
+/**
+ * G1245: Put away (its Cultivate actions): the Vine Radio leaves the street; its spot and its music
+ * are kept. The radio feature drops its sprite and the street's music goes back to its own.
+ */
+function putAwayHomeRadio(engine) {
+  if (!onOwnHomeStreet() || !radioOut(cult)) return { ok: false, reason: 'away' };
+  if (placing?.kind === 'fixture' && placing.id === 'radio') cancelCarry(engine);
+  if (selected?.kind === 'fixture' && selected.id === 'radio') selected = null;
+  dimFixture(engine, 'radio', false);
+  putAwayRadio(cult);
+  engine.query?.('vineRadioSync', engine);
+  engine.playSound?.('ITEM_PICKUP', { volume: 0.45 });
+  engine.pushActivity?.(RADIO_TEXT.putAwayDone);
+  fixtureLast.radio = 'away';
+  engine.save?.();
+  if (mode) {
+    drawCultivationMarkers(engine);
+    renderBar(engine);
+  }
+  publish(engine);
+  return { ok: true };
+}
+
+/** G1245: Put out Vine Radio (the Cultivate banner): at its last spot if it still fits, else its usual one. */
+function putOutHomeRadio(engine) {
+  if (!onOwnHomeStreet()) return { ok: false, reason: 'street' };
+  if (!ownsRadio(engine)) return { ok: false, reason: 'not_owned' };
+  const out = putOutRadio(cult, { at: streetFixtureAt() });
+  if (!out.ok) return { ok: false, reason: 'out' };
+  engine.query?.('vineRadioSync', engine);
+  engine.playSound?.('ITEM_DROP', { volume: 0.45 });
+  engine.pushActivity?.(RADIO_TEXT.putOutDone);
+  fixtureLast.radio = `out:${out.kept ? 'last' : 'usual'}`;
+  engine.save?.();
+  if (mode) {
+    if (mode === 'cultivate' && fixtureTarget(engine, 'radio')) selected = { kind: 'fixture', id: 'radio' };
+    drawCultivationMarkers(engine);
+    renderBar(engine);
+  }
+  publish(engine);
+  return { ok: true, kept: out.kept, rx: out.rx };
+}
+
 /**
  * The banner's Move Mailbox, Move Magic Rock and Move Mail Dispatcher (those on the street now);
- * report 153: Put out Mail Dispatcher in its place while it is put away.
+ * report 153: Put out Mail Dispatcher in its place while it is put away; G1245: Move Vine Radio,
+ * or Put out Vine Radio once you own it.
  */
 function fixtureBannerActions(engine) {
   const rows = MOVABLE_FIXTURE_IDS.filter((id) => fixtureTarget(engine, id)).map((id) => ({
@@ -2626,6 +2692,14 @@ function fixtureBannerActions(engine) {
       title: DISPATCHER_TEXT.putOutTitle,
       attrs: { 'data-home-fixture': 'dispatcher', 'data-home-dispatcher': 'put-out' },
       onClick: () => putOutHomeDispatcher(engine),
+    });
+  }
+  if (onOwnHomeStreet() && !radioOut(cult) && ownsRadio(engine)) {
+    rows.push({
+      label: RADIO_TEXT.putOut,
+      title: RADIO_TEXT.putOutTitle,
+      attrs: { 'data-home-fixture': 'radio', 'data-home-radio': 'put-out' },
+      onClick: () => putOutHomeRadio(engine),
     });
   }
   return rows;
@@ -8026,7 +8100,10 @@ export function visitorHomeScene(engine, view = {}, room = 'street', opts = {}) 
         eng.entityLayer.addChild(gate);
         const yardOpts = { liveRocks: true, tower: v.tower };
         const gardens = drawVisitorYard(eng, st, STREET_GROUND_Y, layout.houseX, yardOpts);
-        return { door, gate, mailbox, gardens, tower: yardOpts.towerSpot || null };
+        // G1245: the owner's Vine Radio where they stood it (features/vine-radio-feature.js draws it).
+        const radioRx = fixtureRx(st, 'radio', { at: { mailboxX: usual, doorway: background.houseDoorway } });
+        const radio = radioRx == null ? null : { x: layout.houseX + radioRx, y: STREET_GROUND_Y, state: radioState(st) };
+        return { door, gate, mailbox, gardens, tower: yardOpts.towerSpot || null, radio };
       },
     };
   });
@@ -8799,6 +8876,39 @@ export const homesFeature = {
   /** Report 153: Put out Mail Dispatcher (the Cultivate banner) and QA: { ok, kept?, rx? }. */
   homeDispatcherPutOut(engine) {
     return putOutHomeDispatcher(engine);
+  },
+
+  /**
+   * G1245: the Vine Radio on your own home street: { x, y } where it stands (its spot, the Mailbox's
+   * ground) and its music (cult.radio), or null while it is put away, in the house or elsewhere.
+   */
+  homeRadio(engine) {
+    const x = fixtureWorldX('radio');
+    if (x == null) return null;
+    const mailbox = (engine?.interactables || []).find((t) => t.classId === 'npc_mailbox' && t.sprite && !t.sprite.destroyed);
+    return { x: Math.round(x), y: mailbox ? mailbox.sprite.y : null, state: radioState(cult) };
+  },
+
+  /** G1245: the radio's music choice on your home street (cult.radio, saved with it), or null elsewhere. */
+  homeRadioState() {
+    return radioState(cult);
+  },
+
+  /** G1245: keep a new music choice with your home street (the Choose music sheet, Stop, Play). */
+  homeRadioSet(next, engine) {
+    const out = setRadioState(cult, next);
+    if (!out) return null;
+    engine?.save?.();
+    publish(engine);
+    return out;
+  },
+
+  /** G1245: Put out / Put away (the Cultivate banner and actions) and QA: { ok, reason?, kept?, rx? }. */
+  homeRadioPutOut(engine) {
+    return putOutHomeRadio(engine);
+  },
+  homeRadioPutAway(engine) {
+    return putAwayHomeRadio(engine);
   },
 
   /** Ticket 51: redraws the room's furniture (a box's count or a cabinet changed under it). */

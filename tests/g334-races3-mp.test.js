@@ -14,11 +14,11 @@ import { before, describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { loadContentCatalogsFromDir, getQuestCatalog } from '../public/js/content-catalogs.js?v=10b118dd';
-import { createQuestState } from '../public/js/quests.js?v=90a2ee3d';
-import { pendingQuestOffers } from '../public/js/quest-offers.js?v=32d4127e';
+import { loadContentCatalogsFromDir, getQuestCatalog } from '../public/js/content-catalogs.js?v=5ef6adb5';
+import { createQuestState } from '../public/js/quests.js?v=d0443973';
+import { pendingQuestOffers } from '../public/js/quest-offers.js?v=4ca83fa9';
 import { MP_RACE_QUESTS, MULTIPLAYER_QUESTS, offerableMultiplayerQuest } from '../public/js/quests-mp.js?v=e697cec3';
-import { questOffersFeature } from '../public/js/features/quest-offers-feature.js?v=4c5562d7';
+import { questOffersFeature } from '../public/js/features/quest-offers-feature.js?v=c7107c8e';
 import { HUB_MAP_STREETS } from '../public/js/hub-maps-data.js?v=ffe222f1';
 import { HELL_LOCATION } from '../public/js/hell.js?v=d77f15ef';
 import { HOG_MP_COURSE } from '../public/js/hog-haul-mp.js?v=67f873fe';

@@ -70,7 +70,7 @@
  */
 
 import { VENDOR_NPCS, VENDOR_NPC_CLASSES } from './vendor-npcs.js?v=90b0c123';
-import { getBuffCatalog, getQuestCatalog } from './content-catalogs.js?v=10b118dd';
+import { getBuffCatalog, getQuestCatalog } from './content-catalogs.js?v=5ef6adb5';
 import { levelInfoForXp } from './progression.js?v=05ff0260';
 import { brokenToolCopies } from './tools.js?v=4156bba8';
 import { offerableMultiplayerQuest } from './quests-mp.js?v=e697cec3';
@@ -81,7 +81,7 @@ import {
   parseQuestConversation,
   cleanQuestMarkup,
   eventToCounter,
-} from './quests.js?v=90a2ee3d';
+} from './quests.js?v=d0443973';
 
 /** Original: only one offer every 5 minutes (quests_offer delay = 60 * 5). */
 export const OFFER_INTERVAL_MS = 5 * 60 * 1000;
@@ -163,6 +163,8 @@ export function ensureQuestOfferState(questState) {
 export const REMAKE_QUEST_NPCS = Object.freeze([
   'street_spirit', 'street_spirit_groceries', 'street_spirit_gardening', 'street_spirit_produce',
   'street_spirit_toys', 'npc_piggy', 'emotional_bear',
+  // G1245 (ours): a world crab offers Tunes for Crabs, the Vine Radio's quest (features/crabs-feature.js).
+  'npc_crab',
   // Pack items whose Reminisce verb offers a quest room's repeat (quest-rooms/catalog.js REMINISCE_ITEMS).
   'play_cube', 'conch',
   // Offers Le Misérable II inside its room (quest-rooms/le-miserable.js).
@@ -1114,6 +1116,7 @@ export const EMITTED_EVENTS = Object.freeze([
   { event: 'street_entered:{a}' },
   { event: 'cubimals_freed:{a}' },
   { event: 'musicblocks_played:{a}' },
+  { event: 'crab_tunes_heard', note: 'G1245 (ours): a crab heard a tune from you (features/crabs-feature.js onListen); Tunes for Crabs counts it' },
   { event: 'feats:contributed' },
   { event: 'players_hugged' },
   { event: 'players_high_fived' },

@@ -46,12 +46,12 @@ import {
   trantsformOutcome,
   usePotion,
 } from '../public/js/potions.js?v=4f4c996d';
-import { potionsFeature, usePotionNow, munchRug, shakeFavor } from '../public/js/features/potions-feature.js?v=8dac3432';
+import { potionsFeature, usePotionNow, munchRug, shakeFavor } from '../public/js/features/potions-feature.js?v=4182db01';
 import { BUFF_ICONS } from '../public/js/buff-triggers.js?v=9fd877c4';
 import { createPlot, growTree, tickPlot, trantsformPlotTree, normalizePlot } from '../public/js/patches.js?v=3f6b9b05';
 import { POTION_ART } from '../public/js/potion-art.js?v=9d731b38';
-import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
-import { createAchievementState, applyAchievementProgress } from '../public/js/achievements.js?v=054773be';
+import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=5ef6adb5';
+import { createAchievementState, applyAchievementProgress } from '../public/js/achievements.js?v=47bd719d';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const publicRoot = join(here, '../public');

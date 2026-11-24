@@ -107,9 +107,9 @@ import { GARDEN_SKILL_PACKAGES, SEED_CATALOG } from '../public/js/garden.js?v=0c
 import { SKILL_PACKAGES } from '../public/js/skill-packages-data.js?v=cb4e9ab3';
 import { creditedMultiplayerQuests } from '../public/js/quests-mp.js?v=e697cec3';
 import { FURNITURE_STARTER_KIT } from '../public/js/homes-catalog.js?v=0367f90f';
-import { GIANTS } from '../public/js/shrines.js?v=01962b40';
+import { GIANTS } from '../public/js/shrines.js?v=037613f7';
 import { FOUR_LETTER_QUEST_ID } from '../public/js/four-letter-quest.js?v=a5574ac7';
-import { LEGALIZE_QUEST_ID } from '../public/js/legalize-it.js?v=7ec63cac';
+import { LEGALIZE_QUEST_ID } from '../public/js/legalize-it.js?v=2b6e3cac';
 import { GREEDY_STREET_SPIRIT_QUEST_ID, GREEDY_STREET_SPIRIT_REPEAT_ID } from '../public/js/greedy-street-spirit.js?v=00620a1c';
 import { WINTER_WALK_QUEST_ID, WINTER_WALK_REPEAT_QUEST_ID } from '../public/js/winter-walk.js?v=89f8dc32';
 import { SUMMERS_DAY_QUEST_ID, SUMMERS_DAY_REPEAT_QUEST_ID } from '../public/js/summers-day.js?v=c15840a1';
@@ -120,7 +120,7 @@ import { PHANTOM_QUEST_ID, REMEMBER_QUEST_ID } from '../public/js/ghost-quest.js
 import { HOG_HAUL_QUEST_ID } from '../public/js/hog-haul.js?v=50d2e072';
 import { ILMENSKIE_QUEST_ID } from '../public/js/ilmenskie-quest.js?v=0e9809ac';
 // G979: Buy a Bag starts with the first skill learned, without its prerequisites (learn_first_skill.js 74-76).
-import { FIRST_SKILL_QUEST_ID } from '../public/js/quest-offers.js?v=32d4127e';
+import { FIRST_SKILL_QUEST_ID } from '../public/js/quest-offers.js?v=4ca83fa9';
 import { CAMERA_OFFER } from '../public/js/snaps.js?v=11f3e41b';
 // #670: the classes a player keeps their own on shared ground (a note, a Still), which the site's house-floor move reads.
 import { KEPT_OWN } from '../public/js/drops-mp.js?v=6be23b70';
