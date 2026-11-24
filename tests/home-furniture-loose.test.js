@@ -73,11 +73,14 @@ describe('G369 a click stays a click', () => {
 });
 
 describe('G369 the locks stay', () => {
-  it('the drag goes through beginMove, with the Door\'s lift check', () => {
+  it('the drag goes through beginMove; a Door only slides, and its pick-up stays refused', () => {
     const move = bind.slice(bind.indexOf('const onPressMove'), bind.indexOf('const endLoosePress'));
     // G1136: carried by where the press began (HandOfDecorator drag_offset_pt).
     assert.match(move, /else beginMove\(engine, press\.id, worldPoint\(engine, \{ clientX: press\.x, clientY: press\.y \}\)\);\n\s+if \(!placing\) \{/);
-    assert.match(fn(homes, '\nfunction beginMove('), /doorLiftCheck\(floors, houseFloorHere\(\) \?\? -1, id, \{ inProgress: doorJobStarted\(\) \}\)/);
+    // #634: doFurnitureMove (main.js 7051-7106) moves a Door at its own y; canPickup still refuses.
+    assert.doesNotMatch(fn(homes, '\nfunction beginMove('), /doorLiftCheck/);
+    assert.match(fn(homes, '\nfunction placeAtPointer('), /isDoor \? slideDoor\(floors, decor, houseFloorHere\(\) \?\? 0, placing\.moveId, at\)/);
+    assert.match(fn(homes, '\nfunction runFurnitureAction('), /doorLiftCheck\(floors, houseFloorHere\(\) \?\? -1, id, \{ inProgress: doorJobStarted\(\) \}\)/);
   });
 
   it('the style is off while the piece is for sale', () => {

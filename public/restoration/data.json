@@ -2814,9 +2814,14 @@
   "deployed": "2026-11-24"
  },
  "git": {
-  "commits": 3393,
+  "commits": 3394,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-24",
+    "kind": "improve",
+    "text": "Doors between house floors slide along their own floor"
+   },
    {
     "date": "2026-11-24",
     "kind": "improve",
@@ -2931,14 +2936,9 @@
     "date": "2026-11-24",
     "kind": "improve",
     "text": "A drop on a house floor joins only the same player's own stack"
-   },
-   {
-    "date": "2026-11-24",
-    "kind": "fix",
-    "text": "More of a thing set on its stack on your house floor joins it, and you can move floor stacks"
    }
   ]
  },
- "tests": 1337,
+ "tests": 1338,
  "generatedAt": "2026-11-24"
 }

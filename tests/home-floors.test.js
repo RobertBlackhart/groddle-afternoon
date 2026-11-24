@@ -34,10 +34,10 @@ import {
   quoteHouseUnexpand,
   unexpandHouseFloors,
   wallExpandItems,
-} from '../public/js/home-floors.js?v=0883cb1c';
+} from '../public/js/home-floors.js?v=c81318fb';
 import { createHomeDecorState, placeFurniture } from '../public/js/home-decor.js?v=4abc83ab';
 import { FURNITURE_CATALOG, FURNITURE_STORE } from '../public/js/homes-catalog.js?v=f3fe838d';
-import { furnitureStoreProfile } from '../public/js/features/homes-feature.js?v=a4f08e36';
+import { furnitureStoreProfile } from '../public/js/features/homes-feature.js?v=fcccab54';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const GSJS = join(homedir(), 'Documents/glitch-audit/glitch-GameServerJS');
@@ -156,7 +156,7 @@ describe('a new floor (homes_add_floor_at)', () => {
     const back = createFloorsState(JSON.parse(JSON.stringify({ ...fs, upper: fs.upper.map(({ storage, ...rest }) => rest) })), ground);
     assert.equal(floorCount(back), 3);
     assert.equal(back.at, 2);
-    assert.deepEqual(back.links.map((l) => [l.floor, l.x]), [[0, 600], [1, d2.x]]);
+    assert.deepEqual(back.links.map((l) => [l.floor, l.upX, l.downX]), [[0, 600, 600], [1, d2.x, d2.x]]);
     assert.equal(back.upper[1].placed.find((r) => r.classTsid === DOOR_CLASS).x, d2.x);
   });
 });
@@ -267,7 +267,7 @@ describe('the Expand button says what it needs while it is off (report #182)', (
 
 describe('homes-feature keeps the floors', () => {
   it('saves and restores floors, links and the floor you are on; each upper floor keeps its own stacks', async () => {
-    const { homesFeature } = await import('../public/js/features/homes-feature.js?v=a4f08e36');
+    const { homesFeature } = await import('../public/js/features/homes-feature.js?v=fcccab54');
     const engine = { param: () => null, setData() {} };
     const { ground, door } = houseWithDoor(600);
     const fs = createFloorsState();
@@ -279,7 +279,7 @@ describe('homes-feature keeps the floors', () => {
     assert.equal(saved.floors.upper.length, 1);
     assert.equal(saved.floors.at, 1);
     assert.equal(saved.floors.upper[0].storage, undefined, 'storage is the house\'s, saved once');
-    assert.deepEqual(saved.floors.links.map((l) => [l.floor, l.x]), [[0, 600]]);
+    assert.deepEqual(saved.floors.links.map((l) => [l.floor, l.upX, l.downX]), [[0, 600, 600]]);
     assert.equal(homesFeature.dropTsid('RH_HOME_INT'), 'RH_HOME_FLOOR_1');
     homesFeature.restore({ decor: ground, floors: { ...saved.floors, at: 0 } }, engine);
     assert.equal(homesFeature.dropTsid('RH_HOME_INT'), null);

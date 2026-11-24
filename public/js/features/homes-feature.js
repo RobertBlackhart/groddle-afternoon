@@ -47,7 +47,9 @@
  * through projectApi); finishing it adds a floor (homes_add_floor_at) with a
  * Door down at the same x, up to three floors. Each floor is its own room
  * (as the Tower's are) and the Doors are the way between; Expand and
- * Un-expand work on every floor at once. QA:
+ * Un-expand work on every floor at once. A placed Door is never picked up but
+ * slides along its own floor at its own y, and the Door on the other floor
+ * then leads to where it stands (#634, main.js doFurnitureMove 7051-7106). QA:
  *     ?autostart=1&fresh=1&resetgame=1&questoffer=off&homedemo=interior&homefloordemo=door
  *     (a Door in storage, 100 Planks, Decorate open; =build places it and
  *     fills the project, =up also goes upstairs). Canvas: homeFloor,
@@ -284,6 +286,7 @@ import {
   doorDestination,
   doorJobId,
   doorLiftCheck,
+  doorMoveAt,
   doorPlaceCheck,
   doorRole,
   expandHouseFloors,
@@ -294,8 +297,9 @@ import {
   noteDoorPlaced,
   quoteHouseExpansion,
   quoteHouseUnexpand,
+  slideDoor,
   unexpandHouseFloors,
-} from '../home-floors.js?v=0883cb1c';
+} from '../home-floors.js?v=c81318fb';
 import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import { anchorBottomCentre, standOnFeet } from '../sprite-feet.js?v=11303931';
 import { autoplayLog } from '../autoplay-log.js?v=55bb4823';
@@ -4980,13 +4984,9 @@ function beginPlacing(engine, classTsid, from = null, style = null) {
 function beginMove(engine, id, grab = null) {
   const item = placedItem(decor, id);
   if (!item) return;
-  if (item.classTsid === DOOR_CLASS) {
-    const lift = doorLiftCheck(floors, houseFloorHere() ?? -1, id, { inProgress: doorJobStarted() });
-    if (!lift.ok) {
-      engine.toast(lift.msg);
-      return;
-    }
-  }
+  // #634: a placed Door is carried too, but only slides along its own floor (doFurnitureMove
+  // main.js 7058-7062 keeps its y; HandOfDecorator.as 1269-1273 keeps the drag on its plat).
+  // Its pick-up stays refused (the lift check on Pick up and on the tray).
   placing = { kind: 'furniture', classTsid: item.classTsid, moveId: id, upgradeId: item.upgradeId || '' };
   // G1136: HandOfDecorator.as 1280-1286 drags a piece by where it was grabbed (drag_offset_pt), so a
   // piece picked up by its middle stays on its plat until it is pulled to another.
@@ -5283,7 +5283,8 @@ function placeAtPointer(engine, at) {
     } else if (placing.moveId) {
       const was = placedItem(decor, placing.moveId);
       const fromX = was?.x;
-      result = moveFurniture(decor, placing.moveId, at);
+      // #634: a Door slides at its own y, and its end of the link between floors follows.
+      result = isDoor ? slideDoor(floors, decor, houseFloorHere() ?? 0, placing.moveId, at) : moveFurniture(decor, placing.moveId, at);
       // dropFromLocationOnTargetPlatform also_tsids: the stacks on a moved piece go with it.
       if (result.ok && Number.isFinite(fromX)) {
         const dx = placedItem(decor, placing.moveId).x - fromX;
@@ -5373,9 +5374,15 @@ function makeGhost(engine) {
   g.zIndex = 95;
   if (placing.kind === 'furniture') {
     const def = furnitureDef(placing.classTsid);
-    const spr = new PIXI.Sprite(textureFromUrl(pieceArt(def.classTsid, placing.upgradeId).path));
+    // #634: a carried Door between floors keeps its own art (up, down or building).
+    const door = placing.moveId && def.classTsid === DOOR_CLASS && doorRole(floors, houseFloorHere() ?? -1, placing.moveId) ? placedItem(decor, placing.moveId) : null;
+    const spr = new PIXI.Sprite(textureFromUrl(door ? doorArtUrl(door) : pieceArt(def.classTsid, placing.upgradeId).path));
     spr.anchor.set(0.5, def.slot === 'ceiling' ? 0 : 1);
-    spr.scale.set(pieceScale(def.classTsid, placing.upgradeId));
+    if (door) {
+      const art = pieceArt(DOOR_CLASS, doorUpgradeId(door));
+      spr.width = art.w;
+      spr.height = art.h;
+    } else spr.scale.set(pieceScale(def.classTsid, placing.upgradeId));
     spr.alpha = 0.72;
     g.addChild(spr);
   } else if (placing.kind === 'fixture') {
@@ -5438,8 +5445,11 @@ function updateGhost(engine) {
   const at = carryAt(engine);
   g.alpha = drag?.over === 'tray' ? 0.3 : 1;
   if (placing.kind === 'furniture') {
+    const moved = placing.moveId ? placedItem(decor, placing.moveId) : null;
     // Furniture lives in room x; the room starts at the back yard's edge.
-    const snap = snapPlacement(decor, placing.classTsid, toRoom(at), placing.moveId || null, placing.upgradeId || '');
+    const spot = moved?.classTsid === DOOR_CLASS ? doorMoveAt(moved, toRoom(at)) : toRoom(at);
+    const snap = snapPlacement(decor, placing.classTsid, spot, placing.moveId || null, placing.upgradeId || '');
+    if (moved?.classTsid === DOOR_CLASS) snap.y = moved.y;
     g.x = snap.x + roomX0();
     g.y = snap.y;
     g.ok = true;
@@ -8117,7 +8127,7 @@ function houseFloorScene(engine, index) {
       if (Number.isFinite(arriveX)) return arriveX;
       if (homeX(engine) != null) return homeX(engine);
       const down = floors.links.find((l) => l.floor + 1 === index);
-      return down ? down.x : Math.round(width / 2);
+      return down ? down.downX : Math.round(width / 2);
     },
     spawnTargets() {
       scene = { room: 'interior', houseFloor: index, background, furnitureLayer: null, furnitureFrontLayer: null, ghost: null, markers: null };
@@ -8168,7 +8178,10 @@ function refreshDoorTargets(engine) {
   for (const t of engine.interactables || []) {
     if (t.classId !== DOOR_CLASS || !t.sprite || t.sprite.destroyed) continue;
     const item = placedItem(decor, t.state?.doorId);
-    if (item) dressDoorSprite(t.sprite, item, floor);
+    if (!item) continue;
+    dressDoorSprite(t.sprite, item, floor);
+    // BUILDER: a Door being carried stays faint where it was, as any piece (renderFurniture).
+    t.sprite.alpha = placing?.moveId === item.id ? 0.3 : 1;
   }
 }
 

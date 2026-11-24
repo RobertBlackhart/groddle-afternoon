@@ -14,6 +14,14 @@
  *    canPickup (531-534): "You can't pick up placed doors." once the project
  *    has started, or once the floor is built. onJobComplete (594-598):
  *    homes_add_floor_at(this.x, this).
+ *  - main.js doFurnitureMove (7051-7106): a placed Door still moves. "Don't
+ *    move doors from their y position" (msg.y = item.y), its own geo door
+ *    moves to the new x, and the Door on the other floor now leads to it
+ *    (target_door.connect.x = msg.x). The client keeps the drag on the
+ *    Door's own plat (HandOfDecorator.as 1269-1273 door_plat_id, 1089-1100).
+ *    inc_homes.js 741-788 builds each pair: floor_N_up stands at
+ *    doors_up[N-1].x and leads to doors_down[N].x, floor_N_down the other
+ *    way, so the two Doors of a pair keep their own x (report #634).
  *  - quests/job_proto_door.js: "Build a New Floor", "Build a new floor in
  *    your home!", "Contribute Planks - 100 needed!", completion "You built a
  *    new floor in your home!".
@@ -40,7 +48,7 @@
  */
 
 import { HOME_LIMITS } from './homes-catalog.js?v=f3fe838d';
-import { floorRestY, normalizeHomeDecorState, quoteInteriorUnexpand, unexpandInterior, expandInterior, wallSlots } from './home-decor.js?v=4abc83ab';
+import { floorRestY, moveFurniture, normalizeHomeDecorState, quoteInteriorUnexpand, unexpandInterior, expandInterior, wallSlots } from './home-decor.js?v=4abc83ab';
 
 export const DOOR_CLASS = 'furniture_door';
 export const DOOR_JOB = 'job_proto_door';
@@ -67,7 +75,8 @@ const whole = (v, d = 0) => (Number.isFinite(Number(v)) ? Math.floor(Number(v)) 
 /**
  * The floors above the ground floor and how they join.
  *   upper    decor states for floors 2 and 3 (the ground floor is the house's own decor)
- *   links    [{ floor, x, up, down }]: floor `floor`'s Door `up` leads to floor+1's Door `down`
+ *   links    [{ floor, up, down, upX, downX }]: floor `floor`'s Door `up` (standing at upX) leads
+ *            to floor+1's Door `down` (at downX); each Door keeps its own x (inc_homes.js 741-788)
  *   pending  { floor, id } | null: a Door set down to build the next floor
  *   at       the floor the player is on (0 is the ground floor)
  */
@@ -81,7 +90,11 @@ export function createFloorsState(seed = {}, ground = null) {
   for (const row of Array.isArray(seed?.links) ? seed.links : []) {
     const floor = whole(row?.floor, -1);
     if (floor < 0 || floor >= floors - 1 || links.some((l) => l.floor === floor)) continue;
-    links.push({ floor, x: Math.round(Number(row.x) || 0), up: whole(row.up), down: whole(row.down) });
+    // Saves from before #634 held one x for both Doors: each end starts there, so nothing moves.
+    const x = Math.round(Number(row.x) || 0);
+    const upX = Number.isFinite(Number(row.upX)) ? Math.round(Number(row.upX)) : x;
+    const downX = Number.isFinite(Number(row.downX)) ? Math.round(Number(row.downX)) : x;
+    links.push({ floor, up: whole(row.up), down: whole(row.down), upX, downX });
   }
   let pending = null;
   if (seed?.pending && whole(seed.pending.floor, -1) === floors - 1 && floors < MAX_FLOORS) {
@@ -133,13 +146,59 @@ export function doorArtKey(role) {
   return 'up';
 }
 
-/** Where a Door leads: { floor, x } on the other floor, or null. */
+/** Where a Door leads: { floor, x } on the other floor, x the other Door's own (connect.x), or null. */
 export function doorDestination(fs, floor, id) {
   const n = whole(id);
   const up = fs.links.find((l) => l.floor === floor && l.up === n);
-  if (up) return { floor: floor + 1, x: up.x, via: up.down, dir: 'up' };
+  if (up) return { floor: floor + 1, x: up.downX, via: up.down, dir: 'up' };
   const down = fs.links.find((l) => l.floor + 1 === floor && l.down === n);
-  if (down) return { floor: down.floor, x: down.x, via: down.up, dir: 'down' };
+  if (down) return { floor: down.floor, x: down.upX, via: down.up, dir: 'down' };
+  return null;
+}
+
+/**
+ * doFurnitureMove for a Door (main.js 7058-7062): where a carried Door may go is `at`'s x on
+ * the plat it stands on, at its own y ("Don't move doors from their y position").
+ */
+export function doorMoveAt(door, at = {}) {
+  return { x: Number(at?.x), y: door.y, ...(door.plat ? { plat: door.plat } : {}) };
+}
+
+/**
+ * doFurnitureMove (main.js 7051-7106): a placed Door on floor `floor` (decor `state`) slides to
+ * `at`'s x along its own floor, inside the walls (the same clamp as any piece), its y kept; the
+ * link end it is follows (door.x / target_door.connect.x), the other Door stays where it is.
+ * Pick-up stays refused (doorLiftCheck). Returns { ok, item, link? } or { ok: false, msg }.
+ */
+export function slideDoor(fs, state, floor, id, at = {}) {
+  const n = whole(id);
+  const door = state?.placed?.find((row) => row.id === n);
+  if (!door || door.classTsid !== DOOR_CLASS) return { ok: false, reason: 'missing' };
+  const y = door.y;
+  const plat = door.plat;
+  const res = moveFurniture(state, n, doorMoveAt(door, at));
+  if (!res.ok) return res;
+  door.y = y;
+  if (plat) door.plat = plat;
+  door.on = null;
+  const link = noteDoorMoved(fs, floor, n, door.x);
+  return { ok: true, item: door, ...(link ? { link: { ...link } } : {}) };
+}
+
+/** A Door on `floor` now stands at x: its end of the link takes it. Returns the link, or null. */
+export function noteDoorMoved(fs, floor, id, x) {
+  const n = whole(id);
+  const at = Math.round(Number(x) || 0);
+  const up = fs.links.find((l) => l.floor === floor && l.up === n);
+  if (up) {
+    up.upX = at;
+    return up;
+  }
+  const down = fs.links.find((l) => l.floor + 1 === floor && l.down === n);
+  if (down) {
+    down.downX = at;
+    return down;
+  }
   return null;
 }
 
@@ -194,7 +253,7 @@ export function addFloor(fs, ground) {
   const down = { id: next.nextId++, classTsid: DOOR_CLASS, slot: 'floor', x: door.x, y: floorRestY(DOOR_CLASS), facingRight: true, z: 1, on: null };
   next.placed.push(down);
   fs.upper.push(next);
-  const link = { floor: fs.pending.floor, x: door.x, up: door.id, down: down.id };
+  const link = { floor: fs.pending.floor, up: door.id, down: down.id, upX: door.x, downX: down.x };
   fs.links.push(link);
   fs.pending = null;
   return { ok: true, floor: link.floor + 1, link: { ...link }, decor: next };
@@ -288,7 +347,7 @@ export function quoteHouseUnexpand(fs, ground) {
 
 /**
  * homes_unexpand on every floor: each loses its last segment (what stands in
- * its last 300 px moves 150 px left; the Doors between floors move together).
+ * its last 300 px moves 150 px left, Doors too; each end of a link follows its own Door).
  */
 export function unexpandHouseFloors(fs, ground, inv = {}) {
   const quote = quoteHouseUnexpand(fs, ground);
@@ -298,12 +357,12 @@ export function unexpandHouseFloors(fs, ground, inv = {}) {
     const res = unexpandInterior(state, inv);
     if (state === ground) out = res;
   }
-  // A link's x follows its Doors (both floors moved alike).
+  // Each end of a link follows its own Door (#634: the two Doors may stand at different x).
   for (const link of fs.links) {
     const up = floorDecor(fs, ground, link.floor)?.placed.find((row) => row.id === link.up);
-    if (up) link.x = up.x;
+    if (up) link.upX = up.x;
     const down = floorDecor(fs, ground, link.floor + 1)?.placed.find((row) => row.id === link.down);
-    if (down && up) down.x = up.x;
+    if (down) link.downX = down.x;
   }
   return { ...out, items: quote.items };
 }

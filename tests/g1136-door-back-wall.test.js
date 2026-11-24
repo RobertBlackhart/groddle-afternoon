@@ -9,7 +9,7 @@
  */
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { DOOR_CLASS, addFloor, createFloorsState } from '../public/js/home-floors.js?v=0883cb1c';
+import { DOOR_CLASS, addFloor, createFloorsState } from '../public/js/home-floors.js?v=c81318fb';
 import {
   DOOR_FOOT_Y,
   INTERIOR,
