@@ -6,25 +6,25 @@
    "id": "game",
    "name": "groddle-afternoon",
    "url": "https://github.com/TinyBitAdventures/groddle-afternoon",
-   "ref": "v0.63.2",
-   "commit": "bbb6347f",
+   "ref": "v0.64.0",
+   "commit": "081f1a7e",
    "licence": "MIT",
    "history": {
-    "commits": 3351,
+    "commits": 3357,
     "first": "2026-10-19",
     "latest": "2026-11-24"
    },
    "code": {
-    "files": 5187,
-    "lines": 1069538,
-    "bytes": 66757966
+    "files": 5191,
+    "lines": 1070361,
+    "bytes": 66812584
    },
    "languages": [
     {
      "id": "javascript",
      "label": "JavaScript",
-     "files": 2458,
-     "lines": 728235
+     "files": 2461,
+     "lines": 728848
     },
     {
      "id": "html",
@@ -47,8 +47,8 @@
     {
      "id": "php",
      "label": "PHP",
-     "files": 30,
-     "lines": 3794
+     "files": 31,
+     "lines": 4004
     },
     {
      "id": "shell",
@@ -69,8 +69,8 @@
      "id": "tests",
      "label": "Tests",
      "path": "tests/",
-     "files": 1375,
-     "lines": 267199
+     "files": 1378,
+     "lines": 267842
     },
     {
      "id": "core",
@@ -90,8 +90,8 @@
      "id": "tools",
      "label": "Build tools",
      "path": "tools/, build-*.mjs",
-     "files": 367,
-     "lines": 85480
+     "files": 368,
+     "lines": 85660
     },
     {
      "id": "rooms",
@@ -134,7 +134,7 @@
      "id": "data",
      "label": "Data (JSON)",
      "files": 3187,
-     "bytes": 215914454
+     "bytes": 215916434
     },
     {
      "id": "generated",
@@ -163,10 +163,10 @@
      "bytes": 8288803
     }
    ],
-   "totalFiles": 36070,
+   "totalFiles": 36074,
    "tests": {
-    "files": 1331,
-    "cases": 14713,
+    "files": 1333,
+    "cases": 14738,
     "runner": "node --test"
    }
   },
@@ -284,37 +284,37 @@
    "id": "site",
    "name": "groddle-afternoon-site",
    "url": "https://github.com/TinyBitAdventures/groddle-afternoon-site",
-   "ref": "v0.43.2",
-   "commit": "587253a7",
+   "ref": "v0.44.0",
+   "commit": "4f9b0d6e",
    "licence": "MIT",
    "history": {
-    "commits": 323,
+    "commits": 326,
     "first": "2026-10-24",
     "latest": "2026-11-24"
    },
    "code": {
-    "files": 173,
-    "lines": 54584,
-    "bytes": 2891657
+    "files": 174,
+    "lines": 55172,
+    "bytes": 2925064
    },
    "languages": [
     {
      "id": "php",
      "label": "PHP",
-     "files": 142,
-     "lines": 44941
+     "files": 143,
+     "lines": 45188
     },
     {
      "id": "javascript",
      "label": "JavaScript",
      "files": 17,
-     "lines": 7368
+     "lines": 7688
     },
     {
      "id": "css",
      "label": "CSS",
      "files": 6,
-     "lines": 2084
+     "lines": 2105
     },
     {
      "id": "html",
@@ -328,15 +328,15 @@
      "id": "pages",
      "label": "Pages, blocks and menu",
      "path": "the rest of src/",
-     "files": 90,
-     "lines": 22415
+     "files": 91,
+     "lines": 22934
     },
     {
      "id": "services",
      "label": "Player services",
      "path": "src/ classes behind the groddle/v1 REST routes",
      "files": 48,
-     "lines": 18736
+     "lines": 18784
     },
     {
      "id": "ledger",
@@ -350,7 +350,7 @@
      "label": "Styles",
      "path": "style.css",
      "files": 6,
-     "lines": 2084
+     "lines": 2105
     },
     {
      "id": "templates",
@@ -367,7 +367,7 @@
     },
     {
      "path": "console/console.js",
-     "lines": 1780
+     "lines": 2100
     },
     {
      "path": "src/HomeYard.php",
@@ -392,8 +392,8 @@
     {
      "id": "data",
      "label": "Data (JSON)",
-     "files": 46,
-     "bytes": 269802
+     "files": 47,
+     "bytes": 326305
     },
     {
      "id": "docs",
@@ -402,10 +402,10 @@
      "bytes": 14917
     }
    ],
-   "totalFiles": 281,
+   "totalFiles": 283,
    "tests": {
-    "files": 160,
-    "cases": 2358,
+    "files": 162,
+    "cases": 2383,
     "runner": "node --test",
     "where": "groddle-afternoon"
    }
