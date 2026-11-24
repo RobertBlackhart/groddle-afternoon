@@ -25,7 +25,7 @@ import { bagsFeature } from '../public/js/features/bags-feature.js?v=c5cfe8e1';
 import { bindToolInventory, createToolConditionState, setToolRemaining, toolCopies } from '../public/js/tools.js?v=4156bba8';
 import { draggedCount, draggedHere, draggedStack, markDragged, takeDragged } from '../public/js/drag-stack.js?v=536cddfb';
 import { runDrop } from '../public/js/features/world-drop-feature.js?v=1cada149';
-import { registerButlerDrop } from '../public/js/butler-drop.js?v=bef161db';
+import { registerButlerDrop } from '../public/js/butler-drop.js?v=f3be35d9';
 import { beginDrag, dragDrop, endDrag } from '../public/js/drop-targets.js?v=59e6edb4';
 
 const root = join(import.meta.dirname, '..', 'public');

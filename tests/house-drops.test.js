@@ -22,11 +22,11 @@ import assert from 'node:assert/strict';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { homePlaceOf, isSharedStreet, shareReason } from '../public/js/drops-mp.js?v=880e94f7';
+import { homePlaceOf, isSharedStreet, shareReason } from '../public/js/drops-mp.js?v=102a2372';
 import { dropsMpFeature } from '../public/js/features/drops-mp-feature.js?fresh=housedrops';
-import { homeStreetMpFeature } from '../public/js/features/home-street-mp-feature.js?v=4b98c3f7';
-import { neighboursMpFeature } from '../public/js/features/neighbours-mp-feature.js?v=32580246';
-import { OWNER_STACK_TEXT, isOwnerStackId, normalizeHomeView, normalizeOwnerStacks, ownerStacksFor, sharedHomeStreet } from '../public/js/neighbours-mp.js?v=917e10c7';
+import { homeStreetMpFeature } from '../public/js/features/home-street-mp-feature.js?v=5e257917';
+import { neighboursMpFeature } from '../public/js/features/neighbours-mp-feature.js?v=75c58818';
+import { OWNER_STACK_TEXT, isOwnerStackId, normalizeHomeView, normalizeOwnerStacks, ownerStacksFor, sharedHomeStreet } from '../public/js/neighbours-mp.js?v=c47d9fe2';
 import { GAME_DIR, HAS_SERVER, HAS_SITE, SITE_DIR, serverPath } from '../tools/repos.mjs';
 
 const OP = 'drop-00000000000000c1';

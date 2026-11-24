@@ -11,7 +11,7 @@ import { WALLPAPER_MAPS } from '../public/js/home-wallpaper-art.js?v=129c514f';
 import { DOCK_GAP, DOCK_W, dockedPickerSpot } from '../public/js/furniture-upgrade-picker.js?v=8cfd5db7';
 import { filterSwatches, swatchFilters } from '../public/js/ui/home-builder.js?v=d73e840b';
 import { listTextures } from '../public/js/home-decor.js?v=b51e16a6';
-import { salePlacementKey } from '../public/js/home-street-mp.js?v=64a12aef';
+import { salePlacementKey } from '../public/js/home-street-mp.js?v=8b462bb2';
 import { beginHomeVisit, createHomeState, imagineHome } from '../public/js/homes.js?v=10f6604f';
 
 const root = join(import.meta.dirname, '..');
