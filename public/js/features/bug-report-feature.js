@@ -87,6 +87,7 @@ import { mountReportsSheet } from '../ui/reports-sheet.js?v=32d2617d';
 import { PICTURE_TEXT } from '../report-pictures.js?v=84c52271';
 import { canvasTransparent } from '../render-probe.js?v=ac5e3810';
 import { marksLine, startBaitCheck } from '../extension-marks.js?v=36c70f4b';
+import { imageFailureLine } from '../textures.js?v=729b29ea';
 
 export const BUG_REPORT_FEATURE_ID = 'bug-report';
 
@@ -255,8 +256,11 @@ export function extensionContext(bait = null, doc = globalThis.document) {
   return { adblock, marks: marksLine(doc) };
 }
 
-/** What the report carries besides the player's words. */
-export function reportContext(engine, errors = [], env = globalThis, bait = null) {
+/**
+ * What the report carries besides the player's words. `images` (#662): the images that failed to
+ * load this session, by path and count (js/textures.js imageFailureLine), one line in the errors.
+ */
+export function reportContext(engine, errors = [], env = globalThis, bait = null, images = imageFailureLine(MAX_ERROR)) {
   const p = engine?.player;
   const street = engine?.street;
   let panels = '';
@@ -284,9 +288,17 @@ export function reportContext(engine, errors = [], env = globalThis, bait = null
     panels,
     gpu,
     ...extensionContext(bait, env.document),
-    // The site keeps only the context keys it knows; a failed probe also rides in the errors so it reaches it now.
-    errors: failed && gpu ? [...errors.slice(-(MAX_ERRORS - 1)), `render probe: ${gpu}`] : errors.slice(-MAX_ERRORS),
+    // The site keeps only the context keys it knows; a failed probe (and #662's failed images) also
+    // ride in the errors so they reach it now.
+    errors: withExtras(errors, [failed && gpu ? `render probe: ${gpu}` : '', String(images || '').slice(0, MAX_ERROR)]),
   };
+}
+
+/** The page's last errors with the extra lines after them, MAX_ERRORS in all (the extras kept). */
+function withExtras(errors, extras) {
+  const add = extras.filter(Boolean);
+  const keep = MAX_ERRORS - add.length;
+  return [...(keep > 0 ? errors.slice(-keep) : []), ...add];
 }
 
 /**

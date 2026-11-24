@@ -248,3 +248,67 @@ describe('#312 (G708): a failed image upload is sent again (guardImageUploads)',
   });
 });
 
+
+// #662 (Oktyabrya, Safari on an Apple GPU): one street deco blank all session. One dropped request or
+// failed decode left its source on the 1x1 placeholder for good; the cache only remade destroyed ones.
+describe('#662: a street deco whose image failed once comes back on the next ask', () => {
+  const realNow = Date.now;
+  let clock = 0;
+  before(() => { clock = realNow.call(Date); Date.now = () => clock; });
+  after(() => { Date.now = realNow; });
+
+  it('a failed deco load is tried again in place, and every sprite on it gets the picture', async () => {
+    T.resetImageFailures();
+    const url = 'assets/decos/groddle/flying_platform_6_300x120.png';
+    const routed = T.routeUrl(url);
+    failing.add(routed);
+    const first = T.textureFromUrl(url);
+    let resized = 0;
+    first.source.on('resize', () => (resized += 1));
+    await T.whenLoaded(first).catch(() => {});
+    assert.equal(T.isFailed(first), true, 'harness: the first load fails (a dropped request or decode on Safari)');
+    assert.equal(first.source.pixelWidth, 1, 'blank: the placeholder');
+    failing.delete(routed); // the file is there again (it always was on disk and live)
+    clock += T.RETRY_WAIT_MS[0];
+    const again = T.textureFromUrl(url); // the next street, or the same street re-entered
+    assert.equal(again, first, 'the same texture: sprites already drawn with it are the ones that fill in');
+    await T.whenLoaded(again);
+    assert.equal(T.isLoaded(again), true, 'loaded on the second try (v0.64.0 kept the failed source)');
+    assert.equal(T.isFailed(again), false);
+    assert.equal(first.source.width, 300);
+    assert.equal(resized, 1, 'the source resized, which re-reads every sprite and frame cut from it');
+    assert.deepEqual(T.imageFailureStats(), [{ path: url, count: 1, loaded: true }]);
+    assert.equal(T.imageFailureLine(), `images failed: ${url} x1 (loaded later)`);
+  });
+
+  it('waits a little between tries and stops after LOAD_ATTEMPTS, so a missing file is not asked for forever', async () => {
+    T.resetImageFailures();
+    const url = 'assets/decos/really_missing.png';
+    failing.add(T.routeUrl(url));
+    const t = T.textureFromUrl(url);
+    await T.whenLoaded(t).catch(() => {});
+    let tries = 1;
+    for (let round = 0; round < 20; round += 1) {
+      const before = t.source;
+      const p = T.whenLoaded(T.textureFromUrl(url)); // asked again at once: not yet
+      if (p !== T.whenLoaded(before)) assert.fail('retried without waiting');
+      clock += 20_000;
+      const asked = T.textureFromUrl(url);
+      if (T.isFailed(asked)) continue; // out of attempts: stays failed, no new load
+      tries += 1;
+      await T.whenLoaded(asked).catch(() => {});
+    }
+    assert.equal(tries, T.LOAD_ATTEMPTS);
+    assert.deepEqual(T.imageFailureStats(), [{ path: url, count: T.LOAD_ATTEMPTS, loaded: false }]);
+  });
+
+  it('the report path is a bare path: no query, no data URL contents', async () => {
+    T.resetImageFailures();
+    const url = 'data:image/svg+xml;utf8,<svg>secret</svg>';
+    failing.add(url);
+    await T.whenLoaded(T.textureFromUrl(url)).catch(() => {});
+    assert.equal(T.imageFailureLine(), 'images failed: data:image/svg+xml x1');
+    T.resetImageFailures();
+    assert.equal(T.imageFailureLine(), '');
+  });
+});

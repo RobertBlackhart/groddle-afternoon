@@ -187,6 +187,71 @@ async function withinSideLimit(image) {
   return canvas;
 }
 
+/**
+ * #662 (a street's piece of art stayed blank all session, Safari on an Apple GPU): one dropped
+ * request or failed decode used to leave a source on its 1x1 placeholder for good, since the cache
+ * only made a new one for a destroyed source. A failed source is loaded again, in place, the next
+ * time it is asked for (cachedSource), once RETRY_WAIT_MS[attempts - 1] has passed since it failed,
+ * at most LOAD_ATTEMPTS times in all, so a file that is really missing is not asked for forever.
+ * In place: every sprite and frame already cut from it shows the picture when it lands (the
+ * source's resize, as on a first load). Each failure is counted by path for the bug report.
+ */
+export const LOAD_ATTEMPTS = 4;
+export const RETRY_WAIT_MS = Object.freeze([1_000, 4_000, 16_000]);
+
+/** #662: failed image loads by path (no query, no data or blob contents): { count, loaded }. */
+const imageFailures = new Map();
+const MAX_FAILURE_PATHS = 40;
+
+/** #662: a URL as a bare path for the report (never a data: or blob: URL's contents, never a query). */
+function failurePath(url) {
+  const u = String(url || '');
+  if (/^data:/i.test(u)) return `data:${(/^data:([^;,]*)/i.exec(u) || [])[1] || ''}`;
+  if (/^blob:/i.test(u)) return 'blob:';
+  return u.replace(/^[a-z]+:\/\/[^/]+\//i, '').replace(/^\//, '').replace(/[?#].*$/, '').slice(0, 120);
+}
+
+function noteImageFailure(state) {
+  const path = failurePath(state.asked || state.url);
+  const row = imageFailures.get(path) || { count: 0, loaded: false };
+  row.count += 1;
+  row.loaded = false;
+  imageFailures.delete(path);
+  imageFailures.set(path, row);
+  if (imageFailures.size > MAX_FAILURE_PATHS) imageFailures.delete(imageFailures.keys().next().value);
+}
+
+function noteImageRecovered(state) {
+  const row = imageFailures.get(failurePath(state.asked || state.url));
+  if (row) row.loaded = true;
+}
+
+/** #662: the failed image loads so far, newest last: [{ path, count, loaded }]. */
+export function imageFailureStats() {
+  return [...imageFailures].map(([path, row]) => ({ path, count: row.count, loaded: row.loaded }));
+}
+
+/**
+ * #662: one line for a bug report's errors, or '' when every image loaded:
+ * "images failed: assets/decos/x.png x2 (loaded later), assets/y.png x4". Newest last, at most `max` chars.
+ */
+export function imageFailureLine(max = 300) {
+  const rows = imageFailureStats();
+  if (!rows.length) return '';
+  const parts = rows.map((r) => `${r.path} x${r.count}${r.loaded ? ' (loaded later)' : ''}`);
+  let line = `images failed: ${parts.join(', ')}`;
+  while (line.length > max && parts.length > 1) {
+    parts.shift();
+    line = `images failed: ... ${parts.join(', ')}`;
+  }
+  return line.slice(0, max);
+}
+
+/** #662: forget the failure counts (tests). */
+export function resetImageFailures() {
+  imageFailures.clear();
+}
+
 function createSource(url, opts) {
   const PIXI = pixi();
   const resolution = opts.resolution || resolutionOfUrl(url);
@@ -198,8 +263,19 @@ function createSource(url, opts) {
     scaleMode: opts.scaleMode || 'linear',
   });
   // holds: holdSource/holdTexture takers not yet released; shared: handed out by a plain call (never freed).
-  const state = { url, loaded: false, failed: false, promise: null, holds: 0, shared: false, own: false };
+  // attempts, failedAt: #662's retry (startLoad, retryIfDue).
+  const state = { url, opts, resolution, loaded: false, failed: false, promise: null, holds: 0, shared: false, own: false, attempts: 0, failedAt: 0 };
   source[LOAD] = state;
+  startLoad(source);
+  return source;
+}
+
+/** Load (or, #662, load again) a source's image and fill it in place. */
+function startLoad(source) {
+  const state = source[LOAD];
+  const { url, opts, resolution } = state;
+  state.attempts += 1;
+  state.failed = false;
   state.promise = (isSvg(url) ? rasteriseSvg(url, opts) : opts.width > 0 && opts.height > 0 ? resizeImage(url, opts) : decodeImage(url)).then(
     (decoded) => withinSideLimit(decoded).catch(() => decoded).then((image) => {
       if (source.destroyed) return source;
@@ -210,18 +286,30 @@ function createSource(url, opts) {
       const res = image === decoded ? resolution : resolution * ((image.width || 1) / (decoded.naturalWidth || decoded.width || 1));
       if (!source.resize(w, h, res)) source.update();
       state.loaded = true;
+      if (state.attempts > 1) noteImageRecovered(state);
       source.emit('loaded', source);
       return source;
     }),
     (err) => {
       state.failed = true;
+      state.failedAt = Date.now();
+      noteImageFailure(state);
       source.emit('error', err, source);
       throw err;
     }
   );
   // Callers that never ask stay quiet about a missing file (Pixi 7 did too).
   state.promise.catch(() => {});
-  return source;
+}
+
+/** #662: a failed source is loaded again when asked for, after its wait, while attempts are left. */
+function retryIfDue(source, now = Date.now()) {
+  const state = source?.[LOAD];
+  if (!state?.failed || source.destroyed || state.attempts >= LOAD_ATTEMPTS) return false;
+  const wait = RETRY_WAIT_MS[Math.min(state.attempts, RETRY_WAIT_MS.length) - 1] ?? 0;
+  if (now - state.failedAt < wait) return false;
+  startLoad(source);
+  return true;
 }
 
 /** The cached source for a URL, made when missing or freed (R30: a destroyed one is never handed out). */
@@ -233,6 +321,8 @@ function cachedSource(url, opts) {
     // The URL as the game named it, before a route picked a 3x copy (js/sprite-feet.js reads it).
     source[LOAD].asked = String(url);
     sources.set(key, source);
+  } else {
+    retryIfDue(source);
   }
   return source;
 }
@@ -245,6 +335,8 @@ function cachedWhole(url, opts) {
     // dynamic: sprites re-read the size and UVs when the image arrives.
     texture = new (pixi().Texture)({ source: cachedSource(url, opts), label: key, dynamic: true });
     textures.set(key, texture);
+  } else {
+    retryIfDue(texture.source);
   }
   return texture;
 }

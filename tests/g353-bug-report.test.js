@@ -210,3 +210,23 @@ describe('Report a bug (G353)', () => {
     assert.match(php, /mb_scrub\(\$text, 'UTF-8'\)/);
   });
 });
+
+// #662: a street deco stayed blank and the report said nothing of it; the failed image loads
+// (path and count, js/textures.js imageFailureLine) now ride in the errors, which the site keeps.
+describe('#662: failed image loads in the report', () => {
+  const env = { document: { getElementById: () => null, querySelector: () => null, querySelectorAll: () => [] }, location: { pathname: '/play/' }, navigator: { userAgent: 'T' }, innerWidth: 1, innerHeight: 1 };
+  it('adds the images line after the page errors, keeping ten in all', () => {
+    const line = 'images failed: assets/decos/groddle/flying_platform_6.png x1 (loaded later)';
+    assert.deepEqual(reportContext({}, ['TypeError: boom'], env, null, line).errors, ['TypeError: boom', line]);
+    const ten = Array.from({ length: 10 }, (_, i) => `e${i}`);
+    assert.deepEqual(reportContext({}, ten, env, null, line).errors, [...ten.slice(1), line]);
+    assert.deepEqual(reportContext({}, ten, env, null, '').errors, ten);
+    const probe = { renderProbeLine: () => 'gpu x', renderProbe: { ok: false } };
+    assert.deepEqual(reportContext(probe, ten, env, null, line).errors, [...ten.slice(2), 'render probe: gpu x', line]);
+  });
+  it("reads the textures module's count by default", () => {
+    const src = readFileSync(join(root, 'public/js/features/bug-report-feature.js'), 'utf8');
+    assert.match(src, /import \{ imageFailureLine \} from '\.\.\/textures\.js/);
+    assert.match(src, /images = imageFailureLine\(MAX_ERROR\)\) \{/);
+  });
+});
