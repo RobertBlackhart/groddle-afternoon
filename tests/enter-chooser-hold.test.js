@@ -50,7 +50,7 @@ describe('offers wait for the chooser and verb menus', () => {
     assert.match(game, /function holdScriptedDialog\(opts\) \{(?:\s*\/\/[^\n]*)*\s*const underEmergency = !opts\?\.offer && isQuestDialogueOpen\(\) && questDialogueState\?\.urgent === true;(?:\s*\/\/[^\n]*)*\s*if \(!opts \|\| !\((?:(?:!state\.started|startHeld\(\)) \|\| )?menuTarget \|\| enterChooser\?\.isOpen\(\) \|\| underEmergency(?: \|\| familiarWaitsForScreen\(opts\))?\)\) return false;/);
     assert.match(game, /function releaseHeldScriptedDialog\(\) \{\s*if \((?:(?:!state\.started|startHeld\(\)) \|\| )?!heldScriptedDialogs\.length \|\| menuTarget \|\| enterChooser\?\.isOpen\(\) \|\| isQuestDialogueOpen\(\) \|\| isVogOpen\(\)\) return;/);
     // R30: each a guarded stage of the frame, in the same order.
-    assert.match(game, /run\('features', \(\) => features\.tick\(ms, Date\.now\(\), engine\)\);\s*run\('held dialog', releaseHeldScriptedDialog\);/);
+    assert.match(game, /run\('features', \(\) => features\.tick\(ms, Date\.now\(\), engine\)\);\s*(?:run\('[^']+', \w+\);\s*)?run\('held dialog', releaseHeldScriptedDialog\);/);
   });
 
   it('the crab\'s own call-out already waits: busy() covers the verb menu and the chooser', () => {
