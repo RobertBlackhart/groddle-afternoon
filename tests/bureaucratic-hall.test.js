@@ -12,6 +12,7 @@ import { fileURLToPath } from 'node:url';
 import {
   HALL,
   HALL_LAYOUT,
+  HALL_OFFICE,
   HALL_QUESTIONS,
   HALL_RESPONSES,
   HALL_TEXT,
@@ -21,7 +22,7 @@ import {
   hallItems,
   hallX,
   waitPromptFor,
-} from '../public/js/bureaucratic-hall.js?v=db500184';
+} from '../public/js/bureaucratic-hall.js?v=7ea53899';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const gsjs = join(root, '..', 'glitch-GameServerJS');
@@ -386,5 +387,43 @@ describe('getItems and the fill rules', () => {
   it('"a" before the item except Your Papers', () => {
     assert.equal(fillHallText('{item_label}', { item: { label: 'Your Papers', cost: 100 }, article: true }), '<b>Your Papers</b>');
     assert.equal(fillHallText('{item_label}', { item: { label: 'General Building Permit', cost: 500 }, article: true }), 'a <b>General Building Permit</b>');
+  });
+});
+
+describe('G1232 (#645): the office behind the counter, and the TV in front of the light', () => {
+  it('a cabinet, the cubicle with the lizard at his computer, two more cabinets, as the 2012 footage shows', () => {
+    const names = HALL_OFFICE.pieces.map(([n]) => n);
+    assert.equal(names.filter((n) => n === 'cubicle_cabinet_stack').length, 3);
+    for (const n of ['cubicle_desk', 'cubicle_wall_left', 'cubicle_wall_right', 'bureaucrat_farmgame']) assert.equal(names.filter((x) => x === n).length, 1, n);
+    // Left to right: cabinet, the cubicle (its right-hand wall piece on the left, as the Institute stands it), two cabinets.
+    const x = (n) => HALL_OFFICE.pieces.filter(([m]) => m === n).map(([, px]) => px);
+    const [cab1, cab2, cab3] = x('cubicle_cabinet_stack');
+    assert.ok(cab1 < x('cubicle_wall_right')[0] && x('cubicle_wall_right')[0] < x('cubicle_desk')[0] && x('cubicle_desk')[0] < x('cubicle_wall_left')[0] && x('cubicle_wall_left')[0] < cab2 && cab2 < cab3);
+    // The Institute of Ocular Testing's own spacing: wall 59 px and 123 px either side of the desk, the lizard 6 px right of it.
+    assert.equal(x('cubicle_desk')[0] - x('cubicle_wall_right')[0], 481 - 421);
+    assert.equal(x('cubicle_wall_left')[0] - x('cubicle_desk')[0], 421 - 298);
+    assert.equal(x('bureaucrat_farmgame')[0] - x('cubicle_desk')[0], 421 - 415);
+    // In the back room behind the counter: past the counter opening's left edge, inside the backdrop.
+    for (const [n, px] of HALL_OFFICE.pieces) assert.ok(px > HALL_LAYOUT.counterLeft && px < HALL.width, n);
+    // The front wall piece stands in front of the lizard, the desk behind him (the Institute's z: 49, 24, 22).
+    assert.ok(names.indexOf('cubicle_desk') < names.indexOf('bureaucrat_farmgame') && names.indexOf('bureaucrat_farmgame') < names.indexOf('cubicle_wall_right'));
+  });
+
+  it('Tiny Speck\'s art ships for every piece, and the computer plays its own timeline', () => {
+    for (const [n] of HALL_OFFICE.pieces) assert.ok(existsSync(join(root, 'public/assets/decos/groddle', `${n}.webp`)), n);
+    assert.ok(existsSync(join(root, 'public/assets/decos/animated/bureaucrat_farmgame.json')));
+    assert.match(pub('js/deco-anim-list.js'), /\["bureaucrat_farmgame", \[195,/);
+    const game = pub('game.js');
+    assert.match(game, /attachAnim\(PIXI, spr, name, \{ clock: performance\.now\(\)/);
+    assert.match(game, /if \(name !== 'bureaucrat_farmgame'\) \{\n      deco\(name, x, y, \{ ay: 1 \}\);/);
+  });
+
+  it('the backdrop draws the light first and the TV over it, then the office (game, loading card and street map alike)', () => {
+    const game = pub('game.js');
+    const body = game.slice(game.indexOf('function drawBureaucraticHall()'), game.indexOf('function drawHallOffice('));
+    const light = body.indexOf("deco('bureaucratic_hall_light_1'");
+    const tv = body.indexOf("deco('bureaucratic_hall_tv_1'");
+    const office = body.indexOf('drawHallOffice(layer, deco);');
+    assert.ok(light > 0 && light < tv && tv < office, 'light, TV, office');
   });
 });

@@ -99,6 +99,31 @@ export const HALL_LAYOUT = Object.freeze({
   clerkBackY: 538,
 });
 
+/**
+ * G1232 (#645): the office behind the counter, as 2012 footage of a hall shows it (a filing
+ * cabinet, a grey cubicle with a lizard bureaucrat at a computer playing a farm game, two more
+ * cabinets), from Tiny Speck's own decos (CC0). The halls' XML is lost; the cubicle's pieces, their
+ * sizes and how they stand together are the Institute of Ocular Testing's (GNV1T7PCUM53T25.xml,
+ * which reuses the hall's set: cubicle_desk, cubicle_wall_left and _right, cubicle_cabinet_stack,
+ * bureaucrat_farmgame), its desk set at x 1790 on the back room's floor (backdrop y 492). The
+ * computer's screen plays the deco's own timeline (bureaucrat_farmgame, js/deco-anim.js), a new
+ * picture of the farm every few seconds. The counter and the bureaucrats stand in front of it all
+ * (game.js drawHallOffice draws it into the backdrop's layer).
+ */
+export const HALL_OFFICE = Object.freeze({
+  floor: 492,
+  /** [deco, x, y offset from the floor], back to front (the Institute's z order). */
+  pieces: Object.freeze([
+    ['cubicle_cabinet_stack', 1645, 0],
+    ['cubicle_desk', 1790, -6],
+    ['cubicle_wall_left', 1913, 17],
+    ['cubicle_cabinet_stack', 2032, 0],
+    ['cubicle_cabinet_stack', 2128, 0],
+    ['bureaucrat_farmgame', 1796, 2],
+    ['cubicle_wall_right', 1730, 17],
+  ]),
+});
+
 /** items/npc_bureaucrat.js getLabel: titles and names (instances without a label prop). */
 export const BUREAUCRAT_TITLES = Object.freeze(['Prefect', 'Chamberlain', 'Deputy', 'Secretary', 'Assistant', 'Associate', 'Representative', 'Magister', 'Manager', 'Director', 'Overseer', 'Administrator', 'Probost']);
 export const BUREAUCRAT_NAMES = Object.freeze(['Smithe', 'Wigglesbottom', 'Apfer', 'Naraiwaddleappali', 'Snifflenose', 'Sharpburger', 'Tummyford', 'Piksnixson', 'Nuter', 'Innifekki', 'Candnot', 'Chucklesmouth', 'Earwick']);

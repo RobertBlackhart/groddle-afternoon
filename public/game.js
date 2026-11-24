@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=61432cc9';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=9badd640';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=f84ef764';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE, playerClickBox } from './js/reach.js?v=456da8a8';
@@ -135,7 +135,7 @@ import {
   requestLegalizeQualification,
   travelToGregarious,
 } from './js/legalize-it.js?v=7ec63cac';
-import { HALL, HALL_LAYOUT, HALL_QUESTIONS } from './js/bureaucratic-hall.js?v=db500184';
+import { HALL, HALL_LAYOUT, HALL_OFFICE, HALL_QUESTIONS } from './js/bureaucratic-hall.js?v=7ea53899';
 import { STATION_X, stationArrival, stationScreen, surfaceStation } from './js/subway.js?v=ea6921ff';
 import { ALLEY, SHADY, drawAlley, inEnteredBox } from './js/quest-rooms/back-alley-set.js?v=d0bcc308';
 import { WINTER_WALK_BOUNDS, WINTER_WALK_PASSAGE } from './js/winter-walk-streets.js?v=c921bf92';
@@ -1153,7 +1153,7 @@ import { blockedPlayerVerbs, listPlayerTarget, opensPlayerMenu, playerMenuRows }
 import { forgetTexture, frameTexture, isFailed, isLoaded, onFailed, onLoaded, textureFromUrl, whenLoaded } from './js/textures.js?v=729b29ea';
 import { FALLBACK_MAX as WORLD_ART_FALLBACK_MAX, worldArtFor } from './js/world-art.js?v=2b3cf8d5';
 import { HOME_PIP_PX, drawLockPip, homeMarkNote, homePipShown, homeStackMark } from './js/home-stack-marks.js?v=0ff4c29f';
-import { sceneAnim, syncAnim } from './js/deco-anim.js?v=5e2bfba2';
+import { attachAnim, sceneAnim, syncAnim } from './js/deco-anim.js?v=5e2bfba2';
 import { revealStartCard, whenSceneDrawn } from './js/start-backdrop.js?v=8510d51e';
 import { cancelAllOverlays, displayTopOf, itemstackOverlayPoint, playPoofIn, setOverlayResolution } from './js/overlay-art.js?v=95f23414';
 import * as textureUrls from './js/textures.js?v=729b29ea';
@@ -19452,10 +19452,30 @@ function drawBureaucraticHall() {
   deco('sign_waiting_area', 1012, 338);
   deco('bureaucratic_hall_sign_wait_1', HALL_LAYOUT.waitingLine, HALL.ground - 12, { ay: 1 });
   deco('bureaucratic_hall_sign_1', 1810, 196);
-  deco('bureaucratic_hall_tv_1', 1330, 178, { scale: 0.72 });
+  // #645: the TV hangs in front of the ceiling light (the light was drawn over it).
   deco('bureaucratic_hall_light_1', 980, 74, { ay: 0, scale: 1.35 });
+  deco('bureaucratic_hall_tv_1', 1330, 178, { scale: 0.72 });
+  drawHallOffice(layer, deco);
   layer.sortableChildren = true;
   return layer;
+}
+
+/** G1232 (#645): the office behind the counter (js/bureaucratic-hall.js HALL_OFFICE). */
+function drawHallOffice(layer, deco) {
+  for (const [name, x, dy] of HALL_OFFICE.pieces) {
+    const y = HALL_OFFICE.floor + dy;
+    if (name !== 'bureaucrat_farmgame') {
+      deco(name, x, y, { ay: 1 });
+      continue;
+    }
+    // The still until the timeline's strip is in, then the loop (as street-render plays a placed deco).
+    const spr = new PIXI.AnimatedSprite([textureFromUrl(`assets/decos/groddle/${name}.png`)]);
+    spr.anchor.set(0.5, 1);
+    spr.position.set(x, y);
+    spr.scale.set(0.5);
+    attachAnim(PIXI, spr, name, { clock: performance.now(), resolution: app?.renderer?.resolution || globalThis.devicePixelRatio || 1 });
+    layer.addChild(spr);
+  }
 }
 
 function installLegalizeScene(layer, { tsid, label, hubName, spawnX, spawnY = null }) {
