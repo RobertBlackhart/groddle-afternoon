@@ -2814,9 +2814,19 @@
   "deployed": "2026-11-23"
  },
  "git": {
-  "commits": 3290,
+  "commits": 3296,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-23",
+    "kind": "new",
+    "text": "The Encyclopedia lists every quest Tiny Speck never shipped, with a way to ask for one"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "Claiming, giving up and visiting a Quarter lot from its menu reach the server"
+   },
    {
     "date": "2026-11-23",
     "kind": "fix",
@@ -2926,19 +2936,9 @@
     "date": "2026-11-23",
     "kind": "improve",
     "text": "Unnu Slight's New Year glow sits soft on the stone dragon's rocks"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "new",
-    "text": "Happy New Ur, a countdown and fireworks at the six Groddle midnights of December 31, with the party at Unnu Slight"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "A visitor sees the owner's stacks on a table or shelf where the owner set them, not on the floor"
    }
   ]
  },
- "tests": 1314,
+ "tests": 1315,
  "generatedAt": "2026-11-23"
 }
