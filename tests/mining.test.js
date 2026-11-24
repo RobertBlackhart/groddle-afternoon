@@ -27,7 +27,7 @@ import {
   starterMiningTools,
   miningVendorOffers,
   STARTER_MINING_SKILLS,
-} from '../public/js/mining.js?v=9eabaaf1';
+} from '../public/js/mining.js?v=c3bd3675';
 import {
   createInventory,
   countItem,
@@ -42,7 +42,7 @@ import {
   ensureMakingItems,
   TOOL_CATALOG,
 } from '../public/js/making.js?v=1ec1075e';
-import { DEFAULT_VENDOR, vendorBuy } from '../public/js/vendor.js?v=9e9ce51e';
+import { DEFAULT_VENDOR, vendorBuy } from '../public/js/vendor.js?v=6baaef80';
 import { bindToolInventory, createToolConditionState, getToolCondition, toolCopies } from '../public/js/tools.js?v=4156bba8';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
@@ -153,6 +153,15 @@ describe('mine rock loop', () => {
     assert.equal(without.gem, null);
     const withIt = mineRock(createMineRock('rock_beryl_1'), createInventory({ pick: 1 }), { ...pc }, { learned: ['mining_1'], rng: () => 0.045, rubeweed: true });
     assert.ok(withIt.gem);
+  });
+
+  it('#651: Max Luck always finds a gem with the card, never without it (inc_skill_packages.js 541)', () => {
+    const pc = { energy: 100, imagination: 0, xp: 0, imaginationUpgrades: ['mining_drop_1'] };
+    const miss = () => 0.99;
+    assert.equal(mineRock(createMineRock('rock_beryl_1'), createInventory({ pick: 1 }), { ...pc }, { learned: ['mining_1'], rng: miss, rubeweed: false, maxLuck: false }).gem, null);
+    assert.ok(mineRock(createMineRock('rock_beryl_1'), createInventory({ pick: 1 }), { ...pc }, { learned: ['mining_1'], rng: miss, rubeweed: false, maxLuck: true }).gem);
+    // No Truly Outrageous card: the package has no drop at all (catalog_skill_packages.js mining).
+    assert.equal(mineRock(createMineRock('rock_beryl_1'), createInventory({ pick: 1 }), { ...pc, imaginationUpgrades: [] }, { learned: ['mining_1'], rng: miss, maxLuck: true }).gem, null);
   });
 
   it('mines chunks, spends energy, depletes and respawns', () => {

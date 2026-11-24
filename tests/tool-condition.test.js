@@ -24,7 +24,7 @@ import {
   createMineRock,
   mineRock,
   MINING_COSTS,
-} from '../public/js/mining.js?v=9eabaaf1';
+} from '../public/js/mining.js?v=c3bd3675';
 import { craftRecipe } from '../public/js/making.js?v=1ec1075e';
 import { createPlayerSave, normalizePlayerSave } from '../public/js/player-save.js?v=bfaedb35';
 

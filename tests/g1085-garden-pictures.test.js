@@ -30,7 +30,7 @@ import {
 import { GARDEN_SPOTS } from '../public/js/garden-spots-data.js?v=3c5d4164';
 import { gardenBedWidth, measuredGardenVendor } from '../public/js/garden-beds.js?v=2ac6a12c';
 import { VENDOR_NPC_ART, VENDOR_PLACEMENT_KEY, vendorNpcList, vendorNpcPlacementGroups, vendorNpcStoreProfile, vendorNpcsFor } from '../public/js/vendor-npcs.js?v=90b0c123';
-import { VENDOR_PROFILES } from '../public/js/vendor.js?v=9e9ce51e';
+import { VENDOR_PROFILES } from '../public/js/vendor.js?v=6baaef80';
 import { VENDOR_REACH } from '../public/js/vendor-walk.js?v=251d4002';
 import { followFloorY } from '../public/js/walk-surface.js?v=3c919d5b';
 import { streetGardenBeds } from '../public/js/garden.js?v=0cbb65f0';

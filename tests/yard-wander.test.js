@@ -23,7 +23,7 @@ import {
   yardWanderAt,
   yardWindow,
 } from '../public/js/yard-wander.js?v=f5fcac8b';
-import { normalizeYardView } from '../public/js/yard-verbs-mp.js?v=99f898c3';
+import { normalizeYardView } from '../public/js/yard-verbs-mp.js?v=eabcd4cf';
 import { normalizeHusbandrySlot } from '../public/js/features/animal-husbandry-feature.js?v=ed130f1c';
 import { MAGIC_STICKS, STICK_DISTANCE } from '../public/js/animal-husbandry.js?v=83779ca2';
 import { GAME_DIR, sitePath, skipWithoutSite } from '../tools/repos.mjs';

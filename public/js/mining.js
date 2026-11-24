@@ -387,6 +387,16 @@ function rubeweedOn(opts) {
   }
 }
 
+/** #651: whether Max Luck runs (opts.maxLuck wins; else the engine's buffs, setMiningBuffs). */
+function maxLuckOn(opts) {
+  if (typeof opts.maxLuck === 'boolean') return opts.maxLuck;
+  try {
+    return Boolean(rubeweedSource?.('max_luck'));
+  } catch {
+    return false;
+  }
+}
+
 /**
  * @param {import('./inventory.js').Inventory} inv
  * @param {string} toolId
@@ -487,7 +497,8 @@ export function mineRock(rock, inv, pc, opts = {}) {
   const dropScale = Number(pc.miningDropScale?.[pick] ?? 1);
   // inc_skill_packages.js 538-541: Rubeweed x1.25 on the (scaled) chance, at most 100.
   const gemChance = rubeweedDropChance(profile.dropChance * dropScale, rubeweedOn(opts));
-  if (profile.dropClassId === 'gem_small' && profile.dropChance > 0 && rng() * 100 < gemChance) {
+  // inc_skill_packages.js 541: is_chance(drop_chance / 100) || buffs_has('max_luck'): Max Luck always finds one (#651).
+  if (profile.dropClassId === 'gem_small' && profile.dropChance > 0 && (maxLuckOn(opts) || rng() * 100 < gemChance)) {
     pc.miningDropScale = { ...(pc.miningDropScale || {}), [pick]: dropScale * 0.8 };
     gem = rollGemSmall(rng);
     if (!ITEM_CATALOG[gem]) ensureItem(gem, GEM_ITEMS[gem]);
