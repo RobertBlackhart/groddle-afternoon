@@ -55,7 +55,7 @@ import { ITEM_CATALOG, addItem, countItem, removeItem } from '../inventory.js?v=
 import { TOOL_CONDITION_CATALOG, leavingCopyTag, leavingToolWear, receiveToolCopy, takeToolCopy } from '../tools.js?v=4156bba8';
 import { createMinnAccount } from '../minn-account.js?v=ca9fb98e';
 import { saveStore, savedThrough } from '../save-store.js?v=4e720735';
-import { DROP_OP, DROP_QUEUE_MAX, DROP_TEXT, bucketTake, dropEffect, dropRefusalText, eatenStack, groundFrom, homePlaceOf, isPublicStreet, normalizeGroundStack, normalizeItem, normalizeMine, pickupAsk, pigAnimalKey, shareReason, stackAt, stackLeft } from '../drops-mp.js?v=8852c611';
+import { DROP_OP, DROP_QUEUE_MAX, DROP_TEXT, bucketTake, dropEffect, dropRefusalText, eatenStack, floorPileMax, groundFrom, homePlaceOf, isFloorPlace, isPublicStreet, normalizeGroundStack, normalizeItem, normalizeMine, pickupAsk, pigAnimalKey, shareReason, stackAt, stackLeft } from '../drops-mp.js?v=8852c611';
 
 export const DROPS_MP_FEATURE_ID = 'drops-mp';
 const TABLE_URL = 'assets/content/trade-items.json';
@@ -590,7 +590,9 @@ function createSession(engine, client) {
     const c = String(classTsid || '');
     const n = Math.floor(Number(count) || 0);
     if (n < 1 || !wouldShare(c)) return false;
-    const max = Number(table?.items?.[c]?.max);
+    // In a house or on a Tower floor a one-per-stack class goes down as one pile (floorPileMax).
+    const row = table?.items?.[c];
+    const max = isFloorPlace(here()?.street) && row ? floorPileMax(row) : Number(row?.max);
     return !(Number.isFinite(max) && max > 0 && n > max);
   }
 

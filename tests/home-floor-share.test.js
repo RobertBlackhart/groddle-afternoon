@@ -24,8 +24,12 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createFeatureHost } from '../public/js/feature-host.js?v=b87e2cbc';
 import { dropsMpFeature } from '../public/js/features/drops-mp-feature.js?fresh=floorshare';
-import { ownRowToSharedFloor, packToSharedFloor } from '../public/js/home-floor-share.js?v=d6cfdacd';
-import { createDroppedItemState, dropInventoryStack, likeStackAt, mergeDroppedStacks, setDownStack } from '../public/js/world-items.js?v=f5f9e017';
+import { ownRowToSharedFloor, packToSharedFloor } from '../public/js/home-floor-share.js?v=aacb6044';
+import { FLOOR_PILE_MAX, createDroppedItemState, dropInventoryStack, likeStackAt, mergeDroppedStacks, pickupDroppedStack, pileMaxOf, setDownStack } from '../public/js/world-items.js?v=220d7a7a';
+import { ITEM_CATALOG } from '../public/js/inventory.js?v=6414dbdc';
+import { layoutPack, stackMaxOf } from '../public/js/pack-slots.js?v=11aa0ad5';
+import { floorPileMax } from '../public/js/drops-mp.js?v=dec58c3d';
+import { TOOL_CONDITION_CATALOG, keepsOwnStack } from '../public/js/tools.js?v=4156bba8';
 import { GAME_DIR } from '../tools/repos.mjs';
 
 const TABLE = { items: { honey: { max: 40 }, emblem_mab: { max: 1 }, gem_moonstone: { max: 3 } }, untradeable: {} };
@@ -133,10 +137,13 @@ describe('Decoration Mode at your own house online: the floor is shared, furnitu
     assert.ok(at.indexOf('packToSharedFloor(') < at.indexOf('beforeRemove?.(n);'), 'before the pack changes');
   });
 
-  it('a class or count the server does not take stays the owner\'s own (an emblem is one to a stack)', () => {
+  it('a class or count the server does not take stays the owner\'s own; a pile of emblems goes down whole (Austin 2026-11-24)', () => {
     assert.equal(packToSharedFloor(host, engine, { classTsid: 'note', count: 1, x: 1300, y: 620, floor: true }), false);
-    assert.equal(dropsMpFeature.sharedDropFits('emblem_mab', 2, engine), null);
+    // "Let them pile up on floors": in a house a one-per-stack class goes to the shared floor as one pile.
+    assert.equal(dropsMpFeature.sharedDropFits('emblem_mab', 2, engine), true);
     assert.equal(dropsMpFeature.sharedDropFits('emblem_mab', 1, engine), true);
+    // A stackmax over 1 keeps its cap in one drop.
+    assert.equal(dropsMpFeature.sharedDropFits('gem_moonstone', 4, engine), null);
   });
 
   it('(c) a locked floor stack moved to the floor comes off the save and goes down shared', async () => {
@@ -212,11 +219,90 @@ describe('a like stack takes no more than its stackmax (Eleven Location.addItem 
     assert.deepEqual(rows.map((r) => [r.id, r.count]), [['a', 3], ['b', 3], ['c', 1]], 'nothing made or lost');
   });
 
-  it('an emblem (stackmax 1) never joins another; honey under its 40 does', () => {
+  it('honey under its 40 joins on a shelf; an emblem dropped on a street (no pile) never joins another', () => {
     const s = createDroppedItemState({ streets: { [ROOM]: [{ id: 'a', classTsid: 'emblem_mab', count: 1, x: 100, y: 620 }] } });
     assert.equal(dropInventoryStack(s, { emblem_mab: 1 }, ROOM, 'emblem_mab', 1, { x: 100, y: 620 }, {}).merged, false);
     const h = createDroppedItemState({ streets: { [ROOM]: [{ id: 'a', classTsid: 'honey', count: 30, x: 100, y: 620, on: 2 }] } });
     assert.deepEqual(setDownStack(h, ROOM, 'honey', 20, { x: 100, y: 400 }, { on: 2, into: 'a' }).merged, true);
     assert.deepEqual(h.streets[ROOM].map((r) => r.count), [40, 10], 'filled to 40, ten beside it');
+  });
+});
+
+/**
+ * Austin 2026-11-24: "Let them pile up on floors." A one-per-stack class (stackmax 1: emblems) piles up
+ * in a house or on a Tower floor, on the floor, a shelf or a table, with no cap; Glitch's stackmax 1
+ * kept them apart (a difference on purpose, tools/inventions ours-floor-piles). Never a tool (its wear),
+ * a class with words, or one that keeps its own stack (js/tools.js keepsOwnStack). The save's side.
+ */
+describe('one-per-stack things pile up in a house: shelves, tables and the floor (the save)', () => {
+  const ROOM = 'RH_HOME_INT';
+  it('the pile: no cap for an emblem; a stackmax over 1, a tool, a script, a Still keep their own', () => {
+    assert.equal(pileMaxOf('emblem_mab'), FLOOR_PILE_MAX);
+    assert.equal(pileMaxOf('gem_moonstone'), 3);
+    assert.equal(pileMaxOf('honey'), 40);
+    assert.equal(pileMaxOf('pick'), 1, 'a tool keeps its wear');
+    assert.equal(pileMaxOf('teleportation_script'), 1, 'keepsOwnStack');
+    assert.equal(pileMaxOf('still'), 1, 'keepsOwnStack');
+    assert.equal(pileMaxOf('npc_cubimal_chick'), 1, 'words of its own (a name)');
+  });
+
+  it('an emblem set on a shelf pile of 5 joins it; a pile moved onto another joins it whole', () => {
+    const s = createDroppedItemState({ streets: { [ROOM]: [
+      { id: 'a', classTsid: 'emblem_mab', count: 5, x: 100, y: 400, on: 2, decor: true },
+      { id: 'b', classTsid: 'emblem_mab', count: 3, x: 600, y: 400, on: 2, decor: true },
+    ] } });
+    const rows = s.streets[ROOM];
+    assert.equal(likeStackAt(rows, { id: 'new', classTsid: 'emblem_mab', count: 1 }, 104, 2)?.id, 'a', 'the shelf pile takes it');
+    assert.deepEqual(setDownStack(s, ROOM, 'emblem_mab', 1, { x: 104, y: 400 }, { on: 2, into: 'a' }).merged, true);
+    assert.equal(rows.find((r) => r.id === 'a').count, 6);
+    const res = mergeDroppedStacks(s, ROOM, 'b', 'a');
+    assert.deepEqual([res.ok, res.count, res.left], [true, 3, undefined]);
+    assert.deepEqual(rows.map((r) => [r.id, r.count]), [['a', 9]], 'one pile, nothing made or lost');
+  });
+
+  it('a Decoration Mode drop (pile) joins a floor pile; a multi-count drop lies as one pile; a street drop never piles', () => {
+    const s = createDroppedItemState({ streets: { [ROOM]: [{ id: 'a', classTsid: 'emblem_mab', count: 2, x: 100, y: 620 }] } });
+    const inv = { emblem_mab: 5 };
+    const on = dropInventoryStack(s, inv, ROOM, 'emblem_mab', 1, { x: 104, y: 620 }, { mergeRadius: 12, pile: true });
+    assert.deepEqual([on.merged, s.streets[ROOM][0].count], [true, 3]);
+    const three = dropInventoryStack(s, inv, ROOM, 'emblem_mab', 3, { x: 900, y: 620 }, { mergeRadius: 12, pile: true });
+    assert.deepEqual([three.merged, three.stack.count], [false, 3], 'three at once, one pile');
+    assert.equal(inv.emblem_mab, 1);
+    const street = createDroppedItemState({ streets: { LA5101HF7F429V: [{ id: 'a', classTsid: 'emblem_mab', count: 1, x: 100, y: 620 }] } });
+    assert.equal(dropInventoryStack(street, { emblem_mab: 1 }, 'LA5101HF7F429V', 'emblem_mab', 1, { x: 100, y: 620 }, {}).merged, false);
+  });
+
+  it('never a Teleportation Script, a Still or a worn tool, even with pile', () => {
+    for (const cls of ['teleportation_script', 'still', 'pick']) {
+      const s = createDroppedItemState({ streets: { [ROOM]: [{ id: 'a', classTsid: cls, count: 1, x: 100, y: 400, on: 2 }, { id: 'b', classTsid: cls, count: 1, x: 300, y: 400, on: 2 }] } });
+      const rows = s.streets[ROOM];
+      assert.equal(likeStackAt(rows, rows[1], 100, 2), null, cls);
+      assert.equal(mergeDroppedStacks(s, ROOM, 'b', 'a').reason, 'full', cls);
+      assert.equal(dropInventoryStack(s, { [cls]: 1 }, ROOM, cls, 1, { x: 100, y: 400 }, { mergeRadius: 12, pile: true }).merged, false, cls);
+    }
+  });
+
+  it('the save, the shared floor, the server and the site read one rule: every keepsOwnStack class is tagged in the trade table', () => {
+    // drops.go pileMax and LedgerDrop::pileCap see only the trade table's max, pts and tag: a class the game keeps
+    // one to a stack must carry a tag there (tools/build-realtime-trade.mjs writes it from js/tools.js), or the
+    // server would pile it up.
+    const table = JSON.parse(readFileSync(join(GAME_DIR, 'public/assets/content/trade-items.json'), 'utf8'));
+    const own = Object.keys(TOOL_CONDITION_CATALOG).filter((c) => keepsOwnStack(c));
+    assert.deepEqual(own.sort(), ['still', 'teleportation_script']);
+    for (const c of own) assert.ok(table.items[c]?.tag, `${c} is tagged`);
+    for (const [c, row] of Object.entries(table.items)) {
+      if (stackMaxOf(c) === row.max) assert.equal(pileMaxOf(c), floorPileMax(row), c);
+    }
+  });
+
+  it('a pile picked up whole puts each emblem in its own pack slot; part of it leaves the rest', () => {
+    const s = createDroppedItemState({ streets: { [ROOM]: [{ id: 'a', classTsid: 'emblem_mab', count: 6, x: 100, y: 400, on: 2 }] } });
+    const inv = {};
+    const part = pickupDroppedStack(s, inv, ROOM, 'a', 2);
+    assert.deepEqual([part.count, part.remaining, inv.emblem_mab], [2, 4, 2]);
+    const whole = pickupDroppedStack(s, inv, ROOM, 'a');
+    assert.deepEqual([whole.count, whole.removed, inv.emblem_mab], [4, true, 6]);
+    const layout = layoutPack(inv, null, { capacity: 16, catalog: ITEM_CATALOG });
+    assert.deepEqual(layout.pack.slots.filter((sl) => sl.cls === 'emblem_mab').map((sl) => sl.count), [1, 1, 1, 1, 1, 1], 'six slots of one');
   });
 });

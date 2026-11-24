@@ -1941,6 +1941,12 @@
       "text": "Energy and mood stop draining while the game's tab is hidden, so a forgotten background tab never runs you down. Glitch drained them whenever you were connected."
     },
     {
+      "id": "P7",
+      "area": "Items",
+      "show": "purpose",
+      "text": "Emblems and other things that come one to a stack pile up together on house and Tower floors, shelves and tables. In Glitch each one lay on its own."
+    },
+    {
       "id": "G63",
       "area": "Animals",
       "show": "purpose",

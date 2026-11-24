@@ -8,8 +8,9 @@
  */
 import { addItem, ITEM_CATALOG, removeItem } from './inventory.js?v=6414dbdc';
 import { canRenameBag, cleanBagName } from './bag-names.js?v=bba085e1';
-import { bagKeep, stackMaxOf } from './pack-slots.js?v=d9ab4a0b';
+import { bagKeep, stackMaxOf } from './pack-slots.js?v=11aa0ad5';
 import { ITEM_PLURALS } from './item-plurals-data.js?v=62e96051';
+import { TOOL_CONDITION_CATALOG, copyTagKind, keepsOwnStack } from './tools.js?v=4156bba8';
 
 export const WORLD_ITEM_STATE_VERSION = 1;
 export const DEFAULT_MERGE_RADIUS = 56;
@@ -66,6 +67,29 @@ function pointsFor(points, count) {
   const out = (points || []).slice(0, count);
   while (out.length < count) out.push(null);
   return out;
+}
+
+/**
+ * The most one pile of a one-per-stack class holds on a house or Tower floor, a shelf or a table:
+ * the count a stack may hold anywhere (MakingSlot.as:25 MAX_COUNT; the realtime server's tradeSlotMax
+ * and the site's ledger take no more in one drop or one take).
+ */
+export const FLOOR_PILE_MAX = 9999;
+
+/**
+ * How many of a class one stack holds when it is set down in a house or on a Tower floor (on the
+ * floor, a shelf or a table): its stackmax (Eleven Location.addItem 475-503), except a class of one
+ * per stack, which piles up with no cap (FLOOR_PILE_MAX).
+ * ours: Austin 2026-11-24, one-per-stack things (emblems) pile up on floors, shelves and tables;
+ * Glitch's stackmax 1 kept them apart. Never things whose copies keep their own identity: a tool
+ * (its wear), a class whose copies carry words (js/tools.js copyTagKind), one that keeps its own
+ * stack (keepsOwnStack: a Still, a Teleportation Script). The realtime server (drops.go pileMax)
+ * and the site (LedgerDrop::pileCap) read the same rule from the trade table's max, pts and tag.
+ */
+export function pileMaxOf(classTsid) {
+  const max = stackMaxOf(classTsid);
+  if (max !== 1) return max;
+  return TOOL_CONDITION_CATALOG[classTsid] || copyTagKind(classTsid) || keepsOwnStack(classTsid) ? 1 : FLOOR_PILE_MAX;
 }
 
 /** The most stacks a bag holds (js/pack-slots.js BAG_DEFS: 16). */
@@ -203,8 +227,9 @@ export function dropInventoryStack(state, inv, streetTsid, classTsid, requested,
   const rows = state.streets[street] || (state.streets[street] = []);
   const mergeRadius = Math.max(0, finite(opts.mergeRadius, DEFAULT_MERGE_RADIUS));
   // A like stack takes no more than its class's stackmax (Eleven's Location.addItem 475-503, it.count < it.stackmax):
-  // a full one takes none, and what does not fit lies as its own stack.
-  const max = stackMaxOf(item);
+  // a full one takes none, and what does not fit lies as its own stack. `pile`: in a house or on a Tower
+  // floor, where a one-per-stack class piles up (pileMaxOf).
+  const max = opts.pile === true ? pileMaxOf(item) : stackMaxOf(item);
   const merge = opts.merge !== false
     ? rows
       .filter((row) => row.classTsid === item && !row.contents && !row.name && !row.sort && cleanCount(row.count) < max)
@@ -280,8 +305,9 @@ export function likeStackAt(rows, stack, x, on, radius = PLACED_MERGE_RADIUS) {
   let best = null;
   for (const row of rows) {
     if (row === stack || row.id === stack.id || row.classTsid !== stack.classTsid || !joinable(row)) continue;
-    // A full stack takes no more (its class's stackmax, Eleven's Location.addItem 475-503).
-    if (cleanCount(row.count) >= stackMaxOf(row.classTsid)) continue;
+    // A full stack takes no more (its class's stackmax, Eleven's Location.addItem 475-503; a
+    // one-per-stack class piles up in a house: pileMaxOf).
+    if (cleanCount(row.count) >= pileMaxOf(row.classTsid)) continue;
     if ((row.on ?? null) !== surface) continue;
     const d = Math.abs(finite(row.x, Infinity) - px);
     if (d <= radius && (!best || d < best.d)) best = { row, d };
@@ -303,9 +329,9 @@ export function mergeDroppedStacks(state, streetTsid, fromId, intoId, opts = {})
   if (!from || !into) return { ok: false, reason: 'missing' };
   if (from.classTsid !== into.classTsid || !joinable(from) || !joinable(into)) return { ok: false, reason: 'unlike' };
   const had = cleanCount(into.count);
-  // No more than its class's stackmax (Eleven's Location.addItem 475-503): a full stack takes none,
-  // and what does not fit stays in the stack moved (`left`).
-  const room = stackMaxOf(into.classTsid) - had;
+  // No more than its class's stackmax (Eleven's Location.addItem 475-503; a one-per-stack class piles
+  // up in a house, pileMaxOf): a full stack takes none, and what does not fit stays in the stack moved (`left`).
+  const room = pileMaxOf(into.classTsid) - had;
   if (room < 1) return { ok: false, reason: 'full' };
   const all = cleanCount(from.count);
   const count = Math.min(all, room);

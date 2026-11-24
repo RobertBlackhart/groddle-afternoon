@@ -175,6 +175,60 @@ export function shareReason(classTsid, table, { street = '', ownHome = false, he
   return '';
 }
 
+/** A house (with its back yard) or a Tower floor (drops.go dropIndoors): where like stacks join. */
+export function isFloorPlace(street) {
+  const room = homePlaceOf(street)?.room;
+  return room === 'interior' || room === 'tower';
+}
+
+/** The most one pile of a one-per-stack class holds on a house or Tower floor (drops.go dropPileMax). */
+export const FLOOR_PILE_MAX = 9999;
+
+/**
+ * How many of a class (its trade table row: max, pts, tag) one stack on a house or Tower floor holds:
+ * its stackmax (Eleven Location.addItem 475-503), except a class of one per stack, which piles up.
+ * ours: Austin 2026-11-24, one-per-stack things (emblems) pile up on floors, shelves and tables;
+ * Glitch's stackmax 1 kept them apart. Never a tool (pts, its wear) or a class whose copies carry
+ * words (tag; js/tools.js keepsOwnStack classes are tagged). drops.go pileMax, the site's
+ * LedgerDrop::pileCap and js/world-items.js pileMaxOf (the save's shelves and tables) agree.
+ */
+export function floorPileMax(row) {
+  const max = Math.max(1, Math.floor(finite(row?.max, 1)));
+  return max !== 1 || finite(row?.pts) > 0 || row?.tag ? max : FLOOR_PILE_MAX;
+}
+
+/** The radius a drop on a house or Tower floor joins a like stack in (drops.go dropMergeRadius). */
+export const DROP_MERGE_RADIUS = 100;
+
+/**
+ * PURE: the like stack a drop joins on a house or Tower floor, as drops.go mergeTarget decides it, or
+ * null. `stacks`: the place's stacks as the server keeps them ({ id, classTsid, count, x, y, by, r?, t? });
+ * `drop`: { c, x, y (server x, without the house's ox), by (the dropper's id), into (the stack it was
+ * set on), merge (false: beside one), words (it carries wear or words) }; `row`: the class's trade row.
+ * A like stack: the same class, no wear or words, below the class's pile (floorPileMax), the dropper's own.
+ */
+export function likeSharedStack(stacks, street, drop = {}, row = null) {
+  if (!isFloorPlace(street) || drop.words || !row) return null;
+  const limit = floorPileMax(row);
+  if (limit < 2) return null;
+  const like = (s) => s && s.classTsid === drop.c && s.r == null && s.t == null && s.count < limit && Number(s.by?.id) === Number(drop.by);
+  const list = Array.isArray(stacks) ? stacks : [...(stacks?.values?.() || [])];
+  if (drop.into) return like(list.find((s) => s.id === drop.into)) ? list.find((s) => s.id === drop.into) : null;
+  if (drop.merge === false) return null;
+  let best = null;
+  let bestD = 0;
+  for (const s of list) {
+    if (!like(s)) continue;
+    const d = Math.hypot(s.x - finite(drop.x), s.y - finite(drop.y));
+    if (d >= DROP_MERGE_RADIUS) continue;
+    if (!best || d < bestD || (d === bestD && s.id < best.id)) {
+      best = s;
+      bestD = d;
+    }
+  }
+  return best;
+}
+
 /** A stack as the server keeps it (x from the house on a home street), set where this game draws it. */
 export function stackAt(stack, ox = 0) {
   const d = Math.round(Number(ox) || 0);

@@ -28,8 +28,8 @@ import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { createFeatureHost } from '../public/js/feature-host.js?v=b87e2cbc';
 import { dropsMpFeature } from '../public/js/features/drops-mp-feature.js?fresh=floormerge';
-import { isTakeOp, normalizeMine } from '../public/js/drops-mp.js?v=8852c611';
-import { packToSharedFloor } from '../public/js/home-floor-share.js?v=d6cfdacd';
+import { isTakeOp, normalizeMine } from '../public/js/drops-mp.js?v=dec58c3d';
+import { packToSharedFloor } from '../public/js/home-floor-share.js?v=aacb6044';
 import { GAME_DIR, SITE_DIR } from '../tools/repos.mjs';
 
 const OP = 'drop-00000000000000a1';
@@ -251,6 +251,20 @@ describe('the site merges on a house floor, once and atomically (LedgerDrop)', {
     assert.equal(r.moveMergeRetry.in, 3, 'asked again: nothing joins twice');
     assert.deepEqual(r.visitorMove, { status: 'refused', why: 'place' });
     assert.deepEqual(r.moveCalls, [null, null, true], 'a street, or a drop op as a move op, is no move');
+  });
+
+  it('one-per-stack things pile up on a house or Tower floor with no cap (Austin 2026-11-24), never tools, things with words or on a street', () => {
+    const p = r.pile;
+    assert.deepEqual([p.join0.joined, p.join1.joined, p.join2.joined, p.join2.in, p.join2.n], [1, 1, 3, 6, 0], 'emblems (told max 1) join one pile, three at once too');
+    assert.deepEqual([p.row.count, p.row.status, p.row.dropper_id], [6, 'ground', 7]);
+    assert.equal(p.call.max, 1, 'the server tells the class stackmax; the site piles it up itself');
+    assert.deepEqual(p.script, { status: 'settled' }, 'a Teleportation Script keeps its own stack');
+    assert.deepEqual(p.pick, { status: 'settled' }, 'a tool keeps its own stack');
+    assert.deepEqual(p.street, { status: 'settled' }, 'a street never merges');
+    assert.deepEqual(p.caps, [9999, 3, 1, 1, 1], 'emblem, Moonstone (capped at 3), script, Still, Pick');
+    assert.deepEqual([p.part.op.endsWith('-t6-g3'), p.part.item, p.part.n], [true, { n: 2, c: 'emblem_mab' }, 4], 'part of the pile');
+    assert.deepEqual(p.whole.item, { c: 'emblem_mab', n: 4 }, 'the rest of the pile, whole');
+    assert.deepEqual([p.adaEmblems, p.ownerEmblems], [6, 0], 'nothing made or lost');
   });
 
   it('nothing made or lost: what lies on the floor and in the ledgers adds up; saves catch up', () => {

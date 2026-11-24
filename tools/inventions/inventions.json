@@ -1093,6 +1093,7 @@
     "P4",
     "P5",
     "P6",
+    "P7",
     "G63",
     "G82",
     "G152",
@@ -2216,6 +2217,25 @@
     "Austin 2026-11-10 (in a code comment)",
     "Austin 2026-11-23 (G1190): make house floors shared as in Glitch"
    ]
+  },
+  {
+   "id": "ours-floor-piles",
+   "title": "One-per-stack things (emblems) pile up on house and Tower floors, shelves and tables, with no stack limit",
+   "kind": "behaviour",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/world-items.js",
+     "symbol": "pileMaxOf"
+    },
+    {
+     "file": "public/js/drops-mp.js",
+     "symbol": "floorPileMax"
+    }
+   ],
+   "why": "Austin asked for it: dropped emblems lay one to a stack, so a house floor or shelf of them could not hold a pile. Glitch's stackmax 1 kept them apart. Tools, things with words and one-to-a-stack classes (Stills, Teleportation Scripts) still keep their own stacks; streets never merge. The realtime server (drops.go pileMax) and the site (LedgerDrop::pileCap) apply the same rule.",
+   "ruling": "Austin 2026-11-24: one-per-stack things (emblems) pile up on floors, shelves and tables; Glitch's stackmax 1 kept them apart",
+   "rows": []
   },
   {
    "id": "ours-familiar-dialog",

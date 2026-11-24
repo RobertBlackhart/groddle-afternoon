@@ -14860,7 +14860,7 @@ const engine = {
     beforeRemove?.(n);
     // Its words go down with it too (#285: a Still's hopper and Hooch), as Drop's do.
     // G1224: marked as the owner's decor (the site's move of old floor drops leaves it in the save).
-    const result = dropInventoryStack(droppedItemState, inv, droppedStacksTsid(), classTsid, n, { x, y }, { now: Date.now(), mergeRadius: 12, ...(keepsOwnStack(classTsid) ? { merge: false } : {}), points: leavingToolPoints(classTsid, n), tags: leavingToolTags(classTsid, n), decor: true });
+    const result = dropInventoryStack(droppedItemState, inv, droppedStacksTsid(), classTsid, n, { x, y }, { now: Date.now(), mergeRadius: 12, pile: true, ...(keepsOwnStack(classTsid) ? { merge: false } : {}), points: leavingToolPoints(classTsid, n), tags: leavingToolTags(classTsid, n), decor: true });
     if (!result.ok) return result;
     closePackPopover();
     saveDroppedItems();
@@ -16131,8 +16131,9 @@ function dropPackItem(classTsid, requested = 1) {
     classTsid,
     count,
     { x, y },
-    // A script is one to a stack on the ground too (js/tools.js ownStack): stackmax 1 never piled up.
-    { now: Date.now(), points: leavingToolPoints(classTsid, count), tags: leavingToolTags(classTsid, count), ...(keepsOwnStack(classTsid) ? { merge: false } : {}) }
+    // A script is one to a stack on the ground too (js/tools.js ownStack). In the house (any floor, a Tower
+    // floor too) a one-per-stack class piles up (Austin 2026-11-24; js/world-items.js pileMaxOf).
+    { now: Date.now(), points: leavingToolPoints(classTsid, count), tags: leavingToolTags(classTsid, count), ...(currentStreetTsid === HOME_INTERIOR_TSID ? { pile: true } : {}), ...(keepsOwnStack(classTsid) ? { merge: false } : {}) }
   );
   closePackPopover();
   if (!result.ok) {

@@ -36,6 +36,7 @@ const ADA = 9;
 const BO = 11;
 const HOUSE = 'HOUSE-7';
 const STREET = 'LA5101HF7F429V';
+const TOWER = 'TOWER-7-1';
 
 function connect(string $host, string $user, string $pass, ?string $db = null): mysqli
 {
@@ -57,7 +58,7 @@ try {
     $db = new Db($conn, PREFIX);
     $now = time();
     $saveOf = static fn (array $state): string => (string) json_encode(['kind' => 'groddle-multiplayer', 'format' => 1, 'entries' => ['playerState' => json_encode($state)]]);
-    foreach ([OWNER => ['cherry' => 60], ADA => ['apple' => 1], BO => ['cherry' => 5]] as $id => $inv) {
+    foreach ([OWNER => ['cherry' => 60, 'emblem_mab' => 8, 'teleportation_script' => 2, 'pick' => 2], ADA => ['apple' => 1], BO => ['cherry' => 5]] as $id => $inv) {
         $db->execute('INSERT INTO ' . $db->table('groddle_mp_saves') . ' (user_id, data, version, updated_at) VALUES (?, ?, 1, ?)', [$id, $saveOf(['inventory' => $inv, 'player' => ['currants' => 0]]), gmdate('Y-m-d H:i:s')]);
     }
     $ledger = new Ledger($db, Economy::shared(), Ledger::RATE, Ledger::CAPACITY);
@@ -153,6 +154,31 @@ try {
     $state = json_decode($caught['entries']['playerState'], true);
     $out['caughtUp'] = ['cherry' => $state['inventory']['cherry'] ?? 0, 'applied' => $state['systems']['features']['trade']['applied'] ?? []];
     $out['ledger'] = $cherries();
+    // —— Austin 2026-11-24 ("Let them pile up on floors"): on a Tower floor emblems (stackmax 1, told "max": 1)
+    // join the owner's pile with no cap; a pile set down whole joins too; a Teleportation Script (words of its
+    // own) and a Pick (wear) never join; a street still never merges ——
+    $em = $op();
+    $out['pile'] = ['first' => $drop(['op' => $em, 'id' => OWNER, 'street' => TOWER, 'c' => 'emblem_mab', 'n' => 1])];
+    foreach ([1, 1, 3] as $i => $n) {
+        $out['pile']['join' . $i] = $drop(['op' => $op(), 'id' => OWNER, 'street' => TOWER, 'c' => 'emblem_mab', 'n' => $n, 'into' => $em, 'max' => 1]);
+    }
+    $out['pile']['row'] = $row($em);
+    $out['pile']['call'] = LedgerDrop::call(['op' => $op(), 'id' => OWNER, 'street' => TOWER, 'x' => 1, 'y' => 2, 'item' => ['c' => 'emblem_mab', 'n' => 1], 'into' => $em, 'max' => 1]);
+    $ts = $op();
+    $drop(['op' => $ts, 'id' => OWNER, 'street' => TOWER, 'c' => 'teleportation_script', 'n' => 1]);
+    $out['pile']['script'] = $drop(['op' => $op(), 'id' => OWNER, 'street' => TOWER, 'c' => 'teleportation_script', 'n' => 1, 'into' => $ts, 'max' => 1]);
+    $pk = $op();
+    $drop(['op' => $pk, 'id' => OWNER, 'street' => TOWER, 'c' => 'pick', 'n' => 1]);
+    $out['pile']['pick'] = $drop(['op' => $op(), 'id' => OWNER, 'street' => TOWER, 'c' => 'pick', 'n' => 1, 'into' => $pk, 'max' => 1]);
+    $ep = $op();
+    $drop(['op' => $ep, 'id' => OWNER, 'street' => STREET, 'c' => 'emblem_mab', 'n' => 1]);
+    $out['pile']['street'] = $drop(['op' => $op(), 'id' => OWNER, 'street' => STREET, 'c' => 'emblem_mab', 'n' => 1, 'into' => $ep, 'max' => 1]);
+    $out['pile']['caps'] = [LedgerDrop::pileCap('emblem_mab', 1), LedgerDrop::pileCap('gem_moonstone', 3), LedgerDrop::pileCap('teleportation_script', 1), LedgerDrop::pileCap('still', 1), LedgerDrop::pileCap('pick', 1)];
+    // Ada takes 2 of the pile of 6, then the rest whole.
+    $out['pile']['part'] = $give($em, ADA, 2, 6);
+    $out['pile']['whole'] = $give($em, ADA);
+    $out['pile']['adaEmblems'] = (int) (((array) ($ledger->peek(ADA)['items'] ?? []))['emblem_mab'] ?? 0);
+    $out['pile']['ownerEmblems'] = (int) (((array) ($ledger->peek(OWNER)['items'] ?? []))['emblem_mab'] ?? 0);
 } catch (Throwable $e) {
     $out['error'] = get_class($e) . ': ' . $e->getMessage() . ' @' . $e->getFile() . ':' . $e->getLine();
 } finally {

@@ -6137,7 +6137,7 @@ function packDropOpts(engine, was, target) {
 /**
  * The like stack on the shared floor (G1190) a stack set on the floor at `target` lands on, or null: its
  * id. The same rule as a save stack's (js/world-items.js likeStackAt: its class, 12 px, below its
- * stackmax); a class whose copies keep their own stack never joins (js/tools.js keepsOwnStack).
+ * stackmax, a one-per-stack class's pile uncapped); a class whose copies keep their own stack never joins (js/tools.js keepsOwnStack).
  */
 function sharedLikeAt(engine, row, target) {
   if (!row || !target || target.on != null || keepsOwnStack(row.classTsid)) return null;

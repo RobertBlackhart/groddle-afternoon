@@ -44,7 +44,7 @@
     "unreleased": 0,
     "fixed": 523,
     "lost": 5,
-    "purpose": 16,
+    "purpose": 17,
     "idea": 10
   },
   "areas": [
@@ -3886,6 +3886,11 @@
       "id": "P6",
       "text": "Energy and mood stop draining while the game's tab is hidden, so a forgotten background tab never runs you down. Glitch drained them whenever you were connected.",
       "area": "Energy and mood"
+    },
+    {
+      "id": "P7",
+      "text": "Emblems and other things that come one to a stack pile up together on house and Tower floors, shelves and tables. In Glitch each one lay on its own.",
+      "area": "Items"
     },
     {
       "id": "G63",
