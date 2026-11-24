@@ -48,7 +48,7 @@
  *   towerWork, towerAutoplay, towerSecrets, towerRock, towerVisited, towerTopY (street).
  */
 
-import { playOverlay } from '../overlays.js?v=705f2e2a';
+import { playOverlay } from '../overlays.js?v=91dcee74';
 import { ITEM_CATALOG, countItem, ensureItem, itemIcon } from '../inventory.js?v=6414dbdc';
 import { canUseTool, useToolCondition, workStepCost } from '../tools.js?v=4156bba8';
 import { acceptOffer, npcQuestOffers } from '../quest-offers.js?v=32d4127e';
@@ -114,14 +114,14 @@ import {
   towerSpotsFor,
   workCheck,
 } from '../home-tower.js?v=84d99af0';
-import { textureFromUrl } from '../textures.js?v=9f92491a';
+import { textureFromUrl } from '../textures.js?v=b8e38103';
 import { denseSprite } from '../sprite-dense.js?v=67101472';
 import { pieceUrl } from '../home-wallpaper.js?v=99228166';
 import { wantsHiresDecos } from '../deco-hires.js?v=34f36d77';
 import { WOTD_TEXT } from '../wine-pour.js?v=6daa23a7';
 import { bindCountField, countFromField, countKeyValue, countStepMarkup, syncCountStep } from '../ui/count-chooser.js?v=c268eefe';
 import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
-import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=fabfcf9e';
+import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=11303931';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 import { CHASSIS_ICONS } from '../chassis-icons.js?v=1a19ac08';
 

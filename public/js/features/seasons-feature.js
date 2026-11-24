@@ -41,7 +41,7 @@ import { SEASONAL_SEEDS, seedInSeason, seedSeasonLine, seedSeasons, setSeasonalS
 import { setSeasonalSeedCheck as setMasterGardenSeasonGate } from '../garden.js?v=0cbb65f0';
 import { setSeasonalRecipeCheck } from '../making.js?v=1ec1075e';
 import { getToolCondition, copyForVerb, copyTag, migrateClassTag, setCopyTag, takeToolCopy } from '../tools.js?v=4156bba8';
-import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=fabfcf9e';
+import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=11303931';
 
 /*
  * Each lit pumpkin's phrases are its own (pumpkin_lit_*.js this.phrases, 380-391, at most 3), kept
@@ -83,7 +83,7 @@ import { emblemCostFor } from '../shrines.js?v=01962b40';
 import { rollDropTable } from '../drop-tables.js?v=1ed0b596';
 import { openNoteView, noteViewOpen } from '../note-view.js?v=c512b345';
 import { payDrop } from './drops-feature.js?v=be983fb0';
-import { fireflyJarCounts, setFireflyJar } from './resource-nodes-feature.js?v=ae5b2556';
+import { fireflyJarCounts, setFireflyJar } from './resource-nodes-feature.js?v=aca90bbf';
 import { SEASON_DATA } from '../seasons-data.js?v=b5174bc9';
 import { forceMetabolic, shiftMetabolic, topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import {
@@ -139,8 +139,8 @@ import {
   yetiMailDue,
   yetiQuote,
 } from '../seasons.js?v=5d8f545a';
-import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=9f92491a';
-import { playOverlay } from '../overlays.js?v=705f2e2a';
+import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=b8e38103';
+import { playOverlay } from '../overlays.js?v=91dcee74';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { MAIL_POST_SENDER } from '../mailbox.js?v=d50d0d05';
 import { filterText } from '../word-filter.js?v=9a7a7ebb';

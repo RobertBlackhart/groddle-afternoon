@@ -39,7 +39,7 @@
 import { isRebuiltRoomTsid, rebuiltRoomEcology } from '../rebuilt-rooms.js?v=8c2eaf24';
 import { isLouiseVillaTsid, louiseVillaEcology } from '../louise-pasture-villa.js?v=01066f39';
 import { isPracticeStreetTsid, practiceExitSign, practiceStreetEcology } from '../practice-streets.js?v=557238c1';
-import { textureFromUrl } from '../textures.js?v=9f92491a';
+import { textureFromUrl } from '../textures.js?v=b8e38103';
 import {
   ICICLE_CHIME,
   ICICLE_CHIME_VERB,
@@ -55,7 +55,7 @@ import {
   stepIcicles,
 } from '../winter-icicles.js?v=5d9616ef';
 import { WINTER_WALK_FLOOR_Y, WINTER_WALK_ICICLES, WINTER_WALK_BOUNDS, WINTER_WALK_CAPTION, WINTER_WALK_TSID, winterStreetEcology } from '../winter-walk-streets.js?v=c921bf92';
-import { anchorBottomCentre } from '../sprite-feet.js?v=fabfcf9e';
+import { anchorBottomCentre } from '../sprite-feet.js?v=11303931';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 
 export const REBUILT_ROOMS_FEATURE_ID = 'rebuilt-rooms';

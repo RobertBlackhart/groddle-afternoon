@@ -11,10 +11,10 @@
  * - A house shows its For Sale sign only while it is for sale (the deco's `sign`, DoorView.as 228-232).
  */
 import { drawnDoorStyle } from './doors.js?v=727d0e0b';
-import { isLoaded, onLoaded, textureFromUrl } from './textures.js?v=9f92491a';
+import { isLoaded, onLoaded, textureFromUrl } from './textures.js?v=b8e38103';
 import { doorLockArt } from './door-lock-art.js?v=e656851c';
 import { doorSaleArt } from './door-sign-art.js?v=69daffff';
-import { anchorBottomCentre } from './sprite-feet.js?v=fabfcf9e';
+import { anchorBottomCentre } from './sprite-feet.js?v=11303931';
 
 export const DOOR_DECO_BASE = 'assets/decos/groddle/';
 /** Doors stand at this zIndex among the street's things (the entity layer). */

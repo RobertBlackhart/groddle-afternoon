@@ -13,8 +13,8 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { execFileSync } from 'node:child_process';
 
-import { racesFeature } from '../public/js/features/races-feature.js?v=5bc86cde';
-import { hogHaulMpFeature } from '../public/js/features/hog-haul-mp-feature.js?v=347c69fd';
+import { racesFeature } from '../public/js/features/races-feature.js?v=87eb2616';
+import { hogHaulMpFeature } from '../public/js/features/hog-haul-mp-feature.js?v=d26ed6db';
 import {
   HOG_MP_TEXT,
   atPen,

@@ -29,7 +29,7 @@ import { VENDOR_PROFILES } from '../public/js/vendor.js?v=6baaef80';
 import { SEED_CATALOG } from '../public/js/garden.js?v=0cbb65f0';
 import { obtainableItems } from '../tools/job-obtainable.mjs';
 import { supplyReport } from '../tools/supply-report.mjs';
-import { supplyFeature } from '../public/js/features/supply-feature.js?v=41e264ba';
+import { supplyFeature } from '../public/js/features/supply-feature.js?v=6d475c3f';
 
 const SPIKE = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const ENGINEER = ['engineering_1'];

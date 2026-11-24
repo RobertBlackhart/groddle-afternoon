@@ -27,7 +27,7 @@ import { KITTY_MOTION, KITTY_PAUSE_CHOICES, KITTY_PET } from '../public/js/heli-
 import { CRAB_WALK } from '../public/js/crabs.js?v=5f0b8099';
 import { GAME_EPOCH_MS } from '../public/js/game-day.js?v=a532775d';
 import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=6b505af8';
-import { heliKittiesFeature } from '../public/js/features/heli-kitties-feature.js?v=c0e7dc0d';
+import { heliKittiesFeature } from '../public/js/features/heli-kitties-feature.js?v=2c00f20b';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
 
 // A floor from 0 to 1600 at y 800, a gap, then another from 1700 to 3000.

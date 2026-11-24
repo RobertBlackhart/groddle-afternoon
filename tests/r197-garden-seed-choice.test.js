@@ -19,7 +19,7 @@ import {
 } from '../public/js/garden.js?v=0cbb65f0';
 import { getVerbsFor, runVerb } from '../public/content.js?v=7ef2b106';
 import { plotDragClass, seedOver } from '../public/js/features/garden-guano-feature.js?v=3d55f5cf';
-import { sharedGardensFeature } from '../public/js/features/shared-gardens-feature.js?v=44ad1263';
+import { sharedGardensFeature } from '../public/js/features/shared-gardens-feature.js?v=6a4f9e22';
 
 const read = (p) => readFileSync(new URL(`../${p}`, import.meta.url), 'utf8');
 const COMMUNITY = 'GCR101NQ4BU1SKS';

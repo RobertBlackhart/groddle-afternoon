@@ -23,7 +23,7 @@ import {
   skyGradientPlacement,
   groundBelowSpan,
   skirtFadeColour,
-} from '../public/js/street-render.js?v=55a4b28d';
+} from '../public/js/street-render.js?v=1e049218';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const read = (rel) => readFileSync(join(here, '..', rel), 'utf8');

@@ -53,8 +53,8 @@ import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { ensureQuestOfferState } from '../quest-offers.js?v=32d4127e';
 import { gameDayIndex, getMusicblock, isMusicblock } from '../musicblocks.js?v=fd84b634';
 import { GAME_DAY_MS } from '../game-day.js?v=a532775d';
-import { playSheetOverlay } from '../overlay-art.js?v=441d2df7';
-import { showRainbow, rainbowSound } from '../overlays.js?v=705f2e2a';
+import { playSheetOverlay } from '../overlay-art.js?v=e50bacca';
+import { showRainbow, rainbowSound } from '../overlays.js?v=91dcee74';
 import { copyFromLedger, spendCopyCharge } from '../copy-charges.js?v=ab07e909';
 import {
   BEAR,

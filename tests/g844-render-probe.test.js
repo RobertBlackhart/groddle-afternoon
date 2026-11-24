@@ -13,8 +13,8 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { canvasTransparent, configureReadback, ensureDepthStencil, pixelsTransparent, probeRenderTexture, renderProbeLine } from '../public/js/render-probe.js?v=ac5e3810';
 import { snapshotEmpty, snapshotStreetView } from '../public/js/ui/street-minimap.js?v=cf66d461';
-import { SKIRT_DEEP_SHADE, shadeColour, skirtFadeColour } from '../public/js/street-render.js?v=55a4b28d';
-import { captureFrame, reportContext } from '../public/js/features/bug-report-feature.js?v=9f528f72';
+import { SKIRT_DEEP_SHADE, shadeColour, skirtFadeColour } from '../public/js/street-render.js?v=1e049218';
+import { captureFrame, reportContext } from '../public/js/features/bug-report-feature.js?v=1a56158f';
 
 const PUBLIC = join(import.meta.dirname, '..', 'public');
 const read = (p) => readFileSync(join(PUBLIC, p), 'utf8');

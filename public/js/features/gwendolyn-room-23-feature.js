@@ -31,8 +31,8 @@
 
 import { acceptOffer, declineOffer, npcQuestOffers } from '../quest-offers.js?v=32d4127e';
 import { XP_FOR_LEVEL } from '../progression.js?v=05ff0260';
-import { textureFromUrl } from '../textures.js?v=9f92491a';
-import * as kit from '../quest-rooms/kit.js?v=690e57e7';
+import { textureFromUrl } from '../textures.js?v=b8e38103';
+import * as kit from '../quest-rooms/kit.js?v=d6247c79';
 import { GREETERBOT } from '../tower-mid-rooms.js?v=07360655';
 import { ROOM_23_FILES } from '../gwendolyn-room-23-art.js?v=1de55db7';
 import {
@@ -64,7 +64,7 @@ import {
   leadPath,
   toScreen,
 } from '../gwendolyn-room-23.js?v=918c0f6b';
-import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=fabfcf9e';
+import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=11303931';
 
 export const GWENDOLYN_ROOM_23_FEATURE_ID = 'gwendolyn-room-23';
 const CHECK_MS = 120;

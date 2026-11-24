@@ -41,10 +41,10 @@
  * clue streets are the archived streets with their `juju_dig` boxes.
  */
 
-import { onLoaded, textureFromUrl } from '../textures.js?v=9f92491a';
+import { onLoaded, textureFromUrl } from '../textures.js?v=b8e38103';
 import { loseMood } from '../metabolics.js?v=48f784bf';
 import { JUJU_CAMP_FILES } from '../juju-camp-art.js?v=4aa81c05';
-import { standOnFeet } from '../sprite-feet.js?v=fabfcf9e';
+import { standOnFeet } from '../sprite-feet.js?v=11303931';
 import { roomMemoryKey } from '../quest-instance.js?v=8858d29d';
 
 const Q1 = 'help_juju_bandits';

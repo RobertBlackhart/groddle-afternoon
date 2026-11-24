@@ -272,7 +272,7 @@ function createSource(url, opts) {
 
 /**
  * Load (or, #662, load again) a source's image and fill it in place. `state` is passed in, never read
- * back off the source: a stand-in source (the tests' fake Pixi) may answer every symbol key with
+ * back off the source: a test double for the source (the tests' fake Pixi) may answer every symbol key with
  * itself, and the load's own promise would then go without its catch (an unhandled rejection).
  */
 function startLoad(source, state) {

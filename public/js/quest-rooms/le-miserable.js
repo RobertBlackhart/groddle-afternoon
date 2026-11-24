@@ -33,8 +33,8 @@
  * the reference recording (j9xJLETQzi4) shows quoins there.
  */
 
-import { onLoaded } from '../textures.js?v=9f92491a';
-import { standOnFeet } from '../sprite-feet.js?v=fabfcf9e';
+import { onLoaded } from '../textures.js?v=b8e38103';
+import { standOnFeet } from '../sprite-feet.js?v=11303931';
 
 export const STREET = 'GIFM4BD43383DKV';
 const BOUNDS = { l: -2000, t: -1000 };

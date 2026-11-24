@@ -67,15 +67,15 @@ import {
   titheIcon,
   useEmblem,
 } from '../giant-icons.js?v=0d6b4965';
-import { textureFromUrl } from '../textures.js?v=9f92491a';
-import { playSheetOverlay } from '../overlay-art.js?v=441d2df7';
+import { textureFromUrl } from '../textures.js?v=b8e38103';
+import { playSheetOverlay } from '../overlay-art.js?v=e50bacca';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { forceMetabolic, gainMetabolic } from '../metabolics.js?v=48f784bf';
 import { CONVERSATION_RULES, adoptLegacyTalks, conversationRecord, hasCompleted, toldRecord } from '../conversations.js?v=7cbdfea4';
 import { TELLERS } from '../conversations-data.js?v=f11b7e02';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { publicStreet } from '../shared-street.js?v=dce5694b';
-import { standOnFeet } from '../sprite-feet.js?v=fabfcf9e';
+import { standOnFeet } from '../sprite-feet.js?v=11303931';
 
 export const ICONS_FEATURE_ID = 'giant-icons';
 const WORLD_ART = (iconClass) => `assets/sprites/giant-icons/${iconClass}.webp`;

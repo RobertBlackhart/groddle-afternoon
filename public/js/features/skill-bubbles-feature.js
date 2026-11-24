@@ -37,7 +37,7 @@ import {
   skillBubbleWord,
   skillToolClass,
   skillToolFor,
-} from '../skill-bubbles.js?v=30239625';
+} from '../skill-bubbles.js?v=0a990b8e';
 
 export const SKILL_BUBBLES_FEATURE_ID = 'skill-bubbles';
 
