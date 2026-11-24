@@ -12,7 +12,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { STREET_DRAWN, STREET_ENTITY_KINDS, markStreetEntity, streetEntityRows } from '../public/js/street-render.js?v=4f5425d0';
 import { doorArt } from '../public/js/door-view.js?v=67875ada';
-import { snapshotEntities, streetEntities } from '../public/js/features/street-minimap-feature.js?v=b7fca631';
+import { snapshotEntities, streetEntities } from '../public/js/features/street-minimap-feature.js?v=3e22fe38';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

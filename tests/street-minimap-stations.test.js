@@ -9,8 +9,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { STATION_MARK, markHasMenu, stationMarks, tipFor } from '../public/js/ui/street-minimap.js?v=be7e822c';
-import { phoneSignRows } from '../public/js/features/street-minimap-feature.js?v=b7fca631';
+import { STATION_MARK, markHasMenu, stationMarks, tipFor } from '../public/js/ui/street-minimap.js?v=9e4ae55e';
+import { phoneSignRows } from '../public/js/features/street-minimap-feature.js?v=3e22fe38';
 import { subwayFeature } from '../public/js/features/subway-feature.js?v=30115b44';
 import { STATIONS } from '../public/js/subway.js?v=ea6921ff';
 
@@ -77,7 +77,7 @@ describe('subway entrances on the street map (#463)', () => {
       ['station', 'right', 'Subway station'],
     ]);
     const feature = read('public/js/features/street-minimap-feature.js');
-    assert.match(feature, /\.\.\.stationMarks\(engine\.street\)\];/);
+    assert.match(feature, /\.\.\.stationMarks\(engine\.street\), \.\.\.doorMarks\(engine\.street\)/);
     assert.match(feature, /walkFromMap\(engine, \{ kind: row\.kind, id: row\.id, x: row\.x, y: row\.y \}/);
     assert.match(feature, /classicArtUrl\(row\.kind === 'station' \? 'map_icon_subway' : 'teensy_signpost'\)/);
   });

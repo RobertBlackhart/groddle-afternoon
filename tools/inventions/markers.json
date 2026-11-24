@@ -564,7 +564,8 @@
     "stand-in: once (the first sync only shows it); G1140: a stand-in for": "featured-project"
   },
   "public/js/features/street-minimap-feature.js": {
-    "remake-own: * entrance (#463, kind 'station': the remake's own) is a row like a signpost's, its station's": "minimap-subway-stations"
+    "remake-own: * entrance (#463, kind 'station': the remake's own) is a row like a signpost's, its station's": "minimap-subway-stations",
+    "remake-own: so is a door out (G1232, #645, kind 'door': the remake's own), where it": "minimap-exit-doors"
   },
   "public/js/features/street-spirits-feature.js": {
     "stand-in: // Keep the stand-in if the art did not": "not-an-invention",
@@ -1330,7 +1331,10 @@
   },
   "public/js/ui/street-minimap.js": {
     "ours: // RIGHTCLICK: the map is ours; only a player's dot and a signpost open a": "right-click-menus",
+    "ours: G1232: a door mark's icon (ours: the client has no map icon for a door).": "minimap-exit-doors",
     "remake-own: * PURE (#463, the remake's own: Glitch's minimap showed only signposts,": "minimap-subway-stations",
+    "remake-own: * PURE (G1232, #645, Austin 2026-11-24: the remake's own, as the subway entrances are):": "minimap-exit-doors",
+    "remake-own: // G1232 (#645): the doors out beside them (the remake's own, as the subway": "minimap-exit-doors",
     "remake-own: the subway entrances beside the signposts (the remake's own).": "minimap-subway-stations",
     "stand-in: * at all got a fogged stand-in until the snap (MiniMapView.show": "ours-street-minimap"
   },
@@ -1401,6 +1405,7 @@
     "reimagined: .avatar-reimagined-tag #2": "ours-style-css",
     "reimagined: .badge-reimagined": "ours-style-css",
     "remake-own: * remake's own popup column. Strip and feed share each": "ours-style-css",
+    "remake-own: a door out, sized as a subway entrance (the remake's own).": "minimap-exit-doors",
     "remake-own: subway entrance, the hub map's subway icon (the remake's own: Glitch's minimap showed only signposts).": "minimap-subway-stations"
   },
   "tools/achievement-overrides.mjs": {

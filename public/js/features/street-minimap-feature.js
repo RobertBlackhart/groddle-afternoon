@@ -70,7 +70,7 @@
  */
 
 import { STREET_ENTITY_KINDS } from '../street-render.js?v=4f5425d0';
-import { createPictureCache, createStreetMinimap, minimapVisibility, onStreetMapChange, sceneSignMarks, setStreetMap, signpostMarks, snapshotStreetView, snapsWithScene, stationMarks, streetMapOn } from '../ui/street-minimap.js?v=be7e822c';
+import { DOOR_SVG, createPictureCache, createStreetMinimap, doorMarks, minimapVisibility, onStreetMapChange, sceneDoorMarks, sceneSignMarks, setStreetMap, signpostMarks, snapshotStreetView, snapsWithScene, stationMarks, streetMapOn } from '../ui/street-minimap.js?v=9e4ae55e';
 import { classicArtUrl } from '../classic/classic-art.js?v=5f713e7d';
 import { onUiModeChange } from '../classic/ui-mode.js?v=1a13f4a8';
 import { focusBack } from '../ui/focus-return.js?v=da190597';
@@ -441,7 +441,8 @@ function enterStreet(engine) {
 function syncLiveScene(engine) {
   if (snapKey && liveKey(engine) !== snapKey) requestResnap(engine);
   if (!isLiveScene(engine.streetView)) return;
-  const marks = sceneSignMarks(engine.interactables || []);
+  // G1232 (#645): a scene's way out (the hall's glass doors) beside its posts.
+  const marks = [...sceneSignMarks(engine.interactables || []), ...sceneDoorMarks(engine.interactables || [])];
   const signKey = marks.map((m) => `${m.x},${m.y},${m.tip}`).join('|');
   if (signKey !== lastSignKey) {
     lastSignKey = signKey;
@@ -576,7 +577,8 @@ export function phoneSignDir(dx, dy = 0, prev = '') {
 /**
  * PURE: the signposts' rows under the phone map, left to right: { id, kind, x, y, text, side } where
  * side says which way it stands from `you` ({ x, y }, or an x alone; #534: phoneSignDir). A subway
- * entrance (#463, kind 'station': the remake's own) is a row like a signpost's, its station's name.
+ * entrance (#463, kind 'station': the remake's own) is a row like a signpost's, its station's name;
+ * so is a door out (G1232, #645, kind 'door': the remake's own), where it leads.
  */
 export function phoneSignRows(marks = [], you = null) {
   const at = typeof you === 'number' || you == null ? { x: you, y: null } : you;
@@ -586,8 +588,8 @@ export function phoneSignRows(marks = [], you = null) {
     .map((m) => {
       const dy = Number.isFinite(at.y) && Number.isFinite(m.y) ? m.y - at.y : 0;
       const side = Number.isFinite(at.x) ? phoneSignDir(m.x - at.x, dy) : 'here';
-      const kind = m.kind === 'station' ? 'station' : 'sign';
-      const text = String(m.tip || '').split('\n').filter(Boolean).join(', ') || (kind === 'station' ? 'Subway station' : 'Signpost');
+      const kind = m.kind === 'station' || m.kind === 'door' ? m.kind : 'sign';
+      const text = String(m.tip || '').split('\n').filter(Boolean).join(', ') || (kind === 'station' ? 'Subway station' : kind === 'door' ? 'Door' : 'Signpost');
       return { id: m.id, kind, x: m.x, y: m.y, text, side };
     });
 }
@@ -635,7 +637,8 @@ function phoneOpen(engine) {
   const signsBox = sheet.querySelector('.smm-sheet-signs');
   phone.sheet = sheet;
   // The signposts' destinations, a tap away.
-  const marks = [...signpostMarks(engine.street), ...(isLiveScene(engine.streetView) ? sceneSignMarks(engine.interactables || []) : []), ...stationMarks(engine.street)];
+  const live = isLiveScene(engine.streetView);
+  const marks = [...signpostMarks(engine.street), ...(live ? sceneSignMarks(engine.interactables || []) : []), ...stationMarks(engine.street), ...doorMarks(engine.street), ...(live ? sceneDoorMarks(engine.interactables || []) : [])];
   const rows = phoneSignRows(marks, engine.player ? { x: engine.player.x, y: engine.player.y } : null);
   phone.signs = [];
   if (rows.length) {
@@ -648,10 +651,10 @@ function phoneOpen(engine) {
       b.dataset.side = row.side;
       b.dataset.signId = row.id;
       b.dataset.kind = row.kind;
-      b.innerHTML = `<img alt="" src="${classicArtUrl(row.kind === 'station' ? 'map_icon_subway' : 'teensy_signpost')}" /><span></span>`;
+      b.innerHTML = `${row.kind === 'door' ? DOOR_SVG : `<img alt="" src="${classicArtUrl(row.kind === 'station' ? 'map_icon_subway' : 'teensy_signpost')}" />`}<span></span>`;
       b.querySelector('span').textContent = row.text;
       phone.signs.push({ el: b, x: row.x, y: row.y, side: row.side });
-      b.setAttribute('aria-label', row.kind === 'station' ? `Walk to ${row.text}` : `Walk to the signpost to ${row.text}`);
+      b.setAttribute('aria-label', row.kind === 'station' ? `Walk to ${row.text}` : row.kind === 'door' ? `Walk to the door to ${row.text}` : `Walk to the signpost to ${row.text}`);
       b.addEventListener('click', () => {
         if (walkFromMap(engine, { kind: row.kind, id: row.id, x: row.x, y: row.y }, { keyboard: true })) phoneClose(engine, { walked: true });
       });

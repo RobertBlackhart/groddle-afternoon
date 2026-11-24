@@ -5079,6 +5079,31 @@
    ]
   },
   {
+   "id": "minimap-exit-doors",
+   "title": "Doors and portals out of a place on the street map like the subway entrances (a door icon, its tip where it leads), each with a walk-to row under the phone street map; a hidden door, or one whose way out is hidden, stays off (#645).",
+   "kind": "UI",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/ui/street-minimap.js",
+     "symbol": "doorMarks sceneDoorMarks SCENE_DOOR_CLASSES DOOR_SVG"
+    },
+    {
+     "file": "public/js/features/street-minimap-feature.js",
+     "symbol": "phoneSignRows phoneOpen syncLiveScene"
+    },
+    {
+     "file": "public/style.css",
+     "symbol": ".smm-sign.smm-door .smm-sheet-sign[data-kind=\"door\"]"
+    }
+   ],
+   "why": "Glitch's minimap showed only signposts (MiniMapView.as maybeAddSignpost); a player asked for the Bureaucratic Hall's way out and every door on the map, as the subway entrances have (#645).",
+   "ruling": "Austin 2026-11-24 (G1232): yes, as with the subway buttons, unless the door is meant to be hidden",
+   "rows": [
+    "G1232"
+   ]
+  },
+  {
    "id": "map-building-no-dots",
    "title": "A street under construction is drawn on the hub map as an unbroken blue road on a dark edge with a road-works diamond at its middle, never Glitch's unvisited dots (#526, #626).",
    "kind": "UI",

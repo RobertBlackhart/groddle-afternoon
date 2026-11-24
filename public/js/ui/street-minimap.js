@@ -231,6 +231,42 @@ export function stationMarks(street) {
   return out;
 }
 
+/**
+ * PURE (G1232, #645, Austin 2026-11-24: the remake's own, as the subway entrances are): the
+ * street's shown doors and portals out, as marks like the signposts' (kind 'door', its tip where it
+ * leads). A door meant to be hidden stays off the map: a hidden door, or one whose way out is
+ * hidden (getSnapshot's hide_hidden_doors, LocationRenderer.as 647-656); a subway entrance is a
+ * station (stationMarks). Doors are in street space already (bottom-centre).
+ */
+export function doorMarks(street) {
+  const out = [];
+  for (const door of street?.doors || []) {
+    if (!door || door.hidden || door.subwayStation || door.connect?.hidden) continue;
+    const tip = String(door.connect?.label || '').trim();
+    if (!tip && !(Array.isArray(door.destinations) && door.destinations.length)) continue;
+    const x = Number(door.x);
+    const y = Number(door.y);
+    if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
+    out.push({ kind: 'door', id: `door:${door.id || out.length}`, x, y, tip: tip || null });
+  }
+  return out;
+}
+
+/** The way-out things a scene registers itself that the map shows as doors (the hall's glass doors). */
+export const SCENE_DOOR_CLASSES = Object.freeze(['bureaucratic_hall_exit']);
+
+/** PURE: door marks from a scene's registered targets ({ classId, label, sprite: { x, y } }, world px). */
+export function sceneDoorMarks(targets = []) {
+  const out = [];
+  for (const t of targets || []) {
+    if (!t || !SCENE_DOOR_CLASSES.includes(t.classId)) continue;
+    const sp = t.sprite;
+    if (!sp || sp.destroyed || !Number.isFinite(sp.x) || !Number.isFinite(sp.y)) continue;
+    out.push({ kind: 'door', id: `scene:door:${t.classId}:${out.length}`, x: Math.round(sp.x), y: Math.round(sp.y), tip: String(t.label || '').trim() || null });
+  }
+  return out;
+}
+
 /** PURE: ColorUtil.getDotColor: a '#rrggbb' group colour, anything else black. */
 export function dotColor(colorGroup) {
   const s = String(colorGroup || '');
@@ -263,7 +299,7 @@ export function markHasMenu(mark) {
 /** PURE: a mark's tip (getTip 923-970): a post's places one per line, a player's or item's label, none for you. */
 export function tipFor(mark) {
   if (!mark || mark.kind === 'you') return null;
-  if (mark.kind === 'sign' || mark.kind === 'station') return mark.tip || null;
+  if (mark.kind === 'sign' || mark.kind === 'station' || mark.kind === 'door') return mark.tip || null;
   const label = String(mark.label || '').trim();
   return label || null;
 }
@@ -595,6 +631,8 @@ const esc = (v) => String(v ?? '').replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<
 const easeOut = (k) => 1 - (1 - k) ** 3;
 const easeIn = (k) => k ** 3;
 
+/** G1232: a door mark's icon (ours: the client has no map icon for a door). */
+export const DOOR_SVG = '<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 11.5V3.2C2.5 1.7 4 .5 6 .5s3.5 1.2 3.5 2.7v8.3z" fill="#7a5130" stroke="#3d2a14" stroke-width="1" /><circle cx="7.6" cy="7" r=".9" fill="#f0d27a" /></svg>';
 const MAP_SVG = '<svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M2.5 5l5-2 5 2 5-2v12l-5 2-5-2-5 2z" /><path d="M7.5 3v12M12.5 5v12" /></svg>';
 
 /**
@@ -794,7 +832,7 @@ export function createStreetMinimap(doc, host, opts = {}) {
     const sw = SIGNPOST_MARK.w * geom.u;
     const sh = SIGNPOST_MARK.h * geom.u;
     for (const s of signs.values()) {
-      if (s.mark.kind === 'station') placeEl(s.el, s.mark.x, s.mark.y, STATION_MARK.w * geom.u, STATION_MARK.h * geom.u);
+      if (s.mark.kind === 'station' || s.mark.kind === 'door') placeEl(s.el, s.mark.x, s.mark.y, STATION_MARK.w * geom.u, STATION_MARK.h * geom.u);
       else placeEl(s.el, s.mark.x, s.mark.y, sw, sh);
     }
     for (const d of dots.values()) {
@@ -981,23 +1019,25 @@ export function createStreetMinimap(doc, host, opts = {}) {
 
   function addSign(mark) {
     const station = mark.kind === 'station';
-    const el = markButton(station ? 'station' : 'sign', mark.id);
-    el.setAttribute('aria-label', station ? mark.tip || 'Subway station' : mark.tip ? `Signpost to ${mark.tip.split('\n').join(', ')}` : 'Signpost');
+    const door = mark.kind === 'door';
+    const el = markButton(station ? 'station' : door ? 'door' : 'sign', mark.id);
+    el.setAttribute('aria-label', station ? mark.tip || 'Subway station' : door ? (mark.tip ? `Door to ${mark.tip}` : 'Door') : mark.tip ? `Signpost to ${mark.tip.split('\n').join(', ')}` : 'Signpost');
     signsEl.append(el);
     signs.set(mark.id, { mark, el });
   }
 
-  /** The signposts among the marks (a subway entrance is not one). */
-  const signCount = () => [...signs.values()].filter((s) => s.mark.kind !== 'station').length;
+  /** The signposts among the marks (a subway entrance or a door is not one). */
+  const signCount = () => [...signs.values()].filter((s) => s.mark.kind === 'sign').length;
 
   function markButton(kind, id) {
     const el = doc.createElement('button');
     el.type = 'button';
-    el.className = kind === 'sign' ? 'smm-sign' : kind === 'station' ? 'smm-sign smm-station' : `smm-dot smm-${kind}`;
+    el.className = kind === 'sign' ? 'smm-sign' : kind === 'station' ? 'smm-sign smm-station' : kind === 'door' ? 'smm-sign smm-door' : `smm-dot smm-${kind}`;
     el.dataset.mark = id;
     el.dataset.kind = kind;
     if (kind === 'sign') el.innerHTML = `<img alt="" src="${esc(artUrl('teensy_signpost'))}" />`;
     if (kind === 'station') el.innerHTML = `<img alt="" src="${esc(artUrl('map_icon_subway'))}" />`;
+    if (kind === 'door') el.innerHTML = DOOR_SVG;
     return el;
   }
 
@@ -1062,8 +1102,12 @@ export function createStreetMinimap(doc, host, opts = {}) {
       // #463: the subway entrances beside the signposts (the remake's own).
       const stations = stationMarks(street);
       for (const mark of stations) addSign(mark);
+      // G1232 (#645): the doors out beside them (the remake's own, as the subway entrances).
+      const doors = doorMarks(street);
+      for (const mark of doors) addSign(mark);
       root.dataset.signs = String(signCount());
       root.dataset.stations = String(stations.length);
+      root.dataset.doors = String(doors.length);
       layout();
     },
     /**
