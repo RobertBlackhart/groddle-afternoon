@@ -15605,6 +15605,19 @@ body.is-booting .touch-controls { display: none; }
 
 /* Docked beside a sheet or a bag (engine.setStageDock), the room the canvas leaves is the dark band (G880). */
 :root.phone-layout[data-ui="modern"] #game-root[data-stage-docked] { background-color: var(--c-grey-29); }
+/* The buff strip (Austin's iPhone 2026-11-24, upright: a buff chip lay over the stats and the start of
+   the street's name; its top never took the top inset): its own slot from js/ui/phone-layout.js, under
+   the caption at the left (under the pills sideways, beside a sideways half sheet), the chips wrapping
+   in the row; the notices start under it and the route card stands under it too. */
+:root.phone-layout[data-ui="modern"] #game-root:not([data-sheet]) :is(#buff-strip, #quest-pins ~ #buff-strip) {
+  top: var(--pr-buffs-t, calc(2 * var(--hud-h) + var(--space-4) + var(--safe-t)));
+  left: var(--pr-buffs-l, calc(var(--hud-inset) + var(--safe-l)));
+  max-width: calc(100% - var(--pr-buffs-l, 8px) - 8px - var(--safe-r));
+  flex-wrap: wrap;
+}
+:root.phone-layout[data-ui="modern"] #game-root:not([data-sheet]) .route-gps {
+  top: max(calc(2 * var(--hud-h) + var(--space-4) + var(--safe-t, 0px) + max(var(--minimap-h, 0px), var(--pins-room, 0px))), calc(var(--pr-buffs-b, 0px) + var(--space-2)));
+}
 /* No room for the pinned quest clear of the controls (js/ui/phone-layout.js): it waits. */
 :root.phone-layout[data-ui="modern"][data-phone-pin="off"] #game-root #quest-pins { visibility: hidden; }
 /* A sheet or an open bag covers the street's floor: the controls and the pinned quest wait. */

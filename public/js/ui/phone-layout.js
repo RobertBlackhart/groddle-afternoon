@@ -75,11 +75,13 @@ const num = (v, d = 0) => (Number.isFinite(Number(v)) ? Number(v) : d);
  * top; `caption` and `pin` the measured { w, h } of the street's caption and the pinned quest card
  * (pin null when nothing is pinned; null in the result when it has no room clear of the controls);
  * `controls` the measured { stick, act, jump } boxes where the page has them; `captionUnder` whether the caption sits under the strip (upright,
- * and sideways when the pills leave it no room: topbar.js .is-under). Returns { upright, strip, caption, notices, pin, stick, act,
+ * and sideways when the pills leave it no room: topbar.js .is-under); `buffs` the buff strip's measured
+ * { w, h } (null when no buff shows). Returns { upright, strip, caption, buffs, notices, pin, stick, act,
  * jump, pack, sheet, dock } (boxes { left, top, right, bottom }, null where a piece has no room or
- * is covered; dock is what engine.setStageDock takes).
+ * is covered; dock is what engine.setStageDock takes). `buffs` is the buff strip's slot: under the
+ * caption at the left, as tall as the strip (0 tall with no buff), the notices under it.
  */
-export function phoneRegions({ width, height, safe = {}, sheet = '', pack = null, packShown = true, bagTop = NaN, caption = null, captionUnder = null, pin = null, controls = null } = {}) {
+export function phoneRegions({ width, height, safe = {}, sheet = '', pack = null, packShown = true, bagTop = NaN, caption = null, captionUnder = null, pin = null, controls = null, buffs = null } = {}) {
   const W = Math.max(0, num(width));
   const H = Math.max(0, num(height));
   const st = Math.max(0, num(safe.t));
@@ -115,6 +117,18 @@ export function phoneRegions({ width, height, safe = {}, sheet = '', pack = null
   let jump = real(controls?.jump) ? box(controls.jump.left, controls.jump.top, controls.jump.right, controls.jump.bottom) : box(W - sr - 12 - JUMP, base - 12 - JUMP, W - sr - 12, base - 12);
   let act = real(controls?.act) ? box(controls.act.left, controls.act.top, controls.act.right, controls.act.bottom) : box(jump.left - 10 - ACT, base - 12 - 44 - ACT, jump.left - 10, base - 12 - 44);
 
+  // The buff strip (Austin's iPhone 2026-11-24: a buff chip lay over the stats and the street's name):
+  // its own slot under the caption (under the strip sideways) at the left, clear of the caption's taps
+  // (G1222); the notices start under it. Its width is the row's; the chips wrap in it.
+  const capTapsAt = Math.ceil((captionBox.top + captionBox.bottom) / 2 + TAP_H / 2);
+  const buffTop = Math.max(under, capTapsAt) + GAP;
+  const buffLeft = sl + EDGE;
+  const buffH = Math.max(0, num(buffs?.h));
+  const buffW = Math.max(0, Math.min(num(buffs?.w), W - sr - EDGE - buffLeft));
+  let buffBox = box(buffLeft, buffTop, buffLeft + (buffH ? buffW : W - sr - EDGE - buffLeft), buffTop + buffH);
+  const buffShown = buffH > 0 && buffW > 0;
+  const buffFloor = buffShown ? buffBox.bottom : under;
+
   // The pinned quest: over the stick upright; beside it sideways, clear of its ring.
   let pinBox = null;
   if (pin && num(pin.h) > 0) {
@@ -124,8 +138,8 @@ export function phoneRegions({ width, height, safe = {}, sheet = '', pack = null
       ? box(stick.left, stick.top - GAP - ph, stick.left + pw, stick.top - GAP)
       : box(stick.right + GAP, base - ph, stick.right + GAP + pw, base);
     // No room clear of the controls, the caption or the pack row: it waits (hidden) rather than cover one.
-    const keep = [stick, act, jump, packBox, captionBox, strip];
-    if (pinBox.top < (capUnder ? captionBox.bottom : strip.bottom) + GAP || keep.some((b) => boxesOverlap(pinBox, b))) pinBox = null;
+    const keep = [stick, act, jump, packBox, captionBox, strip, buffShown ? buffBox : null].filter(Boolean);
+    if (pinBox.top < Math.max(capUnder ? captionBox.bottom : strip.bottom, buffFloor) + GAP || keep.some((b) => boxesOverlap(pinBox, b))) pinBox = null;
   }
 
   let sheetBox = null;
@@ -157,7 +171,10 @@ export function phoneRegions({ width, height, safe = {}, sheet = '', pack = null
   // G1222: under the caption's taps too (TAP_H, centred on it), which reach below the caption: a notice
   // at the region's top cut favor's 44 px hit area to 41 px, and its 4 px slide in reached further.
   const capTaps = captionBox ? Math.ceil((captionBox.top + captionBox.bottom) / 2 + TAP_H / 2) : 0;
-  const top = Math.max(under, capTaps) + GAP;
+  // A sideways half sheet's column takes the left: the buff strip stands beside it, as it did before.
+  if (!upright && kind === 'half') buffBox = box(sheetBox.right + EDGE, buffBox.top, sheetBox.right + EDGE + (buffBox.right - buffBox.left), buffBox.bottom);
+  if (kind === 'map') buffBox = null;
+  const top = Math.max(under, capTaps, buffShown && buffBox ? buffBox.bottom : 0) + GAP;
   let bottom = floor - GAP;
   if (kind === 'map') bottom = top;
   else if (kind === 'half' && upright) bottom = sheetBox.top - GAP;
@@ -174,7 +191,7 @@ export function phoneRegions({ width, height, safe = {}, sheet = '', pack = null
       ? { side: 'bottom', css: H - sheetBox.top, zoom: true }
       : { side: 'left', css: sheetBox.right, zoom: true };
   }
-  return { upright, strip: stripBox, caption: captionBox, notices, pin: pinBox, stick, act, jump, pack: packBox, sheet: sheetBox, dock };
+  return { upright, strip: stripBox, caption: captionBox, buffs: buffBox, notices, pin: pinBox, stick, act, jump, pack: packBox, sheet: sheetBox, dock };
 }
 
 /**
@@ -228,7 +245,7 @@ export function boxesOverlap(a, b) {
 }
 
 /** The pieces the layout keeps apart. */
-export const REGION_NAMES = Object.freeze(['strip', 'caption', 'notices', 'pin', 'stick', 'act', 'jump', 'pack', 'sheet']);
+export const REGION_NAMES = Object.freeze(['strip', 'caption', 'buffs', 'notices', 'pin', 'stick', 'act', 'jump', 'pack', 'sheet']);
 
 /**
  * PURE: what is wrong with a layout: every pair of named boxes that overlap and any box off the
@@ -492,6 +509,7 @@ export function mountPhoneLayout({ doc = globalThis.document, root, sheets = {},
     const packShown = shown(packEl) && doc.defaultView?.getComputedStyle?.(doc.getElementById('pack-bar'))?.visibility !== 'hidden';
     const plate = doc.getElementById('street-nameplate');
     const pins = doc.getElementById('quest-pins');
+    const buffEl = doc.getElementById('buff-strip');
     const regions = phoneRegions({
       width: rr.width,
       height: rr.height,
@@ -503,6 +521,7 @@ export function mountPhoneLayout({ doc = globalThis.document, root, sheets = {},
       caption: shown(plate) ? { w: plate.offsetWidth, h: plate.offsetHeight } : null,
       captionUnder: rr.height > rr.width || Boolean(plate?.classList.contains('is-under')),
       pin: pins && !pins.hidden && pins.getClientRects().length ? { w: pins.offsetWidth, h: pins.offsetHeight } : null,
+      buffs: shown(buffEl) ? { w: buffEl.offsetWidth, h: buffEl.offsetHeight } : null,
       controls: Object.fromEntries(['stick', 'act', 'jump'].map((k) => {
         const el = doc.querySelector(`#game-root .touch-${k}`);
         const r = el?.getClientRects().length ? shift(rectOf(el)) : null;
@@ -524,6 +543,12 @@ export function mountPhoneLayout({ doc = globalThis.document, root, sheets = {},
     };
     const sh = regions.sheet;
     set('--pr-under', regions.notices.top - GAP);
+    // The buff strip's slot (style.css PHONE LAYOUT), and its foot for the route card under it.
+    if (regions.buffs) {
+      set('--pr-buffs-t', regions.buffs.top);
+      set('--pr-buffs-l', regions.buffs.left);
+      set('--pr-buffs-b', regions.buffs.bottom > regions.buffs.top ? regions.buffs.bottom : 0);
+    }
     set('--pr-notice-t', regions.notices.top);
     set('--pr-sheet-t', sh ? sh.top : 0);
     set('--pr-sheet-l', sh ? sh.left : 0);

@@ -679,3 +679,45 @@ describe('phone layout: no overlaps on the real game (Chrome)', { skip: !chromiu
     assert.deepEqual(errors, []);
   });
 });
+
+// Austin's iPhone 2026-11-24 (upright, Xhola Mades): a buff chip lay over the left end of the stats pill
+// and the start of the street's name. Its top never took the top inset (style.css #buff-strip under
+// 760 px: 2 x hud-h + 16 px), and layout C gave it no region. Now it has its own slot under the caption.
+describe('the buff strip has its own slot (Austin 2026-11-24)', () => {
+  const chip = 60;
+  const cases = [
+    ['Safari tab upright', { width: 402, height: 812, safe: { t: 76, b: 34 } }],
+    ['Home Screen app upright', { width: 402, height: 812, safe: { t: 102, b: 34 } }],
+    ['sideways', { width: 812, height: 402, safe: { l: 62, r: 62, b: 21 }, captionUnder: false }],
+  ];
+  for (const [name, at] of cases) {
+    for (const n of [1, 3]) {
+      it(`${name}, ${n} buff${n > 1 ? 's' : ''}: clear of the pills, the caption and its taps, the notices and the pinned quest`, () => {
+        const r = phoneRegions({ ...at, caption: { w: 220, h: 26 }, pin: { w: 200, h: 56 }, buffs: { w: n * (chip + 5) - 5, h: 38 } });
+        assert.ok(r.buffs && r.buffs.bottom - r.buffs.top === 38, 'a slot as tall as the strip');
+        for (const k of ['strip', 'caption', 'notices', 'pin', 'stick', 'act', 'jump', 'pack']) {
+          assert.equal(boxesOverlap(r.buffs, r[k]), false, `buffs vs ${k}`);
+        }
+        const capTaps = Math.ceil((r.caption.top + r.caption.bottom) / 2 + TAP_H / 2);
+        assert.ok(r.buffs.top >= Math.max(r.caption.bottom, r.strip.bottom, at.captionUnder === false ? 0 : capTaps), 'under the caption and its taps');
+        assert.ok(r.notices.top >= r.buffs.bottom + GAP, 'the notices start under it');
+        assert.equal(r.buffs.left, (at.safe.l || 0) + 8, 'at the left, inside the safe area');
+        assert.deepEqual(layoutProblems(r, { width: at.width, height: at.height, allow: at.captionUnder === false ? [['strip', 'caption']] : [] }), []);
+      });
+    }
+  }
+  it('no buff: an empty slot, the notices where they were', () => {
+    const a = phoneRegions({ width: 402, height: 812, safe: { t: 76 }, caption: { w: 220, h: 26 } });
+    assert.equal(a.buffs.bottom, a.buffs.top);
+    const capTaps = Math.ceil((a.caption.top + a.caption.bottom) / 2 + TAP_H / 2);
+    assert.equal(a.notices.top, Math.max(a.caption.bottom, capTaps) + GAP);
+  });
+  it('style.css seats it in the slot, over the older top rules, and the route card under it', () => {
+    const css = readFileSync(join(root, 'public/style.css'), 'utf8');
+    assert.match(css, /:root\.phone-layout\[data-ui="modern"\] #game-root:not\(\[data-sheet\]\) :is\(#buff-strip, #quest-pins ~ #buff-strip\) \{\n  top: var\(--pr-buffs-t,/);
+    assert.match(css, /#game-root:not\(\[data-sheet\]\) \.route-gps \{\n  top: max\([^;]*calc\(var\(--pr-buffs-b, 0px\) \+ var\(--space-2\)\)\);/);
+    const pl = readFileSync(join(root, 'public/js/ui/phone-layout.js'), 'utf8');
+    assert.match(pl, /set\('--pr-buffs-t', regions\.buffs\.top\);/);
+    assert.match(pl, /buffs: shown\(buffEl\) \? \{ w: buffEl\.offsetWidth, h: buffEl\.offsetHeight \} : null,/);
+  });
+});
