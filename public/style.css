@@ -15532,6 +15532,9 @@ body.is-booting .touch-controls { display: none; }
   top: auto; left: var(--pr-pin-l, var(--hud-inset)); bottom: var(--pr-pin-b, 220px);
   width: auto; max-width: 200px; padding: var(--space-1);
 }
+/* G1230 (#595): over the touch controls' layer (the same z-hud, later in the page), so the float stick's
+   corner, which reaches up past the card, does not take the card's taps. */
+:root.phone-layout[data-ui="modern"] #game-root #quest-pins:not([hidden]) { z-index: calc(var(--z-hud) + 1); }
 :root.phone-layout[data-ui="modern"] #game-root #quest-pins:not(.collapsed) .quest-pins-head,
 :root.phone-layout[data-ui="modern"] #game-root #quest-pins .quest-pins-toggle,
 :root.phone-layout[data-ui="modern"] #game-root #quest-pins .tq:not(:first-child),

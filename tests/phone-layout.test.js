@@ -24,7 +24,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
-  GAP, PILL_IDS, STICK, TAP_H, boxesOverlap, fullScreenWay, layoutProblems, menuRoomOf, phoneRegions, pillBadge,
+  GAP, PILL_IDS, STICK, TAP_H, boxesOverlap, fullScreenWay, layoutProblems, menuRoomOf, phoneRegions, pillBadge, stickRegionOf,
 } from '../public/js/ui/phone-layout.js?v=d29bc134';
 import { phonePins } from '../public/js/ui/quest-pin-button.js?v=ec4d53fa';
 
@@ -96,6 +96,20 @@ describe('phone layout: the regions (pure)', () => {
     // A stick so high there is no room above it under the caption: the card waits.
     const high = phoneRegions({ width: 390, height: 844, pin: { w: 200, h: 50 }, controls: { stick: { left: 8, top: 80, right: 140, bottom: 212 } } });
     assert.equal(high.pin, null);
+  });
+
+  it('G1230 (#595, #632): with the float stick on, the card stands just over the stick\'s ring, not over its tall corner', () => {
+    // style.css FLOAT STICK: the corner is up to 300 px tall and 45% wide; the ring rests in its foot's STICK px square.
+    const corner = { left: 16, top: 360, right: 175, bottom: 660 };
+    const stick = stickRegionOf(corner, { float: true });
+    assert.deepEqual(stick, { left: 16, top: 660 - STICK, right: 16 + STICK, bottom: 660 });
+    assert.deepEqual(stickRegionOf(corner), corner, 'the fixed stick is its own box');
+    const r = phoneRegions({ width: 390, height: 844, pin: { w: 200, h: 50 }, controls: { stick } });
+    assert.equal(r.pin.bottom, 660 - STICK - GAP, 'just over the ring');
+    assert.equal(r.pin.left, stick.left);
+    // As the game measured it before: the card over the whole corner, mid-left on the screen.
+    const old = phoneRegions({ width: 390, height: 844, pin: { w: 200, h: 50 }, controls: { stick: corner } });
+    assert.ok(old.pin.bottom < r.pin.bottom - 150);
   });
 
   it('#5: a menu\'s room is above the controls upright and between the stick and Act sideways, none under a sheet', () => {

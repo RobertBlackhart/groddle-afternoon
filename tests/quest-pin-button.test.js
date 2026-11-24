@@ -239,6 +239,25 @@ describe('on a phone (createQuestPinButton through the tracker)', () => {
   });
 });
 
+describe('G1230 (#595): the phone layout\'s card', () => {
+  it('is never folded to its head, so a tap on it opens the quest in Quests, as the old pin did', () => {
+    s = setup();
+    s.root.classList.add('phone-layout');
+    s.tracker.render([PIGS], true);
+    assert.equal(s.card.classList.contains('collapsed'), false, 'a saved fold does not fold the card');
+    const list = s.card.querySelector('[data-pins-list]');
+    const row = new El('button');
+    row.dataset.pin = PIGS.classTsid;
+    list.children = [];
+    list.append(row);
+    row.click();
+    assert.deepEqual(s.opened, [PIGS.classTsid]);
+  });
+  it('sits over the touch controls\' layer, so the float stick\'s corner does not take its taps', () => {
+    assert.match(css, /:root\.phone-layout\[data-ui="modern"\] #game-root #quest-pins:not\(\[hidden\]\) \{ z-index: calc\(var\(--z-hud\) \+ 1\); \}/);
+  });
+});
+
 describe('off a phone', () => {
   it('a computer or tablet keeps the card in place and never shows the button', () => {
     s = setup({ phone: false });

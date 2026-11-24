@@ -138,8 +138,11 @@ export function createQuestTracker({ el, onOpen: openQuest = () => {}, onCollaps
     if (!el) return;
     const shown = rows.slice(0, 2);
     button.sync(shown);
-    // A phone's popover always shows the rows (G919); the fold stays saved for a computer.
-    const collapsed = folded && !button.active();
+    // A phone's popover always shows the rows (G919); the fold stays saved for a computer. G1230 (#595):
+    // the phone layout's card is always its first row, so a tap opens the quest in Quests as the old
+    // pin did; folded it was only the head ("Title 0/3"), which opens nothing.
+    const phoneCard = Boolean(el.ownerDocument?.documentElement?.classList?.contains?.('phone-layout'));
+    const collapsed = folded && !button.active() && !phoneCard;
     el.hidden = shown.length === 0;
     titles.clear();
     for (const r of shown) titles.set(r.classTsid, r.title);

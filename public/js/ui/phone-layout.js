@@ -16,8 +16,9 @@
  * - notices: the top-centre stack under the caption, down to the controls, the pinned quest or the
  *   open sheet; notices, tips and toasts go here and never land on the strip (js/notify-view.js
  *   `region`);
- * - pin: the first pinned quest, a small card bottom left over the stick (#595, Friendly's idea),
- *   beside the stick sideways, clear of its ring;
+ * - pin: the first pinned quest, a small card bottom left over the stick (#595, a player's idea),
+ *   beside the stick sideways, clear of its ring (the float stick's ring too, stickRegionOf); a tap
+ *   opens its quest in Quests, as the old pin did (G1230);
  * - stick, act, jump: the touch controls, on the pack row;
  * - pack: the pack row (measured where js/ui/pack-row.js centres it);
  * - sheet: the room one open sheet takes. The Map takes the whole height (sideways the whole
@@ -191,6 +192,19 @@ export function menuRoomOf(regions, { width } = {}) {
     return { top, floor: Math.min(regions.stick.top, regions.act.top, regions.jump.top) - GAP, left: EDGE, right: EDGE };
   }
   return { top, floor: floorAbove - GAP, left: regions.stick.right + GAP, right: Math.max(EDGE, num(width) - regions.act.left + GAP) };
+}
+
+/**
+ * PURE (G1230, #595 and #632: an iPhone with "Stick follows your thumb" on): the stick's region from
+ * its measured box. With the float stick on, the stick's box is the whole lower-left corner a thumb
+ * may land in (up to 300 px tall, style.css FLOAT STICK), and the pinned quest stood over that, mid-left
+ * on the screen. The stick's region is still where its ring stands when no thumb is down: the STICK px
+ * square at the corner's foot, as with the fixed stick.
+ */
+export function stickRegionOf(rect, { float = false } = {}) {
+  if (!rect || !(rect.right > rect.left) || !(rect.bottom > rect.top)) return null;
+  if (!float || rect.bottom - rect.top <= STICK) return { left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom };
+  return { left: rect.left, top: rect.bottom - STICK, right: rect.left + Math.min(STICK, rect.right - rect.left), bottom: rect.bottom };
 }
 
 /** PURE: true when two boxes share any area. */
@@ -443,7 +457,9 @@ export function mountPhoneLayout({ doc = globalThis.document, root, sheets = {},
       pin: pins && !pins.hidden && pins.getClientRects().length ? { w: pins.offsetWidth, h: pins.offsetHeight } : null,
       controls: Object.fromEntries(['stick', 'act', 'jump'].map((k) => {
         const el = doc.querySelector(`#game-root .touch-${k}`);
-        return [k, el?.getClientRects().length ? shift(rectOf(el)) : null];
+        const r = el?.getClientRects().length ? shift(rectOf(el)) : null;
+        // G1230: the float stick's corner is not its region; its ring's resting square is.
+        return [k, k === 'stick' ? stickRegionOf(r, { float: el?.closest?.('.touch-controls')?.dataset.float === 'on' }) : r];
       })),
     });
     const key = JSON.stringify([s.kind, regions]);
