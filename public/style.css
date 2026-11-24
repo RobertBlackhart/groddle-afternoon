@@ -14740,11 +14740,14 @@ body:has(#quest-dialogue:not([hidden])) .prompt-stack { z-index: calc(var(--z-mo
   --safe-l: env(safe-area-inset-left, 0px);
 }
 /* #595 follow-up (G1177, an iPhone on iOS 27 with the game on the Home Screen, upright): the installed
-   app's status bar fades the page a little further down than the top inset, over the pills; Safari is
-   fine. Upright and standalone, a phone with a top inset takes 14 px more (min(): none when the inset
-   is 0, as on an Android app whose status bar sits outside the page). Every top offset reads --safe-t,
-   and the dark strip under the status bar (body::before) grows with it. Not checked on an iPhone. */
-@media (display-mode: standalone) and (orientation: portrait) {
+   app's status bar fades the page a little further down than the top inset, over the pills. G1230
+   (#595 again, a Safari tab upright): Safari's status bar does the same (its Liquid Glass edge fades
+   the street's top 8 px or so under our dark strip: the "haze" players still saw). Upright, a phone
+   with a top inset takes 14 px more, in Safari and the installed app alike (min(): none when the inset
+   is 0, as on an Android phone whose status bar sits outside the page). Every top offset reads --safe-t,
+   and the dark strip under the status bar (body::before) grows with it, so the fade lands on the
+   strip, not the street. Not checked on an iPhone. */
+@media (orientation: portrait) {
   :root.touch-phone { --safe-t: calc(env(safe-area-inset-top, 0px) + min(14px, env(safe-area-inset-top, 0px) * 1000)); }
 }
 /* #595 (an iPhone on iOS 27, Safari upright): a light fog over the street above the HUD, in the status

@@ -41,14 +41,16 @@ describe('edge to edge on a phone', () => {
   });
   // #595 follow-up (G1177): the installed iPhone app (iOS 26+) fades its status bar past the inset,
   // over the pills. Not checkable without an iPhone: the rule's shape is.
-  it('the installed app upright on a phone takes 14 px more at the top, nothing else changes', () => {
-    const media = '@media (display-mode: standalone) and (orientation: portrait) {';
+  // G1230 (#595 again): a Safari tab fades the same way (its Liquid Glass edge), so the rule is upright, not only standalone.
+  it('upright on a phone (Safari or the installed app) the top takes 14 px more, nothing else changes', () => {
+    const media = '@media (orientation: portrait) {\n  :root.touch-phone { --safe-t:';
     const i = block.indexOf(media);
-    assert.ok(i >= 0, 'a standalone, portrait rule');
+    assert.ok(i >= 0, 'an upright rule');
+    assert.ok(!block.includes('@media (display-mode: standalone) and (orientation: portrait) {\n  :root.touch-phone { --safe-t:'), 'not only in the installed app');
     const body = block.slice(i, block.indexOf('}\n}', i) + 3);
     assert.match(body, /:root\.touch-phone \{ --safe-t: calc\(env\(safe-area-inset-top, 0px\) \+ min\(14px, env\(safe-area-inset-top, 0px\) \* 1000\)\); \}/);
     assert.doesNotMatch(body, /--safe-[rbl]/, 'only the top inset grows');
-    // Outside that media rule --safe-t stays the plain inset (Safari, sideways, computers), and the
+    // Outside that media rule --safe-t stays the plain inset (sideways, computers), and the
     // dark strip under the status bar is as tall as --safe-t, so it grows with it.
     const plain = block.slice(0, i);
     assert.match(plain, /:root \{\n  --safe-t: env\(safe-area-inset-top, 0px\);/);
