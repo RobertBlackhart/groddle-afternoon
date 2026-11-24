@@ -19470,7 +19470,7 @@ function drawHallOffice(layer, deco) {
     }
     // The still until the timeline's strip is in, then the loop (as street-render plays a placed deco).
     const spr = new PIXI.AnimatedSprite([textureFromUrl(`assets/decos/groddle/${name}.png`)]);
-    spr.anchor.set(0.5, 1);
+    anchorBottomCentre(spr, 'deco');
     spr.position.set(x, y);
     spr.scale.set(0.5);
     attachAnim(PIXI, spr, name, { clock: performance.now(), resolution: app?.renderer?.resolution || globalThis.devicePixelRatio || 1 });

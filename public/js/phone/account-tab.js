@@ -24,9 +24,9 @@ export const PHONE_ACCOUNT_TEXT = Object.freeze({
 const STYLE_ID = 'pc-account-css';
 const STYLE = `.pc-panel[data-phone-panel="account"] .acct-forms { margin-top: 8px; }
 .pc-profile { display: grid; gap: 8px; margin-top: 16px; }
-.pc-profile h2 { margin: 0; font-size: 1.1rem; }
+.pc-profile h2 { margin: 0; font-size: var(--fs-lg); }
 .pc-profile textarea { width: 100%; box-sizing: border-box; min-height: 6rem; padding: 8px; font: inherit; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface); color: var(--fg); }
-.pc-profile-count { justify-self: end; font-size: 0.85rem; }`;
+.pc-profile-count { justify-self: end; font-size: var(--fs-md); }`;
 
 function el(doc, tag, attrs = {}, text = '') {
   const node = doc.createElement(tag);

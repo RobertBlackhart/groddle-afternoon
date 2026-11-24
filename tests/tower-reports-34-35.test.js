@@ -15,6 +15,7 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { DOOR_LOCK_ART, doorLockArt } from '../public/js/door-lock-art.js?v=e656851c';
+import { doorArt } from '../public/js/door-view.js?v=67875ada';
 import { navigableSignposts } from '../public/js/street-model.js?v=a9a05f9d';
 import { applyStreetIndex, loadStreetDataFromFs } from '../public/js/street-loader.js?v=10376267';
 import { TOWERS, TOWER_FLOORS, TOWER_NEAR_BASE, TOWER_STANDABLE, towerFloorLayout, towerPropPlatforms, towerProps } from '../public/js/tower-floors.js?v=91217aeb';
@@ -69,8 +70,14 @@ describe('report 34: a lock shows its own key', () => {
   });
 
   it('the doors feature draws a locked door from its key\'s file', () => {
-    const src = readFileSync(join(pub, 'js/features/doors-feature.js'), 'utf8');
-    assert.match(src, /doorLockArt\(door\.sprite, lockKey\)/);
+    // R51: the doors feature draws through js/door-view.js buildDoorSprite, whose art is doorArt's.
+    assert.match(readFileSync(join(pub, 'js/features/doors-feature.js'), 'utf8'), /buildDoorSprite\(PIXI, door, available\)/);
+    const [sprite, key] = Object.entries(DOOR_LOCK_ART).find(([, keys]) => keys.some((k) => k > 0)).map((v, i) => (i ? v.find((k) => k > 0) : v));
+    const locked = doorArt({ sprite, key_id: key, is_locked: true }, new Set([sprite]));
+    assert.deepEqual(locked, { art: 'lock', url: doorLockArt(sprite, key) });
+    assert.ok(locked.url && existsSync(join(pub, locked.url)), locked.url);
+    // Unlocked, the same door shows neither chains nor keyholes (key 0's file).
+    assert.equal(doorArt({ sprite, key_id: key, is_locked: false }, new Set([sprite])).url, doorLockArt(sprite, 0) || `assets/decos/groddle/${sprite}.png`);
   });
 });
 

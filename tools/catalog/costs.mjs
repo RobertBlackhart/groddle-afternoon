@@ -47,7 +47,6 @@ export function secondsText(ms) {
 export const NOT_SELLABLE = Object.freeze({
   'js/funpickle.js': ['special_item_that_only_beta_testers_get'],
   'js/animal-husbandry.js': ['plop', 'hogtied_piggy'],
-  'js/teleportation.js': ['teleportation_script'],
   'js/cubimals.js': (m) => Object.values(m.cubimals.CUBIMAL_SERIES).flat().map((c) => c.classTsid),
   'js/hell.js': ['bunch_of_grapes_hell'],
   'js/features/gifts-feature.js': ['bag_gift_box_wrapped'],
