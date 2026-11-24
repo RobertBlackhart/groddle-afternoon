@@ -209,7 +209,7 @@ describe('pack items on shelves and tables (the dropped-stack model)', () => {
     const fn = game.slice(game.indexOf('dropPackStackAt(classTsid, count, x, y, { beforeRemove = null } = {}) {'));
     assert.match(fn.slice(0, 1200), /const blocked = packDropBlockReason\(classTsid\);/);
     assert.match(fn.slice(0, 1200), /dropInventoryStack\(droppedItemState, inv, droppedStacksTsid\(\), classTsid, n, \{ x, y \}/);
-    assert.match(fn.slice(0, 1200), /saveDroppedItems\(\);\s+refreshDroppedWorldItems\(\);/);
+    assert.match(fn.slice(0, 2400), /saveDroppedItems\(\);\s+refreshDroppedWorldItems\(\);/);
     const homes = read('public/js/features/homes-feature.js');
     // #515: the dragged stack's count, and that stack is the one set down (js/drag-stack.js).
     assert.match(homes, /engine\.dropPackStackAt\?\.\(was\.classTsid, count, target\.x \+ roomX0\(\), target\.y, \{ beforeRemove: \(n\) => takeDragged\(engine, was\.ds, n\) \}\)/);

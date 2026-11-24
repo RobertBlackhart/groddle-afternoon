@@ -295,9 +295,11 @@
   },
   "public/js/drops-mp.js": {
     "ours: ${label}, so it came back to your pack.`, // ours": "remake-copy",
+    "ours: 'Only the owner can set that down here.', // ours: Decoration Mode is the": "home-stack-marks",
     "ours: * Ours: a class the ledger does not carry (the trade": "ours-drops",
     "ours: * there. Ours there: a stack's x is kept from the house (the": "ours-drops",
     "ours: by: (name) => `Dropped by ${name}`, // ours": "remake-copy",
+    "ours: moment, you are still picking something up.', // ours, one pickup at a time": "home-stack-marks",
     "remake-own: * remake's own with no visitors, and stays": "ours-drops"
   },
   "public/js/eat-pick.js": {
@@ -1296,6 +1298,9 @@
   "public/js/ui/featured-project.js": {
     "glitch-had-none: * Glitch had no such line (Tiny Speck chose which streets": "featured-project",
     "ours: (Tiny Speck chose which streets opened); it is ours.": "featured-project"
+  },
+  "public/js/ui/home-builder.js": {
+    "ours: moved onto the floor in Decoration Mode (ours; the floor is anyone's, as": "home-stack-marks"
   },
   "public/js/ui/map-icon-tips.js": {
     "ours: for a key, or -1 when the key is not one of ours": "not-an-invention"
