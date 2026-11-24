@@ -103,7 +103,7 @@ import {
   swimmingSalmonCount,
   takeDueSnails,
   tickResourceNode,
-} from '../resource-nodes.js?v=30b69928';
+} from '../resource-nodes.js?v=90d75c60';
 import { frameTexture as sheetFrameTexture, loadTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=729b29ea';
 import { acceptOffer, markOffered, npcQuestOffers, putOffOffer, questStatus } from '../quest-offers.js?v=32d4127e';
 import { OVERLAY_USES, playOverlay } from '../overlays.js?v=1f5027a3';

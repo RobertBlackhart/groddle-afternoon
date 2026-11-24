@@ -38,7 +38,7 @@ import {
   RESOURCE_DROP_TABLES,
   DUST_TRAP_RARE_KEY_CHANCE,
   DUST_TRAP_DROP_ITEM_DEFS
-} from '../public/js/resource-nodes.js?v=30b69928';
+} from '../public/js/resource-nodes.js?v=90d75c60';
 import { ITEM_CATALOG } from '../public/js/inventory.js?v=6414dbdc';
 import {
   TOOL_CONDITION_CATALOG,
@@ -528,9 +528,14 @@ describe('Sloth', () => {
     assert.equal(snapshot(node, inv, pc), before);
 
     const skills = ['animalkinship_3'];
-    assert.deepEqual(resourceNodeVerbs(node, inv, pc, ctxBase({ skills })).map((v) => v.id), ['knock']);
+    // #649: up in its tree the Sloth still has Feed, greyed (npc_sloth.js feed conditions 215-229).
+    const up = resourceNodeVerbs(node, inv, pc, ctxBase({ skills }));
+    assert.deepEqual(up.map((v) => [v.id, v.enabled]), [['knock', true], ['feed', false]]);
+    assert.equal(up[1].message, "I'm not available right now.");
+    assert.equal(resourceNodeVerbs(node, {}, pc, ctxBase({ skills }))[1].message, "You don't have any metal rods!", 'no rod is said first, as Glitch');
     const hidden = harvestResourceNode(node, inv, pc, ctxBase({ verbId: 'feed', skills }));
     assert.equal(hidden.reason, 'hidden');
+    assert.equal(hidden.message, "I'm not available right now.");
     // G889: knocking with no Metal Rod works; the Sloth stays up and answers (callSloth 328-336).
     const noRod = harvestResourceNode(node, {}, pc, ctxBase({ verbId: 'knock', skills }));
     assert.equal(noRod.ok, true);

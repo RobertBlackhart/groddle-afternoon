@@ -36,9 +36,9 @@ import {
   sharedCreatureLabel,
   walkerAt,
 } from '../public/js/street-creatures.js?v=2d47da2d';
-import { actMessage, createStreetCopy, guanoPiles, idKind, reconcile, takeObjs } from '../public/js/street-objects.js?v=a63f7240';
-import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=35d52a59';
-import { FEATURES } from '../public/js/features/index.js?v=6958771d';
+import { actMessage, createStreetCopy, guanoPiles, idKind, reconcile, takeObjs } from '../public/js/street-objects.js?v=6fb63e96';
+import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=9a6c35f9';
+import { FEATURES } from '../public/js/features/index.js?v=eb6d603a';
 import { GAME_EPOCH_MS } from '../public/js/game-day.js?v=a532775d';
 import { creatureRequests, setCreatureEcology, streetObjectLayout } from '../tools/build-realtime-objects.mjs';
 import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs } from '../public/js/street-loader.js?v=10376267';

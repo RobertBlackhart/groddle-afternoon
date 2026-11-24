@@ -1339,8 +1339,7 @@ function gateVerb(node, inv, pc, ctx = {}) {
       // Answered from the leaves at once (slothKnockAnswer): no wait for it to come down.
       if (slothKnockAnswer(node, inv, now)) durationMs = 0;
     }
-    if (verb.id === 'feed') {
-      if (!node.out) return fail('hidden', 'The Sloth is hiding up in the branches. Knock first.');
+    if (verb.id === 'feed' && node.out) {
       if (node.busyUntil && now < node.busyUntil) return fail('busy', "I'm busy, you fool!");
       if (node.units < 1) return fail('full', "Sod off, I'm full!");
     }
@@ -1366,6 +1365,10 @@ function gateVerb(node, inv, pc, ctx = {}) {
       return fail('no_input', msg, { input: input.classTsid });
     }
   }
+
+  // #649: a Sloth still up in its tree can be clicked, its Feed greyed (npc_sloth.js feed conditions
+  // 215-229: no rod first, then any state but hanging down "I'm not available right now.").
+  if (def.classTsid === 'npc_sloth' && verb.id === 'feed' && !node.out) return fail('hidden', "I'm not available right now.");
 
   // Tools (the dirt pile's shovel was checked first, above).
   let toolUsed = null;
@@ -1414,10 +1417,8 @@ export function resourceNodeVerbs(node, inv, pc, ctx = {}) {
   for (const verb of def.verbs) {
     if (verb.auto && !ctx.includeAuto) continue;
     // G891: Knock stays on the Knocker while the Sloth is out, greyed with sloth_knocker.js's reason
-    // ("The Sloth is already here", 41-43); Feed only shows once it is down.
-    if (def.classTsid === 'npc_sloth' && verb.id === 'feed' && !node.out) {
-      continue;
-    }
+    // ("The Sloth is already here", 41-43). #649: Feed shows on the Sloth up in its tree too, greyed
+    // (npc_sloth.js feed conditions), as Glitch's menu had it: never an empty menu.
     const gate = gateVerb(node, inv, pc, { ...ctx, verbId: verb.id });
     out.push({
       id: verb.id,

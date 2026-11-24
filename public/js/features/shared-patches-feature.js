@@ -74,7 +74,7 @@ import { addItem, countItem, ITEM_CATALOG } from '../inventory.js?v=6414dbdc';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import { answerWaitMs, createOnlineRequests } from '../online-request.js?v=2a5117ff';
 import { saveStore, savedThrough } from '../save-store.js?v=4e720735';
-import { patchesFeature } from './patches-feature.js?v=ebbe3566';
+import { patchesFeature } from './patches-feature.js?v=ebe3eb4a';
 import {
   COPY,
   GRANT_CLASSES,
@@ -99,7 +99,7 @@ import {
   sharedTreeReady,
   sharedTreeSkill,
   TRANTSFORM_VERB,
-} from '../shared-patches.js?v=c68013fa';
+} from '../shared-patches.js?v=fd074a3d';
 
 export const SHARED_PATCHES_FEATURE_ID = 'shared-patches';
 const SYNC_RETRY_MS = 3000;
