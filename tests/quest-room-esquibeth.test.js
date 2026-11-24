@@ -3,10 +3,10 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import * as kit from '../public/js/quest-rooms/kit.js?v=bd6b95e4';
+import * as kit from '../public/js/quest-rooms/kit.js?v=690e57e7';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
-const mod = await import('../public/js/quest-rooms/esquibeth.js?v=02ea1fd9');
+const mod = await import('../public/js/quest-rooms/esquibeth.js?v=eccb0e40');
 
 // Avatar reach (game.js physics): jump 9.6 px/frame against 0.42 gravity peaks near 110 px
 // and carries about 200 px at run speed 4.4; keep margins.

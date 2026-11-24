@@ -10,7 +10,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { convertLocationXml } from '../public/js/location-xml.js?v=32377f99';
-import { buildSignDecoView, DECO_TWINS, signDecoDrawn, signpostBoardAt } from '../public/js/street-render.js?v=4f5425d0';
+import { buildSignDecoView, DECO_TWINS, signDecoDrawn, signpostBoardAt } from '../public/js/street-render.js?v=55a4b28d';
 import { TOWER_LIFT_PLATE, TOWERS } from '../public/js/tower-floors.js?v=91217aeb';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

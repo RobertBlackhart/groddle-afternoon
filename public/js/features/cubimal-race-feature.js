@@ -55,9 +55,9 @@
 
 import { addItem, countItem, removeItem } from '../inventory.js?v=6414dbdc';
 import { copyForVerb, copyTag, copyTags, migrateClassTag, setCopyTag, takeToolCopy } from '../tools.js?v=4156bba8';
-import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d1945384';
+import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=64ec4ad7';
 import { landingY, walkSurfaceY } from '../walk-surface.js?v=3c919d5b';
-import { playPoofIn, poofInAlpha } from '../overlay-art.js?v=95f23414';
+import { playPoofIn, poofInAlpha } from '../overlay-art.js?v=441d2df7';
 import {
   CUBIMAL_FREE,
   CUBIMAL_FREE_RESPONSES,
@@ -81,7 +81,7 @@ import {
 import { cleanCopyTagOf } from '../copy-tags.js?v=7eec7d48';
 import { packSlotFor } from '../pack-slot-qa.js?v=1d74bf2d';
 import { cubimalBattleLabel, cubimalBattleStats, cubimalTagName, cubimalTagWith } from '../cubimal-battle.js?v=f91166b0';
-import { standOnFeet } from '../sprite-feet.js?v=16f962c0';
+import { standOnFeet } from '../sprite-feet.js?v=fabfcf9e';
 
 export const CUBIMAL_RACE_FEATURE_ID = 'cubimal-race';
 const DEMO_DEFAULT = 'npc_cubimal_chick';

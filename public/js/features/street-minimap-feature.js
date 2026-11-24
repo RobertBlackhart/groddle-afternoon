@@ -69,13 +69,13 @@
  * refused). QA: &streetmapexpand=1 expands it on each street.
  */
 
-import { STREET_ENTITY_KINDS } from '../street-render.js?v=4f5425d0';
+import { STREET_ENTITY_KINDS } from '../street-render.js?v=55a4b28d';
 import { DOOR_SVG, createPictureCache, createStreetMinimap, doorMarks, markArt, minimapVisibility, onStreetMapChange, sceneDoorMarks, sceneSignMarks, setStreetMap, signpostMarks, snapshotStreetView, snapsWithScene, stationMarks, streetMapOn } from '../ui/street-minimap.js?v=cf66d461';
 import { classicArtHd, classicArtUrl } from '../classic/classic-art.js?v=87cb1722';
 import { onUiModeChange } from '../classic/ui-mode.js?v=1a13f4a8';
 import { focusBack } from '../ui/focus-return.js?v=da190597';
-import { isPhoneDevice } from '../touch-controls.js?v=b10f17bb';
-import { isFailed, isLoaded, onFailed, onLoaded } from '../textures.js?v=729b29ea';
+import { isPhoneDevice } from '../touch-controls.js?v=6ed23498';
+import { isFailed, isLoaded, onFailed, onLoaded } from '../textures.js?v=9f92491a';
 
 export const STREET_MINIMAP_FEATURE_ID = 'street-minimap';
 const UPDATE_MS = 100;

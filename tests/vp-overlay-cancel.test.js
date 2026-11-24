@@ -10,9 +10,9 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { cancelAllOverlays, liveOverlayCount } from '../public/js/overlay-art.js?v=95f23414';
-import { advanceVpOverlay, vpOverlay, vpOverlayText, vpSequence } from '../public/js/quest-rooms/vp-overlay.js?v=038e7344';
-import { swfFeature } from '../public/js/features/swf-feature.js?v=f82e518f';
+import { cancelAllOverlays, liveOverlayCount } from '../public/js/overlay-art.js?v=441d2df7';
+import { advanceVpOverlay, vpOverlay, vpOverlayText, vpSequence } from '../public/js/quest-rooms/vp-overlay.js?v=d7832a15';
+import { swfFeature } from '../public/js/features/swf-feature.js?v=6bafd53f';
 
 const saved = {};
 

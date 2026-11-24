@@ -146,12 +146,12 @@ import { assignQuest, completeQuest } from '../quests.js?v=90a2ee3d';
 import { acceptOffer, enqueueQuestOffer, questAwardPayload, turnInQuest } from '../quest-offers.js?v=32d4127e';
 import { getQuestCatalog } from '../content-catalogs.js?v=10b118dd';
 import { locationEventsApi } from './location-events-feature.js?v=ac6acbc9';
-import * as kit from '../quest-rooms/kit.js?v=bd6b95e4';
-import { frameTexture, onLoaded, sourceFromUrl, textureFromUrl, whenLoaded } from '../textures.js?v=729b29ea';
+import * as kit from '../quest-rooms/kit.js?v=690e57e7';
+import { frameTexture, onLoaded, sourceFromUrl, textureFromUrl, whenLoaded } from '../textures.js?v=9f92491a';
 import { upgradeSource } from '../sprite-hires.js?v=e96be5f1';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
-import { displayTopOf, itemstackOverlayPoint, playPoofIn, playSheetOverlay, poofInAlpha } from '../overlay-art.js?v=95f23414';
-import { HOME_MACHINE } from '../home-ticket.js?v=acb21418';
+import { displayTopOf, itemstackOverlayPoint, playPoofIn, playSheetOverlay, poofInAlpha } from '../overlay-art.js?v=441d2df7';
+import { HOME_MACHINE } from '../home-ticket.js?v=9702a3d3';
 import { createAnimalState } from '../animals.js?v=56071914';
 import {
   AK_ANIMALS,
@@ -170,9 +170,9 @@ import {
   createAkState,
 } from '../skillquest-ak.js?v=397a9d19';
 import { filterText } from '../word-filter.js?v=9a7a7ebb';
-import { isPhoneDevice, phoneScreenFrame, safeAreaInsets, touchWords } from '../touch-controls.js?v=b10f17bb';
+import { isPhoneDevice, phoneScreenFrame, safeAreaInsets, touchWords } from '../touch-controls.js?v=6ed23498';
 import { energyMax, forceMetabolic, moodMax } from '../metabolics.js?v=48f784bf';
-import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=16f962c0';
+import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=fabfcf9e';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 
 export const NEWXP_FEATURE_ID = 'newxp';

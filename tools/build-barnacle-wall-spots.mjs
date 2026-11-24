@@ -29,7 +29,7 @@ import { execFileSync } from 'node:child_process';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { BARNACLE_VARIANT_FACES, barnacleMaskSprites, barnacleWallSpots } from '../public/js/barnacle-walls.js?v=75e568c3';
-import { DECO_TWINS } from '../public/js/street-render.js?v=4f5425d0';
+import { DECO_TWINS } from '../public/js/street-render.js?v=55a4b28d';
 import { nudgedBarnacleSpots } from '../public/js/barnacle-nudges.js?v=159f11bf';
 import {
   ecologyForStreet,

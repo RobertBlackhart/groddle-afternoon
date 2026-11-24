@@ -28,8 +28,8 @@
  */
 
 import { addItem, removeItem, countItem } from '../inventory.js?v=6414dbdc';
-import { OVERLAY_USES, playOverlay } from '../overlays.js?v=1f5027a3';
-import { displayTopOf, itemstackOverlayPoint } from '../overlay-art.js?v=95f23414';
+import { OVERLAY_USES, playOverlay } from '../overlays.js?v=705f2e2a';
+import { displayTopOf, itemstackOverlayPoint } from '../overlay-art.js?v=441d2df7';
 
 export const QUEST_VERB_PREFIX = 'questverb_';
 export const SLATHER_QUEST = 'jellisachands_donate_jellisacs';

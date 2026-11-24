@@ -17,8 +17,8 @@
  */
 
 import { runOutcome } from '../autoplay-log.js?v=55bb4823';
-import { FLOOR, H, W, buildRainbowScene, rainbowCoins, rainbowPlatforms } from './rainbow-run-scene.js?v=13d8bb5c';
-import { touchesQuoin } from './kit.js?v=bd6b95e4';
+import { FLOOR, H, W, buildRainbowScene, rainbowCoins, rainbowPlatforms } from './rainbow-run-scene.js?v=c8576f3e';
+import { touchesQuoin } from './kit.js?v=690e57e7';
 
 export { rainbowCoins, rainbowPlatforms };
 export const RUN_MS = 30_000;

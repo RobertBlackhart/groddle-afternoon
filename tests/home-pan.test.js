@@ -20,7 +20,7 @@ import { HOME_LAYOUT_LIMITS, HOME_STREET_LIMITS, HOME_STREET_VERSION, buildHomeL
 import { walkHomeScene } from '../public/js/home-layout-scene.js?v=a8846036';
 import { HOME_LIMITS } from '../public/js/homes-catalog.js?v=f3fe838d';
 import { HOUSE_LOT_W, YARD_SEGMENT_W } from '../public/js/home-cultivation.js?v=9e6e217b';
-import { CAMERA_RANGE } from '../public/js/features/camera-mode-feature.js?v=8b214405';
+import { CAMERA_RANGE } from '../public/js/features/camera-mode-feature.js?v=2b9f40e9';
 import { SITE_DIR, skipWithoutSite } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');

@@ -41,11 +41,11 @@
 import { addItem, countItem } from '../inventory.js?v=6414dbdc';
 import { getGameDayKey } from '../game-day.js?v=a532775d';
 import { DOOR_TEXT, doorKeyClass, insideBottomRect } from '../doors.js?v=727d0e0b';
-import { textureFromUrl } from '../textures.js?v=729b29ea';
+import { textureFromUrl } from '../textures.js?v=9f92491a';
 import { ROOM_15_TSID } from '../tower-rooms.js?v=4f1f6af7';
 import { anyTowerRoomByTsid as baseRoomByTsid } from '../tower-challenge-rooms.js?v=01f1c620';
 import { midTowerRoomByTsid } from '../tower-mid-rooms.js?v=07360655';
-import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=16f962c0';
+import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=fabfcf9e';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 
 const anyTowerRoomByTsid = (tsid) => baseRoomByTsid(tsid) || midTowerRoomByTsid(tsid);

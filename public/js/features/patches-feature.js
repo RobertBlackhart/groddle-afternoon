@@ -51,7 +51,7 @@ import { ensureItem } from '../inventory.js?v=6414dbdc';
 import { isItemFloor, platformYAt } from '../street-model.js?v=a9a05f9d';
 import { SOIL_FOOTPRINT, SOIL_STEADY_FLOOR, getStreetEcologyCatalog, streetEcologyAliases } from '../street-ecology.js?v=ff90efe4';
 import { trantFrameKey, trantFruitArt, trantStatusLabel } from '../trants.js?v=864ea9ff';
-import { standOnFeet } from '../sprite-feet.js?v=16f962c0';
+import { standOnFeet } from '../sprite-feet.js?v=fabfcf9e';
 import { woodTreeStatusLabel } from '../woodcutting.js?v=9e9af511';
 import {
   GROWN_TREE_LABELS,
@@ -73,7 +73,7 @@ import {
   soilSpritePaths,
   tickPlot,
 } from '../patches.js?v=3f6b9b05';
-import { frameTexture, isLoaded, onFailed, onLoaded, textureFromUrl } from '../textures.js?v=729b29ea';
+import { frameTexture, isLoaded, onFailed, onLoaded, textureFromUrl } from '../textures.js?v=9f92491a';
 import { HOE_TOOLS, firstWorkingTool } from '../tools.js?v=4156bba8';
 import { slugsFromEffects } from '../speech-slugs.js?v=e79cecfa';
 import { plotSignature, replayRng } from '../shared-patches.js?v=26518bf6';

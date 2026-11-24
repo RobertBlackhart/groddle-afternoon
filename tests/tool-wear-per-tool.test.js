@@ -29,7 +29,7 @@ import { createMineRock, mineRock, MINING_COSTS } from '../public/js/mining.js?v
 import { VENDOR_PROFILES, vendorBuy } from '../public/js/vendor.js?v=6baaef80';
 import { harvestWoodTree } from '../public/js/woodcutting.js?v=9e9af511';
 import { createGarden, plantPlot, waterPlot } from '../public/js/garden.js?v=0cbb65f0';
-import { createPlayerSave, normalizePlayerSave } from '../public/js/player-save.js?v=bfaedb35';
+import { createPlayerSave, normalizePlayerSave } from '../public/js/player-save.js?v=0b153c14';
 import { createDroppedItemState, dropInventoryStack, pickupDroppedStack } from '../public/js/world-items.js?v=220d7a7a';
 import { layoutPack, unitPlaces, unitRankAt } from '../public/js/pack-slots.js?v=11aa0ad5';
 import { toolBreakEvents } from '../public/js/quest-offers.js?v=32d4127e';

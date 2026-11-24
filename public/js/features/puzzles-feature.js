@@ -69,7 +69,7 @@
  */
 
 import { locationEventsApi } from './location-events-feature.js?v=ac6acbc9';
-import { TOUCH_JUMP_EVENT, isPhoneDevice } from '../touch-controls.js?v=b10f17bb';
+import { TOUCH_JUMP_EVENT, isPhoneDevice } from '../touch-controls.js?v=6ed23498';
 import { collectQuoin, QUOIN_SHEET, QUOIN_TYPES } from '../quoins.js?v=5abad2c7';
 import {
   CARD_RETURN_TEXT,
@@ -92,9 +92,9 @@ import {
   stepTriggers,
 } from '../puzzle-triggers.js?v=221b67a9';
 import { gainMetabolic } from '../metabolics.js?v=48f784bf';
-import { isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=729b29ea';
+import { isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=9f92491a';
 import { partySpaceForStreet } from '../party-spaces.js?v=b026ad60';
-import { anchorBottomCentre } from '../sprite-feet.js?v=16f962c0';
+import { anchorBottomCentre } from '../sprite-feet.js?v=fabfcf9e';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 
 export const PUZZLES_FEATURE_ID = 'puzzles';

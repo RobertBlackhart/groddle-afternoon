@@ -19,7 +19,7 @@
  */
 
 import { normalizeHouse } from './home-house.js?v=3c88c47c';
-import { HUB_DEFAULT_MUSIC } from './ambient-music.js';
+import { HUB_DEFAULT_MUSIC } from './ambient-music.js?v=4b3c6041';
 
 export const HOME_STREET_TSID = 'RH_HOME_EXT';
 export const HOME_INTERIOR_TSID = 'RH_HOME_INT';

@@ -26,8 +26,8 @@
  */
 
 import { runOutcome } from '../autoplay-log.js?v=55bb4823';
-import { frameTexture, onLoaded, sourceFromUrl } from '../textures.js?v=729b29ea';
-import { standOnFeet } from '../sprite-feet.js?v=16f962c0';
+import { frameTexture, onLoaded, sourceFromUrl } from '../textures.js?v=9f92491a';
+import { standOnFeet } from '../sprite-feet.js?v=fabfcf9e';
 
 export const STREET = 'GNV1T7PCUM53T25';
 const BOUNDS = { l: -1500, t: -600 };

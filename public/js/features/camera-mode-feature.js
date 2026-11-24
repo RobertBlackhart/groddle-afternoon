@@ -44,11 +44,11 @@
  * cameraEyeballSent.
  */
 
-import { textureFromUrl } from '../textures.js?v=729b29ea';
-import { OVERLAY_BUBBLE_URL, OVERLAY_USES, overlayBubbleBox, playOverlay } from '../overlays.js?v=1f5027a3';
+import { textureFromUrl } from '../textures.js?v=9f92491a';
+import { OVERLAY_BUBBLE_URL, OVERLAY_USES, overlayBubbleBox, playOverlay } from '../overlays.js?v=705f2e2a';
 import { SPEECH_BUBBLE_Z } from '../fx-z.js?v=18dda7e3';
-import { isPhoneDevice } from '../touch-controls.js?v=b10f17bb';
-import { anchorBottomCentre } from '../sprite-feet.js?v=16f962c0';
+import { isPhoneDevice } from '../touch-controls.js?v=6ed23498';
+import { anchorBottomCentre } from '../sprite-feet.js?v=fabfcf9e';
 
 export const CAMERA_FEATURE_ID = 'camera-mode';
 /** getCameraAbilities: range without Eyeballery, px from the avatar. */

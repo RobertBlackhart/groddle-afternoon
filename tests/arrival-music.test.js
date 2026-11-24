@@ -14,9 +14,9 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { HOME_STYLES, createHomeState, homeMusicFile, imagineHome } from '../public/js/homes.js?v=10f6604f';
-import { HUB_DEFAULT_MUSIC, resolveAmbientTheme, setAmbientMusicConfig, tracksForTheme } from '../public/js/ambient-music.js?v=75a5ad20';
-import { EXTERIOR_STYLES, streetStyleFor, switchStreetStyle } from '../public/js/home-styles.js';
+import { HOME_STYLES, createHomeState, homeMusicFile, imagineHome } from '../public/js/homes.js?v=dca6b2cd';
+import { HUB_DEFAULT_MUSIC, resolveAmbientTheme, setAmbientMusicConfig, tracksForTheme } from '../public/js/ambient-music.js?v=4b3c6041';
+import { EXTERIOR_STYLES, streetStyleFor, switchStreetStyle } from '../public/js/home-styles.js?v=ec5d2f69';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

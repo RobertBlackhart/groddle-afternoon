@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { phaseOpensInMins } from '../public/js/features/street-jobs-feature.js?v=cfba5bdf';
+import { phaseOpensInMins } from '../public/js/features/street-jobs-feature.js?v=aa85cc09';
 
 const root = join(import.meta.dirname, '..');
 

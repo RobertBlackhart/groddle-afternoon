@@ -54,7 +54,7 @@ before(async () => {
   globalThis.PIXI = { ImageSource, Texture };
   globalThis.Image = FakeImage;
   globalThis.document = { createElement: () => ({ width: 0, height: 0, getContext: () => ({ drawImage() {} }) }) };
-  T = await import('../public/js/textures.js?v=729b29ea');
+  T = await import('../public/js/textures.js?v=9f92491a');
 });
 after(() => {
   for (const [k, v] of Object.entries(saved)) globalThis[k] = v;

@@ -75,11 +75,11 @@ import {
 import { energyMax, forceMetabolic, gainMetabolic, loseEnergy, loseMood, metabolicGain, moodMax } from '../metabolics.js?v=48f784bf';
 import { levitationCards } from '../imagination-effects.js?v=70169933';
 import { applyPhysicsAdjustments, physicsMultipliers } from '../location-events.js?v=44ee645e';
-import { sourceFromUrl } from '../textures.js?v=729b29ea';
+import { sourceFromUrl } from '../textures.js?v=9f92491a';
 import { denseSprite } from '../sprite-dense.js?v=67101472';
-import { rainbowSound, showRainbow } from '../overlays.js?v=1f5027a3';
+import { rainbowSound, showRainbow } from '../overlays.js?v=705f2e2a';
 import { moodScaledXp } from '../mood-xp.js?v=e311b45c';
-import { TOUCH_JUMP_EVENT, isPhoneDevice } from '../touch-controls.js?v=b10f17bb';
+import { TOUCH_JUMP_EVENT, isPhoneDevice } from '../touch-controls.js?v=6ed23498';
 import { createMinnAccount } from '../minn-account.js?v=c6a70577';
 import { getSkillPackageOverride } from '../skill-packages.js?v=bfb87281';
 import {
@@ -100,7 +100,7 @@ import {
   radiatorEnd,
   radiatorLine,
 } from '../radiance-mp.js?v=b3137af4';
-import { anchorBottomCentre } from '../sprite-feet.js?v=16f962c0';
+import { anchorBottomCentre } from '../sprite-feet.js?v=fabfcf9e';
 
 export const MEDITATION_FEATURE_ID = 'meditation';
 /** metabolics_get_max_energy: the energy tank (100 plus Energy Tank cards). */

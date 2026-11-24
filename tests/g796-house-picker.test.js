@@ -11,8 +11,8 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { defaultHouseConfig } from '../public/js/home-house.js?v=3c88c47c';
-import { createHomeState, setHomeHouse } from '../public/js/homes.js?v=10f6604f';
-import { homesFeature } from '../public/js/features/homes-feature.js?v=817693c5';
+import { createHomeState, setHomeHouse } from '../public/js/homes.js?v=dca6b2cd';
+import { homesFeature } from '../public/js/features/homes-feature.js?v=8922f428';
 import { HOUSE_PICKER_TEXT } from '../public/js/ui/house-picker.js?v=67f03b99';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

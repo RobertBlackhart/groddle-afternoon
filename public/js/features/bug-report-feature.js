@@ -87,7 +87,7 @@ import { mountReportsSheet } from '../ui/reports-sheet.js?v=32d2617d';
 import { PICTURE_TEXT } from '../report-pictures.js?v=84c52271';
 import { canvasTransparent } from '../render-probe.js?v=ac5e3810';
 import { marksLine, startBaitCheck } from '../extension-marks.js?v=36c70f4b';
-import { imageFailureLine } from '../textures.js?v=729b29ea';
+import { imageFailureLine } from '../textures.js?v=9f92491a';
 
 export const BUG_REPORT_FEATURE_ID = 'bug-report';
 

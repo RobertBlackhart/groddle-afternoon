@@ -12,7 +12,7 @@ import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { sitePath, skipWithoutSite } from '../tools/repos.mjs';
 import { BAIT_CLASSES, KNOWN_MARKS, MARKS_MAX, baitHidden, marksLine, pageMarks, startBaitCheck } from '../public/js/extension-marks.js?v=36c70f4b';
-import { extensionContext, reportContext } from '../public/js/features/bug-report-feature.js?v=da28a080';
+import { extensionContext, reportContext } from '../public/js/features/bug-report-feature.js?v=9f528f72';
 
 const root = join(import.meta.dirname, '..');
 

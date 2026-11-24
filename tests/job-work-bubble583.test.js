@@ -18,7 +18,7 @@ import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { JOB_WORK_BUBBLE, JOB_WORK_OVERLAY, JOB_WORK_REMOTE_BUBBLE_DY, jobWorkBubbleY, jobWorkFloatPoint, jobWorkToolSheet } from '../public/js/job-work-fx.js?v=2c489570';
-import { fitTextureSide, resolutionOfUrl } from '../public/js/textures.js?v=729b29ea';
+import { fitTextureSide, resolutionOfUrl } from '../public/js/textures.js?v=9f92491a';
 
 const pub = join(import.meta.dirname, '../public');
 const read = (f) => readFileSync(join(pub, f), 'utf8');

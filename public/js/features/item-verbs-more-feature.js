@@ -38,8 +38,8 @@
  *   packVerbNet, packVerbDefect.
  */
 
-import { displayTopOf } from '../overlay-art.js?v=95f23414';
-import { OVERLAY_USES, playOverlay } from '../overlays.js?v=1f5027a3';
+import { displayTopOf } from '../overlay-art.js?v=441d2df7';
+import { OVERLAY_USES, playOverlay } from '../overlays.js?v=705f2e2a';
 import { addItem, countItem, removeItem } from '../inventory.js?v=6414dbdc';
 import { getGameDayKey } from '../game-day.js?v=a532775d';
 import { levelInfoForXp, XP_FOR_LEVEL } from '../progression.js?v=05ff0260';
@@ -50,10 +50,10 @@ import { SKILLQUEST_AK_TSID } from '../skillquest-ak.js?v=397a9d19';
 import { getToolCondition, migrateClassValue, setToolRemaining, TOOL_CONDITION_CATALOG, toolCopies, useToolCondition } from '../tools.js?v=4156bba8';
 import { copyChargesLeft, keepsCopies, spendCopyCharge, verbCopy } from '../copy-charges.js?v=ab07e909';
 import { HERDKEEPING, hogtieEscapeDelayMs, husbandryPack } from '../animal-husbandry.js?v=83779ca2';
-import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d1945384';
-import { sourceFromUrl, frameTexture } from '../textures.js?v=729b29ea';
+import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=64ec4ad7';
+import { sourceFromUrl, frameTexture } from '../textures.js?v=9f92491a';
 import { landingY, walkSurfaceY } from '../walk-surface.js?v=3c919d5b';
-import { overlayOrStandIn } from '../overlay-stand-in.js?v=d0136826';
+import { overlayOrStandIn } from '../overlay-stand-in.js?v=88f94ef7';
 import {
   BUNDLE_OF_JOY,
   BUTTERFLY_NET,
@@ -119,7 +119,7 @@ import {
 } from '../item-verbs-more.js?v=377f760a';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { forceMetabolic } from '../metabolics.js?v=48f784bf';
-import { standOnFeet } from '../sprite-feet.js?v=16f962c0';
+import { standOnFeet } from '../sprite-feet.js?v=fabfcf9e';
 
 export const ITEM_VERBS_MORE_FEATURE_ID = 'item-verbs-more';
 

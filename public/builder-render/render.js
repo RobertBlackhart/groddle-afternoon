@@ -19,15 +19,15 @@
  * with every emitter puffing (2.2 s in); the `effects` overlay marks each emitter (its id, kind and
  * plume height) and names the rumble. The output is at most 4096 px a side (the scale shrinks to fit).
  */
-import { buildStreetView, loadDecoManifest, loadSignpostTextures } from '../js/street-render.js?v=4f5425d0';
+import { buildStreetView, loadDecoManifest, loadSignpostTextures } from '../js/street-render.js?v=55a4b28d';
 import { navigableSignposts, streetWidth, streetHeight, worldToScreen } from '../js/street-model.js?v=a9a05f9d';
-import * as textureUrls from '../js/textures.js?v=729b29ea';
+import * as textureUrls from '../js/textures.js?v=9f92491a';
 import { installPixiFixes } from '../js/pixi-fixes.js?v=0f42b75e';
 import { installHiresDecos } from '../js/deco-hires.js?v=34f36d77';
 import { installNewArt, withNewArt } from '../js/builder/new-art.js?v=29f0b13e';
 import { spotGroup } from '../js/builder/editor-zone.js?v=333b4867';
-import { drawGeometryOverlay, drawReachOverlay, drawArrivals, OVERLAY_COLOURS } from '../js/builder/overlays.js?v=f350d2b8';
-import { createStreetEffects, normaliseEmitter, emitterAnchor, EFFECT_WORDS } from '../js/street-effects.js?v=f8f8bd01';
+import { drawGeometryOverlay, drawReachOverlay, drawArrivals, OVERLAY_COLOURS } from '../js/builder/overlays.js?v=aa9ea01b';
+import { createStreetEffects, normaliseEmitter, emitterAnchor, EFFECT_WORDS } from '../js/street-effects.js?v=9f7b335c';
 
 export const MAX_SIDE = 4096;
 export const WIDE = Object.freeze({ w: 960, h: 408 });

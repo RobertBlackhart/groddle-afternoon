@@ -64,17 +64,17 @@
  */
 
 import { BUTLER_STRINGS } from '../butler.js?v=6c66ebf5';
-import { butlerApi } from './butler-feature.js?v=5ad8dd3e';
-import { hellFeature } from './hell-feature.js?v=1b37d6ab';
+import { butlerApi } from './butler-feature.js?v=6c746661';
+import { hellFeature } from './hell-feature.js?v=5a916d21';
 import { locationEventsApi } from './location-events-feature.js?v=ac6acbc9';
-import { towerApi } from './home-tower-feature.js?v=0880b24a';
+import { towerApi } from './home-tower-feature.js?v=53c4617b';
 import { platformYAt, platformsScreen } from '../street-model.js?v=a9a05f9d';
 import { COMMAND_HELP_INTRO, STUCK_COOLDOWN_MS, STUCK_MENU, STUCK_TEXT, bareCommand, commandHelpLines, commandHint, isCommandHelp, misplacedCommand, slashPlan, strayLetterCommand, unknownLine } from '../slash-commands.js?v=bb2569aa';
 import { parseTp, runTeleportCommand, TP_TEXT } from '../admin-teleport.js?v=c4d28509';
 import { minnUrls } from '../minn-account.js?v=c6a70577';
 import { saveStore } from '../save-store.js?v=4e720735';
 import { STREET_INDEX } from '../street-loader.js?v=10376267';
-import { isPhoneDevice } from '../touch-controls.js?v=b10f17bb';
+import { isPhoneDevice } from '../touch-controls.js?v=6ed23498';
 
 export const SLASH_COMMANDS_FEATURE_ID = 'slash-commands';
 

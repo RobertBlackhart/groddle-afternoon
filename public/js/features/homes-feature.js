@@ -215,17 +215,17 @@ import {
 } from '../home-cultivation.js?v=9e6e217b';
 import { PROTO_DEPLETED_ART } from '../home-proto-art.js?v=9309e9f3';
 import { DISPATCHER_HALF, DISPATCHER_TEXT, MOVABLE_FIXTURES, MOVABLE_FIXTURE_IDS, dispatcherAway, fixtureFits, fixtureText, savedFixtureRx, signpostX } from '../home-street-fixtures.js?v=bad831a1';
-import { displayTopOf, itemstackOverlayPoint, overlayAlpha, overlayLifeMs, playPoofIn, trackOverlay } from '../overlay-art.js?v=95f23414';
-import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d1945384';
-import { fadeInNewNear } from '../poof-fade.js?v=83361da5';
-import { projectApi } from './street-jobs-feature.js?v=cfba5bdf';
+import { displayTopOf, itemstackOverlayPoint, overlayAlpha, overlayLifeMs, playPoofIn, trackOverlay } from '../overlay-art.js?v=441d2df7';
+import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=64ec4ad7';
+import { fadeInNewNear } from '../poof-fade.js?v=a3425905';
+import { projectApi } from './street-jobs-feature.js?v=aa85cc09';
 import { TOWER_CHASSIS, TOWER_CONFIG, TOWER_DOOR_DX, TOWER_GEO, TOWER_PROTO, normalizeTowerState } from '../home-tower.js?v=84d99af0';
-import { drawTowerBench, drawTowerElevator, drawTowerExit, towerApi, visitorTowerView } from './home-tower-feature.js?v=0880b24a';
+import { drawTowerBench, drawTowerElevator, drawTowerExit, towerApi, visitorTowerView } from './home-tower-feature.js?v=53c4617b';
 import { pieceUrl, roomPieces, surfaceAt, swatchPiece, wallTargetAt } from '../home-wallpaper.js?v=99228166';
 import { maxTextureSizeOf, sharpDeco, wantsHiresDecos } from '../deco-hires.js?v=34f36d77';
 import { SHARP_DECOS } from '../deco-sharp-list.js?v=7d615f20';
-import { resourceNodesFeature } from './resource-nodes-feature.js?v=5a231fcd';
-import { patchesFeature } from './patches-feature.js?v=39fb12ec';
+import { resourceNodesFeature } from './resource-nodes-feature.js?v=ae5b2556';
+import { patchesFeature } from './patches-feature.js?v=e9cc7469';
 import { GROWN_TREE_LABELS, createPlot, growTree, plotLabel } from '../patches.js?v=3f6b9b05';
 import { WOTD_DEPLETE_MS, WOTD_TEXT, nearestPourTarget, pourButton, pourConditions, pourConfirmText } from '../wine-pour.js?v=6daa23a7';
 import { WOTD_TOOL, pourApproach, pourDropTip } from '../wine-pour-fx.js?v=364e22d2';
@@ -246,9 +246,9 @@ import {
   yardStyleChoices,
   yardStyleFor,
 } from '../home-styles.js?v=ec5d2f69';
-import { frameTexture, isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=729b29ea';
+import { frameTexture, isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=9f92491a';
 import { FALLBACK_MAX as WORLD_ART_FALLBACK_MAX, worldArtFor } from '../world-art.js?v=a67514c8';
-import { oneArmSignpost } from '../street-render.js?v=4f5425d0';
+import { oneArmSignpost } from '../street-render.js?v=55a4b28d';
 import { ROCK_CATALOG } from '../mining.js?v=c3bd3675';
 import {
   HOUSE_SIGN,
@@ -267,7 +267,7 @@ import {
   ROCK_VERB_IDS,
 } from '../magic-rock-home.js?v=c07b2327';
 import { getGameDayKey } from '../game-day.js?v=a532775d';
-import { HOME_TICKET, HOME_TICKET_CLASS } from '../home-ticket.js?v=acb21418';
+import { HOME_TICKET, HOME_TICKET_CLASS } from '../home-ticket.js?v=9702a3d3';
 import { MIN_GROUND_CLEARANCE, yCamOffsetAnchor } from '../movement.js?v=f4be1a05';
 import { LANDSCAPE_VIEW_W, landscapeWindow, rowRange, soilTiles } from '../landscape-reach.js?v=2f2d7cb3';
 import { takeFromHouse } from '../ledger-house.js?v=b34f5c89';
@@ -296,7 +296,7 @@ import {
   unexpandHouseFloors,
 } from '../home-floors.js?v=0883cb1c';
 import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
-import { anchorBottomCentre, standOnFeet } from '../sprite-feet.js?v=16f962c0';
+import { anchorBottomCentre, standOnFeet } from '../sprite-feet.js?v=fabfcf9e';
 import { autoplayLog } from '../autoplay-log.js?v=55bb4823';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 import { HOUSE_ART_DIR, HOUSE_FROM_HOME_STYLE, HOUSE_STYLE_IDS, composeHouse, houseFitViewH, houseLabel, houseLot, normalizeHouse } from '../home-house.js?v=3c88c47c';

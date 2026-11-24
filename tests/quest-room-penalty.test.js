@@ -10,7 +10,7 @@ import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { homedir } from 'node:os';
 
-import * as kit from '../public/js/quest-rooms/kit.js?v=bd6b95e4';
+import * as kit from '../public/js/quest-rooms/kit.js?v=690e57e7';
 import { stageFor } from '../public/js/location-view.js?v=af5bc629';
 import { cameraTargetY, cameraWorldHeightForGround } from '../public/js/movement.js?v=f4be1a05';
 import { Display, FakeEl, fakePixi } from './fake-scene.js';
@@ -40,7 +40,7 @@ import {
   cellStep,
   hasWorkingTool,
   room,
-} from '../public/js/quest-rooms/penalty.js?v=257bed5f';
+} from '../public/js/quest-rooms/penalty.js?v=788c6f8c';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const GSJS = join(homedir(), 'Documents/glitch-audit/glitch-GameServerJS');

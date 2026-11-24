@@ -15,9 +15,9 @@
  * ecology rows, the style profiles and the zone schema (assets/content/zone.schema.json, a copy of
  * docs/level-builder/zone.schema.json that tests/builder-validate.test.js keeps equal).
  */
-import { validateZone } from './validate.js?v=b8a482fe';
+import { validateZone } from './validate.js?v=e752093b';
 import { compileSchema } from './schema-check.js?v=cc9d1af4';
-import { DECO_TWINS } from '../street-render.js?v=4f5425d0';
+import { DECO_TWINS } from '../street-render.js?v=55a4b28d';
 import { ANIM_DECOS } from '../deco-anim-list.js?v=ecfee655';
 import { SHARP_DECOS } from '../deco-sharp-list.js?v=7d615f20';
 import { setStreetEcologyCatalog } from '../street-ecology.js?v=ff90efe4';

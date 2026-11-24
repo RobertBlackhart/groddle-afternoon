@@ -37,7 +37,7 @@
 import { addItem, countItem, ensureItem } from '../inventory.js?v=6414dbdc';
 import { getGameDayKey } from '../game-day.js?v=a532775d';
 import { XP_FOR_LEVEL } from '../progression.js?v=05ff0260';
-import { emblemCostFor } from '../shrines.js?v=d5d7a471';
+import { emblemCostFor } from '../shrines.js?v=01962b40';
 import { giantDisplayName } from '../giant-names.js?v=0e295891';
 import { landingY } from '../walk-surface.js?v=3c919d5b';
 import {
@@ -67,15 +67,15 @@ import {
   titheIcon,
   useEmblem,
 } from '../giant-icons.js?v=0d6b4965';
-import { textureFromUrl } from '../textures.js?v=729b29ea';
-import { playSheetOverlay } from '../overlay-art.js?v=95f23414';
+import { textureFromUrl } from '../textures.js?v=9f92491a';
+import { playSheetOverlay } from '../overlay-art.js?v=441d2df7';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { forceMetabolic, gainMetabolic } from '../metabolics.js?v=48f784bf';
 import { CONVERSATION_RULES, adoptLegacyTalks, conversationRecord, hasCompleted, toldRecord } from '../conversations.js?v=7cbdfea4';
 import { TELLERS } from '../conversations-data.js?v=f11b7e02';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { publicStreet } from '../shared-street.js?v=dce5694b';
-import { standOnFeet } from '../sprite-feet.js?v=16f962c0';
+import { standOnFeet } from '../sprite-feet.js?v=fabfcf9e';
 
 export const ICONS_FEATURE_ID = 'giant-icons';
 const WORLD_ART = (iconClass) => `assets/sprites/giant-icons/${iconClass}.webp`;

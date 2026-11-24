@@ -10,7 +10,7 @@ import { spawnSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { buildRefuses, pageBuild, saveStampOf } from '../public/js/save-build.js?v=588eae75';
-import { createPlayerSave, inspectPlayerSave, serializePlayerSave } from '../public/js/player-save.js?v=bfaedb35';
+import { createPlayerSave, inspectPlayerSave, serializePlayerSave } from '../public/js/player-save.js?v=0b153c14';
 import { createMultiplayerSaveStore } from '../public/js/save-store.js?v=4e720735';
 import { stamp } from '../tools/deploy/build-id.mjs';
 import { SITE_DIR, skipWithoutSite } from '../tools/repos.mjs';

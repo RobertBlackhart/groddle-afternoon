@@ -13,7 +13,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { ACT_DRAG_STEP } from '../public/js/touch-controls.js?v=b10f17bb';
+import { ACT_DRAG_STEP } from '../public/js/touch-controls.js?v=6ed23498';
 import { fakeControls } from './touch-fake-dom.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
