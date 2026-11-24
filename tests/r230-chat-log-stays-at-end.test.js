@@ -69,6 +69,6 @@ describe('report 230: the chat log keeps to its end while the box grows', () => 
     const bind = src.indexOf('bindChatInput(input, {');
     const listen = src.indexOf("input.addEventListener('input', keepLogEnd);");
     assert.ok(bind > 0 && listen > bind, 'the input listener comes after bindChatInput\'s own');
-    assert.match(src, /log\.addEventListener\('scroll', \(\) => \{\n\s+const atEnd = log\.scrollHeight - log\.scrollTop - log\.clientHeight < 24;[\s\S]{0,300}logAtEnd = atEnd;/);
+    assert.match(src, /log\.addEventListener\('scroll', \(\) => \{\n(?:\s+if \(listShown\(\)\) return;\n)?\s+const atEnd = log\.scrollHeight - log\.scrollTop - log\.clientHeight < 24;[\s\S]{0,300}logAtEnd = atEnd;/);
   });
 });
