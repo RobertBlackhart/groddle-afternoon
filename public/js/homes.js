@@ -19,6 +19,7 @@
  */
 
 import { normalizeHouse } from './home-house.js?v=3c88c47c';
+import { HUB_DEFAULT_MUSIC } from './ambient-music.js';
 
 export const HOME_STREET_TSID = 'RH_HOME_EXT';
 export const HOME_INTERIOR_TSID = 'RH_HOME_INT';
@@ -51,12 +52,24 @@ export const HOME_STYLES = Object.freeze({
 });
 
 /**
- * #474: the music of a home of `style` (its street, its house and its Tower floors alike, so the
- * door and the elevator never restart it). Every arrival there names it, so whatever played before
- * (an instance's, a quest room's, the last street's) never carries in.
+ * #474: the music of a home (its street, its house and its Tower floors alike, so the door and the
+ * elevator never restart it). Every arrival there names it, so whatever played before (an
+ * instance's, a quest room's, the last street's) never carries in.
+ *
+ * #661: it follows the street style you have now (js/home-styles.js streetStyleFor), not the look
+ * the home was bought in: Change Style re-cloned the street from the new template, its music_file
+ * with it (inc_homes.js 2861-2885), and the street played geometry.music_file (location.js 481-482).
+ * The Firebog, Uralia and Meadow templates have their home street music; every other style plays
+ * the hub default a POL hub got (HUB_DEFAULT_MUSIC, the Forest library). A purchase look id
+ * ('meadow', 'firebog', 'uralia') still names its own music.
  */
-export function homeMusicFile(style) {
-  return (HOME_STYLES[style] || HOME_STYLES.meadow).musicFile;
+export function homeMusicFile(streetStyle) {
+  const key = String(streetStyle || '');
+  if (HOME_STYLES[key]) return HOME_STYLES[key].musicFile;
+  if (key.startsWith('firebog_')) return HOME_STYLES.firebog.musicFile;
+  if (key.startsWith('uralia_')) return HOME_STYLES.uralia.musicFile;
+  if (key.startsWith('meadow')) return HOME_STYLES.meadow.musicFile;
+  return key ? HUB_DEFAULT_MUSIC : HOME_STYLES.meadow.musicFile;
 }
 
 function finiteInt(value, fallback = 0) {

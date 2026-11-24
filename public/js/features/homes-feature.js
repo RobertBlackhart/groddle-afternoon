@@ -8561,6 +8561,11 @@ export const homesFeature = {
     return homeScene(room, engine);
   },
 
+  /** #661: renderHomeScene's music: the street style you have now (Change Style changes it). */
+  homeStreetStyle(engine) {
+    return currentStreetStyle(engine);
+  },
+
   onStreetClear(engine) {
     closeUpgradePicker(true);
     releaseCameraLook(engine);

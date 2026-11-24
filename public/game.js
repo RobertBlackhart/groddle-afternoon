@@ -26470,8 +26470,9 @@ async function renderHomeScene(room = homeState.room || 'street', opts = {}) {
     label: room === 'interior' ? 'Your House' : 'Your Home Street',
     hubId: 'home',
     hubName: 'Homes',
-    // #474: the home's own music (its style's home street music_file, js/homes.js homeMusicFile).
-    musicFile: homeMusicFile(homeState.style),
+    // #474: the home's own music (its street style's music_file, js/homes.js homeMusicFile).
+    // #661: the street style you have now (the homes feature's), so Change Style changes it at once.
+    musicFile: homeMusicFile(features.query('homeStreetStyle', engine) || homeState.style),
     // The scene's own height (the street map's shape and dots: a home street is 972 tall).
     bounds: { l: 0, r: WORLD_W, t: 0, b: Number(bgLayer.worldH) || AUTHORED_VIEW_H },
     platforms: streetPlatforms,

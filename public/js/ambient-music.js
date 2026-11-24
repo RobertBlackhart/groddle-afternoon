@@ -59,6 +59,15 @@ export async function loadAmbientMusicConfig(
 export const SILENT_THEME = 'silence';
 
 /**
+ * #661: a scene's musicFile for "no music_file of its own: the hub's default set". Glitch's POL hubs
+ * (home streets and houses) had no ambient_hub_map row (main.js 456), so a home street whose
+ * template carried no music_file played ambient_library.default (FOREST_AMBIENT1-4, main.js 332-336)
+ * as a playlist. A named key, so the scene still names its music (#474: the last place's never
+ * carries in) and a floor named like a hub ("Uralia") never picks that hub's music.
+ */
+export const HUB_DEFAULT_MUSIC = 'HUB_DEFAULT';
+
+/**
  * Resolve ambient theme id for a hub.
  * @param {{ hubId?: string|number, hubName?: string, musicFile?: string|null }} street
  * @returns {string}
@@ -73,6 +82,7 @@ export function resolveAmbientTheme(street = {}) {
   // library is lost, so the street keeps its hub's music.
   const musicKey = String(street.musicFile || '').trim();
   if (musicKey === 'NO_MUSIC') return SILENT_THEME;
+  if (musicKey === HUB_DEFAULT_MUSIC) return fallback;
   // A lost key the remake keeps quiet rather than stand in for (#303: SUBWAY_CAR_HUM, under the train loop).
   if (musicKey && cfg.streetMusic?.[musicKey] === SILENT_THEME) return SILENT_THEME;
   if (musicKey && cfg.streetMusic?.[musicKey] && cfg.themes?.[cfg.streetMusic[musicKey]]) {

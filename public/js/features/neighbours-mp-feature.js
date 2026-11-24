@@ -119,6 +119,7 @@ import { BUTLER, BUTLER_INFO, butlerInfoText, butlerPostRx, normalizeButlerParts
 import { butlerApi } from './butler-feature.js?v=5ad8dd3e';
 import { homesFeature, visitorHomeScene, visitorHomeState } from './homes-feature.js?v=817693c5';
 import { homeMusicFile } from '../homes.js?v=10f6604f';
+import { streetStyleFor } from '../home-styles.js';
 import { visitGardenPlots, visitSceneKey } from '../home-live.js?v=9c7abae7';
 import {
   BUTLER_MESSAGE_MAX,
@@ -454,8 +455,9 @@ function createSession(engine, client) {
       walls: [],
       spawn: { x, y: built.groundY },
       returnTo: visit.returnTo,
-      // #474: the visited home's own music (its style's home street music_file), as at your own.
-      musicFile: homeMusicFile(visitorHomeState(visit.view).style),
+      // #474: the visited home's own music, as at your own. #661: its street style now (the owner's
+      // Change Style rebuilds this scene in place, G944), not the look it was bought in.
+      musicFile: homeMusicFile(streetStyleFor(visitorHomeState(visit.view).streetStyle, visitorHomeState(visit.view).style)),
       // G944: rebuilt in place for the owner's change: the windows open here stay.
       keepWindows: quiet,
     };
