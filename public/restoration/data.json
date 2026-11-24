@@ -2814,7 +2814,7 @@
   "deployed": "2026-11-24"
  },
  "git": {
-  "commits": 3360,
+  "commits": 3361,
   "since": "2026-10-19",
   "recent": [
    {
@@ -2936,14 +2936,9 @@
     "date": "2026-11-23",
     "kind": "fix",
     "text": "Each home street, house and Tower floor you visit remembers your own last visit there"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "Teleporting works from someone else's home street, house and Tower"
    }
   ]
  },
- "tests": 1335,
+ "tests": 1336,
  "generatedAt": "2026-11-24"
 }
