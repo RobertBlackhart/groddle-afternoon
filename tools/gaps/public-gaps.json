@@ -5249,6 +5249,18 @@
       "commits": [
         "game:c15c56d8680"
       ]
+    },
+    {
+      "id": "G1238",
+      "area": "Homes",
+      "text": "Things set on a house floor in Decoration Mode were locked to the owner, couldn't be moved along the floor, and more of the same item never joined the stack already there.",
+      "show": "fixing",
+      "commits": [
+        "game:7355b00f842",
+        "game:cf952e590cd",
+        "server:432ed50",
+        "site:0c8531e"
+      ]
     }
   ]
 }

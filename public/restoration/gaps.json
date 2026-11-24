@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.63.0",
+  "release": "v0.63.1",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -42,7 +42,7 @@
     "fixing": 3,
     "known": 15,
     "unreleased": 0,
-    "fixed": 522,
+    "fixed": 523,
     "lost": 5,
     "purpose": 16,
     "idea": 10
@@ -1257,6 +1257,12 @@
           "text": "Every home street shared one \"last visited\" time on the loading card.",
           "state": "fixed",
           "version": "v0.63.0"
+        },
+        {
+          "id": "G1238",
+          "text": "Things set on a house floor in Decoration Mode were locked to the owner, couldn't be moved along the floor, and more of the same item never joined the stack already there.",
+          "state": "fixed",
+          "version": "v0.63.1"
         },
         {
           "id": "G48",
