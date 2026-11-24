@@ -2,7 +2,9 @@
  * The encyclopedia's search (tools/encyclopedia/build.mjs writes the pages):
  *  - the home page (input[data-search]) loads search.json and shows matches
  *    from every section, items included, as tiles grouped by section, with a
- *    section filter; the query lives in the address (?q=&s=);
+ *    section filter; the query lives in the address (?q=&s=). #668: each
+ *    section's facts (what its pages say) load after it, and a match found in
+ *    a fact shows that fact under its tile (./search-core.js ranks and cuts);
  *  - a section's list (input[data-filter], and select[data-group] drawn as the
  *    themed combobox of ./items/combobox.js) hides the tiles that do not match
  *    (?q=&g=), so the list it draws without JavaScript stays the source; on
@@ -13,6 +15,7 @@
  *    player at a time.
  */
 import { combobox } from './items/combobox.js?v=f2510e19';
+import { addFacts, createIndex, search as find, snippet } from './search-core.js?v=eb80f5cc';
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -96,39 +99,37 @@ async function search(input) {
   const data = await (await fetch(input.dataset.search)).json();
   const label = Object.fromEntries(data.sections.map((s) => [s.key, s.label]));
   const inRemake = new Set(data.inRemake);
-  const hay = data.entries.map((e) => fold(`${e.n} ${e.id.replace(/[_-]/g, ' ')} ${e.g || ''}`));
+  // #668: names first; each section's facts (what its pages say) join the index as they arrive.
+  const index = createIndex(data.entries, data.sections);
   const params = new URLSearchParams(location.search);
   input.value = params.get('q') || '';
   let section = params.get('s') || '';
   const chips = $('sections');
   chips.innerHTML = [['', 'All'], ...data.sections.map((s) => [s.key, s.label])]
     .map(([k, l]) => `<button type="button" class="chip" data-s="${esc(k)}" aria-pressed="${k === section}">${esc(l)}</button>`).join(' ');
-  const tile = (e) => `<li><a class="ency-tile${inRemake.has(e.st) ? '' : ' ency-tile-out'}" href="${base}${e.h}"><span class="ency-tile-pic">${e.ic ? `<img class="ency-ic" src="${base}${esc(e.ic)}" alt="" loading="lazy" decoding="async" />` : '<span class="ency-ic cat-ph" aria-hidden="true"></span>'}</span> <span class="ency-tile-name">${esc(e.n)}<span class="ency-sep">,</span></span> <span class="ency-tile-sub"><span class="cat-st st-${esc(e.st)}">${esc(data.statuses[e.st] || e.st)}</span></span></a></li>`;
+  const why = (line, fuzzy) => (line ? ` <span class="ency-tile-why">${snippet(line, input.value, { fuzzy }).map((p) => (p.hit ? `<mark>${esc(p.text)}</mark>` : esc(p.text))).join('')}</span>` : '');
+  const sub = (e) => (e.s === 'lists' ? `${fmt(e.c || 0)} ${e.c === 1 ? 'street' : 'streets'}` : `<span class="cat-st st-${esc(e.st)}">${esc(data.statuses[e.st] || e.st)}</span>`);
+  const tile = ({ e, why: line }, fuzzy) => `<li><a class="ency-tile${inRemake.has(e.st) ? '' : ' ency-tile-out'}${line ? ' ency-tile-fact' : ''}" href="${base}${e.h}"><span class="ency-tile-pic">${e.ic ? `<img class="ency-ic" src="${base}${esc(e.ic)}" alt="" loading="lazy" decoding="async" />` : '<span class="ency-ic cat-ph" aria-hidden="true"></span>'}</span> <span class="ency-tile-name">${esc(e.n)}<span class="ency-sep">,</span></span> <span class="ency-tile-sub">${sub(e)}</span>${why(line, fuzzy)}</a></li>`;
   const run = () => {
-    const words = fold(input.value).split(' ').filter(Boolean);
+    const q = input.value.trim();
     const p = new URLSearchParams();
     if (input.value) p.set('q', input.value);
     if (section) p.set('s', section);
     history.replaceState(null, '', p.toString() ? `?${p}` : location.pathname);
     for (const c of chips.children) c.setAttribute('aria-pressed', String(c.dataset.s === section));
-    chips.hidden = !words.length;
-    $('cards').hidden = Boolean(words.length);
-    if (!words.length) { $('results').innerHTML = ''; $('count').textContent = ''; return; }
-    const hits = [];
-    data.entries.forEach((e, i) => {
-      if ((!section || e.s === section) && words.every((w) => hay[i].includes(w))) {
-        // Names that start with the query first.
-        hits.push({ e, rank: fold(e.n).startsWith(words[0]) ? 0 : 1 });
-      }
-    });
-    hits.sort((a, b) => a.rank - b.rank);
+    chips.hidden = !q;
+    $('cards').hidden = Boolean(q);
+    if (!q) { $('results').innerHTML = ''; $('count').textContent = ''; return; }
+    const { hits, fuzzy } = find(index, q, { section });
     const groups = new Map();
-    for (const { e } of hits) { if (!groups.has(e.s)) groups.set(e.s, []); groups.get(e.s).push(e); }
-    $('count').textContent = hits.length ? `${fmt(hits.length)} match${hits.length === 1 ? '' : 'es'}` : 'Nothing matches. Try fewer words.';
-    $('results').innerHTML = [...groups].map(([s, list]) => `<section class="ency-group"><h2>${esc(label[s])} <span class="count">${fmt(list.length)}</span></h2><ul class="ency-tiles ency-grid">${list.slice(0, LIMIT).map(tile).join('')}</ul>${list.length > LIMIT ? `<p class="cat-muted">${fmt(list.length - LIMIT)} more: add a word, or pick ${esc(label[s])} above.</p>` : ''}</section>`).join('');
+    for (const h of hits) { if (!groups.has(h.e.s)) groups.set(h.e.s, []); groups.get(h.e.s).push(h); }
+    const n = `${fmt(hits.length)} match${hits.length === 1 ? '' : 'es'}`;
+    $('count').textContent = !hits.length ? 'Nothing matches. Try fewer words.' : fuzzy ? `${n} for a spelling close to yours.` : n;
+    $('results').innerHTML = [...groups].map(([s, list]) => `<section class="ency-group"><h2>${esc(label[s])} <span class="count">${fmt(list.length)}</span></h2><ul class="ency-tiles ency-grid">${list.slice(0, LIMIT).map((h) => tile(h, fuzzy)).join('')}</ul>${list.length > LIMIT ? `<p class="cat-muted">${fmt(list.length - LIMIT)} more: add a word, or pick ${esc(label[s])} above.</p>` : ''}</section>`).join('');
   };
   let frame = 0;
-  input.addEventListener('input', () => { if (!frame) frame = requestAnimationFrame(() => { frame = 0; run(); }); });
+  const later = () => { if (!frame) frame = requestAnimationFrame(() => { frame = 0; run(); }); };
+  input.addEventListener('input', later);
   chips.addEventListener('click', (ev) => {
     const b = ev.target.closest('[data-s]');
     if (!b) return;
@@ -136,6 +137,13 @@ async function search(input) {
     run();
   });
   run();
+  const folder = new URL('.', new URL(input.dataset.search, location.href));
+  await Promise.all(Object.entries(data.facts || {}).map(async ([s, path]) => {
+    try {
+      addFacts(index, s, await (await fetch(new URL(path, folder))).json());
+      if (input.value.trim()) later();
+    } catch { /* that section's names still search */ }
+  }));
 }
 
 const filter = document.querySelector('input[data-filter]');

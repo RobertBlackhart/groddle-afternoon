@@ -8,6 +8,7 @@
  *   public/encyclopedia/items/data.json         the list the catalog page renders
  *   public/encyclopedia/items/index.html        the catalog (grid, search, filters)
  *   public/encyclopedia/items/<id>/index.html   one page per item
+ *   public/encyclopedia/items/facts.json        each page's facts, for the encyclopedia's search (#668)
  *
  *   node tools/catalog/build.mjs          write the files
  *   node tools/catalog/build.mjs --check  exit 1 if any file is stale
@@ -57,6 +58,7 @@ import { loadCosts } from './costs.mjs';
 import { loadHero } from './hero.mjs';
 import { pageArt, srcsetAttrs } from '../page-art/index.mjs';
 import { loadUses } from './uses.mjs';
+import { dropBoilerplate, factsFile, pageFacts } from '../encyclopedia/search-facts.mjs';
 import { loadHandouts } from './handouts.mjs';
 import { STREET_SPIRIT_VARIANTS } from '../../public/js/street-spirits.js?v=f9e88445';
 
@@ -748,6 +750,8 @@ export async function buildCatalog({ inventory = readInventory(), evidence = rea
     });
   });
   for (const [id, to] of folds) if (inCatalog.has(to)) files[`${OUT}/${id}/index.html`] = foldedPage(all.get(id), all.get(to));
+  // #668: each item page's facts for the encyclopedia's search (its Items file, search.json `facts`).
+  files[`${OUT}/facts.json`] = factsFile(dropBoilerplate(new Map(entries.map((e) => [e.it.id, pageFacts(files[`${OUT}/${e.it.id}/index.html`])]))));
   // Each page's icons and art carry their content keys (tools/data-versions/build.mjs keyAssetUrls).
   const keys = committedMap();
   for (const path of Object.keys(files)) if (path.endsWith('.html')) files[path] = keyAssetUrls(files[path], path, keys);

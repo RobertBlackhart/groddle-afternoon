@@ -241,6 +241,20 @@ must match) and shows results as tiles grouped by section; filters by section
 and "in the remake". Each section index is a server-drawn list (it reads
 without JavaScript) with the same search box filtering its own entries.
 
+#668 (Austin 2026-11-24): the search also reads what each page says. The builders
+write each page's facts (`tools/encyclopedia/search-facts.mjs`: one line per fact
+list term, sub-heading list or paragraph, numbers and prices left out, sentences
+many pages share dropped) to `facts/<section>.json` (`items/facts.json` for the
+catalog), listed in search.json `facts` and loaded after it. The ranking, stems
+and one-typo matching are `public/encyclopedia/search-core.js` (pure, tested in
+`tests/encyclopedia-search-668.test.js`): a name match beats an id, group or
+section match, which beats a fact; a query held as a phrase comes first; a result
+found by a fact shows that fact under its tile. The "Streets with…" lists
+(`tools/encyclopedia/street-lists.mjs`, `/encyclopedia/streets/with/`) gather the
+streets with a community garden, each Giant's shrine, each vendor, a subway
+station, and each rock, tree, animal and other thing, by region; each is a search
+entry (section "lists") and each street page links the lists it is on.
+
 ## Visual design (Austin 2026-11-01: "link up more visually")
 
 Related things are shown as pictures, not just text links. Shared parts

@@ -195,6 +195,9 @@ a.ency-tile:focus-visible, .ency-chip:focus-visible, .ency-vendor:focus-visible,
 .ency-tile-sub { font-size: 11.5px; font-weight: 700; color: var(--muted); line-height: 1.25; }
 .ency-tile-sub .cat-st { font-size: 11px; }
 .ency-shop .ency-tile-sub { color: var(--fg); }
+/* #668: the fact a search result was found by, under its tile, the query's words marked. */
+.ency-tile-why { font-size: 11.5px; line-height: 1.3; color: var(--muted); overflow-wrap: anywhere; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
+.ency-tile-why mark { color: var(--fg); background: color-mix(in srgb, var(--accent) 24%, transparent); border-radius: 3px; padding: 0 1px; }
 .ency-tile .ency-price { display: inline-flex; align-items: center; gap: 3px; }
 .ency-tile .ency-price .ency-chip-ic { width: 14px; height: auto; }
 .ency-grid .ency-tile { width: auto; }

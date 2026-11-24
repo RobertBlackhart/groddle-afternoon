@@ -40,8 +40,8 @@ const mod = (name) => import(join(PUB, 'js', name));
 const G = (t) => String(t || '').replace(/^L/, 'G');
 
 /** Animals, trees, rocks and other things, in the order a page lists them. */
-const KIND_ORDER = ['Animals', 'Trees and plants', 'Rocks', 'Things to harvest', 'Other things'];
-const kindOf = (cls) => {
+export const KIND_ORDER = ['Animals', 'Trees and plants', 'Rocks', 'Things to harvest', 'Other things'];
+export const kindOf = (cls) => {
   if (/^npc_/.test(cls)) return 'Animals';
   if (/^(trant_|wood_tree$|paper_tree$)/.test(cls)) return 'Trees and plants';
   if (/^rock_/.test(cls)) return 'Rocks';
@@ -262,11 +262,11 @@ export function waysFromStart({ graph, free, shut, boards, start }) {
 
 /* -- Pages ------------------------------------------------------------ */
 
-const GIANT_NAMES = {
+export const GIANT_NAMES = {
   alph: 'Alph', cosma: 'Cosma', friendly: 'Friendly', grendaline: 'Grendaline', humbaba: 'Humbaba', lem: 'Lem',
   mab: 'Mab', pot: 'Pot', spriggan: 'Spriggan', ti: 'Tii', zille: 'Zille',
 };
-const giantIcon = (g) => `assets/sprites/giant-icons/icon_${g === 'ti' ? 'tii' : g}.webp`;
+export const giantIcon = (g) => `assets/sprites/giant-icons/icon_${g === 'ti' ? 'tii' : g}.webp`;
 
 /** A chip's 20 px picture without its 3x copy: thousands of pages, and the plain icon is already twice the size. */
 const lite = (pic) => (pic ? { ...pic, hi: null } : null);
@@ -375,8 +375,13 @@ export function streetPage(e, P, { info, d, backOf, kit }) {
     if (!groups.has(kind)) groups.set(kind, []);
     groups.get(kind).push(P.chip(`${esc(info(k).name)}${n > 1 ? ` <b>${fmt(n)}</b>` : ''}`, { pic: lite(info(k).icon), link: P.href(k) }));
   }
-  if (st.gardens) (groups.get('Other things') || groups.set('Other things', []).get('Other things')).push(P.chip(st.gardens > 1 ? `Garden plots <b>${fmt(st.gardens)}</b>` : 'A garden plot'));
-  const hereHtml = KIND_ORDER.filter((k) => groups.has(k)).map((k) => sub(k, P.chips(groups.get(k)))).join('\n        ');
+  // #668: a street's Gardens are open to everyone, so a community garden (the words players look for).
+  if (st.gardens) (groups.get('Other things') || groups.set('Other things', []).get('Other things')).push(P.chip(st.gardens > 1 ? `Community gardens <b>${fmt(st.gardens)}</b>` : 'A community garden', { link: '../with/community-garden/' }));
+  // #668: the "Streets with…" lists this street is on (street-lists.mjs), as plain links: on 1,400 pages.
+  const lists = (d.streetListsOf?.get(e.key) || []).map((l) => `<a href="../with/${l.slug}/">${esc(l.short)}</a>`);
+  const hereParts = KIND_ORDER.filter((k) => groups.has(k)).map((k) => sub(k, P.chips(groups.get(k))));
+  if (lists.length) hereParts.push(sub('Other streets with these', `<p class="st-lists-here">Every street with each of them, by region: ${lists.join(', ')}.</p>`));
+  const hereHtml = hereParts.join('\n        ');
   const hereLead = st.empty ? 'Its file in Tiny Speck’s archive holds nothing to place, so nothing lives here.' : st.interiorWhy ? 'Indoors: only what its own file holds.' : 'As the remake places them, from the street’s own file.';
 
   // Quests and achievements.
@@ -428,6 +433,7 @@ export function streetsIndex(sec, list, { info, kit, d }) {
       <h1>${esc(sec.label)}</h1>
       <p class="lead">${esc(sec.blurb)}</p>
       <p class="cat-score"><strong>${fmt(list.length)}</strong> streets in ${fmt(placesSorted.length)} regions. Under them, the <a href="../subway/">subway map</a>.</p>
+      <p class="cat-score"><a href="with/">Streets with…</a>: every street with a community garden, a shrine, each kind of vendor, a subway station, or each rock, tree and animal.</p>
     </div>
   </header>
 

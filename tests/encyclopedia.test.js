@@ -33,13 +33,14 @@ describe('encyclopedia', () => {
       assert.ok(want.length > 10, `${sec}: only ${want.length}`);
       // Music and sounds keeps its Still missing list beside the entries.
       // A person's folded copy (#505, data.mjs personFolds) keeps a folder that only forwards to the page it shares.
-      const have = readdirSync(join(dir, sec), { withFileTypes: true }).filter((x) => x.isDirectory() && !(sec === 'sounds' && x.name === 'still-missing') && !search.folded?.[`${sec}:${x.name}`]).map((x) => x.name).sort();
+      const have = readdirSync(join(dir, sec), { withFileTypes: true }).filter((x) => x.isDirectory() && !(sec === 'sounds' && x.name === 'still-missing') && !(sec === 'streets' && x.name === 'with') && !search.folded?.[`${sec}:${x.name}`]).map((x) => x.name).sort();
       assert.deepEqual(have, want, sec);
     }
     for (const name of readdirSync(dir, { withFileTypes: true }).filter((x) => x.isDirectory()).map((x) => x.name)) {
       // items/ is the Item catalog's (tools/catalog/build.mjs, tests/catalog.test.js); subway/ is one page,
-      // the Subway System map (G917, tools/encyclopedia/subway.mjs, tests/encyclopedia-subway-917.test.js).
-      assert.ok(BUILT_SECTIONS.includes(name) || name === 'items' || name === 'subway', `stray section ${name}`);
+      // the Subway System map (G917, tools/encyclopedia/subway.mjs, tests/encyclopedia-subway-917.test.js);
+      // facts/ is each section's facts for the search (#668, tests/encyclopedia-search-668.test.js).
+      assert.ok(BUILT_SECTIONS.includes(name) || name === 'items' || name === 'subway' || name === 'facts', `stray section ${name}`);
     }
   });
 

@@ -7,6 +7,8 @@
  *
  *   public/encyclopedia/index.html                 the home: search across every section
  *   public/encyclopedia/search.json                every entry (items included), for the search
+ *   public/encyclopedia/facts/<section>.json       each page's facts, for the search (#668, search-facts.mjs)
+ *   public/encyclopedia/streets/with/              the "Streets with…" lists (#668, street-lists.mjs)
  *   public/encyclopedia/<section>/index.html       a section's list, drawn in full
  *   public/encyclopedia/<section>/<id>/index.html  one page per entry
  *   public/encyclopedia/sounds/still-missing/       every sound whose recording is still missing
@@ -35,6 +37,8 @@ import { regionMoreStreets, regionStreetName, streetPage, streetsIndex, streetsW
 import { storePage } from './stores.mjs';
 import { STREET_SPIRIT_VARIANTS } from '../../public/js/street-spirits.js?v=f9e88445';
 import { subwayPage } from './subway.mjs';
+import { LISTS_PATH, listEntry, listPage, listsIndex, streetLists } from './street-lists.mjs';
+import { dropBoilerplate, factsFile, factsPath, pageFacts } from './search-facts.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const OUT = 'encyclopedia';
@@ -221,6 +225,11 @@ export async function buildEncyclopedia(data = null) {
   const files = {};
   const put = (path, html) => { files[path] = html; };
 
+  // #668: the "Streets with…" lists, before the street pages, which link the lists they are on.
+  const { lists, of: listsOf } = streetLists(d, info);
+  d.streetListsOf = listsOf;
+  if (bySection.streets.some((e) => e.id === 'with')) throw new Error('a street page would take the address of the Streets with… lists');
+
   // The page frame's parts, for the sections drawn in their own modules (streets.mjs, stores.mjs).
   const kit = { entryHead, band, sub, picture, shell };
   for (const sec of SECTIONS) {
@@ -249,11 +258,32 @@ export async function buildEncyclopedia(data = null) {
   const subway = await subwayPage({ d, P: makeParts('../../', info, d.nameOf), p: '../../', info });
   put(`${OUT}/subway/index.html`, shell({ p: '../../', title: subway.title, description: subway.description, body: subway.body, css: 'encyclopedia/streets.css' }));
 
-  // Search: every entry, items included.
+  // #668: the "Streets with…" lists and the page of them all.
+  {
+    const p = '../../../../';
+    const P = makeParts(p, info, d.nameOf);
+    for (const l of lists) put(`${OUT}/streets/with/${l.slug}/index.html`, shell({ p, title: `${l.title} · Groddle Encyclopedia`, description: `${l.title}: ${l.rows.length} streets of the Groddle Afternoon remake, by region.`, body: listPage(l, { info, P, entrySearch }), css: 'encyclopedia/streets.css' }));
+    const p3 = '../../../';
+    put(`${OUT}/streets/with/index.html`, shell({ p: p3, title: 'Streets with… · Groddle Encyclopedia', description: 'Every street with a community garden, a shrine, a vendor, a subway station, or a rock, tree, animal or thing to harvest, by region.', body: listsIndex(lists, { P: makeParts(p3, info, d.nameOf), entrySearch }), css: 'encyclopedia/streets.css' }));
+  }
+
+  // Search: every entry, items included, and the lists.
   const search = [
     ...[...items.values()].map((it) => ({ s: 'items', id: it.id, n: it.name, st: it.status, ic: it.icon?.src || '', h: pathOf(`item:${it.id}`) })),
     ...[...entries.values()].map((e) => ({ s: e.section, id: e.id, n: e.name, g: e.group || '', st: e.status, ic: e.icon?.src || '', h: pathOf(e.key) })),
+    { s: 'lists', id: 'all', n: 'Streets with…', g: 'lists of streets features where to find', st: 'source', ic: '', h: LISTS_PATH, c: lists.length },
+    ...lists.map(listEntry),
   ];
+  // #668: each page's facts, a file per section (search-facts.mjs; the Items section's is the catalog's own).
+  const factsOf = new Map();
+  for (const e of entries.values()) {
+    const html = files[`${OUT}/${e.section}/${e.id}/index.html`];
+    if (html) (factsOf.get(e.section) || factsOf.set(e.section, new Map()).get(e.section)).set(e.id, pageFacts(html));
+  }
+  for (const [section, facts] of factsOf) put(`${OUT}/${factsPath(section)}`, factsFile(dropBoilerplate(facts)));
+  const sectionKeys = [{ key: 'items', label: 'Items' }, ...SECTIONS.map(({ key, label }) => ({ key, label }))];
+  sectionKeys.splice(sectionKeys.findIndex((s) => s.key === 'streets') + 1, 0, { key: 'lists', label: 'Lists of streets' });
+  const factFiles = Object.fromEntries(['items', ...factsOf.keys()].map((k) => [k, factsPath(k)]));
   // A folded variant's class opens the page it shares (data.mjs foldsOf, #505; js/encyclopedia-links.js).
   const folded = Object.fromEntries([
     ...[...d.folds].filter(([, to]) => items.has(to)).map(([id, to]) => [`items:${id}`, pathOf(`item:${to}`)]),
@@ -261,7 +291,7 @@ export async function buildEncyclopedia(data = null) {
   ].sort(([a], [b]) => a.localeCompare(b)));
   // A folded page keeps its old address, which forwards to the page it shares.
   for (const [key, to] of movedPageKeys(d)) put(`${OUT}/${key.replace(':', '/')}/index.html`, movedPage(entries.get(to).name, `../../${to.replace(':', '/')}/`));
-  put(`${OUT}/search.json`, `${JSON.stringify({ sections: [{ key: 'items', label: 'Items' }, ...SECTIONS.map(({ key, label }) => ({ key, label }))], statuses: Object.fromEntries(Object.entries(STATUS).map(([k, v]) => [k, v.label])), inRemake: Object.keys(STATUS).filter(inRemake), entries: search, folded }).replace(/\{"s":/g, '\n{"s":')}\n`);
+  put(`${OUT}/search.json`, `${JSON.stringify({ sections: sectionKeys, statuses: Object.fromEntries(Object.entries(STATUS).map(([k, v]) => [k, v.label])), inRemake: Object.keys(STATUS).filter(inRemake), facts: factFiles, entries: search, folded }).replace(/\{"s":/g, '\n{"s":')}\n`);
   put(`${OUT}/index.html`, homePage(bySection, items, info, d.nameOf, subway.count));
 
   const keys = committedMap();
@@ -934,6 +964,7 @@ function homePage(bySection, items, info, nameOf, stations = 0) {
       <ul class="ency-cards" id="cards">
         ${cards.join('\n        ')}
       </ul>
+      <p class="ency-lead-small ency-subway-link">Looking for a street? <a href="streets/with/">Streets with…</a> lists every street with a community garden, a shrine, each kind of vendor, a subway station, or each rock, tree and animal.</p>
       <p class="ency-lead-small ency-subway-link">Riding the subway? <a href="subway/">The subway map</a> shows its ${fmt(stations)} stations, both lines and the street each one comes up on.</p>
     </div>
   </main>
@@ -943,7 +974,7 @@ function homePage(bySection, items, info, nameOf, stations = 0) {
 
 /* -- Write / check ------------------------------------------ */
 
-const STATIC = new Set(['encyclopedia.js', 'sections.css', 'streets.css']);
+const STATIC = new Set(['encyclopedia.js', 'search-core.js', 'sections.css', 'streets.css']);
 /** The Items section's folder: tools/catalog/build.mjs writes and checks it, so it is never a stray here. */
 const CATALOG = `${OUT}/items`;
 

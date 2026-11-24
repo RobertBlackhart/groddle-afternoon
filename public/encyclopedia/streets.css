@@ -17,6 +17,10 @@
 .st-region h3 { margin: 14px 0 8px; }
 .st-region h3 a { color: inherit; }
 .cat-facts .ency-chips { margin: 0; }
+/* #668: a "Streets with…" list (tools/encyclopedia/street-lists.mjs): how many a street has, after its name. */
+.st-list-note { color: var(--muted); font-size: 13px; }
+.st-lists .ency-chips { margin: 0 0 8px; }
+.st-lists-here { margin: 0 0 10px; }
 
 /*
  * G917 (#445): the Subway System map (tools/encyclopedia/subway.mjs), the game's own SVG
