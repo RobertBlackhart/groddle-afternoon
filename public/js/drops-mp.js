@@ -156,6 +156,16 @@ export function isSharedStreet(street) {
 }
 
 /**
+ * The classes a player keeps their own on a shared street, house or Tower floor, and why (shareReason):
+ * a note's writing would not travel; a Still works on the ground (#285: Distill, Collect, its hopper
+ * running), and the shared ground keeps a stack's words but has no verbs to change them. Glitch let only
+ * a home's owner pick a Still up there (items/still.js canPickup 386-389). The one list: the site's
+ * economy table carries it as each class's "own" (tools/build-economy.mjs), which its house-floor move
+ * reads (groddle-afternoon-site src/HouseFloors.php stays; report #670).
+ */
+export const KEPT_OWN = Object.freeze({ note: 'note', still: 'works' });
+
+/**
  * Whether a pack stack is dropped for everyone: '' when it is, else why it
  * stays the player's own (the game then drops it as in solo).
  * street: the realtime street; ownHome: the player stands at their own home;
@@ -168,10 +178,8 @@ export function shareReason(classTsid, table, { street = '', ownHome = false, he
   if (!isSharedStreet(street)) return 'private';
   if (!table?.items) return 'table';
   if (!table.items[c]) return 'type';
-  if (c === 'note') return 'note';
-  // #285: a Still works on the ground (Distill, Collect, its hopper running); the shared ground keeps a
-  // stack's words but has no verbs to change them, so a Still stays the player's own, where it works.
-  if (c === 'still') return 'works';
+  // A note, and a Still (#285), stay the player's own (KEPT_OWN).
+  if (Object.hasOwn(KEPT_OWN, c)) return KEPT_OWN[c];
   if (ownHome && herdFood && homeStreetOwner(street) > 0) return 'herd'; // the owner's animals eat it from the owner's own stacks
   return '';
 }

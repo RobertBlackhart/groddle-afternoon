@@ -12,7 +12,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { applyStockAct } from '../public/js/yard-stock-mp.js?v=ef552c2f';
-import { RESTORE_RETRIES, RESTORE_RETRY_MS, missingRestoreWires, restoreWireId } from '../public/js/home-street-mp.js?v=560c929c';
+import { RESTORE_RETRIES, RESTORE_RETRY_MS, missingRestoreWires, restoreWireId } from '../public/js/home-street-mp.js?v=cbb5478b';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => readFileSync(join(root, rel), 'utf8');

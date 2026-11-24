@@ -72,7 +72,7 @@ describe('a big house\'s old floor drops move to the shared floor once (HouseFlo
 
   it('every floor stack moves; what is on furniture, a Decoration Mode placement, a note, a full bag and unlike tools stay', () => {
     assert.equal(r.plan.moves, 100);
-    assert.deepEqual(r.plan.kept, { furniture: 8, decor: 1, type: 1, bag: 1, wear: 1 });
+    assert.deepEqual(r.plan.kept, { furniture: 8, decor: 1, note: 1, bag: 1, wear: 1 });
     assert.deepEqual(r.apply, { moved: 100 });
     assert.deepEqual(r.after.left, { RH_HOME_INT: 12, RH_HOME_EXT: 1 }, 'the Tower floor emptied, the home street untouched');
     assert.equal(r.after.ground, 100);
