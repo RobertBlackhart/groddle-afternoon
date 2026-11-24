@@ -60,6 +60,7 @@ import { pageArt, srcsetAttrs } from '../page-art/index.mjs';
 import { loadUses } from './uses.mjs';
 import { dropBoilerplate, factsFile, pageFacts } from '../encyclopedia/search-facts.mjs';
 import { loadHandouts } from './handouts.mjs';
+import { howLinks } from '../encyclopedia/guides.mjs';
 import { STREET_SPIRIT_VARIANTS } from '../../public/js/street-spirits.js?v=f9e88445';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -1153,7 +1154,10 @@ ${usesHtml.length ? `          <ul class="cat-list">
   const achTiles = fromAll((b) => b.from.startsWith('achievements:')).map((b) => P.tile(b.from, { sub: b.n > 1 ? `${fmt(b.n)} times` : '' }));
   // Music and sounds (tools/encyclopedia/sounds.mjs): the sounds Tiny Speck's game played from this item.
   const soundTiles = fromAll((b) => b.from.startsWith('sounds:')).map((b) => P.tile(b.from));
+  // #668: the "How do I…" guides that rely on this item (tools/encyclopedia/guides.mjs covers).
+  const how = howLinks(`item:${it.id}`, ency, p);
   const encyBody = [
+    how ? `<h3>How do I…</h3>\n        ${how}` : '',
     whereToFind(it.id, P, ency),
     person ? `<h3>People</h3>\n        ${P.tiles([P.tile(person.key, { sub: 'who they are and where to meet them' })])}` : '',
     questTiles.length ? `<h3>Quests</h3>\n        ${P.tiles(questTiles)}` : '',

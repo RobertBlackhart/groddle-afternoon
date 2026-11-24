@@ -4,7 +4,9 @@
  *    from every section, items included, as tiles grouped by section, with a
  *    section filter; the query lives in the address (?q=&s=). #668: each
  *    section's facts (what its pages say) load after it, and a match found in
- *    a fact shows that fact under its tile (./search-core.js ranks and cuts);
+ *    a fact shows that fact under its tile (./search-core.js ranks and cuts); a "How do I…"
+ *    guide whose question holds the query comes first, and the home's guides strip (#how)
+ *    hides while a query is shown, as the section cards do;
  *  - a section's list (input[data-filter], and select[data-group] drawn as the
  *    themed combobox of ./items/combobox.js) hides the tiles that do not match
  *    (?q=&g=), so the list it draws without JavaScript stays the source; on
@@ -15,7 +17,7 @@
  *    player at a time.
  */
 import { combobox } from './items/combobox.js?v=f2510e19';
-import { addFacts, createIndex, search as find, snippet } from './search-core.js?v=eb80f5cc';
+import { addFacts, createIndex, search as find, snippet } from './search-core.js?v=fc694f9e';
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -108,8 +110,8 @@ async function search(input) {
   chips.innerHTML = [['', 'All'], ...data.sections.map((s) => [s.key, s.label])]
     .map(([k, l]) => `<button type="button" class="chip" data-s="${esc(k)}" aria-pressed="${k === section}">${esc(l)}</button>`).join(' ');
   const why = (line, fuzzy) => (line ? ` <span class="ency-tile-why">${snippet(line, input.value, { fuzzy }).map((p) => (p.hit ? `<mark>${esc(p.text)}</mark>` : esc(p.text))).join('')}</span>` : '');
-  const sub = (e) => (e.s === 'lists' ? `${fmt(e.c || 0)} ${e.c === 1 ? 'street' : 'streets'}` : `<span class="cat-st st-${esc(e.st)}">${esc(data.statuses[e.st] || e.st)}</span>`);
-  const tile = ({ e, why: line }, fuzzy) => `<li><a class="ency-tile${inRemake.has(e.st) ? '' : ' ency-tile-out'}${line ? ' ency-tile-fact' : ''}" href="${base}${e.h}"><span class="ency-tile-pic">${e.ic ? `<img class="ency-ic" src="${base}${esc(e.ic)}" alt="" loading="lazy" decoding="async" />` : '<span class="ency-ic cat-ph" aria-hidden="true"></span>'}</span> <span class="ency-tile-name">${esc(e.n)}<span class="ency-sep">,</span></span> <span class="ency-tile-sub">${sub(e)}</span>${why(line, fuzzy)}</a></li>`;
+  const sub = (e) => (e.s === 'lists' ? `${fmt(e.c || 0)} ${e.c === 1 ? 'street' : 'streets'}` : e.s === 'how' ? 'Guide' : `<span class="cat-st st-${esc(e.st)}">${esc(data.statuses[e.st] || e.st)}</span>`);
+  const tile = ({ e, why: line }, fuzzy) => `<li><a class="ency-tile${inRemake.has(e.st) ? '' : ' ency-tile-out'}${line ? ' ency-tile-fact' : ''}${e.s === 'how' ? ' ency-tile-how' : ''}" href="${base}${e.h}"><span class="ency-tile-pic">${e.ic ? `<img class="ency-ic" src="${base}${esc(e.ic)}" alt="" loading="lazy" decoding="async" />` : '<span class="ency-ic cat-ph" aria-hidden="true"></span>'}</span> <span class="ency-tile-name">${esc(e.n)}<span class="ency-sep">,</span></span> <span class="ency-tile-sub">${sub(e)}</span>${why(line, fuzzy)}</a></li>`;
   const run = () => {
     const q = input.value.trim();
     const p = new URLSearchParams();
@@ -119,6 +121,7 @@ async function search(input) {
     for (const c of chips.children) c.setAttribute('aria-pressed', String(c.dataset.s === section));
     chips.hidden = !q;
     $('cards').hidden = Boolean(q);
+    if ($('how')) $('how').hidden = Boolean(q);
     if (!q) { $('results').innerHTML = ''; $('count').textContent = ''; return; }
     const { hits, fuzzy } = find(index, q, { section });
     const groups = new Map();

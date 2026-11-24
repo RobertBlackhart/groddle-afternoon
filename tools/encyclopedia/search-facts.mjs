@@ -19,6 +19,8 @@ export const SKIP_LABELS = new Set([
   // Conversation, not facts.
   'When it is offered', 'When you finish', 'When you learn it',
   'How long it takes',
+  // #668: the guides a page links (guides.mjs howLinks); a guide's words are its own search entry's.
+  'How do I…',
 ]);
 /** Fact-list terms that are numbers and codes, not words a player looks for. */
 export const SKIP_TERMS = new Set(['Region', 'Base price', 'Sells for', 'Stacks to', 'Tags', 'Music', 'Plural', 'Kind', 'Cost', 'In the deck', 'Buy it', 'Learn time']);

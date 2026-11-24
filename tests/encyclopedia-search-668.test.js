@@ -18,7 +18,7 @@ import { gzipSync } from 'node:zlib';
 import { INVENTORY_DB } from '../tools/catalog/build.mjs';
 import { loadEncyclopedia } from '../tools/encyclopedia/data.mjs';
 import { pageFacts, listWords, dropBoilerplate } from '../tools/encyclopedia/search-facts.mjs';
-import { addFacts, createIndex, fold, oneEdit, search, snippet, stem, words } from '../public/encyclopedia/search-core.js?v=eb80f5cc';
+import { addFacts, createIndex, fold, oneEdit, search, snippet, stem, words } from '../public/encyclopedia/search-core.js?v=fc694f9e';
 
 const pub = join(import.meta.dirname, '..', 'public');
 const dir = join(pub, 'encyclopedia');
@@ -74,12 +74,14 @@ describe('#668 encyclopedia search: words', () => {
 });
 
 describe('#668 encyclopedia search: results', () => {
-  it('"community garden" finds the list first, then every street with one, each saying why', { skip }, () => {
+  it('"community garden" finds the How do I guide and the list first, then every street with one, each saying why', { skip }, () => {
     const want = gardenStreets();
     assert.ok(want.length >= 10, `${want.length} streets with a community garden`);
     const { hits, fuzzy } = find('community garden');
     assert.equal(fuzzy, false);
-    assert.equal(keyOf(hits[0]), 'lists:community-garden');
+    // The guide to them comes first (tests/encyclopedia-how-668.test.js), then the list.
+    assert.equal(keyOf(hits[0]), 'how:community-gardens');
+    assert.equal(keyOf(hits[1]), 'lists:community-garden');
     const got = new Set(hits.map(keyOf));
     for (const k of want) assert.ok(got.has(k), `${k} is not found`);
     for (const h of hits.filter((x) => want.includes(keyOf(x)) && x.e.n !== 'Community Gardens')) assert.match(h.why, /Community garden/i, keyOf(h));
@@ -97,7 +99,7 @@ describe('#668 encyclopedia search: results', () => {
       for (const k of want) assert.ok(got.has(k), `${q}: ${k}`);
     }
     assert.equal(find('community gardn').fuzzy, true);
-    assert.equal(find('community gardn').hits[0].e.id, 'community-garden');
+    assert.deepEqual(find('community gardn').hits.slice(0, 2).map(keyOf), ['how:community-gardens', 'lists:community-garden']);
   });
 
   it("an item's facts are searchable: each seed the Gardening Tools Vendor sells, by the vendor", { skip }, () => {

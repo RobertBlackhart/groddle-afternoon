@@ -14,6 +14,9 @@
  *    in a fact; ties put the "Streets with…" lists first, then names that start with the query.
  *  - One typo (a letter missing, extra, changed or two swapped) is allowed in words of five
  *    letters or more, only when nothing matches as typed.
+ *  - A "How do I…" guide (section "how", tools/encyclopedia/guides.mjs) carries its question as
+ *    its name and strong keywords `k`, which count as name words; when every query word starts a
+ *    word of its question or keywords, the guide comes before everything else.
  */
 
 /** Lower case, accents, apostrophes and punctuation folded. */
@@ -70,8 +73,11 @@ function matchHow(w, t, fuzzy) {
 export function createIndex(entries, sections = []) {
   const label = Object.fromEntries(sections.map((s) => [s.key, s.label]));
   const index = { entries, words: new Map(), facts: entries.map(() => null), at: new Map(entries.map((e, i) => [`${e.s}:${e.id}`, i])) };
+  // #668: a guide's question and keywords, the words that rank it first.
+  index.strong = entries.map((e) => (e.k == null ? null : [...new Set([...words(e.n), ...words(e.k)])]));
   entries.forEach((e, i) => {
     for (const w of words(e.n)) note(index, w, i, FIELD.name);
+    for (const w of words(e.k || '')) note(index, w, i, FIELD.name);
     for (const w of words(`${String(e.id).replace(/[_-]/g, ' ')} ${e.g || ''} ${label[e.s] || ''}`)) note(index, w, i, FIELD.meta);
   });
   return index;
@@ -141,7 +147,8 @@ function holdsPhrase(ts, ws, fuzzy) {
  * does), `fuzzy` true when nothing matched as typed and these are one typo off.
  * opts.section keeps one section.
  *
- * Order: entries that hold the query as a phrase (in the name, or in one fact) first; then the
+ * Order: a guide whose question or keywords hold every query word (the start of a word) first;
+ * then entries that hold the query as a phrase (in the name, or in one fact); then the
  * score (where each word was found: name, then id, group and section, then facts); then the
  * "Streets with…" lists; then the shorter fact (a list line says it outright, a long paragraph
  * only mentions it); then names that start with the query, shorter names, and A to Z.
@@ -163,9 +170,11 @@ export function search(index, query, { section = '' } = {}) {
     const inName = ws.every((w) => name.some((t) => matchHow(w, t, fuzzy)));
     const why = inName ? '' : bestFact(index.facts[i], ws, fuzzy);
     const phrase = holdsPhrase(name, ws, fuzzy) || (why && holdsPhrase(words(why), ws, fuzzy)) ? 0 : 1;
-    return { e, i, score, why, phrase, list: e.s === 'lists' ? 0 : 1, starts: name[0]?.startsWith(first) ? 0 : 1 };
+    const strong = index.strong?.[i];
+    const guide = strong && ws.every((w) => strong.some((t) => inFact(w, t, fuzzy))) ? 0 : 1;
+    return { e, i, score, why: guide ? why : '', guide, phrase, list: e.s === 'lists' ? 0 : 1, starts: name[0]?.startsWith(first) ? 0 : 1 };
   });
-  hits.sort((a, b) => a.phrase - b.phrase || a.score - b.score || a.list - b.list || a.why.length - b.why.length
+  hits.sort((a, b) => a.guide - b.guide || a.phrase - b.phrase || a.score - b.score || a.list - b.list || a.why.length - b.why.length
     || a.starts - b.starts || a.e.n.length - b.e.n.length || a.e.n.localeCompare(b.e.n));
   return { hits: hits.map(({ e, i, score, why }) => ({ e, i, score, why })), fuzzy };
 }

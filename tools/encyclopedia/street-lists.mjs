@@ -95,7 +95,7 @@ export const listEntry = (l) => ({ s: 'lists', id: l.slug, n: l.title, g: `${l.s
 const many = (n, one, more = `${one}s`) => `${fmt(n)} ${n === 1 ? one : more}`;
 
 /** One list's page body: its streets by region, as plain links (a common thing is on hundreds). */
-export function listPage(l, { info, P, kit, entrySearch }) {
+export function listPage(l, { info, P, kit, entrySearch, how = '' }) {
   const nameOf = (k) => info(k)?.name || k;
   const byPlace = new Map();
   for (const r of l.rows) (byPlace.get(r.place) || byPlace.set(r.place, []).get(r.place)).push(r);
@@ -121,7 +121,7 @@ export function listPage(l, { info, P, kit, entrySearch }) {
 
   <main class="band cat-main">
     <div class="wrap">
-      ${groups}
+      ${groups}${how ? `\n      <section class="ency-group how-here" aria-labelledby="how-h"><h2 id="how-h">How do I…</h2>${how}</section>` : ''}
       <p class="note-all"><a href="../">Every list of streets</a> · <a href="../../">All streets</a> · <a href="../../../">Search the encyclopedia</a></p>
     </div>
   </main>
@@ -129,7 +129,7 @@ export function listPage(l, { info, P, kit, entrySearch }) {
 }
 
 /** The page of every list, by kind, each a chip with how many streets it has. */
-export function listsIndex(lists, { P, entrySearch }) {
+export function listsIndex(lists, { P, entrySearch, how = '' }) {
   const byKind = LIST_KINDS.map((k) => [k, lists.filter((l) => l.kind === k)]).filter(([, ls]) => ls.length);
   const kindTitle = { Gardens: 'Gardens', Shrines: 'Shrines', Vendors: 'Vendors', Subway: 'The subway' };
   const bands = byKind.map(([k, ls]) => `<section class="ency-group st-lists" aria-label="${esc(kindTitle[k] || k)}"><h2>${esc(kindTitle[k] || k)} <span class="count">${fmt(ls.length)}</span></h2>
@@ -148,7 +148,7 @@ export function listsIndex(lists, { P, entrySearch }) {
 
   <main class="band cat-main">
     <div class="wrap">
-      ${bands}
+      ${bands}${how ? `\n      <section class="ency-group how-here" aria-labelledby="how-h"><h2 id="how-h">How do I…</h2>${how}</section>` : ''}
       <p class="note-all"><a href="../">All streets</a> · <a href="../../">Search the encyclopedia</a></p>
     </div>
   </main>

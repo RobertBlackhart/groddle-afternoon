@@ -255,6 +255,22 @@ streets with a community garden, each Giant's shrine, each vendor, a subway
 station, and each rock, tree, animal and other thing, by region; each is a search
 entry (section "lists") and each street page links the lists it is on.
 
+"How do I…" guides (#668, Austin 2026-11-24): short answers to questions players
+asked, at `/encyclopedia/how/<slug>/` with an index at `/encyclopedia/how/` and a strip
+on the home above the section cards. Each guide is data in `tools/encyclopedia/guides.mjs`
+(question, one-sentence answer, steps or lists, search keywords, the pages that link
+back to it, and its facts); `guide-pages.mjs` draws the pages, styled by the "How do I…"
+block of `items/catalog.css`. Links in a guide are `[[key]]` or `[[key|words]]`
+(encyclopedia keys, `list:<slug>`, `search:<query>`, `page:<path/>`, `how:<slug>`), so
+names come from the game data. Every fact names its words (`say`) and checks them
+against the game's code and data (`ok`); the builder refuses to write a guide whose fact
+fails, and `tests/encyclopedia-how-668.test.js` checks the facts, that every number in a
+guide is one of them, that every link resolves and that covered pages link back. In the
+search each guide is an entry of section "how" (listed first) whose keywords count as
+name words: a query whose every word starts a word of a guide's question or keywords
+brings that guide first. To add a guide, add its row, run the builders, and add its
+sample queries.
+
 ## Visual design (Austin 2026-11-01: "link up more visually")
 
 Related things are shown as pictures, not just text links. Shared parts

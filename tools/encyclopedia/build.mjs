@@ -9,6 +9,7 @@
  *   public/encyclopedia/search.json                every entry (items included), for the search
  *   public/encyclopedia/facts/<section>.json       each page's facts, for the search (#668, search-facts.mjs)
  *   public/encyclopedia/streets/with/              the "Streets with…" lists (#668, street-lists.mjs)
+ *   public/encyclopedia/how/                       the "How do I…" guides (#668, guides.mjs, guide-pages.mjs)
  *   public/encyclopedia/<section>/index.html       a section's list, drawn in full
  *   public/encyclopedia/<section>/<id>/index.html  one page per entry
  *   public/encyclopedia/sounds/still-missing/       every sound whose recording is still missing
@@ -39,6 +40,8 @@ import { STREET_SPIRIT_VARIANTS } from '../../public/js/street-spirits.js?v=f9e8
 import { subwayPage } from './subway.mjs';
 import { LISTS_PATH, listEntry, listPage, listsIndex, streetLists } from './street-lists.mjs';
 import { dropBoilerplate, factsFile, factsPath, pageFacts } from './search-facts.mjs';
+import { HOW_PATH, HOW_TITLE, checkGuides, guideEntries, guideFacts, howLinks } from './guides.mjs';
+import { guidePages, guidesIndex, howStrip } from './guide-pages.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
 const OUT = 'encyclopedia';
@@ -225,6 +228,10 @@ export async function buildEncyclopedia(data = null) {
   const files = {};
   const put = (path, html) => { files[path] = html; };
 
+  // #668: the "How do I…" guides check their facts against the game first: a guide that drifted is not written.
+  const drift = checkGuides(d);
+  if (drift.length) throw new Error(`a How do I guide no longer matches the game: ${drift.map((f) => `${f.slug}: "${f.say}" (${f.why})`).join('; ')}`);
+
   // #668: the "Streets with…" lists, before the street pages, which link the lists they are on.
   const { lists, of: listsOf } = streetLists(d, info);
   d.streetListsOf = listsOf;
@@ -241,7 +248,9 @@ export async function buildEncyclopedia(data = null) {
       const page = { quests: questPage, animals: creaturePage, people: creaturePage, skills: skillPage, places: placePage, achievements: achievementPage, sounds: soundPage, streets: streetPage, stores: storePage, ...MORE_PAGES }[sec.key];
       // Bands alternate plain and tinted in the order they appear, whichever ones the entry has.
       let nth = 0;
-      const body = (page(e, P, { linkFor, backOf, uniqBy, info, d, kit: { ...kit, p, paras, verbList, learnTime } }) + pager(list, i, sec.label))
+      // #668: a page a guide relies on links it, in a band of its own before the pager.
+      const how = band('how-h', HOW_TITLE, howLinks(e.key, d, p));
+      const body = (page(e, P, { linkFor, backOf, uniqBy, info, d, kit: { ...kit, p, paras, verbList, learnTime } }) + how + pager(list, i, sec.label))
         .replace(/<(section|nav) class="band(?: band-alt)?/g, (m, tag) => `<${tag} class="band${nth++ % 2 ? ' band-alt' : ''}`);
       const desc = plainText(e.quest?.desc || e.creature?.desc || e.skill?.description || e.ach?.desc || e.desc || e.sound?.moment || '').slice(0, 150);
       // A sound's page loads the encyclopedia's script for its synth stand-in and its players.
@@ -262,13 +271,23 @@ export async function buildEncyclopedia(data = null) {
   {
     const p = '../../../../';
     const P = makeParts(p, info, d.nameOf);
-    for (const l of lists) put(`${OUT}/streets/with/${l.slug}/index.html`, shell({ p, title: `${l.title} · Groddle Encyclopedia`, description: `${l.title}: ${l.rows.length} streets of the Groddle Afternoon remake, by region.`, body: listPage(l, { info, P, entrySearch }), css: 'encyclopedia/streets.css' }));
+    for (const l of lists) put(`${OUT}/streets/with/${l.slug}/index.html`, shell({ p, title: `${l.title} · Groddle Encyclopedia`, description: `${l.title}: ${l.rows.length} streets of the Groddle Afternoon remake, by region.`, body: listPage(l, { info, P, entrySearch, how: howLinks(`list:${l.slug}`, d, p) }), css: 'encyclopedia/streets.css' }));
     const p3 = '../../../';
-    put(`${OUT}/streets/with/index.html`, shell({ p: p3, title: 'Streets with… · Groddle Encyclopedia', description: 'Every street with a community garden, a shrine, a vendor, a subway station, or a rock, tree, animal or thing to harvest, by region.', body: listsIndex(lists, { P: makeParts(p3, info, d.nameOf), entrySearch }), css: 'encyclopedia/streets.css' }));
+    put(`${OUT}/streets/with/index.html`, shell({ p: p3, title: 'Streets with… · Groddle Encyclopedia', description: 'Every street with a community garden, a shrine, a vendor, a subway station, or a rock, tree, animal or thing to harvest, by region.', body: listsIndex(lists, { P: makeParts(p3, info, d.nameOf), entrySearch, how: howLinks(`page:${LISTS_PATH}`, d, p3) }), css: 'encyclopedia/streets.css' }));
+  }
+
+  // #668: the "How do I…" guides (guides.mjs) and their index.
+  const listsBySlug = new Map(lists.map((l) => [l.slug, l]));
+  {
+    const ctx = { info, lists: listsBySlug, d, entrySearch, makeParts };
+    const index = guidesIndex(ctx);
+    put(`${HOW_PATH.replace(/^encyclopedia/, OUT)}index.html`, shell({ p: '../../', ...index }));
+    for (const [slug, page] of guidePages(ctx)) put(`${HOW_PATH.replace(/^encyclopedia/, OUT)}${slug}/index.html`, shell({ p: '../../../', ...page }));
   }
 
   // Search: every entry, items included, and the lists.
   const search = [
+    ...guideEntries(info),
     ...[...items.values()].map((it) => ({ s: 'items', id: it.id, n: it.name, st: it.status, ic: it.icon?.src || '', h: pathOf(`item:${it.id}`) })),
     ...[...entries.values()].map((e) => ({ s: e.section, id: e.id, n: e.name, g: e.group || '', st: e.status, ic: e.icon?.src || '', h: pathOf(e.key) })),
     { s: 'lists', id: 'all', n: 'Streets with…', g: 'lists of streets features where to find', st: 'source', ic: '', h: LISTS_PATH, c: lists.length },
@@ -280,8 +299,10 @@ export async function buildEncyclopedia(data = null) {
     const html = files[`${OUT}/${e.section}/${e.id}/index.html`];
     if (html) (factsOf.get(e.section) || factsOf.set(e.section, new Map()).get(e.section)).set(e.id, pageFacts(html));
   }
-  for (const [section, facts] of factsOf) put(`${OUT}/${factsPath(section)}`, factsFile(dropBoilerplate(facts)));
-  const sectionKeys = [{ key: 'items', label: 'Items' }, ...SECTIONS.map(({ key, label }) => ({ key, label }))];
+  // The guides' facts are their own words (guides.mjs guideFacts), not read off a page.
+  factsOf.set('how', guideFacts({ info, lists: listsBySlug }));
+  for (const [section, facts] of factsOf) put(`${OUT}/${factsPath(section)}`, factsFile(section === 'how' ? facts : dropBoilerplate(facts)));
+  const sectionKeys = [{ key: 'how', label: HOW_TITLE }, { key: 'items', label: 'Items' }, ...SECTIONS.map(({ key, label }) => ({ key, label }))];
   sectionKeys.splice(sectionKeys.findIndex((s) => s.key === 'streets') + 1, 0, { key: 'lists', label: 'Lists of streets' });
   const factFiles = Object.fromEntries(['items', ...factsOf.keys()].map((k) => [k, factsPath(k)]));
   // A folded variant's class opens the page it shares (data.mjs foldsOf, #505; js/encyclopedia-links.js).
@@ -961,6 +982,7 @@ function homePage(bySection, items, info, nameOf, stations = 0) {
     <div class="wrap">
       <p class="cat-count" id="count" aria-live="polite"></p>
       <div id="results"></div>
+      ${howStrip()}
       <ul class="ency-cards" id="cards">
         ${cards.join('\n        ')}
       </ul>

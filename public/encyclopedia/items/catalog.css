@@ -371,3 +371,40 @@ a.ency-card:hover { border-color: var(--moss); }
   .cat-card.cat-card-nr { grid-template-rows: auto 40px 1fr auto; }
   .cat-card-nr .cat-ic { width: 40px; height: 40px; }
 }
+
+/* #668 "How do I…" guides (tools/encyclopedia/guides.mjs, guide-pages.mjs): the home's strip, the guide pages and the links a covered page shows. */
+.how-strip {
+  margin: 0 0 18px; padding: 14px 18px 16px; background: color-mix(in srgb, var(--moss) 9%, var(--surface));
+  border: 1px solid color-mix(in srgb, var(--moss) 40%, var(--border)); border-radius: var(--radius-lg);
+}
+.how-strip h2 { margin: 0 0 8px; font-size: 22px; }
+.how-strip h2 a { color: var(--fg); text-decoration: none; }
+.how-strip h2 a:hover { color: var(--moss); }
+.how-strip-list { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: 6px 18px; }
+.how-strip-list a, .how-links a { color: var(--moss); font-weight: 700; text-decoration: none; }
+.how-strip-list a:hover, .how-links a:hover { text-decoration: underline; }
+.how-links { list-style: none; margin: 0 0 12px; padding: 0; display: grid; gap: 6px; }
+.how-links li, .how-strip-list li { position: relative; padding-left: 22px; }
+.how-links li::before, .how-strip-list li::before { content: "?"; position: absolute; left: 0; top: 1px; width: 16px; height: 16px; border-radius: 50%; background: var(--moss); color: var(--surface); font-size: 11px; font-weight: 800; line-height: 16px; text-align: center; }
+.how-answer { max-width: 40em; font-size: 19px; }
+.how-part p, .how-part li { max-width: 44em; font-size: 17px; line-height: 1.55; }
+.how-part a, .how-answer a { color: var(--moss); font-weight: 700; }
+.how-steps { margin: 0; padding: 0; list-style: none; counter-reset: how; display: grid; gap: 12px; }
+.how-steps > li { counter-increment: how; position: relative; padding-left: 44px; min-height: 30px; }
+.how-steps > li::before {
+  content: counter(how); position: absolute; left: 0; top: -1px; width: 30px; height: 30px; border-radius: 50%;
+  background: var(--moss); color: var(--surface); font-weight: 800; font-size: 15px; line-height: 30px; text-align: center;
+}
+.how-list { margin: 0; padding-left: 22px; display: grid; gap: 8px; }
+.how-card .ency-card-name { font-size: 20px; }
+.how-here { margin-top: 8px; }
+@media (max-width: 520px) {
+  .how-answer { font-size: 17px; }
+  .how-part p, .how-part li { font-size: 16px; }
+  .how-steps > li { padding-left: 38px; }
+  .how-steps > li::before { width: 26px; height: 26px; line-height: 26px; font-size: 14px; }
+}
+/* A guide in the search results: wide enough for its whole question. */
+.ency-grid > li:has(> .ency-tile-how) { grid-column: span 2; }
+.ency-tile-how .ency-tile-name { -webkit-line-clamp: 4; font-size: 14px; }
+.how-cards + .note-all { margin-top: 20px; }

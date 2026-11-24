@@ -39,8 +39,9 @@ describe('encyclopedia', () => {
     for (const name of readdirSync(dir, { withFileTypes: true }).filter((x) => x.isDirectory()).map((x) => x.name)) {
       // items/ is the Item catalog's (tools/catalog/build.mjs, tests/catalog.test.js); subway/ is one page,
       // the Subway System map (G917, tools/encyclopedia/subway.mjs, tests/encyclopedia-subway-917.test.js);
-      // facts/ is each section's facts for the search (#668, tests/encyclopedia-search-668.test.js).
-      assert.ok(BUILT_SECTIONS.includes(name) || name === 'items' || name === 'subway' || name === 'facts', `stray section ${name}`);
+      // facts/ is each section's facts for the search (#668, tests/encyclopedia-search-668.test.js);
+      // how/ is the "How do I…" guides (#668, tools/encyclopedia/guides.mjs, tests/encyclopedia-how-668.test.js).
+      assert.ok(BUILT_SECTIONS.includes(name) || name === 'items' || name === 'subway' || name === 'facts' || name === 'how', `stray section ${name}`);
     }
   });
 
