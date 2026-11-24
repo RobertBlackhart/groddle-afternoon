@@ -35,7 +35,7 @@ import {
   towerForLobby,
 } from '../public/js/tower-floors.js?v=91217aeb';
 import { towerFloorsFeature } from '../public/js/features/tower-floors-feature.js?v=2613cfb3';
-import { FEATURES } from '../public/js/features/index.js?v=f4a615ab';
+import { FEATURES } from '../public/js/features/index.js?v=05f511e1';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pub = join(spike, 'public');

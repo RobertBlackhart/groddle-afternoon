@@ -2814,9 +2814,14 @@
   "deployed": "2026-11-24"
  },
  "git": {
-  "commits": 3348,
+  "commits": 3350,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-24",
+    "kind": "improve",
+    "text": "A floor stack you set on a shelf or table in Decoration Mode shows there at once"
+   },
    {
     "date": "2026-11-24",
     "kind": "improve",
@@ -2931,11 +2936,6 @@
     "date": "2026-11-23",
     "kind": "improve",
     "text": "Favor's Giant symbol on the phone's street caption reads on any street"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "improve",
-    "text": "The phone's Social badge counts chat and IMs only, the Activity log keeps its own small count"
    }
   ]
  },
