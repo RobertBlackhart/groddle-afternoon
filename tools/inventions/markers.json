@@ -1455,6 +1455,14 @@
     "ours: Ours: the rolls a day a capped class's cap allows": "ours-tools-build-economy",
     "ours: Ours: the unit value of a tradeable class with no": "ours-tools-build-economy"
   },
+  "tools/build-item-sources.mjs": {
+    "glitch-had-none: (GSJS base_cost), rare 1 for Glitch\\'s rare tag (Glitch had no rarity scale), why when it cannot be": "not-an-invention",
+    "glitch-had-none: * - A class Glitch never had (the remake's own, in neither) can be got": "not-an-invention",
+    "no-source: give classes, ${admin.length} with no source in the game (admin only), ${rows.filter((r) =>": "not-an-invention",
+    "no-source: unknown: 'No source": "not-an-invention",
+    "remake-own: * - A class Glitch never had (the remake's own, in neither) can be got unless the economy": "not-an-invention",
+    "remake-own: * - Either way, the remake's own supply tables win when they give it": "not-an-invention"
+  },
   "tools/build-realtime-boards.mjs": {
     "remake-own: * the remake's own words, marked as such), pinned online": "remake-copy"
   },
