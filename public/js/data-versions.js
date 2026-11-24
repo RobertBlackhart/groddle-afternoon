@@ -10753,7 +10753,7 @@
       "encyclopedia/facts/streets.json": "87eedf49",
       "encyclopedia/items/data.json": "91599bdd",
       "encyclopedia/items/facts.json": "98d145de",
-      "encyclopedia/search.json": "9ca25b5a",
+      "encyclopedia/search.json": "85d0320b",
       "landing/card-explore.webp": "7a2c1124",
       "landing/full/card-explore.webp": "cbce4e96",
       "restoration/gaps.json": "7b5c1b67",
