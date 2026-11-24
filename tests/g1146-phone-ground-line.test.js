@@ -10,7 +10,7 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { MIN_PACK_HEIGHT, PHONE_GROUND_MIN_CLEARANCE, VIEW_FLOOR_H, phoneGroundWorldHeight, sceneGroundLine, stageFor } from '../public/js/location-view.js?v=ded0e52b';
+import { MIN_PACK_HEIGHT, PHONE_GROUND_MIN_CLEARANCE, VIEW_FLOOR_H, phoneCameraAnchor, phoneFeetWorldHeight, phoneGroundWorldHeight, sceneGroundLine, stageFor } from '../public/js/location-view.js?v=ded0e52b';
 import { MIN_GROUND_CLEARANCE, cameraTargetY, cameraWorldHeightForGround } from '../public/js/movement.js?v=f4be1a05';
 import { STREET_GROUND_LINES } from '../public/js/street-ground-lines.js?v=31e7f393';
 import { CELL, GAP_SHARE, groundLineFromCover, measureStreet, rowCover, stampDeco } from '../tools/ground-line/build.mjs?v=1bfd0f53';
@@ -124,5 +124,41 @@ describe('G1146: the phone camera stops at the ground line', () => {
     const fn = game.slice(game.indexOf('function activeCameraWorldHeight('), game.indexOf('function clampWorldOverlayX('));
     assert.match(fn, /const floor = phoneLine > 0 \? deepest : deepestReachableFloorY\(\);/);
     assert.match(fn, /phoneGroundWorldHeight\(\{ worldHeight: world, groundLine: line, floorY: floor/);
+  });
+});
+
+describe('G1229 (#654): the feet stand over the phone\'s controls, not only the pack row', () => {
+  const KALA = 'GIFGR4QG5IV1QPI';
+  // Upright the stick's top stands about 136 CSS px over the pack row's (style.css TOUCH): 200 px over the canvas's bottom.
+  const CONTROLS_CSS = 200;
+  for (const size of [{ width: 390, height: 844 }, { width: 384, height: 748 }, { width: 375, height: 667 }]) {
+    it(`Kala Close at ${size.width}x${size.height}: the street-bottom clamp left the feet under the controls; now they stand over them`, () => {
+      const s = street(KALA);
+      const line = STREET_GROUND_LINES[KALA];
+      const H = s.bounds.b - s.bounds.t;
+      const floor = Math.max(...s.platforms.filter((p) => p.pc_perm !== 1).map((p) => Math.max(p.y1, p.y2) - s.bounds.t));
+      const stage = stageFor({ ...size, packReserve: MIN_PACK_HEIGHT, sceneWidth: s.bounds.r - s.bounds.l, sceneHeight: H, phone: true, groundLine: line });
+      const ground = phoneGroundWorldHeight({ worldHeight: cameraWorldHeightForGround(H, floor, stage.viewH, 0.75), groundLine: line, floorY: floor, packReserve: MIN_PACK_HEIGHT, packCoverCss: PACK_CSS, scale: stage.scale, clearance: MIN_GROUND_CLEARANCE });
+      const feetOverControls = (world, anchor) => {
+        const camY = cameraTargetY(floor, world, stage.viewH, anchor);
+        return (camY + stage.viewH + MIN_PACK_HEIGHT - CONTROLS_CSS / stage.scale) - floor;
+      };
+      const anchor0 = phoneCameraAnchor({ viewH: stage.viewH, packCoverCss: PACK_CSS, scale: stage.scale, clearance: MIN_GROUND_CLEARANCE });
+      assert.ok(feetOverControls(ground, anchor0) < 0, 'before: under the controls');
+      const world = phoneFeetWorldHeight({ worldHeight: ground, floorY: floor, packReserve: MIN_PACK_HEIGHT, floorCoverCss: CONTROLS_CSS, scale: stage.scale, clearance: MIN_GROUND_CLEARANCE });
+      const anchor = phoneCameraAnchor({ viewH: stage.viewH, packCoverCss: PACK_CSS, scale: stage.scale, clearance: MIN_GROUND_CLEARANCE, floorCoverCss: CONTROLS_CSS });
+      assert.ok(world > ground, 'past the street-bottom clamp: the feet win where both cannot hold');
+      assert.ok(feetOverControls(world, anchor) >= MIN_GROUND_CLEARANCE - 1, `the feet ${feetOverControls(world, anchor).toFixed(1)} world px over the controls`);
+    });
+  }
+  it('never higher than the usual camera, and no floor cover changes nothing', () => {
+    assert.equal(phoneFeetWorldHeight({ worldHeight: 2000, floorY: 900, floorCoverCss: 200, scale: 1 }), 2000);
+    assert.equal(phoneFeetWorldHeight({ worldHeight: 1000, floorY: 990, floorCoverCss: NaN, scale: 1 }), 1000);
+    assert.equal(phoneCameraAnchor({ viewH: 600, packCoverCss: 64, scale: 1 }), phoneCameraAnchor({ viewH: 600, packCoverCss: 64, scale: 1, floorCoverCss: NaN }));
+  });
+  it('game.js: the region model\'s floor (phone-layout streetFloor) is the camera\'s safe area', () => {
+    assert.match(game, /phoneLayout\?\.streetFloor\?\.\(\)/);
+    assert.match(game, /phoneFeetWorldHeight\(\{ worldHeight: ground, floorY: deepest/);
+    assert.match(game, /floorCoverCss: cameraFloorCoverCss \}\);/);
   });
 });

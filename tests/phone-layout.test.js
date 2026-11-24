@@ -24,7 +24,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
-  GAP, PILL_IDS, STICK, TAP_H, boxesOverlap, fullScreenWay, layoutProblems, menuRoomOf, phoneRegions, pillBadge, stickRegionOf,
+  GAP, PILL_IDS, STICK, TAP_H, boxesOverlap, fullScreenWay, layoutProblems, menuRoomOf, phoneRegions, pillBadge, stickRegionOf, streetFloorOf,
 } from '../public/js/ui/phone-layout.js?v=d29bc134';
 import { phonePins } from '../public/js/ui/quest-pin-button.js?v=ec4d53fa';
 
@@ -110,6 +110,18 @@ describe('phone layout: the regions (pure)', () => {
     // As the game measured it before: the card over the whole corner, mid-left on the screen.
     const old = phoneRegions({ width: 390, height: 844, pin: { w: 200, h: 50 }, controls: { stick: corner } });
     assert.ok(old.pin.bottom < r.pin.bottom - 150);
+  });
+
+  it('G1229 (#654): the free street area\'s floor is over the stick, Act, Jump and the pack row upright, over the pack row sideways, none under a sheet', () => {
+    for (const [width, height] of [[390, 844], [384, 748], [375, 667]]) {
+      const pack = { left: width / 2 - 165, right: width / 2 + 165, top: height - 66, bottom: height - 6 };
+      const r = phoneRegions({ width, height, pack });
+      assert.equal(streetFloorOf(r), Math.min(r.stick.top, r.act.top, r.jump.top) - GAP, `${width}x${height}`);
+      assert.ok(Number.isNaN(streetFloorOf(phoneRegions({ width, height, pack, sheet: 'half' }))), 'none under a sheet');
+    }
+    const side = phoneRegions({ width: 748, height: 384, pack: { left: 209, right: 539, top: 318, bottom: 378 } });
+    assert.equal(streetFloorOf(side), 318 - GAP);
+    assert.ok(Number.isNaN(streetFloorOf(null)));
   });
 
   it('#5: a menu\'s room is above the controls upright and between the stick and Act sideways, none under a sheet', () => {
@@ -580,6 +592,20 @@ describe('phone layout: no overlaps on the real game (Chrome)', { skip: !chromiu
     // The float stick's corner is taller than its ring (stickRegionOf); these tabs keep the fixed stick.
     const controls = Math.min(top('#game-root .touch-stick'), top('#game-root .touch-act'), top('#game-root .touch-jump'));
     return { feet: r.top + Number(c.dataset.playerScreenY) * Number(c.dataset.stageScale), controls, pack: top('#pack-row'), dock: c.dataset.phoneDock || '' };
+  });
+
+  it('G1229 (#654): on a low-floor street (Kala Close) the avatar\'s feet stand over the controls at 390x844, 384x748 and 375x667', { timeout: 120_000 }, async () => {
+    const { ctx, tab, errors } = await kalaClose(390, 844);
+    const bad = [];
+    for (const [w, h] of [[390, 844], [384, 748], [375, 667]]) {
+      await tab.setViewportSize({ width: w, height: h });
+      await tab.waitForTimeout(1500);
+      const m = await feetAndControls(tab);
+      if (!(m.feet < m.controls)) bad.push(`${w}x${h}: the feet at ${Math.round(m.feet)}, the controls from ${Math.round(m.controls)}`);
+    }
+    await ctx.close();
+    assert.deepEqual(bad, []);
+    assert.deepEqual(errors, []);
   });
 
   it('G1228 (#653): closing a sheet, the Menu, Social or a bag gives the street back and the camera returns (the avatar never sinks under the pack row)', { timeout: 120_000 }, async () => {

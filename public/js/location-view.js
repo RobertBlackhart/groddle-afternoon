@@ -472,15 +472,44 @@ export function landscapePhoneStage({ width, height, packReserve = MIN_PACK_HEIG
  * the feet come nearer the real pack than `clearance` (js/movement.js MIN_GROUND_CLEARANCE), and at
  * most 0.95 of the view. No measured pack (hidden, not laid out): the anchor as given.
  */
-export function phoneCameraAnchor({ anchor = 0.75, viewH, packReserve = MIN_PACK_HEIGHT, packCoverCss, scale, clearance = 40 } = {}) {
+export function phoneCameraAnchor({ anchor = 0.75, viewH, packReserve = MIN_PACK_HEIGHT, packCoverCss, scale, clearance = 40, floorCoverCss } = {}) {
   const base = finite(anchor, 0.75);
   const view = finite(viewH);
   const cover = finite(packCoverCss);
   const s = finite(scale);
-  if (!(view > 0) || !(cover >= 0) || !(s > 0)) return base;
-  const room = view + finite(packReserve, MIN_PACK_HEIGHT) - cover / s;
-  const feet = Math.min(base * room, room - finite(clearance, 40));
-  return Math.min(0.95, Math.max(base, feet / view));
+  if (!(view > 0) || !(s > 0)) return base;
+  let out = base;
+  if (cover >= 0) {
+    const room = view + finite(packReserve, MIN_PACK_HEIGHT) - cover / s;
+    const feet = Math.min(base * room, room - finite(clearance, 40));
+    out = Math.min(0.95, Math.max(base, feet / view));
+  }
+  // G1229 (#654): never so low the feet come under the phone's controls (floorCoverCss, phoneFeetWorldHeight).
+  const floorCover = finite(floorCoverCss);
+  if (floorCover > 0) {
+    const free = view + finite(packReserve, MIN_PACK_HEIGHT) - floorCover / s - finite(clearance, 40);
+    if (free > 0) out = Math.min(out, free / view);
+  }
+  return out;
+}
+
+/**
+ * PURE (G1229, report #654: an Android phone, Kala Close): the camera's world height on a phone, so
+ * the feet on the deepest floor (`floorY`) can always stand `clearance` over the free street area's
+ * floor: the canvas's bottom `floorCoverCss` CSS px are the touch controls and the pack row (upright
+ * the stick, Act and Jump stand over the row; js/ui/phone-layout.js streetFloorOf). The street-bottom
+ * clamp (phoneGroundWorldHeight, G1146) keeps only the pack row's room under the feet, so on a street
+ * whose lowest floor sits close over its bottom the avatar stood under the stick, Act and the pack.
+ * Where both cannot hold, the feet win: the camera goes as low as they need, past the street's bottom
+ * (its ground fill shows there). Never higher than `worldHeight`.
+ */
+export function phoneFeetWorldHeight({ worldHeight, floorY, packReserve = MIN_PACK_HEIGHT, floorCoverCss, scale, clearance = 40 } = {}) {
+  const world = finite(worldHeight);
+  const floor = finite(floorY);
+  const cover = finite(floorCoverCss);
+  const s = finite(scale);
+  if (!(world > 0) || !Number.isFinite(floor) || !(cover > 0) || !(s > 0)) return world;
+  return Math.max(world, floor + finite(clearance, 40) + cover / s - finite(packReserve, MIN_PACK_HEIGHT));
 }
 
 /**

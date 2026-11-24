@@ -207,6 +207,21 @@ export function stickRegionOf(rect, { float = false } = {}) {
   return { left: rect.left, top: rect.bottom - STICK, right: rect.left + Math.min(STICK, rect.right - rect.left), bottom: rect.bottom };
 }
 
+/**
+ * PURE (G1229, #654): the free street area's floor in the root's px: the lowest the avatar's feet may
+ * stand and stay clear of the controls and the pack row (game.js gives it to the camera). Upright the
+ * stick, Act and Jump stand over the pack row across the narrow screen, so it is over all of them;
+ * sideways they stand at the sides and the street's middle runs down to the pack row. NaN under a
+ * sheet or a bag (the street is docked above it) and with neither controls nor a pack row.
+ */
+export function streetFloorOf(regions) {
+  if (!regions || regions.sheet) return NaN;
+  const tops = [regions.pack];
+  if (regions.upright) tops.push(regions.stick, regions.act, regions.jump);
+  const shown = tops.filter((b) => b && b.bottom > b.top).map((b) => b.top);
+  return shown.length ? Math.min(...shown) - GAP : NaN;
+}
+
 /** PURE: true when two boxes share any area. */
 export function boxesOverlap(a, b) {
   return Boolean(a && b && a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top);
@@ -514,6 +529,12 @@ export function mountPhoneLayout({ doc = globalThis.document, root, sheets = {},
     regions: () => current,
     /** The room an interaction menu may take (menuRoomOf), in the root's px; null when not laid out. */
     menuRoom: () => (on && current ? menuRoomOf(current, { width: root.getBoundingClientRect().width }) : null),
+    /** G1229: the free street area's floor in page px (streetFloorOf), NaN when not laid out or under a sheet. */
+    streetFloor: () => {
+      if (!on || !current) return NaN;
+      const y = streetFloorOf(current);
+      return Number.isFinite(y) ? y + root.getBoundingClientRect().top : NaN;
+    },
     /** The notices' region in page px (js/notify-view.js), null when not laid out. */
     noticeRegion: () => {
       if (!on || !current) return null;

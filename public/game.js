@@ -832,7 +832,7 @@ import { easeCameraAxis } from './js/camera-feel.js?v=e668afc5';
 import { renderResolution, resolutionCap, RESOLUTION_STEP, phoneZoomResolution } from './js/render-density.js?v=74c6f5f9';
 // g458: low energy and mood turn amber and red, and a click offers something from the pack.
 import { makingNeeds, vitalMenuEmpty, vitalMenuHeading, vitalSnacks } from './js/vitals.js?v=85a51302';
-import { DEFAULT_VP_H, LOCATION_VIEW_W, VIEW_CEIL_H, stageFor, sceneViewCap, sceneViewWidthCap, zoomMovesStage, phoneZoomSpan, phoneCameraAnchor, phoneGroundWorldHeight, reachableFloorY, sceneBottomLine, sceneGroundLine, shortSceneBand, stageRoomBeside } from './js/location-view.js?v=ded0e52b';
+import { DEFAULT_VP_H, LOCATION_VIEW_W, VIEW_CEIL_H, stageFor, sceneViewCap, sceneViewWidthCap, zoomMovesStage, phoneZoomSpan, phoneCameraAnchor, phoneFeetWorldHeight, phoneGroundWorldHeight, reachableFloorY, sceneBottomLine, sceneGroundLine, shortSceneBand, stageRoomBeside } from './js/location-view.js?v=ded0e52b';
 import {
   levelInfoForXp,
   reconcilePlayerProgression,
@@ -2614,11 +2614,17 @@ function streetCameraAnchor() {
   const anchor = yCamOffsetAnchor(Number.isFinite(offset) ? offset : 150, LOCATION_VIEW_H);
   // G673: on a phone, that share of the room over the real pack row (js/location-view.js phoneCameraAnchor).
   if (!TOUCH_PHONE || !modernUi() || PINNED_VIEW_H > 0) return anchor;
-  return phoneCameraAnchor({ anchor, viewH: LOCATION_VIEW_H, packReserve: PACK_VIEW_RESERVE, packCoverCss: cameraPackCoverCss, scale: STAGE_SCALE, clearance: MIN_GROUND_CLEARANCE });
+  return phoneCameraAnchor({ anchor, viewH: LOCATION_VIEW_H, packReserve: PACK_VIEW_RESERVE, packCoverCss: cameraPackCoverCss, scale: STAGE_SCALE, clearance: MIN_GROUND_CLEARANCE, floorCoverCss: cameraFloorCoverCss });
 }
 
 /** G673: CSS px of the canvas's bottom the pack row covers (syncCameraSafeArea; phones and, G1157, computers); NaN when not shown. */
 let cameraPackCoverCss = NaN;
+/**
+ * G1229 (#654): on the phone layout, CSS px of the canvas's bottom under the free street area's floor
+ * (js/ui/phone-layout.js streetFloorOf: upright over the stick, Act, Jump and the pack row; sideways
+ * over the row), the camera's safe area from the region model; NaN elsewhere and under a sheet.
+ */
+let cameraFloorCoverCss = NaN;
 
 /**
  * G928 (#459): upright on a phone the top bar and the street's name stand over the canvas's top, and the
@@ -2659,11 +2665,19 @@ function syncCameraPackCover() {
   const canvas = app?.canvas;
   if (!bar || !canvas?.isConnected || !shownElement(bar)) {
     cameraPackCoverCss = NaN;
+    syncCameraFloorCover();
     return;
   }
   const c = canvas.getBoundingClientRect();
   const p = bar.getBoundingClientRect();
   cameraPackCoverCss = p.height > 0 && c.height > 0 ? Math.max(0, c.bottom - p.top) : NaN;
+  syncCameraFloorCover(c);
+}
+
+/** G1229: the free street area's floor over the canvas (cameraFloorCoverCss), from the phone layout's regions. */
+function syncCameraFloorCover(c = app?.canvas?.isConnected ? app.canvas.getBoundingClientRect() : null) {
+  const floor = TOUCH_PHONE && modernUi() && PINNED_VIEW_H <= 0 ? phoneLayout?.streetFloor?.() : NaN;
+  cameraFloorCoverCss = Number.isFinite(floor) && c?.height > 0 ? Math.max(0, c.bottom - floor) : NaN;
 }
 
 function activeCameraWorldHeight(anchorRatio = 0.75) {
@@ -2673,9 +2687,13 @@ function activeCameraWorldHeight(anchorRatio = 0.75) {
   // SCENE BOTTOM (G1157): a computer's at the street's or room's bottom (or ground line), by the same rule.
   const phoneLine = phoneGroundLine();
   const line = phoneLine > 0 ? phoneLine : computerGroundBottom();
-  if (!(line > 0)) return world;
   const floor = phoneLine > 0 ? deepest : deepestReachableFloorY();
-  return phoneGroundWorldHeight({ worldHeight: world, groundLine: line, floorY: floor, packReserve: PACK_VIEW_RESERVE, packCoverCss: cameraPackCoverCss, scale: STAGE_SCALE, clearance: MIN_GROUND_CLEARANCE });
+  const ground = line > 0
+    ? phoneGroundWorldHeight({ worldHeight: world, groundLine: line, floorY: floor, packReserve: PACK_VIEW_RESERVE, packCoverCss: cameraPackCoverCss, scale: STAGE_SCALE, clearance: MIN_GROUND_CLEARANCE })
+    : world;
+  // G1229 (#654): on the phone layout the feet on the deepest floor stay over the controls and the pack
+  // row (the region model's free street area), past the street's bottom where both cannot hold.
+  return phoneFeetWorldHeight({ worldHeight: ground, floorY: deepest, packReserve: PACK_VIEW_RESERVE, floorCoverCss: cameraFloorCoverCss, scale: STAGE_SCALE, clearance: MIN_GROUND_CLEARANCE });
 }
 
 /**
