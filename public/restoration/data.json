@@ -2814,9 +2814,19 @@
   "deployed": "2026-11-23"
  },
  "git": {
-  "commits": 3340,
+  "commits": 3343,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-24",
+    "kind": "improve",
+    "text": "A drop on a house floor joins only the same player's own stack"
+   },
+   {
+    "date": "2026-11-24",
+    "kind": "fix",
+    "text": "More of a thing set on its stack on your house floor joins it, and you can move floor stacks"
+   },
    {
     "date": "2026-11-24",
     "kind": "fix",
@@ -2926,19 +2936,9 @@
     "date": "2026-11-23",
     "kind": "fix",
     "text": "On a phone the camera keeps the avatar above the stick, Act and the pack row on low streets"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "The pinned quest on a phone sits just above the stick again, and a tap on it opens the quest"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "Closing a menu or panel on a phone brings the camera back, the avatar no longer sinks under the pack row"
    }
   ]
  },
- "tests": 1329,
+ "tests": 1330,
  "generatedAt": "2026-11-24"
 }

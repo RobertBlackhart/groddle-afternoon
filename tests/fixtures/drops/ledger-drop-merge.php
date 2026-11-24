@@ -113,14 +113,14 @@ try {
     $out['full'] = $drop(['op' => $d, 'id' => OWNER, 'street' => HOUSE, 'c' => 'cherry', 'n' => 1, 'into' => $a, 'max' => 10]);
     $out['afterFull'] = ['a' => $row($a), 'd' => $row($d)];
 
-    // —— Who joins whom: a visitor's drop onto the owner's stack joins; the owner's onto a visitor's does not ——
+    // —— Who joins whom: only one player's own stacks (Austin 2026-11-24): a visitor's drop onto the owner's stack and the owner's onto a visitor's lie on their own ——
     $bo = $op();
     $drop(['op' => $bo, 'id' => BO, 'street' => HOUSE, 'c' => 'cherry', 'n' => 2]);
     $boOnOwner = $op();
     $out['visitorOnOwner'] = $drop(['op' => $boOnOwner, 'id' => BO, 'street' => HOUSE, 'c' => 'cherry', 'n' => 1, 'into' => $d, 'max' => 10]);
     $ownerOnBo = $op();
     $out['ownerOnVisitor'] = $drop(['op' => $ownerOnBo, 'id' => OWNER, 'street' => HOUSE, 'c' => 'cherry', 'n' => 1, 'into' => $bo, 'max' => 10]);
-    $out['afterWho'] = ['d' => $row($d), 'bo' => $row($bo), 'ownerOnBo' => $row($ownerOnBo)];
+    $out['afterWho'] = ['d' => $row($d), 'bo' => $row($bo), 'ownerOnBo' => $row($ownerOnBo), 'boOnOwner' => $row($boOnOwner)];
     // A public street never merges here.
     $pub = $op();
     $drop(['op' => $pub, 'id' => OWNER, 'street' => STREET, 'c' => 'cherry', 'n' => 1]);

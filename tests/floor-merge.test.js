@@ -233,8 +233,9 @@ describe('the site merges on a house floor, once and atomically (LedgerDrop)', {
     assert.deepEqual([r.afterFull.a.count, r.afterFull.d.count], [10, 1]);
   });
 
-  it('a visitor\'s drop joins the owner\'s stack; the owner\'s never joins a visitor\'s; a street never merges', () => {
-    assert.equal(r.visitorOnOwner.joined, 1);
+  it('only one player\'s own stacks join (Austin 2026-11-24): not a visitor\'s onto the owner\'s, nor the owner\'s onto a visitor\'s; a street never merges', () => {
+    assert.deepEqual(r.visitorOnOwner, { status: 'settled' });
+    assert.deepEqual([r.afterWho.boOnOwner.count, r.afterWho.boOnOwner.status], [1, 'ground']);
     assert.deepEqual(r.ownerOnVisitor, { status: 'settled' });
     assert.deepEqual([r.afterWho.bo.count, r.afterWho.ownerOnBo.count], [2, 1]);
     assert.deepEqual(r.publicStreet, { status: 'settled' });
@@ -246,8 +247,8 @@ describe('the site merges on a house floor, once and atomically (LedgerDrop)', {
     assert.deepEqual([r.afterMove.x, r.afterMove.count, r.afterMove.status], [640, 2, 'ground']);
     assert.deepEqual(r.moveRetry, r.move);
     assert.equal(r.moveMerge.joined, 2);
-    assert.deepEqual([r.afterMoveMerge.c.status, r.afterMoveMerge.d.count, r.afterMoveMerge.d.gen], ['merged', 4, 2]);
-    assert.equal(r.moveMergeRetry.in, 4, 'asked again: nothing joins twice');
+    assert.deepEqual([r.afterMoveMerge.c.status, r.afterMoveMerge.d.count, r.afterMoveMerge.d.gen], ['merged', 3, 1]);
+    assert.equal(r.moveMergeRetry.in, 3, 'asked again: nothing joins twice');
     assert.deepEqual(r.visitorMove, { status: 'refused', why: 'place' });
     assert.deepEqual(r.moveCalls, [null, null, true], 'a street, or a drop op as a move op, is no move');
   });
