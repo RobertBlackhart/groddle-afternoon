@@ -5267,6 +5267,19 @@
         "server:432ed50",
         "site:0c8531e"
       ]
+    },
+    {
+      "id": "G1239",
+      "area": "Homes",
+      "text": "Things dropped or moved in your house waited a moment before they showed, and emblems never piled up on a floor or shelf.",
+      "show": "fixing",
+      "commits": [
+        "game:9d92cb6d475",
+        "game:4c1ab162aa6",
+        "game:09b99d053f6",
+        "server:5ad5a36",
+        "site:587253a"
+      ]
     }
   ]
 }

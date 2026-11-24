@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.63.1",
+  "release": "v0.63.2",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -42,7 +42,7 @@
     "fixing": 3,
     "known": 15,
     "unreleased": 0,
-    "fixed": 523,
+    "fixed": 524,
     "lost": 5,
     "purpose": 17,
     "idea": 10
@@ -1263,6 +1263,12 @@
           "text": "Things set on a house floor in Decoration Mode were locked to the owner, couldn't be moved along the floor, and more of the same item never joined the stack already there.",
           "state": "fixed",
           "version": "v0.63.1"
+        },
+        {
+          "id": "G1239",
+          "text": "Things dropped or moved in your house waited a moment before they showed, and emblems never piled up on a floor or shelf.",
+          "state": "fixed",
+          "version": "v0.63.2"
         },
         {
           "id": "G48",
