@@ -2810,13 +2810,18 @@
   ]
  },
  "release": {
-  "game": "0.62.0",
+  "game": "0.63.0",
   "deployed": "2026-11-23"
  },
  "git": {
-  "commits": 3333,
+  "commits": 3338,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "The Buddies list really opens at the top: the chat log's keep-at-the-end watcher leaves it alone"
+   },
    {
     "date": "2026-11-23",
     "kind": "new",
@@ -2931,11 +2936,6 @@
     "date": "2026-11-23",
     "kind": "improve",
     "text": "Achievement badges are sharp on phones and retina screens"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "Encyclopedia pictures are sharp: the Butterfly, item heroes and catalog cards no longer stretch small files"
    }
   ]
  },
