@@ -1129,7 +1129,7 @@ import { contextNeedsResume, createAudioResumer } from './js/audio-resume.js?v=7
 import { bubbleMs } from './js/read-time.js?v=3151fb1a';
 import { mountNotifyView } from './js/notify-view.js?v=0fbfad68';
 import { mountSocialDrawer } from './js/ui/social-drawer.js?v=84248d73';
-import { installPhonePill, mountPhoneLayout } from './js/ui/phone-layout.js?v=d29bc134';
+import { installPhonePill, mountPhoneLayout, socialPillCount } from './js/ui/phone-layout.js?v=d29bc134';
 import { bindChatLinks } from './js/chat-links.js?v=b717fac7';
 import { SIDE_SHEET_IDS, bindTabs, inSideSheet, mountPanelShell, sheetKeyToWorld } from './js/ui/panel-shell.js?v=06a0d3fe';
 import { createQuestSheet, failedQuestPin, questLogNeedsSwap, questStep, visibleRowCount } from './js/ui/quest-sheet.js?v=b612c898';
@@ -1707,7 +1707,8 @@ function installPhoneLayout() {
       // undocks, the row moves and resizes; measured only on a resize it went stale: after a sheet
       // closed, and from the start, the feet sank under the row until a pinch measured again).
       syncCameraPackCover();
-      pill?.setBadge(socialDrawer ? socialDrawer.tabs.reduce((n, id) => n + (socialDrawer.unread(id) || 0), 0) : 0);
+      // G1230 (#595): chat and IMs only; the Activity log keeps its count on its own tab in the drawer.
+      pill?.setBadge(socialDrawer ? socialPillCount(socialDrawer.tabs, (id) => socialDrawer.unread(id)) : 0);
       // C4: the Menu's Quests row carries the new quests' count, as the bar's Quests button did.
       const n = countIn(document.querySelector('#quest-btn .quest-btn-count'));
       const row = document.getElementById('menu-quest-btn');

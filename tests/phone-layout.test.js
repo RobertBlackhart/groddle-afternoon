@@ -24,7 +24,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
-  GAP, PILL_IDS, STICK, TAP_H, boxesOverlap, fullScreenWay, layoutProblems, menuRoomOf, phoneRegions, pillBadge, stickRegionOf, streetFloorOf,
+  GAP, PILL_IDS, STICK, TAP_H, boxesOverlap, fullScreenWay, layoutProblems, menuRoomOf, phoneRegions, pillBadge, socialPillCount, stickRegionOf, streetFloorOf,
 } from '../public/js/ui/phone-layout.js?v=d29bc134';
 import { phonePins } from '../public/js/ui/quest-pin-button.js?v=ec4d53fa';
 
@@ -178,6 +178,21 @@ describe('phone layout: the regions (pure)', () => {
     assert.match(game, /canTip: iosSafari\(navigator\)/);
     const r = phoneRegions({ width: 402, height: 874, safe: { t: 62, b: 34 } });
     assert.ok(r.strip.top >= 62 && r.pack.bottom <= 874 - 34);
+  });
+});
+
+describe('G1230 (#595): the Social pill counts chat and IMs, not the Activity log', () => {
+  it('Activity and new buddies stay off the pill; Local, Global and the Chats list (IMs, help channels) count', () => {
+    const unread = { activity: 40, local: 1, global: 2, buddies: 3, chats: 4 };
+    assert.equal(socialPillCount(['activity', 'local', 'global', 'buddies', 'chats'], (id) => unread[id]), 7);
+    assert.equal(socialPillCount(['activity'], () => 99), 0, 'pickups and skills alone light no badge');
+    assert.equal(socialPillCount(), 0);
+    assert.match(game, /pill\?\.setBadge\(socialDrawer \? socialPillCount\(socialDrawer\.tabs, \(id\) => socialDrawer\.unread\(id\)\) : 0\)/);
+  });
+  it('the Activity tab keeps its own small count inside the drawer', () => {
+    assert.match(css, /#local-chat-dock \.social-tab\[data-social-tab="activity"\] \.social-badge \{\n  min-width: 12px; height: 12px;/);
+    // The drawer draws a count on every tab that is not showing (js/ui/social-drawer.js renderTabs).
+    assert.match(read('public/js/ui/social-drawer.js'), /if \(n\) b\.append\(el\('span', \{ class: 'social-badge', 'aria-hidden': 'true' \}, badgeText\(n\)\)\);/);
   });
 });
 

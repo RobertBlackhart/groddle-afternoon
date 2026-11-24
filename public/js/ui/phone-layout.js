@@ -8,7 +8,7 @@
  * Today's layout stays (Glitch's: stats top left, the pack row along the bottom, the stick, Act and
  * Jump), in fixed regions (phoneRegions, pure):
  * - strip: one top row: the stats pill at the left, and at the right a pill of four fixed icons:
- *   Full screen, Report a problem, Social (with its badge) and the Menu (installPhonePill). The pill
+ *   Full screen, Report a problem, Social (with its badge: chat and IMs, socialPillCount) and the Menu (installPhonePill). The pill
  *   never grows: Quests, Sound, Make and the rest are rows of the Menu, and so is anything new;
  * - caption: the street's name as a plain caption under the stats (between the pills sideways),
  *   with the street map's button on it, instead of a second row of pill, and favor with the
@@ -253,6 +253,20 @@ export function pillBadge(n) {
   const v = Math.floor(num(n));
   if (!(v > 0)) return '';
   return v > 99 ? '99+' : String(v);
+}
+
+/**
+ * The Social drawer's tabs whose news is not the pill's (G1230, #595): the Activity log (pickups,
+ * skills, quests: many a minute, it swamped the badge so IMs and help requests went unseen) and new
+ * buddies. Their counts stay on their own tabs inside the drawer.
+ */
+export const PILL_BADGE_SKIP = Object.freeze(['activity', 'buddies']);
+
+/** PURE (G1230): the Social pill's count: chat, IMs and the Chats list (mentions are chat lines), from the drawer's tabs. */
+export function socialPillCount(tabs = [], unread = () => 0) {
+  let n = 0;
+  for (const id of Array.isArray(tabs) ? tabs : []) if (!PILL_BADGE_SKIP.includes(id)) n += Math.max(0, num(unread(id)));
+  return n;
 }
 
 /** The pill's words (FULL SCREEN, G1194 call 3). */
