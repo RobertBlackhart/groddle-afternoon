@@ -24,7 +24,7 @@ import {
   shareReason,
 } from '../public/js/drops-mp.js?v=3b0174f2';
 import { dropsMpFeature } from '../public/js/features/drops-mp-feature.js?v=985496f7';
-import { giftsFeature } from '../public/js/features/gifts-feature.js?v=1361e74d';
+import { giftsFeature } from '../public/js/features/gifts-feature.js?v=84930713';
 import { HAS_SERVER, HAS_SITE, SITE_DIR, serverPath, sitePath } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');

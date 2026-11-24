@@ -20,7 +20,10 @@
  *   onExitLocation (quests/quest_scripting.js 11-20), which fails an unfinished quest
  *   (btc_room_3.js 67-76), as the room's Leave does. Saving a point there stays refused
  *   (can_set_target 313), as does summoning (can_summon 777). A Party Space can be teleported
- *   out of the same way (its party goes on; its teleporter takes you back in). The other places
+ *   out of the same way (its party goes on; its teleporter takes you back in). So can another
+ *   player's home street, house or Tower floor on a visit (G1226, #648): teleportation_can_teleport
+ *   never asks where you stand, only the target (219-262), and teleportation_teleport 371-377 lands
+ *   a visitor going home outside it; the visit ends as any trip off it does. The other places
  *   the game holds you (races, Paradise, the older rooms in game.js) keep their own exits.
  * - The jump plays the avatar's hit1 for one second (playHitAnimation('hit1', 1000)
  *   before teleportToLocationDelayed, G892); 500 ms in (that function's own timer,
@@ -84,6 +87,7 @@ import {
 } from '../teleportation.js?v=1bbe1ab3';
 import { energyMax, forceMetabolic, loseEnergy, topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import { HOME_STREET_TSID } from '../homes.js?v=10f6604f';
+import { readVisitScene } from '../neighbours-mp.js?v=57993067';
 
 export const TELEPORT_FEATURE_ID = 'teleportation';
 /** inc_teleportation.js 920-937: the cost is a share of your own energy tank (metabolics_get_max_energy). */
@@ -278,12 +282,16 @@ function playWarpHit(engine) {
 /** A quest room the jump will leave (quest-instances-feature questRoomHere), else null. */
 const questRoomHere = (engine) => engine.query?.('questRoomHere', engine) || null;
 
+/** G1226 (#648): standing on a visit to someone's home (MPH_<owner>, its house _IN, a Tower floor _T<n>), which a jump leaves. */
+const homeVisitHere = (engine) => readVisitScene(engine.streetTsid) != null;
+
 /**
- * Held where teleporting waits: any instance but a quest room or a Party Space, which a jump leaves
- * (header; teleportation_teleport 362-366 leaves any instance, and teleportation_can_teleport has no
- * party check: inc_teleportation.js 777 refuses only summoning from one).
+ * Held where teleporting waits: any instance but a quest room, a Party Space or a home visit, which
+ * a jump leaves (header; teleportation_teleport 362-366 leaves any instance, and
+ * teleportation_can_teleport checks only the target: inc_teleportation.js 777 refuses only
+ * summoning from a party).
  */
-const noExit = (engine) => engine.transientInstance() && !questRoomHere(engine) && engine.query?.('partyHoldHere', engine) !== true;
+const noExit = (engine) => engine.transientInstance() && !questRoomHere(engine) && engine.query?.('partyHoldHere', engine) !== true && !homeVisitHere(engine);
 
 /** Shared checks before any jump: held places, then the host travel gate. */
 function preflight(engine, target) {
