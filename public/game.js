@@ -16594,10 +16594,10 @@ function quoinResultCopy(result) {
     if (result.giantId === 'all') return `+${amount} favor with all giants`;
     return `+${amount} favor${giant ? ` with ${giant.name}` : ''}`;
   }
-  if (result.resolvedTypeId === 'time') {
-    const applied = result.acceleration?.applied || 0;
-    return applied ? `${applied}s faster study` : 'No active study to accelerate';
-  }
+  // #650: the coin says the quoin's own seconds, studying or not (AnnouncementController.as
+  // doQuoinGot 896-901: stat 'time' reads "seconds", delta the quoin's amount); like Glitch's
+  // (quoin.js 202, 236-238) it counts toward the day's quoins either way.
+  if (result.resolvedTypeId === 'time') return `+${result.amount} seconds`;
   return `+${amount}`;
 }
 
