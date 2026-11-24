@@ -42,7 +42,7 @@ import {
 import { SEASONS, SEASON_TIME_ZONE, potLuckWindow, urDate } from './seasons.js?v=5d8f545a';
 import { MP_ORDER, RUN_EPOCH_MS, RUN_MS, runAt } from './feats-mp.js?v=49ed2393';
 import { FEAT_BY_ID } from './solo-feats.js?v=0ec0bd95';
-import { NEW_UR_TEXT, newUrMidnights } from './new-ur.js?v=a5efbd09';
+import { NEW_UR_TEXT, newUrMidnights } from './new-ur.js?v=96c11429';
 
 export const CALENDAR_TEXT = Object.freeze({
   title: 'Calendar',

@@ -32,7 +32,7 @@ import { RECIPE_CATALOG, isRecipeCatalogReady, setRecipeCatalog } from '../makin
 import { gainMetabolic } from '../metabolics.js?v=48f784bf';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import { parseSeasonDate, urDate } from '../seasons.js?v=5d8f545a';
-import { hatsOn, sparklyBatterflies } from '../new-ur.js?v=a5efbd09';
+import { hatsOn, sparklyBatterflies } from '../new-ur.js?v=96c11429';
 import {
   BUBBLY,
   BUBBLY_DRINK,

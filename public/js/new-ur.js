@@ -34,8 +34,15 @@ export const NEW_UR_SEASON = 'new_ur';
 /** Unnu Slight (Bortola), the street with the stone dragon's head: Glitch's 2011 party street. */
 export const PARTY_STREET = 'GIFUNGIBHQ1243A';
 export const PARTY_STREET_LABEL = 'Unnu Slight';
-/** The stone dragon's head (the heights_face_1 rock pile at the street's left end), in world px, for the glow. */
-export const DRAGON_AT = Object.freeze({ x: 240, y: 600 });
+/**
+ * The stone dragon's mouth, in the street's px, for the glow. Unnu Slight's own template (Tiny Speck's
+ * "Unnu Slight (dragon)" street render, the GoodnightGroddle archive's FullStreetTemplates/Bortola,
+ * 3000 x 1600 as the street is) lights the dragon's throat between its teeth: that lit patch's middle
+ * is (642, 1059), the head's rock reaching from the street's left end to its snout at about x 1100.
+ * The 2012-01-01 00:52 and 00:55 snaps of the New Year crowd on Unnu Slight (forum thread general
+ * 14813) show the party standing up on that head. Reference only: no pixels come from either.
+ */
+export const DRAGON_AT = Object.freeze({ x: 640, y: 1060 });
 /** New Year's Eve on Ur's clock. */
 export const EVE = Object.freeze({ m: 12, d: 31 });
 /** Austin's pick: the Groddle midnight nearest 1 PM on Ur's clock on December 31 is the big one. */

@@ -212,10 +212,10 @@ import { potLuckFeature } from './pot-luck-feature.js?v=bbe49c64'; FEATURES.push
 import { potLuckFeastFeature } from './pot-luck-feast-feature.js?v=8cbc7d3d'; FEATURES.push(potLuckFeastFeature);
 // G1009 Thanksgiving Day's feast: eat-in-place piles of the week's table food (asks pot-luck-feast for its counts).
 import { feastDayFeature } from './feast-day-feature.js?v=b29b2ded'; FEATURES.push(feastDayFeature);
-import { calendarFeature } from './calendar-feature.js?v=67ce9e94'; FEATURES.push(calendarFeature);
+import { calendarFeature } from './calendar-feature.js?v=911e7478'; FEATURES.push(calendarFeature);
 // G1195 Happy New Ur: the countdown at the Groddle midnights of December 31, the show and the party street.
-import { newUrFeature } from './new-ur-feature.js?v=5089d273'; FEATURES.push(newUrFeature);
-import { newUrPartyFeature } from './new-ur-party-feature.js?v=736c9830'; FEATURES.push(newUrPartyFeature);
+import { newUrFeature } from './new-ur-feature.js?v=f409a82a'; FEATURES.push(newUrFeature);
+import { newUrPartyFeature } from './new-ur-party-feature.js?v=62874ea6'; FEATURES.push(newUrPartyFeature);
 import { streetObjectsFeature } from './street-objects-feature.js?v=35d52a59'; FEATURES.push(streetObjectsFeature);
 import { realtimeFeature } from './realtime-feature.js?v=34ae9ffb'; FEATURES.push(realtimeFeature);
 import { accountBackupFeature } from './account-backup-feature.js?v=f4b8549c'; FEATURES.push(accountBackupFeature);
