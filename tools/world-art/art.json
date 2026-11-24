@@ -11062,14 +11062,14 @@
   "swf": "misc/cornucopia_crops/cornucopia_crops.swf",
   "states": {
    "1": {
-    "w": 158,
-    "h": 135,
+    "w": 95,
+    "h": 81,
     "dx": 0,
     "lift": 0
    }
   },
   "of": "cornucopia_crops",
-  "zoom": 5
+  "zoom": 3
  },
  "pottine": {
   "sha": "6592f77113b238c7",

@@ -27,9 +27,9 @@ the SWF's hash and its path in glitch-items (`swf`); unchanged ids are skipped u
 Only the item folders count: glitch-items/achievements is badge art (NOT_ITEMS). Ids that can't be
 put down are left out, and their old renders removed.
 
-MADE lists ids the remake added that lie in a place drawn from another item's SWF at a zoom of their
-own (G982: Pot's Cornucopia is Tiny Speck's cornucopia_crops at zoom 5, about 1.7x): rendered,
-listed and kept like the rest, with `of` and `zoom` recorded in art.json.
+MADE lists ids the remake added that lie in a place drawn from another item's SWF, at a zoom of their
+own (G982: Pot's Cornucopia is Tiny Speck's cornucopia_crops; #652: at the items' own zoom, its size
+in Glitch, no longer 1.7x): rendered, listed and kept like the rest, with `of` and `zoom` in art.json.
 """
 import glob, hashlib, json, os, shutil, subprocess, sys, tempfile
 
@@ -51,8 +51,8 @@ ZOOM = 3
 BATCH = 60
 # The client's count states run 1, 2, 3 ... (apple 1-4, plank 1-5); more than this is never drawn apart.
 MAX_STATES = 12
-# G982 (ours): the keepsake Pot's Cornucopia, Tiny Speck's Cornucopia of Crops drawn larger (158 x 135 at 1x).
-MADE = {'pots_cornucopia': {'of': 'cornucopia_crops', 'zoom': 5}}
+# G982 (ours): the keepsake Pot's Cornucopia, Tiny Speck's Cornucopia of Crops at its own size (95 x 81 at 1x, #652).
+MADE = {'pots_cornucopia': {'of': 'cornucopia_crops', 'zoom': ZOOM}}
 
 
 def sha(path):

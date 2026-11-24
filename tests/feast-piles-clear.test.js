@@ -18,7 +18,7 @@ import { PLACEMENT_FOOTPRINTS, ecologyForStreet, planStreetPlacements, populatio
 import { placementRequests } from '../tools/build-realtime-objects.mjs';
 import { FEAST_SPOTS, PILE_HALF, PILE_MARGIN } from '../public/js/feast-day.js?v=c5ec0820';
 import { TABLE_AT, TABLE_STREET } from '../public/js/pot-luck-feast.js?v=971888be';
-import { worldArtFor } from '../public/js/world-art.js?v=2b3cf8d5';
+import { worldArtFor } from '../public/js/world-art.js?v=a67514c8';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const json = (f) => JSON.parse(readFileSync(join(ROOT, f), 'utf8'));

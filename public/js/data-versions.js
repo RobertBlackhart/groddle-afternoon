@@ -10583,7 +10583,7 @@
       "assets/sprites/world/herb_seed_yellow_crumb_flower/2@3x.webp": "761c51ca",
       "assets/sprites/world/herb_seed_yellow_crumb_flower/3@3x.webp": "0993db3f",
       "assets/sprites/world/herb_seed_yellow_crumb_flower/4@3x.webp": "d0483afa",
-      "assets/sprites/world/pots_cornucopia/1@3x.webp": "93dacace",
+      "assets/sprites/world/pots_cornucopia/1@3x.webp": "978e1f60",
       "assets/streets/GA5134UPLRU29OH.json": "7bdd55c5",
       "assets/streets/GA59OB99RE92267.json": "0138f577",
       "assets/streets/GA94AEO5H3D35LP.json": "29f05f5a",

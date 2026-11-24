@@ -618,7 +618,7 @@ export const WORLD_ART = Object.freeze({
   "potion_tree_poison": { "1": [23, 48] },
   "potion_tree_poison_antidote": { "1": [23, 48] },
   "potoxin": { "1": [18, 22] },
-  "pots_cornucopia": { "1": [158, 135] },
+  "pots_cornucopia": { "1": [95, 81] },
   "pottine": { "1": [44, 20] },
   "powder_of_mild_fecundity": { "1": [22, 39], "2": [22, 40], "3": [22, 39], "4": [22, 39], "5": [22, 39] },
   "powder_of_startling_fecundity": { "1": [25, 45], "2": [25, 45], "3": [25, 45], "4": [25, 45], "5": [25, 45] },

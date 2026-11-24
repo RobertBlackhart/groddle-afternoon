@@ -144,7 +144,7 @@ import { playOverlay } from '../overlays.js?v=1f5027a3';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { MAIL_POST_SENDER } from '../mailbox.js?v=d50d0d05';
 import { filterText } from '../word-filter.js?v=9a7a7ebb';
-import { trophyGotText } from '../home-trophies.js?v=4eb640c3';
+import { trophyGotText } from '../home-trophies.js?v=649b111e';
 
 export const SEASONS_FEATURE_ID = 'seasons';
 const LANTERN_GROUP = 'seasons:lantern';

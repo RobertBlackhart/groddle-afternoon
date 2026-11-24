@@ -10,7 +10,7 @@
  */
 import { addItem, countItem, ensureItem } from '../inventory.js?v=6414dbdc';
 import { getAchievementCatalog } from '../content-catalogs.js?v=10b118dd';
-import { trophyGotText } from '../home-trophies.js?v=4eb640c3';
+import { trophyGotText } from '../home-trophies.js?v=649b111e';
 import { COLLECTION_TROPHIES, COUNTED_ON_ARRIVAL, HELD_AT_ONCE, collectionClasses, heldChanges, planCollectionTrophies } from '../collection-trophies.js?v=e45565a7';
 
 const CHECK_MS = 1000;

@@ -43,7 +43,7 @@ import {
 } from '../public/js/pot-luck-feast.js?v=971888be';
 import { SEED_CATALOG } from '../public/js/garden.js?v=0cbb65f0';
 import { canCraft, setSeasonalRecipeCheck } from '../public/js/making.js?v=1ec1075e';
-import { TROPHY_DECOR, isTrophyDecor, trophyOfBadge } from '../public/js/home-trophies.js?v=4eb640c3';
+import { TROPHY_DECOR, isTrophyDecor, trophyOfBadge } from '../public/js/home-trophies.js?v=649b111e';
 import { takesNoSlot } from '../public/js/pack-slots.js?v=d9ab4a0b';
 import { dropFor } from '../public/js/world-drop.js?v=a8956ae5';
 import { createAchievementState, applyAchievementProgress } from '../public/js/achievements.js?v=054773be';
@@ -262,7 +262,7 @@ describe('Harvest Stuffing and Pot’s Cornucopia', () => {
     assert.ok(takesNoSlot(KEEPSAKE));
     const art = TROPHY_DECOR[KEEPSAKE].art;
     assert.ok(existsSync(join(pub, art.path)), art.path);
-    assert.deepEqual([art.w, art.h], [158, 135]);
+    assert.deepEqual([art.w, art.h], [95, 81], "#652: cornucopia_crops at its own size");
   });
 
   it('can be dropped on the table from the pack', () => {

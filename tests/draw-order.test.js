@@ -22,7 +22,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { remoteAvatarZ } from '../public/js/features/realtime-feature.js?v=d784d5fc';
-import { FRONT_FURNITURE_SLOTS, furnitureDrawsInFront } from '../public/js/home-decor.js?v=b51e16a6';
+import { FRONT_FURNITURE_SLOTS, furnitureDrawsInFront } from '../public/js/home-decor.js?v=a918562f';
 import { FURNITURE_CATALOG } from '../public/js/homes-catalog.js?v=f3fe838d';
 import { typingElsewhere } from '../public/js/screen-fx.js?v=39954e0b';
 import { SCREEN_SELECTOR, WINDOW_SELECTOR, isTopWindow, stackZ } from '../public/js/window-stack.js?v=a7104f02';

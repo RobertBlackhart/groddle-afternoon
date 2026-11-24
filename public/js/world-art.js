@@ -17,7 +17,7 @@
  * in js/world-art-list.js. A class with no SWF keeps its pack icon, shrunk to
  * the size a put-down stack has (FALLBACK_MAX).
  */
-import { WORLD_ART } from './world-art-list.js?v=4653ee21';
+import { WORLD_ART } from './world-art-list.js?v=932c8bcf';
 
 /** The longest side of a pack icon drawn as a put-down stack when no world art exists (the rendered '1' states' median). */
 export const FALLBACK_MAX = 36;

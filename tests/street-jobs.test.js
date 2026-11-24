@@ -40,13 +40,13 @@ import {
   TROPHY_PIECES,
   planStreetTrophies,
 } from '../public/js/street-jobs.js?v=3fc80dcd';
-import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=c02ba739';
+import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=a36ad88f';
 import { createAchievementState, applyAchievementProgress } from '../public/js/achievements.js?v=054773be';
 import { applyRewards } from '../public/js/quests.js?v=90a2ee3d';
 import { loadContentCatalogsFromDir, resetContentCatalogs } from '../public/js/content-catalogs.js?v=10b118dd';
 import { addItem, countItem } from '../public/js/inventory.js?v=6414dbdc';
 import { ALLOWED_SHORTFALLS, gatedShortfalls, obtainableItems } from '../tools/job-obtainable.mjs';
-import { TROPHY_WHERE_TEXT } from '../public/js/home-trophies.js?v=4eb640c3';
+import { TROPHY_WHERE_TEXT } from '../public/js/home-trophies.js?v=649b111e';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
 const catalog = JSON.parse(readFileSync(join(root, 'assets/content/street-jobs.json'), 'utf8'));

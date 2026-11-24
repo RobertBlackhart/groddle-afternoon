@@ -9,7 +9,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { TROPHY_DECOR, TROPHY_FIND_TEXT, TROPHY_WHERE_TEXT, trophyGotText, isTrophyDecor, placedTrophies, trophyOfBadge } from '../public/js/home-trophies.js?v=4eb640c3';
+import { TROPHY_DECOR, TROPHY_FIND_TEXT, TROPHY_WHERE_TEXT, trophyGotText, isTrophyDecor, placedTrophies, trophyOfBadge } from '../public/js/home-trophies.js?v=649b111e';
 import {
   createHomeDecorState,
   displayDeposit,
@@ -26,19 +26,19 @@ import {
   renderOrder,
   stackSurfaceAt,
   surfaceHeight,
-} from '../public/js/home-decor.js?v=b51e16a6';
+} from '../public/js/home-decor.js?v=a918562f';
 import { cabinetRefusal } from '../public/js/home-storage.js?v=b0225465';
 import { canSellClass } from '../public/js/home-street-mp.js?v=fa2c57ff';
 import { filterTiles, furniturePane, trayFilters } from '../public/js/ui/home-builder.js?v=1e633de5';
 import { hasUpgrades, upgradeVerb } from '../public/js/furniture-upgrades.js?v=6cc0e2da';
 import { NO_SLOT_CLASSES } from '../public/js/pack-slots-data.js?v=800f664c';
 import { layoutPack, takesNoSlot } from '../public/js/pack-slots.js?v=d9ab4a0b';
-import { WORLD_ART } from '../public/js/world-art-list.js?v=4653ee21';
-import { homeTrophyCount, isTrophyClass } from '../public/js/features/item-verbs-feature.js?v=de3451a9';
-import { homesFeature } from '../public/js/features/homes-feature.js?v=c48016c2';
+import { WORLD_ART } from '../public/js/world-art-list.js?v=932c8bcf';
+import { homeTrophyCount, isTrophyClass } from '../public/js/features/item-verbs-feature.js?v=15223c7f';
+import { homesFeature } from '../public/js/features/homes-feature.js?v=cc185e5a';
 import { planStreetTrophies } from '../public/js/street-jobs.js?v=3fc80dcd';
 import { planEggTrophy } from '../public/js/seasons.js?v=5d8f545a';
-import { collectionTrophiesFeature as collection } from '../public/js/features/collection-trophies-feature.js?v=d9656427';
+import { collectionTrophiesFeature as collection } from '../public/js/features/collection-trophies-feature.js?v=469e6ea3';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
 import { applyAchievementProgress, createAchievementState } from '../public/js/achievements.js?v=054773be';
 
@@ -300,5 +300,17 @@ describe('a trophy that has left the pack is not given again', () => {
   it('Street Creator and Egg Hunter keep their own record, whatever the pack holds', () => {
     assert.deepEqual(planStreetTrophies({ trophiesGranted: ['rock'] }, ['collection_street_creator_rock'], () => 0), []);
     assert.equal(planEggTrophy({ trophyGiven: true }, ['collection_egg_hunter'], () => 0), null);
+  });
+});
+
+describe('#652: Pot\'s Cornucopia is the size of Glitch\'s Cornucopia of Crops', () => {
+  it('drawn at cornucopia_crops\' own size (position w 95, h 82; adjusted_scale 1), not 1.7x', async () => {
+    const { WORLD_ART } = await import('../public/js/world-art-list.js?v=932c8bcf');
+    const art = TROPHY_DECOR.pots_cornucopia.art;
+    assert.deepEqual([art.w, art.h], WORLD_ART.cornucopia_crops['1']);
+    assert.deepEqual(WORLD_ART.pots_cornucopia['1'], WORLD_ART.cornucopia_crops['1']);
+    // About twice a music trophy, as in Glitch (trophy_music_d_blue.js position w 50, h 49).
+    const music = TROPHY_DECOR.trophy_music_d_blue.art;
+    assert.ok(art.w / music.w < 2.1 && art.h / music.h < 1.8, `${art.w}x${art.h} beside ${music.w}x${music.h}`);
   });
 });

@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=f41be695';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=62fca1fe';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=d909fc9a';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE, playerClickBox } from './js/reach.js?v=456da8a8';
@@ -536,7 +536,7 @@ import {
   removeItem,
   isToolItem,
 } from './js/inventory.js?v=6414dbdc';
-import { TROPHY_FIND_TEXT, trophyOfBadge } from './js/home-trophies.js?v=4eb640c3';
+import { TROPHY_FIND_TEXT, trophyOfBadge } from './js/home-trophies.js?v=649b111e';
 import { HELD_AT_ONCE, HELD_AT_ONCE_TEXT } from './js/collection-trophies.js?v=e45565a7';
 import { PACK_COPY, isBagClass, isElementClass, ownBagLabel, unitRankAt } from './js/pack-slots.js?v=d9ab4a0b';
 import { beginDrag, installDropRegistry, packStackOf, registerDropTarget, touchLift } from './js/drop-targets.js?v=59e6edb4';
@@ -1151,7 +1151,7 @@ import { heldDirection, installHeldKeyGuard, isMacPlatform } from './js/held-key
 import { isOneClickDoor, oneClickChoice, signpostArmRows, worldContextAction } from './js/world-context-menu.js?v=e4c99c05';
 import { blockedPlayerVerbs, listPlayerTarget, opensPlayerMenu, playerMenuRows } from './js/ui/player-menu.js?v=909b6cbb';
 import { forgetTexture, frameTexture, isFailed, isLoaded, onFailed, onLoaded, textureFromUrl, whenLoaded } from './js/textures.js?v=729b29ea';
-import { FALLBACK_MAX as WORLD_ART_FALLBACK_MAX, worldArtFor } from './js/world-art.js?v=2b3cf8d5';
+import { FALLBACK_MAX as WORLD_ART_FALLBACK_MAX, worldArtFor } from './js/world-art.js?v=a67514c8';
 import { HOME_PIP_PX, drawLockPip, homeMarkNote, homePipShown, homeStackMark } from './js/home-stack-marks.js?v=0ff4c29f';
 import { attachAnim, sceneAnim, syncAnim } from './js/deco-anim.js?v=5e2bfba2';
 import { revealStartCard, whenSceneDrawn } from './js/start-backdrop.js?v=8510d51e';

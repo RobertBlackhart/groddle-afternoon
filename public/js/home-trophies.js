@@ -36,8 +36,9 @@ const SIZES = Object.freeze({
   trophy_street_creator_earth: [69, 67],
   trophy_street_creator_rock: [69, 65],
   trophy_street_creator_wood: [69, 68],
-  // G982 (ours): Pot's Cornucopia, Tiny Speck's cornucopia_crops rendered larger (95 x 81 in a pack's world art).
-  pots_cornucopia: [158, 135],
+  // G982 (ours): Pot's Cornucopia, Tiny Speck's cornucopia_crops at its own size (#652: it was drawn
+  // 1.7x, as big as a cabinet; cornucopia_crops.js position w 95, h 82, adjusted_scale 1).
+  pots_cornucopia: [95, 81],
 });
 
 /** Badge -> the trophy it gives, for the five COLLECTION_TROPHIES does not settle (js/seasons.js, js/street-jobs.js). */

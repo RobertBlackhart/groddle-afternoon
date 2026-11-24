@@ -44,7 +44,7 @@
  * - Glitch furniture never rotated; it faces left or right (`facing_right`).
  */
 
-import { TROPHY_DECOR, isTrophyDecor } from './home-trophies.js?v=4eb640c3';
+import { TROPHY_DECOR, isTrophyDecor } from './home-trophies.js?v=649b111e';
 import {
   FURNITURE_CATALOG,
   FURNITURE_STARTER_KIT,
