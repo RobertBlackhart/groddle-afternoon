@@ -87,6 +87,7 @@ describe('where each give class comes from (tools/build-item-sources.mjs)', () =
       test_tube: ['sold'], // the Alchemical Goods Vendor (js/store-catalog.js); the inventory had excluded it as a test id
       npc_garden_gnome: ['sold'], // the Hardware Vendor (js/store-catalog.js)
       grilled_cheese: ['made'], // recipes.json
+      furniture_bookcase: ['made'], // recipe 263 turned back on (G1248, #669); tagged deleted, judged by tools/inventory/overrides.json
       musicblock_d_blue_01: ['harvest'], // drop tables (js/musicblocks.js, drop-tables-data.js)
       npc_cubimal_fox: ['other'], // a Cubimal box's roll (js/cubimals.js)
       emblem_alph: ['other'], // Alph's shrine as the favor fills (js/features/giant-icons-feature.js)
@@ -101,7 +102,6 @@ describe('where each give class comes from (tools/build-item-sources.mjs)', () =
       doll_ayn_rand: WHY.excluded, // a staff handout; the Rube never offers it either
       seed_strawberry: WHY.unbuilt_original, // in no seed catalog (js/garden.js SEED_CATALOG)
       fuelmaker_engine: WHY.excluded, // tagged deleted; no recipe, store or drop
-      furniture_bookcase: WHY.excluded, // tagged deleted; no furniture store, recipe or starter kit (js/homes-catalog.js)
       million_currant_trophy: WHY.excluded, // sold out in Glitch; nothing in the remake gives it
       artifact_butterlfy_hair_clip_piece1: WHY.excluded, // Tiny Speck's misspelt duplicate; the real piece drops
     };

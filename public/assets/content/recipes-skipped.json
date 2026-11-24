@@ -2,8 +2,8 @@
   "_meta": {
     "generator": "build-recipes.mjs",
     "sourceRecipes": 339,
-    "imported": 320,
-    "skipped": 19,
+    "imported": 321,
+    "skipped": 18,
     "verbRecipes": 7
   },
   "skipped": [
@@ -96,16 +96,6 @@
       ],
       "reason": "learnt 3: hidden/retired in production (main.js skips learnt == 3 when building the client recipe catalog).",
       "source": "catalog_recipes.js recipes[\"254\"]"
-    },
-    {
-      "id": "263",
-      "name": "Bookcase",
-      "tool": "alchemical_tongs",
-      "outputs": [
-        "furniture_bookcase"
-      ],
-      "reason": "learnt 3: hidden/retired in production (main.js skips learnt == 3 when building the client recipe catalog).",
-      "source": "catalog_recipes.js recipes[\"263\"]"
     },
     {
       "id": "282",

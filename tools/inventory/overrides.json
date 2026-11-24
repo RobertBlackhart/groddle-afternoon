@@ -995,6 +995,11 @@
     "reason": "how: It is the house on your home street, so it comes with your home; the Home Street Ticket picks its look (js/features/homes-feature.js:1392-1398 HOUSES, js/homes.js HOME_STYLES) | the house itself: locations/inc_homes.js:2459-2466 places furniture_chassis (Groddle Cottage) at the home street's door when the home is made; the remake's home street draws the house (js/homes.js HOME_STYLES, features/homes-feature.js)",
     "register": "G125"
   },
+  "item:furniture_bookcase": {
+    "status": "source",
+    "reason": "catalog_tags.js lists it under deleted (767) and its recipe 263 is learnt 3 (catalog_recipes.js 5490-5510), yet players had Bookcases in their houses (#669). The remake turns recipe 263 back on as Glitch wrote it (build-recipes.mjs TURNED_BACK_ON, Austin 2026-11-24)",
+    "register": "G1248"
+  },
   "item:stoot_barfield_pullstring_doll": {
     "status": "source",
     "reason": "game.js spawnStootMemorial registers the doll on the Stoot memorial street GIFPV9EMLT72DP4 with its pull_string verb and exact 43 quotes (js/stoot-doll.js); GSJS has no source, the original's only placed copy sits on the location dump street LDOU1UON87E3K2T",

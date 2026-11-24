@@ -8653,6 +8653,44 @@
     "learnt": 1,
     "source": "catalog_recipes.js recipes[\"262\"]"
   },
+  "furniture_bookcase": {
+    "id": "263",
+    "name": "Bookcase",
+    "tool": "construction_tool",
+    "energyCost": 180,
+    "xpReward": 60,
+    "waitMs": 5000,
+    "inputs": [
+      {
+        "classTsid": "board",
+        "qty": 20
+      },
+      {
+        "classTsid": "plank",
+        "qty": 20
+      },
+      {
+        "classTsid": "snail",
+        "qty": 40
+      }
+    ],
+    "outputs": [
+      {
+        "classTsid": "furniture_bookcase",
+        "qty": 1
+      }
+    ],
+    "skill": "engineering_1",
+    "skills": [
+      "engineering_1",
+      "furnituremaking_2"
+    ],
+    "achievements": [],
+    "toolWear": 0,
+    "taskLimit": 1,
+    "learnt": 3,
+    "source": "catalog_recipes.js recipes[\"263\"] for the inputs, energy, xp and time; tool and skills from the Bookcase's own item file, last built while the recipe was live (items/furniture_bookcase.js 215-216: a Construction Tool, Furnituremaking II and Engineering); turned back on for G1248 (#669)"
+  },
   "bag_furniture_wallcabinet": {
     "id": "264",
     "name": "Wall Cabinet",

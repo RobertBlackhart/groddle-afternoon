@@ -407,10 +407,57 @@ const QUEST_TAUGHT = {
   162: 'intermediateadmixing_make_more_powders', 163: 'intermediateadmixing_make_more_powders', 166: 'intermediateadmixing_make_more_powders', 168: 'intermediateadmixing_make_more_powders', 169: 'intermediateadmixing_make_more_powders', // 49-53
 };
 
+/**
+ * learnt 3 recipes the remake turns back on (id -> why, and the live fields the retired row lost).
+ * Without them a class has no route in the game at all. build-homes.mjs reads this too, so the
+ * house catalog names the recipe.
+ */
+export const TURNED_BACK_ON = {
+  // Bookcase (catalog_recipes.js 5490-5510): nothing else gives one, no store sells it, and the
+  // house's art and Warped Wooden style are in. Austin 2026-11-24, G1248 (#669). The retired row
+  // was parked on the Alchemical Tongs with no skills; the Bookcase's own item file, last built
+  // while it was live (items/furniture_bookcase.js 4 version 1336427797, 215-216), says it was
+  // made with a Construction Tool and needed Furnituremaking II and Engineering, as its neighbours
+  // the Cabinet (262) and Wall Cabinet (264) do. Inputs, energy, xp and time stay the row's.
+  263: {
+    why: 'Bookcase: the only way to get one (G1248).',
+    live: { tool: 'construction_tool', skill: 'engineering_1', skills: ['engineering_1', 'furnituremaking_2'] },
+    source:
+      'catalog_recipes.js recipes["263"] for the inputs, energy, xp and time; tool and skills from the Bookcase\'s own item file, last built while the recipe was live (items/furniture_bookcase.js 215-216: a Construction Tool, Furnituremaking II and Engineering); turned back on for G1248 (#669)',
+  },
+};
+
+/** A GSJS recipe row as the remake runs it: a turned-back-on row takes its live tool and skills. */
+export function liveRecipe(id, r) {
+  const on = TURNED_BACK_ON[id];
+  return on ? { ...r, ...on.live } : r;
+}
+
+/** Whether a learnt 3 recipe stays off (not quest-taught, not turned back on). */
+export function retiredRecipe(id, r) {
+  return r.learnt === 3 && !QUEST_TAUGHT[id] && !TURNED_BACK_ON[id];
+}
+
+/**
+ * Recipes whose live verb did something other than the catalog row; the row keeps the catalog's
+ * tool, wear and time and takes these fields (id -> fields).
+ */
+const LIVE_VERB = {
+  304: {
+    energyCost: 10,
+    inputs: [
+      { classTsid: 'barnacle_talc', qty: 7 },
+      { classTsid: 'firefly_jar', qty: 1, full: 7 },
+    ],
+    source:
+      "catalog_recipes.js recipes[\"304\"] for the tool, wear and time; inputs and energy from the live verb, crystallizer.js crystalmalize 274-327 (one full Firefly Jar, kept and emptied, and 7 Barnacle Talc; onCrystalizeComplete 389-401) and the crystallizing skill package (energy_cost 10): recipe 304's own verb, crystalize, was switched off (conditions return state null, 349-351) (#219)",
+  },
+};
+
 function skipReason(id, r) {
   if (SKIPPED_TOOLS[r.tool]) return SKIPPED_TOOLS[r.tool];
   if (!INCLUDED_TOOLS.includes(r.tool)) return `Tool ${r.tool} is not a player-ownable making tool in the remake.`;
-  if (r.learnt === 3 && !QUEST_TAUGHT[id]) {
+  if (retiredRecipe(id, r)) {
     return 'learnt 3: hidden/retired in production (main.js skips learnt == 3 when building the client recipe catalog).';
   }
   const outIds = r.outputs.map((o) => o[0]);
@@ -442,7 +489,7 @@ export function buildCatalog(gsjs = GSJS) {
   const ids = Object.keys(recipes).sort((a, b) => Number(a) - Number(b));
 
   for (const id of ids) {
-    const r = recipes[id];
+    const r = liveRecipe(id, recipes[id]);
     const reason = skipReason(id, r);
     if (reason) {
       skipped.push({
@@ -488,6 +535,8 @@ export function buildCatalog(gsjs = GSJS) {
         entry.inputs = entry.inputs.filter((i) => i.classTsid !== 'fuel_cell');
       }
     }
+    if (LIVE_VERB[id]) Object.assign(entry, LIVE_VERB[id]);
+    if (TURNED_BACK_ON[id]) entry.source = TURNED_BACK_ON[id].source;
     out[key] = entry;
   }
 

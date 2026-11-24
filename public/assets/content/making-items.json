@@ -2495,6 +2495,19 @@
       "isTool": false,
       "source": "items/furniture_bench.js"
     },
+    "furniture_bookcase": {
+      "label": "Bookcase",
+      "namePlural": "Bookcases",
+      "desc": "Rudimentary bookcase, perfect for those who wish to give the impression of intending to read something someday.",
+      "baseCost": 1500,
+      "stackMax": 1,
+      "tags": [
+        "no_rube",
+        "furniture"
+      ],
+      "isTool": false,
+      "source": "items/furniture_bookcase.js"
+    },
     "furniture_ceilingdeco": {
       "label": "Hanging Decoration",
       "namePlural": "Hanging Decorations",

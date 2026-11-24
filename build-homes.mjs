@@ -32,7 +32,7 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, 
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { loadItem } from './build-recipes.mjs';
+import { liveRecipe, loadItem, retiredRecipe } from './build-recipes.mjs';
 import { encodeLosslessWebp } from './tools/webp-lossless.mjs';
 import { basePlats, surfaceFrom } from './tools/furniture-upgrades/build.mjs';
 import { stageFoot } from './tools/swf-stage.mjs';
@@ -242,9 +242,10 @@ function buildFurniture() {
   const store = loadStore23();
   const upgrades = loadUpgradeCounts();
   const recipeByOutput = {};
-  for (const [id, r] of Object.entries(recipes)) {
+  for (const [id, row] of Object.entries(recipes)) {
+    const r = liveRecipe(id, row);
     for (const [cls] of r.outputs || []) {
-      if (/^(furniture_|bag_furniture_)/.test(cls) && r.learnt !== 3) recipeByOutput[cls] = { id, tool: r.tool, name: r.name };
+      if (/^(furniture_|bag_furniture_)/.test(cls) && !retiredRecipe(id, r)) recipeByOutput[cls] = { id, tool: r.tool, name: r.name };
     }
   }
   const catalog = {};

@@ -389,6 +389,7 @@
 {"s":"items","id":"furniture_armchair_seashell_pink","n":"Pink Seashell Armchair","st":"unbuilt_original","ic":"assets/sprites/icons/furniture_armchair_seashell_pink.webp","h":"encyclopedia/items/furniture_armchair_seashell_pink/"},
 {"s":"items","id":"furniture_bed","n":"Bed","st":"source","ic":"assets/sprites/icons/furniture_bed.webp","h":"encyclopedia/items/furniture_bed/"},
 {"s":"items","id":"furniture_bench","n":"Bench","st":"source","ic":"assets/sprites/icons/furniture_bench.webp","h":"encyclopedia/items/furniture_bench/"},
+{"s":"items","id":"furniture_bookcase","n":"Bookcase","st":"source","ic":"assets/sprites/icons/furniture_bookcase.webp","h":"encyclopedia/items/furniture_bookcase/"},
 {"s":"items","id":"furniture_ceilingdeco","n":"Hanging Decoration","st":"source","ic":"assets/sprites/icons/furniture_ceilingdeco.webp","h":"encyclopedia/items/furniture_ceilingdeco/"},
 {"s":"items","id":"furniture_ceilinglamp","n":"Ceiling Lamp","st":"source","ic":"assets/sprites/icons/furniture_ceilinglamp.webp","h":"encyclopedia/items/furniture_ceilinglamp/"},
 {"s":"items","id":"furniture_chair","n":"Chair","st":"source","ic":"assets/sprites/icons/furniture_chair.webp","h":"encyclopedia/items/furniture_chair/"},

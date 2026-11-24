@@ -390,7 +390,11 @@ export const FURNITURE_CATALOG = Object.freeze({
     },
     "surface": 157,
     "upgrades": 1,
-    "recipe": null,
+    "recipe": {
+      "id": "263",
+      "tool": "construction_tool",
+      "name": "Bookcase"
+    },
     "storeCost": null,
     "source": "items/furniture_bookcase.js"
   },
