@@ -15,7 +15,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { BUTLER, ROOK_ALERTS_KEPT, createButlerState, normalizeButlerState, rookAlert, rookAlertLine } from '../public/js/butler.js?v=6c66ebf5';
 import { attacksFromServer } from '../public/js/rook-mp.js?v=dda37008';
-import { rookAttackFeature } from '../public/js/features/rook-attack-feature.js?v=cd462b62';
+import { rookAttackFeature } from '../public/js/features/rook-attack-feature.js?v=f333190c';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const gsjs = join(root, '..', 'glitch-GameServerJS');

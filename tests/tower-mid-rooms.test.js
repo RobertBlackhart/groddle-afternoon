@@ -31,8 +31,8 @@ import {
   midTowerRoomByTsid,
   midTowerRoomStreet,
 } from '../public/js/tower-mid-rooms.js?v=07360655';
-import { greet, greeterAction, midTowerFeature } from '../public/js/features/mid-tower-feature.js?v=af1ea7d9';
-import { towerRoomsFeature } from '../public/js/features/tower-rooms-feature.js?v=06400a23';
+import { greet, greeterAction, midTowerFeature } from '../public/js/features/mid-tower-feature.js?v=bccad9b2';
+import { towerRoomsFeature } from '../public/js/features/tower-rooms-feature.js?v=5d5b3db6';
 import { populationForStreet } from '../public/js/street-ecology.js?v=ff90efe4';
 import { reachStreet } from '../public/js/builder/reach-graph.js?v=467ca20f';
 

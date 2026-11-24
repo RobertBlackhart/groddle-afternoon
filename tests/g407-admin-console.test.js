@@ -14,7 +14,7 @@ import { pathToFileURL } from 'node:url';
 import { SITE_DIR, sitePath, serverPath, skipWithoutSite, skipWithoutServer, HAS_SITE } from '../tools/repos.mjs';
 import { ADMIN_TEXT, ADMIN_TEXT_MAX, adminGiveGoods, adminMessageText, applyAdminGive, applyAdminRefill, bootedLine, showAdminMessage, showBooted } from '../public/js/admin-console-mp.js?v=709b25cd';
 import { CLOSE_BANNED, CLOSE_BOOTED, createRealtimeClient } from '../public/js/realtime-client.js?v=5e2348b7';
-import { statusText } from '../public/js/features/realtime-feature.js?v=34ae9ffb';
+import { statusText } from '../public/js/features/realtime-feature.js?v=d784d5fc';
 import { GATE_COPY, suspendedNow } from '../public/js/online-boot.js?v=172dc26f';
 
 const root = join(import.meta.dirname, '..');

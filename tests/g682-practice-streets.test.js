@@ -50,8 +50,8 @@ import {
 import { NEW_DECOS, NEW_DECOS_HIRES } from '../public/js/deco-new-list.js?v=e9cba68f';
 import { BUILT_ROOMS, QUEST_ROOMS } from '../public/js/quest-rooms/catalog.js?v=10c8100d';
 import { FIRST_SKILLS, PRACTICE_TOOLS, firstSkill, practiceToolToPlace } from '../public/js/newxp.js?v=5aa81665';
-import { HELLO as EZ_HELLO, room as ezRoom } from '../public/js/quest-rooms/ez-cookin.js?v=66fc9191';
-import { HELLO as SOIL_HELLO, TEND_FIRST, patchArt, patchVerbs, room as soilRoom } from '../public/js/quest-rooms/soil-appreciation.js?v=5a30fd55';
+import { HELLO as EZ_HELLO, room as ezRoom } from '../public/js/quest-rooms/ez-cookin.js?v=49f94d2a';
+import { HELLO as SOIL_HELLO, TEND_FIRST, patchArt, patchVerbs, room as soilRoom } from '../public/js/quest-rooms/soil-appreciation.js?v=5b78c47e';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const pub = join(spike, 'public');
