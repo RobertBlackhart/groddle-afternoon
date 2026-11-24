@@ -65,11 +65,11 @@ import { textureFromUrl } from '../textures.js?v=729b29ea';
 import { addSignBoard, signArmWidth, signLabel } from '../street-render.js?v=7c327017';
 import { openNotePicker, openNoteView } from '../note-view.js?v=c512b345';
 import { homeStreetName, possessive, readVisitScene } from '../neighbours-mp.js?v=57993067';
-import { BACK_YARD_GROUND_Y, SIGN_PROMPT_LIFT, STREET_GROUND_Y, homesFeature, visitorHomeState } from './homes-feature.js?v=8490f095';
+import { BACK_YARD_GROUND_Y, SIGN_PROMPT_LIFT, STREET_GROUND_Y, homesFeature, visitorHomeState } from './homes-feature.js?v=d5e1c13f';
 import { BENCH_ART, towerApi } from './home-tower-feature.js?v=0880b24a';
 import { readTowerFloorWire, towerFloorProject, towerFloorWire } from '../home-tower.js?v=84d99af0';
 import { projectApi } from './street-jobs-feature.js?v=ec9c5689';
-import { giveCarriedNote, takeCarriedNote, writtenCarriedNotes } from './street-furniture-feature.js?v=e5f78db0';
+import { giveCarriedNote, takeCarriedNote, writtenCarriedNotes } from './street-furniture-feature.js?v=72605ad6';
 import { saveStore, savedThrough } from '../save-store.js?v=4e720735';
 import {
   GOOD_NEIGHBOUR_AT,

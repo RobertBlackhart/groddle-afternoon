@@ -301,6 +301,7 @@ import { autoplayLog } from '../autoplay-log.js?v=55bb4823';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 import { HOUSE_ART_DIR, HOUSE_FROM_HOME_STYLE, HOUSE_STYLE_IDS, composeHouse, houseFitViewH, houseLabel, houseLot, normalizeHouse } from '../home-house.js?v=3c88c47c';
 import { closeHousePicker, housePickerOpen, openHousePicker, refreshHousePicker } from '../ui/house-picker.js?v=67f03b99';
+import { YARD_WALL_DX } from '../yard-wander.js?v=f5fcac8b';
 
 export const HOMES_FEATURE_ID = 'homes';
 const HOME_STREET_TSID = 'RH_HOME_EXT';
@@ -8710,6 +8711,17 @@ export const homesFeature = {
     renderBar(engine);
     publish(engine);
     return null;
+  },
+
+  /**
+   * G1225 (#647): the world x of the wall between the back yard and the house on its ground floor
+   * (inc_homes.js 1424-1431: the house's left end + 8, solid to animals from the yard), or null
+   * where there is none (a Tower floor, an upper floor, no back yard, anywhere else). js/yard-wander.js.
+   */
+  homeAnimalWall(engine) {
+    if (!engine || engine.streetTsid !== HOME_INTERIOR_TSID || !inHouse()) return null;
+    const x0 = roomX0();
+    return x0 > 0 ? x0 + YARD_WALL_DX : null;
   },
 
   /** G226: game.js dropped-stack key; each Tower floor has its own. */

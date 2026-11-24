@@ -72,8 +72,8 @@ import { frameTexture, onLoaded, sourceFromUrl, textureFromUrl } from '../textur
 import { homeStreetLayout, normalizeCultivationState } from '../home-cultivation.js?v=9e6e217b';
 import { readVisitScene } from '../neighbours-mp.js?v=57993067';
 import { saveStore } from '../save-store.js?v=4e720735';
-import { STREET_GROUND_Y, homesFeature, wearHomeCultivation } from './homes-feature.js?v=8490f095';
-import { holdYardAnimal } from './animal-husbandry-feature.js?v=66ac4344';
+import { STREET_GROUND_Y, homesFeature, wearHomeCultivation } from './homes-feature.js?v=d5e1c13f';
+import { holdYardAnimal } from './animal-husbandry-feature.js?v=ed130f1c';
 import { patchesFeature, treeFrameUrl } from './patches-feature.js?v=ebbe3566';
 import {
   YARD_STREET,
@@ -94,10 +94,10 @@ import {
   visitorRewardDelta,
   visitorRewardSnapshot,
   visitorTreeState,
-} from '../yard-verbs-mp.js?v=509119a5';
+} from '../yard-verbs-mp.js?v=b0a4c757';
 import { yardFixtureRows, yardFixtureVerbs, yardFixturesKey } from '../yard-fixtures-mp.js?v=dd022fe8';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { followYardPath, holdYardWalk, stickForClass } from '../yard-wander.js?v=7da3769e';
+import { followYardPath, holdYardWalk, stickForClass } from '../yard-wander.js?v=f5fcac8b';
 import { showsChickenIdle, yardChickenPose } from '../chicken-idle-art.js?v=5180bd30';
 import { chickenWaitPose } from '../chicken-idles.js?v=eef0279b';
 import { countItem, removeItem } from '../inventory.js?v=6414dbdc';

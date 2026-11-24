@@ -58,6 +58,24 @@ export const YARD_RANGE = 110;
 export const YARD_NUDGE = 45;
 /** Kept off the street's ends (stepExtra's 30 px). */
 export const YARD_EDGE = 30;
+
+/**
+ * G1225 (#647): the wall between the back yard and the house. inc_homes.js 1424-1431 put one on the
+ * house's ground floor, at the house's left end + 8 ("wall to stop animals getting into house"):
+ * item_perm -1, solid to an animal coming from the yard on its left and open from the house
+ * (Wall.as 35-41), pc_perm 0, open to players. So an animal in the back yard never walks into the
+ * house, nor to food on its floor (npc_piggy.js onFoodPathing paths to it, apiFindPath keeps to the
+ * walls); one released indoors may still walk out. YARD_WALL_GAP keeps a walk this far short of it.
+ */
+export const YARD_WALL_DX = 8;
+export const YARD_WALL_GAP = 40;
+
+/** PURE: whether the yard wall at `wall` (world x, or null where there is none) stands between an animal at fromX and toX. */
+export function wallBetween(fromX, toX, wall) {
+  const w = Number(wall);
+  if (wall == null || !Number.isFinite(w)) return false;
+  return Number(fromX) < w && Number(toX) >= w - YARD_WALL_GAP / 2;
+}
 /** Legs in one round of a walk (then it walks back to where the round began). */
 export const YARD_LEGS = 12;
 /** The source's turn: the next place is at least this far on (npc_piggy.js 2675 x - 25, 2697 x + 25). */
@@ -123,7 +141,7 @@ export function yardSeed(id, classId) {
  * nudge, ± YARD_RANGE). Kept inside the street, shifted rather than shrunk where it meets an end
  * (npc_piggy.js parent_startMoving 2628-2655 shifts the limits into the level).
  */
-export function yardWindow({ id = '', classId = '', homeX = 0, stick = null, worldW = 0 } = {}) {
+export function yardWindow({ id = '', classId = '', homeX = 0, stick = null, worldW = 0, wall = null } = {}) {
   let center;
   let range;
   if (stick && Number.isFinite(Number(stick.x))) {
@@ -146,6 +164,15 @@ export function yardWindow({ id = '', classId = '', homeX = 0, stick = null, wor
   } else if (right > maxX) {
     left -= right - maxX;
     right = maxX;
+  }
+  // G1225: an animal whose walk is in the back yard keeps to the yard's side of the house's wall.
+  // Its side is its stick's, else its own spot's (where it was released or hatched).
+  const w = Number(wall);
+  const side = stick && Number.isFinite(Number(stick.x)) ? Number(stick.x) : Number(homeX) || 0;
+  if (wall != null && Number.isFinite(w) && side < w && right > w - YARD_WALL_GAP) {
+    const over = right - (w - YARD_WALL_GAP);
+    right -= over;
+    left = Math.max(YARD_EDGE, Math.min(left - over, right - 20));
   }
   return { left: Math.round(left), right: Math.round(right) };
 }

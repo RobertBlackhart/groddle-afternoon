@@ -163,6 +163,7 @@ import {
   satePiggy,
 } from '../animal-mood.js?v=a49495fc';
 import { ownGroundRows, pruneOwnGround } from '../ground-stacks.js?v=22792362';
+import { wallBetween } from '../yard-wander.js?v=f5fcac8b';
 
 export const ANIMAL_MOOD_FEATURE_ID = 'animal-mood';
 const YARD_TSID = 'RH_HOME_EXT';
@@ -584,8 +585,17 @@ function fruitingTrants(engine) {
   return (engine.interactables || []).filter((t) => TRANT_META[t?.classId] && t.state && Number(t.state.fruitCount) > 0 && t.sprite && !t.sprite.destroyed);
 }
 
-function reachable(spr, x, y) {
-  return Number.isFinite(x) && (!Number.isFinite(y) || Math.abs(y - spr.y) <= REACH_DY);
+/**
+ * G1225 (#647): in the house a Piggy in the back yard never reaches the house's floor: the wall at
+ * the house's left end is solid to animals coming from the yard (homes-feature homeAnimalWall,
+ * js/yard-wander.js wallBetween).
+ */
+function behindWall(engine, spr, x) {
+  return wallBetween(spr.x, x, engine.query?.('homeAnimalWall', engine) ?? null);
+}
+
+function reachable(spr, x, y, engine = null) {
+  return Number.isFinite(x) && (!Number.isFinite(y) || Math.abs(y - spr.y) <= REACH_DY) && !(engine && behindWall(engine, spr, x));
 }
 
 /** onTwiceDaily's food search: dropped food first, else a trant with fruit. */
@@ -593,12 +603,12 @@ function findFoodFor(engine, target) {
   const spr = target.sprite;
   const byDist = (a, b) => Math.abs(a.x - spr.x) - Math.abs(b.x - spr.x);
   const food = foodStacks(engine)
-    .filter((row) => reachable(spr, row.x, row.y))
+    .filter((row) => reachable(spr, row.x, row.y, engine))
     .map((row) => ({ kind: 'stack', id: row.id, x: row.x, y: row.y }))
     .sort(byDist)[0];
   if (food) return food;
   return fruitingTrants(engine)
-    .filter((t) => reachable(spr, t.sprite.x, t.sprite.y))
+    .filter((t) => reachable(spr, t.sprite.x, t.sprite.y, engine))
     .map((t) => ({ kind: 'trant', target: t, x: t.sprite.x, y: t.sprite.y }))
     .sort(byDist)[0] || null;
 }
@@ -627,7 +637,7 @@ function eatFruit(trant) {
 /** onFoodPathing arrival: one food item, else one fruit, within 100 px. */
 function eatNearby(engine, target) {
   const spr = target.sprite;
-  const near = (x, y) => Math.hypot(x - spr.x, (Number.isFinite(y) ? y : spr.y) - spr.y) <= EAT_RADIUS;
+  const near = (x, y) => Math.hypot(x - spr.x, (Number.isFinite(y) ? y : spr.y) - spr.y) <= EAT_RADIUS && !behindWall(engine, spr, x);
   const stack = foodStacks(engine).find((row) => near(row.x, row.y));
   if (stack) {
     const cls = stack.classTsid;
@@ -683,7 +693,7 @@ function canSeek(engine, r) {
 }
 
 function startSeek(engine, r, food) {
-  if (!food || !reachable(r.target.sprite, food.x, food.y)) return false;
+  if (!food || !reachable(r.target.sprite, food.x, food.y, engine)) return false;
   // setMovingTo('food'): rooting stops (wait_rooting 0) and the walk to food plays its walk.
   if (r.mode === 'root' || (r.pathPose && r.pathPose !== 'walk')) walkAgain(engine, r);
   r.pathPose = '';
