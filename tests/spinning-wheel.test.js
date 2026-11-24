@@ -411,7 +411,8 @@ test.describe('#665 spin at once', () => {
   test('still one spin and one ticket', () => {
     const wheel = createSpinningWheelState('player', 1_000, { ticket: GAMESHOW_TICKET_ID });
     const inv = { [GAMESHOW_TICKET_ID]: 1 };
-    assert.equal(startSpinningWheel(wheel, 'player', { now: 1_000 }).ok, true);
+    // A fixed roll (500 currants): about 1 spin in 15 wins another Gameshow Ticket, which keeps the count at 1.
+    assert.equal(startSpinningWheel(wheel, 'player', { now: 1_000, rewardRoll: 0.96 }).ok, true);
     assert.equal(startSpinningWheel(wheel, 'player', { now: 1_001 }).reason, 'spun');
     const spin = getVerbsFor({ classId: 'npc_spinning_wheel', state: { wheel } }, { pc: {}, inv: {} })
       .find((v) => v.id === 'spin');
