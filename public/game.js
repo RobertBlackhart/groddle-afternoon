@@ -1138,7 +1138,7 @@ import { createQuestSheet, failedQuestPin, questLogNeedsSwap, questStep, visible
 import { resolveQuestPins } from './js/features/quest-pins-feature.js?v=0e07d9a1';
 import { createQuestTracker } from './js/ui/quest-tracker.js?v=54c1d111';
 import { bindContextTrigger, createContextMenu, isContextMenuKey as isMenuKey, MORE_KEYS_LABEL } from './js/ui/context-menu.js?v=dee0ecde';
-import { bindCountField, countKeyValue, countStepMarkup, createCountChooser, heldPress, typedCount } from './js/ui/count-chooser.js?v=c268eefe';
+import { bindCountField, countKeyValue, countStepMarkup, createCountChooser, focusedCountField, heldPress, keepCountCaret, openCountField, restoreCountCaret, saveCountCaret, typedCount } from './js/ui/count-chooser.js?v=c268eefe';
 import { createScrollKeep } from './js/ui/scroll-keep.js?v=2898b5b1';
 import { actVerbMenu, bindVerbMenu, centerVerbMenu, chooseVerbRow, dropVerbMenuActs, fitPickGrid, fitVerbMenuRows, focusVerbRow, lockVerbMenuSize, makePickTile, makeVerbRow, pickGridCols, placeVerbMenu, plainWords, refuseVerbRow, setVerbMenuIcon, settleVerbMenu, stepVerbRow, syncVerbDetail, verbMenuKey, verbMenuWaiting, verbRowAttrs, verbRowInner, verbRowKeys } from './js/ui/verb-menu.js?v=424b9a35';
 import { createPromptSettler, promptId, promptSideStep } from './js/prompt-settle.js?v=cb790f3a';
@@ -5700,6 +5700,8 @@ function renderPackPopover(classTsid, anchor = null) {
   // same buttons and listeners.
   // A redraw while the eat chooser has focus (a count change, an energy tick) keeps it on the same control.
   const focusedEat = pop.contains(document.activeElement) ? document.activeElement : null;
+  // #666: a count field keeps its caret and selection across a redraw (the count rewritten: at the end).
+  const countCaret = saveCountCaret(pop);
   const keepFocus = focusedEat
     ? ['data-pack-eat-choice', 'data-pack-eat-dec', 'data-pack-eat-inc', 'data-pack-eat-confirm', 'data-pack-eat-cancel', 'data-pack-eat-many', 'data-pack-eat-num', 'data-pack-eat-max',
       'data-pack-drop-dec', 'data-pack-drop-inc', 'data-pack-drop-num', 'data-pack-drop-max', 'data-pack-drop-confirm',
@@ -5722,6 +5724,7 @@ function renderPackPopover(classTsid, anchor = null) {
       const again = pop.querySelector(keepFocus);
       const target = again && !again.disabled ? again : pop.querySelector('[data-pack-eat-confirm], [data-pack-drop-confirm], [data-pack-count-num]');
       target?.focus({ preventScroll: true });
+      if (countCaret) restoreCountCaret(pop, countCaret);
     } else if (focusedRow >= 0) focusVerbRow(pop, focusedRow);
     syncVerbDetail(pop);
     pop.dataset.packFor = classTsid;
@@ -5759,9 +5762,7 @@ function renderPackPopover(classTsid, anchor = null) {
       packDropMode = false;
       packEatMode = false;
       renderPackPopover(classTsid, sourceAnchor);
-      const num = pop.querySelector('[data-pack-count-num]');
-      num?.focus({ preventScroll: true });
-      num?.select?.();
+      openCountField(pop.querySelector('[data-pack-count-num]'), pop.querySelector('[data-pack-count-confirm]'));
     });
   });
   if (countVerb) {
@@ -5926,7 +5927,7 @@ function renderPackPopover(classTsid, anchor = null) {
     packDropMode = true;
     packDropQty = normalizeStackQuantity(packDropQty, stackCount);
     renderPackPopover(classTsid, sourceAnchor);
-    pop.querySelector('[data-pack-drop-confirm]')?.focus({ preventScroll: true });
+    openCountField(pop.querySelector('[data-pack-drop-num]'), pop.querySelector('[data-pack-drop-confirm]'));
   });
   pop.querySelector('[data-pack-drop-dec]')?.addEventListener('click', () => {
     packDropQty = normalizeStackQuantity(packDropQty - 1, stackCount);
@@ -5991,7 +5992,7 @@ function renderPackPopover(classTsid, anchor = null) {
       packDropMode = false;
       packEatQty = 1;
       renderPackPopover(classTsid, sourceAnchor);
-      pop.querySelector('[data-pack-eat-confirm]')?.focus({ preventScroll: true });
+      openCountField(pop.querySelector('[data-pack-eat-num]'), pop.querySelector('[data-pack-eat-confirm]'));
     });
     pop.querySelectorAll('[data-pack-eat-choice]').forEach((button) => {
       button.addEventListener('click', () => setEatQty(Number(button.dataset.packEatChoice)));
@@ -7270,7 +7271,9 @@ function updateHud() {
   refreshVitalsMenu();
 
   renderPackBar();
-  if (packSelected) renderPackPopover(packSelected);
+  // #666: never under a count field being typed in ("24" typed as "42": the redraw put the caret back at
+  // the start). The menu follows the typing in place (preview); it is redrawn once the field is left.
+  if (packSelected && !focusedCountField(document.getElementById('pack-popover'))) renderPackPopover(packSelected);
   updateLocalChatDockPosition();
   updateHomeChrome();
   if (state.started) savePlayerState();
@@ -7441,7 +7444,7 @@ function usePackItem(classTsid, count = 1, stock = null) {
   }
   if (app?.canvas && ordinaryInfo?.usable) app.canvas.dataset.packEaten = `${classTsid}:${eaten}:${r.effects?.energy || 0}:${r.effects?.mood || 0}:${r.effects?.xp || 0}`;
   updateHud();
-  if (isVendorOpen()) renderVendorList();
+  if (isVendorOpen() && !typingIn('vendor-panel')) renderVendorList();
   return true;
 }
 
@@ -7611,7 +7614,7 @@ function playPackMusicblock(classTsid) {
   );
   announceAchievementUpdates(achievementUpdates);
   updateHud();
-  if (isVendorOpen()) renderVendorList();
+  if (isVendorOpen() && !typingIn('vendor-panel')) renderVendorList();
 }
 
 function checkQuest() {
@@ -10019,7 +10022,8 @@ function showFeedPickerQty(food) {
     cancel: () => closeFeedPicker(),
   });
   placeFeedPicker();
-  requestAnimationFrame(() => document.getElementById('feed-picker-qty-go')?.focus({ preventScroll: true }));
+  // #666: the field opens with its number selected (a phone's OK button takes the focus instead).
+  requestAnimationFrame(() => openCountField(input, document.getElementById('feed-picker-qty-go')));
 }
 
 /** MPANELS: the modern skin's Feed what? / How many sits by the thing, as its verb menu did. */
@@ -32524,6 +32528,11 @@ function renderVendorList() {
       ? ['data-vq', 'data-vq-val', 'data-v-go', 'data-v-back'].find((a) => document.activeElement.hasAttribute(a))
       : null;
     const hadFocusVal = hadFocus === 'data-vq' ? document.activeElement.getAttribute('data-vq') : null;
+    // #666: the field being typed in keeps its caret and selection; a count just asked for opens selected.
+    const vqCaret = saveCountCaret(detail);
+    const countFor = `${vendorTab}:${vendorSelected}`;
+    const opening = detail.dataset.countFor !== countFor;
+    detail.dataset.countFor = countFor;
     if (vendorPop) {
       drawVendorTiles(list);
       vendorShelfScroll.restore(shelfKey, shelfScrollers);
@@ -32569,7 +32578,7 @@ function renderVendorList() {
         }</p>
         <div class="qty-row">
           <button type="button" data-vq="-">−</button>
-          <input type="number" min="1" max="${maxQ}" value="${vendorQty}" data-vq-val />
+          <input type="text" value="${vendorQty}" data-vq-val inputmode="numeric" pattern="[0-9]*" autocomplete="off" aria-label="How many" />
           <button type="button" data-vq="+">+</button>
           <button type="button" class="btn-max" data-vq="max">Max</button>
           <button type="button" class="btn-glitch-primary" data-v-go>
@@ -32648,7 +32657,9 @@ function renderVendorList() {
     if (hadFocus) {
       const sel = hadFocus === 'data-vq' ? `[data-vq="${hadFocusVal}"]` : `[${hadFocus}]`;
       detail.querySelector(sel)?.focus({ preventScroll: true });
-    } else if (vendorPop) detail.querySelector('[data-v-go]')?.focus({ preventScroll: true });
+      if (vqCaret) restoreCountCaret(detail, vqCaret);
+    } else if (opening) openCountField(detail.querySelector('[data-vq-val]'), detail.querySelector('[data-v-go]'));
+    else if (vendorPop) detail.querySelector('[data-v-go]')?.focus({ preventScroll: true });
     if (vendorPop) placeVendorPop(list, detail);
     detail.querySelector('[data-v-go]')?.addEventListener('click', () => {
       // G152 (inc_stores.js:168-196): buy only what fits; none fitting is refused, the rest isn't charged.
@@ -32705,6 +32716,7 @@ function renderVendorList() {
     detail.hidden = true;
     detail.innerHTML = '';
     detail.style.display = '';
+    delete detail.dataset.countFor;
   }
   // The room a pop under the bottom row asked for goes with it (placeVendorPop).
   list.style.paddingBottom = '';
@@ -36714,6 +36726,7 @@ async function main() {
     // #306: the Quests cards gain or lose their Pin button with the skin.
     if (!document.getElementById('quest-panel')?.hidden) updateHud();
     // MPANELS: a vendor's count is a popover over the shelf in Modern, the shelf's own detail in Classic.
+    // #666: a count being typed in keeps its caret (renderVendorList gives it back).
     if (isVendorOpen()) renderVendorList();
   });
   // RIGHTCLICK (R4, js/ui/context-guard.js): the browser's own menu never opens over the world, a

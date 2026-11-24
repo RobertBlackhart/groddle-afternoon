@@ -51,6 +51,73 @@ function coarsePointer() {
   return Boolean(globalThis.matchMedia?.('(pointer: coarse)')?.matches);
 }
 
+/**
+ * #666: a How many opens as Glitch's did, the field focused with its number selected, so the first digit
+ * typed replaces it (InteractionMenu.as 1752-1753, QuantityPickerSpecial.as 234). Every count field opens
+ * this way. On a phone the OK button (`ok`) takes the focus instead, so the keyboard stays down until the
+ * field is pressed. Returns what took the focus.
+ */
+export function openCountField(input, ok = null) {
+  const target = coarsePointer() || !input ? ok : input;
+  if (!target?.focus) return null;
+  target.focus({ preventScroll: true });
+  if (target === input) input.select?.();
+  return target;
+}
+
+/** #666: the How many field (one bindCountField wired) that has the focus inside `root`, or null. */
+export function focusedCountField(root) {
+  const doc = root?.ownerDocument || globalThis.document;
+  const a = doc?.activeElement;
+  return a && a.dataset?.countBound && (!root || root === a || root.contains?.(a)) ? a : null;
+}
+
+/** The selector that finds a field again after a redraw: its id, else its first own data attribute. */
+function fieldHook(input) {
+  if (input.id) return `#${input.id}`;
+  const attr = [...(input.attributes || [])].find((a) => a.name.startsWith('data-') && !a.name.startsWith('data-count-'));
+  if (!attr) return '';
+  return attr.value ? `[${attr.name}="${attr.value.replace(/["\\]/g, '\\$&')}"]` : `[${attr.name}]`;
+}
+
+/**
+ * #666: what a redraw of `root` has to give back to its focused count field: which field, what it said,
+ * its caret and selection. Null when no count field there has the focus.
+ */
+export function saveCountCaret(root) {
+  const input = focusedCountField(root);
+  if (!input) return null;
+  let sel = null;
+  try {
+    if (input.selectionStart != null) sel = [input.selectionStart, input.selectionEnd, input.selectionDirection || 'none'];
+  } catch { /* a field with no caret to read */ }
+  return { hook: fieldHook(input), value: String(input.value), sel };
+}
+
+/**
+ * #666: after a redraw, the field saved by saveCountCaret has the focus again with its caret and selection
+ * where they were. A count the redraw rewrote puts the caret at the end, as Glitch's did (QuantityPicker.as
+ * 185). Returns the field, or null when the redraw left none.
+ */
+export function restoreCountCaret(root, saved) {
+  if (!saved?.hook || !root) return null;
+  const input = root.querySelector?.(saved.hook);
+  if (!input || input.disabled) return null;
+  if (input.ownerDocument?.activeElement !== input) input.focus({ preventScroll: true });
+  const end = String(input.value).length;
+  const [start, stop, dir] = String(input.value) === saved.value && saved.sel ? saved.sel : [end, end, 'none'];
+  try { input.setSelectionRange(start, stop, dir); } catch { /* a field with no caret to set */ }
+  return input;
+}
+
+/** #666: redraw `root` with `redraw()`, its focused count field keeping its focus, caret and selection. */
+export function keepCountCaret(root, redraw) {
+  const saved = saveCountCaret(root);
+  const out = redraw();
+  if (saved) restoreCountCaret(root, saved);
+  return out;
+}
+
 function esc(s) {
   return String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
@@ -63,7 +130,7 @@ export function countStepMarkup({ value, max, min = 1, verb = 'Choose', attrs })
   const n = Math.max(min, Math.min(max, Math.floor(Number(value)) || min));
   return `<div class="count-pop-step">
           <button type="button" class="count-pop-dec" ${attrs.dec} aria-label="${esc(verb)} one fewer" ${n <= min ? 'disabled' : ''}>−</button>
-          <input type="number" class="count-pop-num" ${attrs.num} min="${min}" max="${max}" value="${n}" inputmode="numeric" aria-label="How many" />
+          <input type="text" class="count-pop-num" ${attrs.num} value="${n}" inputmode="numeric" pattern="[0-9]*" autocomplete="off" aria-label="How many" />
           <button type="button" class="count-pop-inc" ${attrs.inc} aria-label="${esc(verb)} one more" ${n >= max ? 'disabled' : ''}>+</button>
           <button type="button" class="count-pop-max" ${attrs.max} ${n >= max ? 'aria-pressed="true"' : ''}>Max</button>
         </div>`;
@@ -145,6 +212,13 @@ export function bindCountField(input, { max, set, confirm, cancel, preview = nul
   });
   let previewed = null;
   input.addEventListener('input', () => {
+    // #666: digits only, as Glitch's count field (a text field that took 0-9); the caret stays put.
+    const raw = String(input.value ?? '');
+    if (/\D/.test(raw)) {
+      const at = Math.max(0, (input.selectionStart ?? raw.length) - (raw.slice(0, input.selectionStart ?? raw.length).match(/\D/g) || []).length);
+      input.value = raw.replace(/\D+/g, '');
+      try { input.setSelectionRange?.(at, at); } catch { /* no caret */ }
+    }
     if (typeof preview !== 'function') return;
     const most = max();
     const n = typedCount(input.value, most);
@@ -230,12 +304,7 @@ export function createCountChooser(doc, { title, max, start = max, verb, hook, b
     panel,
     get count() { return n; },
     focus() {
-      if (coarsePointer()) {
-        q('confirm').focus({ preventScroll: true });
-        return;
-      }
-      input.focus({ preventScroll: true });
-      input.select?.();
+      openCountField(input, q('confirm'));
     },
   };
 }

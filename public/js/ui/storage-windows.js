@@ -25,7 +25,7 @@
  * original's dark blocker colour (CabinetDialog blocker 0x213036).
  */
 
-import { bindCountField, countKeyValue, countStepMarkup } from './count-chooser.js?v=c268eefe';
+import { bindCountField, countKeyValue, countStepMarkup, keepCountCaret, openCountField } from './count-chooser.js?v=c268eefe';
 import { bindContextTrigger } from './context-menu.js?v=dee0ecde';
 import { beginDrag, registerDropTarget, touchLift } from '../drop-targets.js?v=59e6edb4';
 
@@ -316,7 +316,8 @@ export function openCabinetWindow(opts) {
     pick.hidden = false;
     const meta = item(s.classTsid, s);
     let n = s.count;
-    const render = () => {
+    // #666: a redraw (a step, a key) gives the count field back its focus, caret and selection.
+    const render = () => keepCountCaret(pick, () => {
       pick.replaceChildren();
       pick.append(el('img', { src: meta.icon, alt: '' }), el('span', { class: 'hst-pick-name' }, `${meta.label} × ${s.count}`));
       if (s.count > 1) {
@@ -331,7 +332,7 @@ export function openCabinetWindow(opts) {
       const out = el('button', { type: 'button', class: 'hst-btn btn-glitch-primary', 'data-hst-take': '' }, opts.takeLabel || 'Take out');
       out.addEventListener('click', () => go());
       pick.append(out);
-    };
+    });
     const go = async () => {
       const at = picked;
       picked = null;
@@ -451,7 +452,7 @@ export function openCabinetWindow(opts) {
     const i = Number(b.dataset.hstSlot);
     picked = slots[i] && picked !== i ? i : null;
     draw();
-    if (picked != null) pick.querySelector('[data-hst-take]')?.focus({ preventScroll: true });
+    if (picked != null) openCountField(pick.querySelector('[data-hst-num]'), pick.querySelector('[data-hst-take]'));
   });
   // RIGHTCLICK: a right-click (Shift+F10, the Menu key) on a full slot opens its Take out row, as a
   // click does, and leaves it open when it already is.
@@ -463,7 +464,7 @@ export function openCabinetWindow(opts) {
     open: (b) => {
       picked = Number(b.getAttribute('data-hst-slot'));
       draw();
-      pick.querySelector('[data-hst-take]')?.focus({ preventScroll: true });
+      openCountField(pick.querySelector('[data-hst-num]'), pick.querySelector('[data-hst-take]'));
     },
   });
   grid.addEventListener('keydown', (e) => {
@@ -540,7 +541,11 @@ export function openStoreDialog({ title, sub = '', item, have, max, text, onBuy,
   let busy = false;
   let cur = { ...item };
   let say = null;
+  // #666: a redraw (a step, the store's own news) gives the count field back its focus, caret and selection.
   function render(msg = '', bad = false) {
+    keepCountCaret(body, () => paint(msg, bad));
+  }
+  function paint(msg = '', bad = false) {
     body.replaceChildren();
     const top = el('div', { class: 'hst-store-item' });
     top.append(el('img', { src: cur.icon, alt: '' }));
@@ -601,7 +606,7 @@ export function openStoreDialog({ title, sub = '', item, have, max, text, onBuy,
   h.say = (t, bad) => say?.(t, bad);
   h.item = () => cur;
   render();
-  setTimeout(() => body.querySelector('[data-hst-buy]')?.focus({ preventScroll: true }), 0);
+  setTimeout(() => openCountField(body.querySelector('[data-hst-num]'), body.querySelector('[data-hst-buy]')), 0);
   return h;
 }
 
@@ -612,6 +617,9 @@ export function openCountDialog({ title, icon = '', label = '', max, value = nul
   h.root.append(body);
   let n = Math.max(1, Math.min(max, value ?? max));
   function render() {
+    keepCountCaret(body, paint);
+  }
+  function paint() {
     body.replaceChildren();
     if (icon || label) {
       const top = el('div', { class: 'hst-store-item' });
@@ -637,7 +645,7 @@ export function openCountDialog({ title, icon = '', label = '', max, value = nul
     onOk(n);
   };
   render();
-  setTimeout(() => body.querySelector('[data-hst-ok]')?.focus({ preventScroll: true }), 0);
+  setTimeout(() => openCountField(body.querySelector('[data-hst-num]'), body.querySelector('[data-hst-ok]')), 0);
   return h;
 }
 

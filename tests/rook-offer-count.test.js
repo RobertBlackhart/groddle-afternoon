@@ -122,7 +122,7 @@ describe('ticket 70: how many of an offering', () => {
 
   it('the panel uses the one How many chooser on its own hooks, and both skins style its OK', () => {
     const feature = src('js/features/rook-attack-feature.js');
-    assert.match(feature, /import \{ bindCountField, countKeyValue, countStepMarkup \} from '\.\.\/ui\/count-chooser\.js/);
+    assert.match(feature, /import \{ bindCountField, countKeyValue, countStepMarkup, openCountField \} from '\.\.\/ui\/count-chooser\.js/);
     assert.match(feature, /countStepMarkup\(\{ value: n, max: o\.count, verb: 'Give', attrs: OFFER_COUNT_ATTRS \}\)/);
     assert.match(feature, /const n = offerDefaultCount\(o\.count\);/);
     assert.match(src('style.css'), /\.count-pop :is\(\.feed-picker-qty-go, \.qty-row \.btn-glitch-primary, \[data-v-go\], \[data-rook-count-give\]\) \{/);

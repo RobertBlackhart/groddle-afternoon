@@ -166,7 +166,8 @@ describe('pack / inventory', () => {
     const css = resolveTokens(readFileSync(join(__dirnameUi, '../public/style.css'), 'utf8'));
     const game = readFileSync(join(__dirnameUi, '../public/game.js'), 'utf8');
     // updateHud redraws the open card on every HUD change; the same markup keeps the same buttons (no hover blink).
-    assert.match(game, /if \(packSelected\) renderPackPopover\(packSelected\);/);
+    // #666: not under a count field being typed in.
+    assert.match(game, /if \(packSelected && !focusedCountField\(document\.getElementById\('pack-popover'\)\)\) renderPackPopover\(packSelected\);/);
     assert.match(game, /const unchanged = pop\.dataset\.packFor === classTsid && \(pop\.dataset\.packPlace \|\| ''\) === placeKey && pop\.innerHTML !== '' && packPopoverMarkup === markup;\n[\s\S]{0,500}?if \(!unchanged\) \{\n\s*pop\.innerHTML = markup;/);
     assert.match(game, /positionPackPopover\(pop, sourceAnchor\);\n\s*if \(unchanged\) return;/);
     assert.match(game, /packPopoverMarkup = '';/, 'closing forgets the markup');

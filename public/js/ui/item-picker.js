@@ -17,7 +17,7 @@
  * Styles: style.css `.item-picker` (every skin + Modern), css/classic.css (Classic restyles in place).
  */
 import { packSearchMatch } from './pack-row.js?v=8c1f055d';
-import { bindCountField, countFromField, countKeyValue, countStepMarkup, syncCountStep } from './count-chooser.js?v=c268eefe';
+import { bindCountField, countFromField, countKeyValue, countStepMarkup, keepCountCaret, openCountField, syncCountStep } from './count-chooser.js?v=c268eefe';
 
 /**
  * PURE: the items the search leaves (all of them for an empty search), in order.
@@ -331,7 +331,8 @@ export function createItemPicker(doc, opts) {
       if ('selected' in next) selected = next.selected == null ? null : String(next.selected);
       if (next.count != null) count = Math.max(1, Math.floor(Number(next.count)) || 1);
       renderGrid();
-      renderChosen();
+      // #666: the count field being typed in keeps its focus, caret and selection.
+      keepCountCaret(chosen, renderChosen);
     },
     /** The search box (a window opened from the keyboard starts there). */
     focus() {
@@ -339,9 +340,8 @@ export function createItemPicker(doc, opts) {
     },
     /** Puts the focus on the count field, or the picked tile. */
     focusCount() {
-      const input = chosen.querySelector('.count-pop-num');
-      (input || tiles.get(selected))?.focus({ preventScroll: true });
-      input?.select?.();
+      // #666: its number selected, as every count field opens (a phone's picked tile takes the focus instead).
+      if (!openCountField(chosen.querySelector('.count-pop-num'), tiles.get(selected))) tiles.get(selected)?.focus({ preventScroll: true });
     },
     clearSearch() {
       search.value = '';

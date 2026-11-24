@@ -41,7 +41,8 @@ describe('the How many chooser', () => {
   it('the step row: − [number] + Max, on the site\'s own hooks, its ends off at one and at max', () => {
     const row = countStepMarkup({ value: 1, max: 5, verb: 'Drop', attrs: { dec: 'data-a-dec', inc: 'data-a-inc', num: 'data-a-num', max: 'data-a-max' } });
     assert.match(row, /<button type="button" class="count-pop-dec" data-a-dec aria-label="Drop one fewer" disabled>−<\/button>/);
-    assert.match(row, /<input type="number" class="count-pop-num" data-a-num min="1" max="5" value="1" inputmode="numeric" aria-label="How many" \/>/);
+    // #666: a text field with a number keypad (its caret can be kept across a redraw; a number field's can't).
+    assert.match(row, /<input type="text" class="count-pop-num" data-a-num value="1" inputmode="numeric" pattern="\[0-9\]\*" autocomplete="off" aria-label="How many" \/>/);
     assert.match(row, /class="count-pop-inc" data-a-inc aria-label="Drop one more" >\+/);
     assert.match(row, /class="count-pop-max" data-a-max >Max<\/button>/);
     assert.match(countStepMarkup({ value: 9, max: 5, attrs: { dec: '', inc: '', num: '', max: '' } }), /value="5"[\s\S]*aria-pressed="true"/);

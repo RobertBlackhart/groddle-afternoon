@@ -60,7 +60,7 @@ describe('#141 the item picker\'s rules', () => {
 describe('#141 one picker in the Auction House, Give, Wrap and the Butler', () => {
   it('the picker draws tiles with a search and puts How many (the shared count chooser) right under the pick', () => {
     const src = read('js/ui/item-picker.js');
-    assert.match(src, /import \{ bindCountField, countFromField, countKeyValue, countStepMarkup, syncCountStep \} from '\.\/count-chooser\.js/);
+    assert.match(src, /import \{ bindCountField, countFromField, countKeyValue, countStepMarkup, keepCountCaret, openCountField, syncCountStep \} from '\.\/count-chooser\.js/);
     assert.match(src, /chosen\.className = 'item-picker-chosen count-pop';/);
     assert.match(src, /el\.append\(search, grid, none, chosen\);/, 'search, grid, then the picked stack and How many');
     const css = read('style.css');
