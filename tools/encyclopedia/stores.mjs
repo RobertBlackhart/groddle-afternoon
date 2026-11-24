@@ -36,7 +36,7 @@ export async function addStores(d, { itemIcon, portrait }) {
     const streets = streetsOf.get(p.key) || [];
     d.entries.set(`stores:${p.key}`, {
       key: `stores:${p.key}`, section: 'stores', id: p.key, name: p.label, status: 'source', register: '', refs: [],
-      group: keeper ? 'Kept by a vendor of their own' : 'Kept by Street Spirits',
+      group: keeper ? 'Kept by a vendor of their own' : 'Kept by Street Spirits', storeName: p.label.replace(/ Vendor$/, ''),
       icon: (keeper && portrait(keeper)) || itemIcon('street_spirit'),
       desc: p.desc,
       shop: {
@@ -57,7 +57,7 @@ export function storePage(e, P, { info, kit }) {
   for (const k of s.streets) { const st = info(k); (byPlace.get(st.street.place) || byPlace.set(st.street.place, []).get(st.street.place)).push(st); }
   const places = [...byPlace.keys()].sort((a, b) => info(a).name.localeCompare(info(b).name, 'en', { sensitivity: 'base' }));
   const where = places.map((pk) => `<div class="st-region"><h3><a href="${P.href(pk)}">${esc(info(pk).name)}</a> <span class="count">${fmt(byPlace.get(pk).length)}</span></h3>${P.chips(byPlace.get(pk).sort((a, b) => a.name.localeCompare(b.name, 'en', { sensitivity: 'base' })).map((st) => P.chip(esc(st.name), { link: P.href(st.key), cls: 'ency-place' })))}</div>`).join('\n        ');
-  const person = s.person && info(s.person) ? P.tiles([P.tile(s.person, { sub: s.keeper ? 'keeps it' : 'a Street Spirit keeps it' })]) : '';
+  const person = s.person && info(s.person) ? P.tiles([P.tile(s.person, { sub: 'keeps it' })]) : '';
   const original = s.keeper
     ? `<div class="cat-desc"><p>${esc(s.keeperDesc)}</p></div>${s.buyTooltip ? `<p class="ency-talk">${esc(s.buyTooltip)}</p>` : ''}<p class="cat-source">In Tiny Speck’s words, from their game code. The line below is the remake’s.</p>`
     : '<p class="cat-desc">A Street Spirit keeps this store: the stock is Tiny Speck’s, from their store catalog. The line below is the remake’s.</p>';

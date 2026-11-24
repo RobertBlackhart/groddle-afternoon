@@ -93,7 +93,8 @@ describe('blank stubs', () => {
     const SECTION_LABEL = Object.fromEntries(SECTIONS.map((s) => [s.key, s.label]));
     for (const sec of BUILT_SECTIONS) {
       // Music and sounds keeps its Still missing list beside the entries (tests/encyclopedia-sounds.test.js counts it).
-      const pages = readdirSync(join(pub, 'encyclopedia', sec), { withFileTypes: true }).filter((x) => x.isDirectory() && !(sec === 'sounds' && x.name === 'still-missing')).length;
+      // A person's folded copy (#505) keeps a folder that only forwards to the page it shares.
+      const pages = readdirSync(join(pub, 'encyclopedia', sec), { withFileTypes: true }).filter((x) => x.isDirectory() && !(sec === 'sounds' && x.name === 'still-missing') && !search.folded?.[`${sec}:${x.name}`]).length;
       const rows = search.entries.filter((x) => x.s === sec);
       assert.equal(card(SECTION_LABEL[sec]), pages, `${sec}: home card`);
       assert.equal(rows.length, pages, `${sec}: search rows`);

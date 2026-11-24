@@ -58,6 +58,7 @@ import { loadHero } from './hero.mjs';
 import { pageArt, srcsetAttrs } from '../page-art/index.mjs';
 import { loadUses } from './uses.mjs';
 import { loadHandouts } from './handouts.mjs';
+import { STREET_SPIRIT_VARIANTS } from '../../public/js/street-spirits.js?v=f9e88445';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, '..', '..');
@@ -644,6 +645,9 @@ export async function buildCatalog({ inventory = readInventory(), evidence = rea
   const all = new Map(ids.map((id) => {
     const it = readGsjsItem(id);
     it.tags = [...new Set([...it.tags, ...(tagIndex.get(id) || []).map((t) => t.replace(/,$/, ''))])];
+    // Same name, different things (#505): the encyclopedia's qualified name (data.mjs disambiguate), "Piece of Wooden Apple (2 of 4)".
+    const own = ency.items.get(id)?.name;
+    if (own && own !== it.name) it.name = own;
     return [id, it];
   }));
   const excluded = ids.filter((id) => inventory.get(id).status === 'excluded');
@@ -672,10 +676,16 @@ export async function buildCatalog({ inventory = readInventory(), evidence = rea
   const musicblocks = JSON.parse(readFileSync(join(pub, 'musicblocks', 'data.json'), 'utf8'));
   const musicCards = new Set(musicblocks.sets.flatMap((s) => s.blocks.map((b) => b.id)));
 
+  // #505: a folded variant's ways to get it are its thing's too (a proto's price, a variant's own source).
+  const variantsOf = new Map();
+  for (const [v, to] of folds) (variantsOf.get(to) || variantsOf.set(to, []).get(to)).push(v);
   const entries = listed.map((it) => {
     const inv = inventory.get(it.id);
     const status = inv.status;
-    const ways = status === 'source' ? waysFor(it.id, remake, evidence.get(it.id), quests, it.takeable, handouts, questOffered) : [];
+    const own = status === 'source' ? waysFor(it.id, remake, evidence.get(it.id), quests, it.takeable, handouts, questOffered) : [];
+    const more = status === 'source' ? (variantsOf.get(it.id) || []).filter((v) => inventory.get(v)?.status === 'source')
+      .flatMap((v) => waysFor(v, remake, evidence.get(v), quests, all.get(v)?.takeable, handouts, questOffered)) : [];
+    const ways = mergeWays(own, more);
     if (status === 'source' && !ways.length) problems.push(`${it.id}: in the remake, but no table or handover says how to get it (tools/catalog/handouts.mjs)`);
     return {
       it,
@@ -750,7 +760,8 @@ export async function buildCatalog({ inventory = readInventory(), evidence = rea
  */
 export function vendorIcon(key, ency, storeIconUrl) {
   const keeper = ency.stores.get(key);
-  const spirit = !keeper || keeper.startsWith('people:vendor-');
+  // A store a Street Spirit keeps opens its Stores page (data.mjs foldStoreEntries, #505).
+  const spirit = !keeper || keeper.startsWith('people:vendor-') || keeper.startsWith('stores:');
   return (spirit && storeIconUrl(key)) || ency.entries.get(keeper)?.icon?.src || '';
 }
 
@@ -810,6 +821,25 @@ function waysFor(id, remake, evidence, quests, takeable, handouts, questOffered)
     if (way) ways.push(typeof way === 'string' ? { kind: 'other', text: way } : way);
   }
   return ways;
+}
+
+/**
+ * PURE (#505): an item's ways to get it, then the ways its folded variants add that it lacks.
+ * A variant's fallback words ("Found out in the world.", from the evidence when nothing else
+ * says how) never add to a page that already says how.
+ */
+const FALLBACK_WAYS = new Set(['Found out in the world.', 'A drop you can get as you play.']);
+export function mergeWays(own, more) {
+  const key = (w) => JSON.stringify(w);
+  const seen = new Set(own.map(key));
+  const out = [...own];
+  for (const w of more) {
+    if (seen.has(key(w))) continue;
+    if (own.length && w.kind === 'other' && FALLBACK_WAYS.has(w.text)) continue;
+    seen.add(key(w));
+    out.push(w);
+  }
+  return out;
 }
 
 /* -- Pages --------------------------------------------- */
@@ -933,8 +963,9 @@ function itemPage(e, ctx) {
       case 'garden': return `Grown in a garden plot from ${link(c.inputs[0])}.`;
       case 'transform': return `Made from ${ins} with its ${esc(c.source.split(':')[1].replace(/_/g, ' '))} verb.`;
       case 'assembly': {
-        // An artifact's pieces all carry the artifact's name (items/artifact_*_piece*.js): number them instead.
-        const same = c.inputs.length > 1 && c.inputs.every((i) => nameOf(i) === nameOf(c.inputs[0]));
+        // An artifact's pieces all carry the artifact's name (items/artifact_*_piece*.js): number them instead
+        // (their plural, as their names now carry "2 of 4", data.mjs itemQualifier).
+        const same = c.inputs.length > 1 && c.inputs.every((i) => pluralOf(i) === pluralOf(c.inputs[0]));
         return same
           ? `Assembled from ${c.inputs.length === 2 ? 'both' : `all ${c.inputs.length}`} ${esc(pluralOf(c.inputs[0]))}: ${andList(c.inputs.map((i, n) => link(i, `piece ${n + 1}`)))}.`
           : `Assembled from ${ins}.`;
@@ -1108,7 +1139,11 @@ ${usesHtml.length ? `          <ul class="cat-list">
   const questTiles = fromAll((b) => b.from.startsWith('quests:')).map((b) => ({ ...b, rel: backs.filter((x) => x.from === b.from).sort((x, y) => qRank[x.rel] - qRank[y.rel])[0].rel }))
     .map((b) => (unoffered(b) ? { ...b, rel: 'unoffered', sub: `${QUEST_REL[b.rel]}, ${NOT_OFFERED[ctx.questStatus?.get(b.from.slice(7))] || 'not offered in the remake'}` } : b))
     .sort((a, b) => (qRank[a.rel] ?? 6) - (qRank[b.rel] ?? 6)).map((b) => P.tile(b.from, { sub: b.sub || QUEST_REL[b.rel] || '' }));
-  const placeChips = fromAll((b) => b.from.startsWith('places:') && b.rel === 'lives').sort((a, b) => b.n - a.n)
+  // #505: someone you meet who is also an item (Street Spirit, Magic Rock, Butler, Hell's Bartender) has the
+  // regions it is found in on its People page; the item page shows the same, and links there.
+  const person = [...ency.entries.values()].find((x) => x.itemPage === it.id) || null;
+  const personLives = person ? (ency.back.get(person.key) || []).filter((b) => b.rel === 'lives' && ency.entries.has(b.from)) : [];
+  const placeChips = [...fromAll((b) => b.from.startsWith('places:') && b.rel === 'lives'), ...personLives].filter((b, i, a) => a.findIndex((x) => x.from === b.from) === i).sort((a, b) => b.n - a.n)
     .map((b) => P.chip(`${esc(ency.entries.get(b.from).name)} <b>${fmt(b.n)}</b>`, { link: P.href(b.from), cls: 'ency-place' }));
   const streetsWith = streetsWithIt(it.id, P, ency, info);
   const achTiles = fromAll((b) => b.from.startsWith('achievements:')).map((b) => P.tile(b.from, { sub: b.n > 1 ? `${fmt(b.n)} times` : '' }));
@@ -1116,6 +1151,7 @@ ${usesHtml.length ? `          <ul class="cat-list">
   const soundTiles = fromAll((b) => b.from.startsWith('sounds:')).map((b) => P.tile(b.from));
   const encyBody = [
     whereToFind(it.id, P, ency),
+    person ? `<h3>People</h3>\n        ${P.tiles([P.tile(person.key, { sub: 'who they are and where to meet them' })])}` : '',
     questTiles.length ? `<h3>Quests</h3>\n        ${P.tiles(questTiles)}` : '',
     // G1183: the streets that have one, by region (the remake's own streets); Tiny Speck's region counts when none does.
     streetsWith ? `<h3>Where it is found</h3>\n        ${streetsWith}` : placeChips.length ? `<h3>Where it is found</h3>\n        <p class="ency-lead-small">Regions on the map, with how many there are in each, from the streets’ own files.</p>\n        ${P.chips(placeChips)}` : '',
@@ -1214,14 +1250,22 @@ ${verbs.map((v) => `          <div><dt>${esc(v.name)}</dt><dd>${v.tooltip ? esc(
 export const FOLDED_USES = {
   wood_tree_enchanted: 'In the Enchanted Forests',
   mortar_barnacle: null,
+  // The regional Street Spirits (data.mjs sameThingOf: each a street_spirit subclass), by their region (js/street-spirits.js).
+  ...Object.fromEntries(Object.values(STREET_SPIRIT_VARIANTS).map((v) => [v.classTsid, `The ${v.region} Street Spirit`])),
+  // The Conch on the pedestal: How to get it on the Conch's page already says so.
+  conch_decoy: null,
 };
 
-/** PURE: the use lines the variants folded into `id` add to its page. */
+/**
+ * PURE: the use lines the variants folded into `id` add to its page. A home-cultivation proto's
+ * lines (how you cultivate it) only stand in where the thing's page says nothing of its own.
+ */
 export function foldedUseLines(id, folds, usesFor) {
   const own = new Set(usesFor(id)?.lines || []);
   const out = [];
   for (const [v, to] of folds || []) {
     if (to !== id || FOLDED_USES[v] === null) continue;
+    if (v.startsWith('proto_') && own.size) continue;
     const lines = (usesFor(v)?.lines || []).filter((l) => !own.has(l) && !out.includes(l));
     if (!lines.length) continue;
     if (FOLDED_USES[v]) out.push(`${FOLDED_USES[v]}: ${lines.map((l, i) => (i ? l : l[0].toLowerCase() + l.slice(1))).join(' ')}`);

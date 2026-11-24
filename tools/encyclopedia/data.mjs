@@ -210,11 +210,13 @@ export async function loadEncyclopedia({ inventory = readInventoryAll() } = {}) 
     const name = /^var name_single\s*=\s*"((?:[^"\\]|\\.)*)"/m.exec(text)?.[1] || id;
     const plural = /^var name_plural\s*=\s*"((?:[^"\\]|\\.)*)"/m.exec(text)?.[1] || '';
     items.set(id, { id, name: JSON.parse(`"${name}"`), plural: plural ? JSON.parse(`"${plural}"`) : '', status: r.status, icon: itemIcon(id) });
-    gsjsPage.set(id, { infopage: !/^var has_infopage\s*=\s*false/m.test(text), proxy: /^var proxy_item\s*=\s*"([a-z0-9_]+)"/m.exec(text)?.[1] || null });
+    gsjsPage.set(id, gsjsPageFacts(text));
   }
   /* One thing, one page (#505): fold an item's variants into the item Glitch gave the page (foldsOf). */
   const folds = foldsOf(items, gsjsPage);
   for (const id of folds.keys()) items.delete(id);
+  // What still shares a name is really different: each gets a plain qualifier (itemQualifier).
+  for (const [id, name] of disambiguate([...items.values()], (m, group) => itemQualifier(m, group, gsjsPage))) items.get(id).name = name;
 
   const quests = content('quests.json');
   const { withBetterLearning } = await import(js('better-learning.js'));
@@ -257,10 +259,22 @@ export async function loadEncyclopedia({ inventory = readInventoryAll() } = {}) 
   /* Animals, Cubimals and people (inventory kind npc), plus the item-class people and the stores. */
   const npcs = live('npc');
   const npcStatus = new Map(npcs);
+  // One person, one page (#505): a creature's or person's copies share the page Glitch gave one of them (foldsOf),
+  // as Greeterbot Sentry G-42's quest copies do (npc_widget, npc_quest_widget -> npc_quest_giver_widget).
+  const npcNames = new Map();
+  const npcPage = new Map();
+  for (const [id] of npcs) {
+    if (!existsSync(join(GSJS, 'items', `${id}.js`)) || /^npc_shrine_(firebog|ix|uralia)_|^npc_letterblock_/.test(id)) continue;
+    const text = readFileSync(join(GSJS, 'items', `${id}.js`), 'utf8');
+    npcNames.set(id, { id, name: readCreature(id).name });
+    npcPage.set(id, gsjsPageFacts(text));
+  }
+  const personFolds = foldsOf(npcNames, npcPage);
   for (const [id, r] of npcs) {
     if (!existsSync(join(GSJS, 'items', `${id}.js`))) continue;
     if (/^npc_shrine_(firebog|ix|uralia)_/.test(id)) continue; // variants: folded into the shrine
     if (/^npc_letterblock_/.test(id)) continue; // letters of the one Letter Block
+    if (personFolds.has(id)) continue; // a copy: it shares its person's page (personFolds)
     const c = readCreature(id);
     const base = { name: c.name, status: r.status, register: r.register, creature: c, icon: portrait(id) };
     if (id.startsWith('npc_cubimal_')) add('animals', id, { ...base, group: 'Cubimals' });
@@ -280,8 +294,9 @@ export async function loadEncyclopedia({ inventory = readInventoryAll() } = {}) 
     const main = entries.get(`people:npc_shrine_${g}`);
     if (main) (main.variants ||= []).push(v);
   }
+  // The regional Street Spirits share the Street Spirit's page (foldsOf: each is a street_spirit subclass).
   const spirit = entries.get('people:street_spirit');
-  if (spirit) spirit.variants = STREET_SPIRITS.slice(1).filter((v) => items.has(v));
+  if (spirit) spirit.variants = STREET_SPIRITS.slice(1).filter((v) => items.has(v) || folds.get(v) === 'street_spirit');
 
   // Stores: a person's own, or a Street Spirit store of its own entry.
   const storeOf = (key, label, offers) => ({ key, label, offers: offers.filter((o) => o.classTsid) });
@@ -329,7 +344,10 @@ export async function loadEncyclopedia({ inventory = readInventoryAll() } = {}) 
 
   /* Cross references. */
   const has = (key) => entries.has(key);
-  const animalOrPerson = (id) => (has(`animals:${id}`) ? `animals:${id}` : has(`people:${id}`) ? `people:${id}` : STREET_SPIRITS.includes(id) && has('people:street_spirit') ? 'people:street_spirit' : null);
+  const animalOrPerson = (id) => {
+    const p = personFolds.get(id) || id;
+    return has(`animals:${p}`) ? `animals:${p}` : has(`people:${p}`) ? `people:${p}` : STREET_SPIRITS.includes(id) && has('people:street_spirit') ? 'people:street_spirit' : null;
+  };
   /** Any class id named in the data, as the key of its entry (an item, or a creature or person). */
   const keyOf = (id) => {
     if (!id) return null;
@@ -449,11 +467,16 @@ export async function loadEncyclopedia({ inventory = readInventoryAll() } = {}) 
   const sounds = addSounds({ entries, items, keyOf, stubKey, nameOf }, { picture });
   for (const s of sounds.stubs) stubs.set(s.key, s);
   addMoreSections({ add, entries, items, keyOf, nameOf, picture, itemIcon, recipes, skills, ecology });
-  const out = { entries, items, recipes, keyOf, skills, stores, stubs, stubKey, nameOf, sounds, folds };
+  const out = { entries, items, recipes, keyOf, skills, stores, stubs, stubKey, nameOf, sounds, folds, personFolds };
   /* Streets, Stores and the item pages' Where to find it (streets.mjs, stores.mjs, where-to-find.mjs). */
   await addStreets(out, { inventory, picture, slug });
   await addStores(out, { itemIcon, portrait });
+  out.movedKeys = foldStoreEntries(out);
   await addWhereToFind(out);
+  // What still shares a name in a section is really different: each gets a plain qualifier (#505, entryQualifier).
+  for (const sec of new Set([...entries.values()].map((e) => e.section))) {
+    for (const [key, name] of disambiguate([...entries.values()].filter((e) => e.section === sec), (m, group) => entryQualifier(m, group, entries), (e) => e.key)) entries.get(key).name = name;
+  }
   out.back = backOf();
   return out;
 }
@@ -461,31 +484,170 @@ export async function loadEncyclopedia({ inventory = readInventoryAll() } = {}) 
 /* -- One thing, one page (#505) ------------------------------ */
 
 /**
- * PURE: the items folded into another item's page: id -> the id whose page it shares.
+ * What a GSJS class file says about its encyclopedia page: has_infopage, proxy_item, its
+ * parent_classes, the class a home-cultivation proto places (instanceProps item_class) and
+ * whether it has a description of its own.
+ */
+export function gsjsPageFacts(text) {
+  const parents = /^var parent_classes\s*=\s*\[([^\]]*)\]/m.exec(text)?.[1].match(/[a-z0-9_]+/g) || [];
+  const becomes = /"item_class"\s*:\s*"([^"]*)"/.exec(text)?.[1].split(/\s*,\s*/).filter(Boolean) || [];
+  return {
+    infopage: !/^var has_infopage\s*=\s*false/m.test(text),
+    proxy: /^var proxy_item\s*=\s*"([a-z0-9_]+)"/m.exec(text)?.[1] || null,
+    parents,
+    becomes: parents.includes('proto') ? becomes : [],
+    desc: Boolean(/^var description\s*=\s*"((?:[^"\\]|\\.)+)"/m.exec(text)),
+  };
+}
+
+/** Kept on a page of their own: the remake's new player tour door is not a house Door. */
+export const OWN_PAGE = new Set(['newxp_door']);
+
+/**
+ * PURE: the classes folded into another class's page: id -> the id whose page it shares.
  * Glitch's encyclopedia gave one page to one thing. A variant named its page with proxy_item
  * (rock_metal_2 and rock_metal_3 -> rock_metal_1, items/rock_metal_2.js 12), and the classes it
  * kept off the encyclopedia (has_infopage = false: the variants, the home-cultivation protos,
  * the street's barnacle) shared their name with the one class that had the page. Fold both, so
  * a name never has two pages that tell different halves (one with the streets, one without).
- * `items` is id -> { name }, `page` is id -> { infopage, proxy }.
+ * Where Glitch gave none of a name's classes a page (report #505: Street Spirit x5, Jellisac
+ * Mound, Firefly Hive, Barnacle Pod, Tower, Conch, Teleporter), a class folds into the one the
+ * game code says it is (sameThingOf).
+ * `items` is id -> { name }, `page` is id -> gsjsPageFacts.
  */
-/** Kept on a page of their own: the remake's new player tour door is not a house Door. */
-export const OWN_PAGE = new Set(['newxp_door']);
-
 export function foldsOf(items, page) {
   const withPage = new Map(); // name -> the ids of that name Glitch gave a page
-  for (const [id, it] of items) if (page.get(id)?.infopage && !page.get(id)?.proxy) (withPage.get(it.name) || withPage.set(it.name, []).get(it.name)).push(id);
+  const byName = new Map(); // name -> every id of that name
+  for (const [id, it] of items) {
+    (byName.get(it.name) || byName.set(it.name, []).get(it.name)).push(id);
+    if (page.get(id)?.infopage && !page.get(id)?.proxy) (withPage.get(it.name) || withPage.set(it.name, []).get(it.name)).push(id);
+  }
   const folds = new Map();
   for (const [id, it] of items) {
+    if (OWN_PAGE.has(id)) continue;
     const g = page.get(id) || {};
     const proxy = g.proxy && g.proxy !== id && items.has(g.proxy) ? g.proxy : null;
     const same = withPage.get(it.name) || [];
-    const to = OWN_PAGE.has(id) ? null : proxy || (!g.infopage && same.length === 1 && same[0] !== id ? same[0] : null);
+    const to = proxy || (!g.infopage && same.length === 1 && same[0] !== id ? same[0] : null) || (!g.infopage && !same.length ? sameThingOf(id, byName.get(it.name), page) : null);
     if (to) folds.set(id, to);
   }
   // A proxy of a proxy ends at the page.
   for (const [id, to] of folds) { let t = to; const seen = new Set([id]); while (folds.has(t) && !seen.has(t)) { seen.add(t); t = folds.get(t); } folds.set(id, t); }
   return folds;
+}
+
+/**
+ * PURE: where Glitch gave no class of a name a page, the other class of that name this one is,
+ * by its game code: the class it inherits from (street_spirit_firebog is a street_spirit,
+ * teleporter_ground a teleporter_visible), the class its proto places (proto_jellisac_mound's
+ * item_class jellisac_mound), or, for a class with no description, the one class of its name
+ * that has one (the Conch on the pedestal, conch_decoy, is the Conch you take). Else null.
+ */
+export function sameThingOf(id, ids = [], page) {
+  const g = page.get(id) || {};
+  const others = ids.filter((o) => o !== id && !OWN_PAGE.has(o));
+  const named = others.filter((o) => (g.parents || []).includes(o) || (g.becomes || []).includes(o));
+  if (named.length === 1) return named[0];
+  if (named.length) return null;
+  const told = others.filter((o) => page.get(o)?.desc && !(page.get(o).parents || []).includes(id));
+  return !g.desc && told.length === 1 ? told[0] : null;
+}
+
+/**
+ * One store, one page (#505): a store a Street Spirit keeps had a People entry of its own
+ * (people:vendor-<key>, "Alchemical Goods Vendor") beside its Stores page of the same name, stock
+ * and streets. The Stores page is its one page: what linked the People entry links it, the Street
+ * Spirit keeps it, and the old address forwards (build.mjs movedPageKeys). Returns old key -> new key.
+ */
+export function foldStoreEntries(d) {
+  const moved = new Map();
+  for (const e of d.entries.values()) if (e.section === 'people' && e.id.startsWith('vendor-') && d.entries.has(`stores:${e.store?.key}`)) moved.set(e.key, `stores:${e.store.key}`);
+  for (const [from, to] of moved) {
+    const store = d.entries.get(to);
+    store.refs.push(...d.entries.get(from).refs);
+    for (const x of d.entries.values()) for (const r of x.refs) if (r.to === from) r.to = to;
+    for (const [k, v] of d.stores) if (v === from) d.stores.set(k, to);
+    if (store.shop?.person === from) store.shop.person = d.entries.has('people:street_spirit') ? 'people:street_spirit' : null;
+    d.entries.delete(from);
+  }
+  return moved;
+}
+
+/* -- Same name, different things (#505) ---------------------------- */
+
+/**
+ * PURE: the new names of the members of `list` that share a name with another member: the
+ * name plus the qualifier `qualifierOf(member, group)` gives (a member it gives null keeps its
+ * name). Returns key -> new name, only for the names that change.
+ */
+export function disambiguate(list, qualifierOf, keyOf = (m) => m.id) {
+  const byName = new Map();
+  for (const m of list) (byName.get(m.name) || byName.set(m.name, []).get(m.name)).push(m);
+  const out = new Map();
+  for (const [name, group] of byName) {
+    if (group.length < 2) continue;
+    for (const m of group) {
+      const q = qualifierOf(m, group);
+      if (q) out.set(keyOf(m), q.startsWith(',') ? `${name}${q}` : `${name} (${q})`);
+    }
+  }
+  return out;
+}
+
+/** Plain words for the class id words that tell same-named classes apart. */
+export const ID_WORDS = { newxp: 'new player tour', rem: 'reminisce', reminisce: 'reminisce', repeat: 'repeat' };
+
+/** PURE: the words of `id` none of the `others` has, as plain words (ID_WORDS), or ''. */
+export function idWords(id, others) {
+  const theirs = new Set(others.flatMap((o) => o.split('_')));
+  return id.split('_').filter((w) => !theirs.has(w)).map((w) => ID_WORDS[w] || w).join(' ');
+}
+
+/** PURE: the number a class id ends with (artifact_wooden_apple_piece2, swf_2), or null. */
+const endNumber = (id) => { const m = /(\d+)$/.exec(id); return m ? Number(m[1]) : null; };
+
+/**
+ * PURE: an item's qualifier in a group of same-named items. Numbered classes (an artifact's
+ * pieces, the three SWFs) are "2 of 4", as Glitch's own words count them ("one fourth of a
+ * most wonderful apple"); otherwise the class Glitch gave the page keeps the name and the
+ * others take the words their class id adds (newxp_door: the new player tour's Door).
+ */
+export function itemQualifier(m, group, page) {
+  const nums = group.map((x) => endNumber(x.id));
+  if (nums.every((n) => n !== null) && new Set(nums).size === nums.length) return `${endNumber(m.id)} of ${Math.max(group.length, ...nums)}`;
+  const withPage = group.filter((x) => page.get(x.id)?.infopage);
+  if (withPage.length === 1 && withPage[0].id === m.id) return null;
+  return idWords(m.id, group.filter((x) => x !== m).map((x) => x.id)) || null;
+}
+
+/**
+ * PURE: an encyclopedia entry's qualifier in a group of same-named entries of one section.
+ *  - quests: Glitch's reminisce copies (_rem, _reminisce) are "(reminisce)", a repeat is
+ *    "(repeat)", the later parts of a quest ", part 2" as Glitch titled The Ultimate Smoothie;
+ *    the quest whose id the others start with keeps the name;
+ *  - streets: the region, where the streets are in different regions, else the street its
+ *    first signpost leads to;
+ *  - else the words its id adds.
+ */
+export function entryQualifier(m, group, entries) {
+  const ids = group.map((x) => x.id);
+  if (m.section === 'quests') {
+    if (/_(?:rem|reminisce)$/.test(m.id)) return 'reminisce';
+    if (/[a-z0-9]repeat$/.test(m.id)) return 'repeat';
+    if (ids.some((o) => o !== m.id && o.startsWith(m.id))) return null;
+    const part = /_part(\d+)$/.exec(m.id);
+    if (part) return `, part ${Number(part[1])}`;
+  }
+  if (m.section === 'streets') {
+    const regions = new Set(group.map((x) => x.street?.place));
+    if (regions.size === group.length) return entries.get(m.street.place)?.name || null;
+    const to = (m.street?.signposts || []).map((t) => [...entries.values()].find((x) => x.section === 'streets' && x.street.tsid === t)).find(Boolean);
+    return to ? `by ${to.name}` : null;
+  }
+  // The shortest id keeps the name (buy_bag); the others take the words their id adds (buy_two_bags: two bags).
+  const others = ids.filter((o) => o !== m.id);
+  if (others.every((o) => o.length > m.id.length)) return null;
+  return idWords(m.id, others) || null;
 }
 
 /* -- Blank stubs ------------------------------------------- */

@@ -33,6 +33,7 @@ import { tablesForSkill, timeLead, timeTableHtml } from './skill-times.mjs';
 import { STATUS, andList, article, badge, entrySearch, esc, fmt, inRemake, makeParts, pathOf, plainText, sep, statusLabel, tsHtml } from './parts.mjs';
 import { regionMoreStreets, regionStreetName, streetPage, streetsIndex, streetsWithIt } from './streets.mjs';
 import { storePage } from './stores.mjs';
+import { STREET_SPIRIT_VARIANTS } from '../../public/js/street-spirits.js?v=f9e88445';
 import { subwayPage } from './subway.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..');
@@ -254,7 +255,12 @@ export async function buildEncyclopedia(data = null) {
     ...[...entries.values()].map((e) => ({ s: e.section, id: e.id, n: e.name, g: e.group || '', st: e.status, ic: e.icon?.src || '', h: pathOf(e.key) })),
   ];
   // A folded variant's class opens the page it shares (data.mjs foldsOf, #505; js/encyclopedia-links.js).
-  const folded = Object.fromEntries([...d.folds].filter(([, to]) => items.has(to)).sort(([a], [b]) => a.localeCompare(b)).map(([id, to]) => [`items:${id}`, pathOf(`item:${to}`)]));
+  const folded = Object.fromEntries([
+    ...[...d.folds].filter(([, to]) => items.has(to)).map(([id, to]) => [`items:${id}`, pathOf(`item:${to}`)]),
+    ...movedPageKeys(d).map(([key, to]) => [key, pathOf(to)]),
+  ].sort(([a], [b]) => a.localeCompare(b)));
+  // A folded page keeps its old address, which forwards to the page it shares.
+  for (const [key, to] of movedPageKeys(d)) put(`${OUT}/${key.replace(':', '/')}/index.html`, movedPage(entries.get(to).name, `../../${to.replace(':', '/')}/`));
   put(`${OUT}/search.json`, `${JSON.stringify({ sections: [{ key: 'items', label: 'Items' }, ...SECTIONS.map(({ key, label }) => ({ key, label }))], statuses: Object.fromEntries(Object.entries(STATUS).map(([k, v]) => [k, v.label])), inRemake: Object.keys(STATUS).filter(inRemake), entries: search, folded }).replace(/\{"s":/g, '\n{"s":')}\n`);
   put(`${OUT}/index.html`, homePage(bySection, items, info, d.nameOf, subway.count));
 
@@ -263,6 +269,34 @@ export async function buildEncyclopedia(data = null) {
   // The blank stubs left out (data.mjs isBlankStub), per section, items included.
   const leftOut = Object.fromEntries(['items', ...SECTIONS.map((s) => s.key)].map((k) => [k, [...d.stubs.values()].filter((s) => s.section === k)]));
   return { files, counts: Object.fromEntries(SECTIONS.map((s) => [s.key, bySection[s.key].length])), leftOut, data: d };
+}
+
+/**
+ * The pages folded into another (#505): a person's or creature's copies (data.mjs personFolds) and
+ * the People entries of the stores a Street Spirit keeps (data.mjs foldStoreEntries).
+ * [its old key, the key of the page it shares].
+ */
+export function movedPageKeys(d) {
+  const people = [...(d.personFolds || [])].map(([id, to]) => [d.keyOf(to), id]).filter(([k]) => k && d.entries.has(k)).map(([k, id]) => [`${k.split(':')[0]}:${id}`, k]);
+  return [...people, ...[...(d.movedKeys || [])].filter(([, to]) => d.entries.has(to))];
+}
+
+/** An old address that forwards to the page of the thing it is (#505), as the item catalog's folded pages do. */
+export function movedPage(name, href) {
+  return `<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>${esc(name)} · Groddle Encyclopedia</title>
+  <meta name="robots" content="noindex" />
+  <link rel="canonical" href="${href}" />
+  <meta http-equiv="refresh" content="0; url=${href}" />
+</head>
+<body>
+  <p>This page moved: <a href="${href}">${esc(name)}</a>.</p>
+</body>
+</html>
+`;
 }
 
 /* -- Quests ------------------------------------------------- */
@@ -433,7 +467,9 @@ function creaturePage(e, P, { linkFor, backOf, uniqBy, info, d }) {
   const quests = uniqBy(backOf(e.key, (b) => b.from.startsWith('quests:')), (b) => b.from).map((b) => P.tile(b.from, { sub: REL_WORD[b.rel] || '' }));
   const comesFrom = uniqBy(backOf(e.key, (b) => b.rel === 'gives' && !b.from.startsWith('quests:')), (b) => b.from).map((b) => P.tile(b.from, { sub: 'can give it' }));
   const achs = uniqBy(backOf(e.key, (b) => b.from.startsWith('achievements:')), (b) => b.from).map((b) => P.tile(b.from, { sub: b.n ? `${fmt(b.n)} times` : '' }));
-  const variants = (e.variants || []).map((v) => (info(`item:${v}`) ? P.tile(`item:${v}`) : `<li><span class="ency-tile ency-tile-plain"><span class="ency-tile-pic">${P.img(null)}</span><span class="ency-tile-name">${esc(v.replace(/^npc_shrine_/, '').replace(/_/g, ' '))}</span></span></li>`));
+  // A shrine's other shrines to its Giant; the Street Spirit's regional looks (#505: they share its page, data.mjs foldsOf).
+  const spiritLooks = e.id === 'street_spirit';
+  const variants = (e.variants || []).map((v) => (info(`item:${v}`) ? P.tile(`item:${v}`) : `<li><span class="ency-tile ency-tile-plain"><span class="ency-tile-pic">${P.img(spiritLooks ? picture(`assets/sprites/icons/${v}.webp`) : null)}</span><span class="ency-tile-name">${esc(spiritLooks ? `${e.name} (${variantWord(v)})` : v.replace(/^npc_shrine_/, '').replace(/_/g, ' '))}</span></span></li>`));
   const shrineGiant = /^npc_shrine_([a-z]+)$/.exec(e.id)?.[1];
   const giantSkills = shrineGiant ? Object.values(d.skills).filter((s) => s.giants?.[shrineGiant]?.primary && info(`skills:${s.classTsid}`)).map((s) => P.tile(`skills:${s.classTsid}`)) : [];
   const desc = c ? tsHtml(c.desc, linkFor) : e.desc ? [esc(e.desc)] : [];
@@ -459,10 +495,13 @@ function creaturePage(e, P, { linkFor, backOf, uniqBy, info, d }) {
 ${band('give-h', e.store ? 'What they sell' : 'What it gives', [sells.length ? P.tiles(sells, 'ency-shop') : '', gives.length ? (e.store ? sub('Also gives', P.tiles(gives)) : P.tiles(gives)) : ''].filter(Boolean).join('\n        '), { alt: true, lead: e.store ? 'Prices in currants, as the remake sells them.' : 'The items its game code hands out.' })}
 ${band('verbs-h', 'What you can do', [verbList(c?.verbs || []), sub('Skills that change it', P.tiles(skills))].filter(Boolean).join('\n        '), { lead: c?.verbs?.length ? 'Its verbs, with Tiny Speck’s tooltips.' : '' })}
 ${band('where-h', 'Where to find it', streetsWith || (placeChips.length ? `<p class="ency-lead-small">On ${fmt(totalStreets)} street${totalStreets === 1 ? '' : 's'} in ${fmt(lives.length)} region${lives.length === 1 ? '' : 's'}, by the 2012 map and the streets’ own files.</p>${P.chips(placeChips)}` : ''), { alt: true })}
-${band('rel-h', 'Quests and achievements', [sub('Quests', P.tiles(quests)), sub('Achievements', P.tiles(achs)), sub('Sounds', P.tiles(soundTiles(e.key, P, backOf, uniqBy))), sub('Where it comes from', P.tiles(comesFrom)), sub('The Giant', P.tiles(uniqBy(backOf(e.key, (b) => b.from.startsWith('giants:')), (b) => b.from).map((b) => P.tile(b.from)))), sub('Skills this Giant favors', P.tiles(giantSkills)), sub('Other shrines to this Giant', P.tiles(variants))].filter(Boolean).join('\n        '))}
+${band('rel-h', 'Quests and achievements', [sub('Quests', P.tiles(quests)), sub('Achievements', P.tiles(achs)), sub('Sounds', P.tiles(soundTiles(e.key, P, backOf, uniqBy))), sub('Where it comes from', P.tiles(comesFrom)), sub('The Giant', P.tiles(uniqBy(backOf(e.key, (b) => b.from.startsWith('giants:')), (b) => b.from).map((b) => P.tile(b.from)))), sub('Skills this Giant favors', P.tiles(giantSkills)), sub(spiritLooks ? 'How it looks in other regions' : 'Other shrines to this Giant', P.tiles(variants))].filter(Boolean).join('\n        '))}
 ${remakeBand(e)}
   </main>`;
 }
+
+/** A regional Street Spirit's region (js/street-spirits.js: street_spirit_zutto rises in Uralia), else its class word. */
+export const variantWord = (id) => Object.values(STREET_SPIRIT_VARIANTS).find((v) => v.classTsid === id)?.region || id.split('_').pop().replace(/^./, (c) => c.toUpperCase());
 
 /* -- Skills --------------------------------------------- */
 

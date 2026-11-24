@@ -32,7 +32,8 @@ describe('encyclopedia', () => {
       const want = [...d.entries.values()].filter((e) => e.section === sec).map((e) => e.id).sort();
       assert.ok(want.length > 10, `${sec}: only ${want.length}`);
       // Music and sounds keeps its Still missing list beside the entries.
-      const have = readdirSync(join(dir, sec), { withFileTypes: true }).filter((x) => x.isDirectory() && !(sec === 'sounds' && x.name === 'still-missing')).map((x) => x.name).sort();
+      // A person's folded copy (#505, data.mjs personFolds) keeps a folder that only forwards to the page it shares.
+      const have = readdirSync(join(dir, sec), { withFileTypes: true }).filter((x) => x.isDirectory() && !(sec === 'sounds' && x.name === 'still-missing') && !search.folded?.[`${sec}:${x.name}`]).map((x) => x.name).sort();
       assert.deepEqual(have, want, sec);
     }
     for (const name of readdirSync(dir, { withFileTypes: true }).filter((x) => x.isDirectory()).map((x) => x.name)) {
@@ -144,6 +145,8 @@ describe('encyclopedia', () => {
       skills: ['needs-skill', 'after'],
       achievements: ['counts', 'rewards'],
       places: ['lives'],
+      // A store's stock is one-way, as it was on the People entry it took over (#505, data.mjs foldStoreEntries).
+      stores: [],
       sounds: null, // every relation of a sound: its item, creature, person, quest and place pages list it
       // The sections of tools/encyclopedia/sections.mjs: a card's page lists the cards that need it, a buff what comes after it,
       // a Feat the others of its epic, a shrine its Giant;
@@ -161,7 +164,6 @@ describe('encyclopedia', () => {
       for (const r of e.refs) {
         if (SHOWN[e.section] && !SHOWN[e.section].includes(r.rel)) continue;
         if (r.to.startsWith('item:') && !existsSync(join(pub, pageOf(r.to)))) continue;
-        if (r.to.startsWith('people:vendor-') && r.rel === 'lives') continue;
         const back = `/${pathOf(e.key)}"`;
         assert.ok(page(r.to).includes(back), `${r.to} does not link back to ${e.key} (${r.rel})`);
         checked += 1;
