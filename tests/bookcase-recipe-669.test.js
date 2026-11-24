@@ -13,7 +13,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { RECIPE_CATALOG, canCraft, craftRecipe, listRecipesForTool, loadRecipeCatalogFromFile } from '../public/js/making.js?v=1ec1075e';
 import { createInventory, countItem } from '../public/js/inventory.js?v=6414dbdc';
-import { FURNITURE_CATALOG } from '../public/js/homes-catalog.js?v=f3fe838d';
+import { FURNITURE_CATALOG } from '../public/js/homes-catalog.js?v=0367f90f';
 import { TURNED_BACK_ON, loadRecipes } from '../build-recipes.mjs';
 import { sitePath, skipWithoutSite } from '../tools/repos.mjs';
 import { GSJS } from '../tools/catalog/build.mjs';

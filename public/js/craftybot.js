@@ -96,7 +96,6 @@ export const CRAFTYBOT_COPY = Object.freeze({
   defaultStatus: 'Confabulating thingies',
   // Ours: Glitch gave no words where the bot could not be dropped (canDrop 729-735 hid the verb).
   dropOutside: 'You can only put your Crafty Bot down inside your house.',
-  dropUpstairs: 'Your Crafty Bot works on the ground floor of your house. Put it down there.',
   tooltips: {
     install_crystal: 'Install a crystal to increase the queue size',
     kick: 'Am I standing there looking like a goof?',
@@ -179,6 +178,8 @@ export function normalizeCraftybotState(seed = {}) {
     owned: s.owned === true,
     boxRead: s.boxRead === true,
     where: ['street', 'interior', 'pack'].includes(s.where) ? s.where : 'street',
+    // G1249: the house's floor it stands on (0 the ground floor, 1 and 2 the upper ones; home_limits MAX_FLOORS 3).
+    floor: s.where === 'interior' ? Math.max(0, Math.min(2, int(s.floor))) : 0,
     x: Number.isFinite(Number(s.x)) ? Number(s.x) : 0,
     dir: s.dir === 'right' ? 'right' : 'left',
     fuel: Math.max(0, Math.min(CRAFTYBOT.MAX_FUEL, Number.isFinite(Number(s.fuel)) ? Number(s.fuel) : CRAFTYBOT.START_FUEL)),
@@ -1448,9 +1449,10 @@ export function peek(bot, world) {
 }
 
 /** onCreate: idle after 1 s. */
-export function createBot(bot, x, where, now) {
+export function createBot(bot, x, where, now, floor = 0) {
   bot.owned = true;
   bot.where = where;
+  bot.floor = where === 'interior' ? Math.max(0, Math.min(2, int(floor))) : 0;
   bot.x = x;
   bot.clock = now;
   bot.fuel = CRAFTYBOT.START_FUEL;

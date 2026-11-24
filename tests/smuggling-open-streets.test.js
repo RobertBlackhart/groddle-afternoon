@@ -23,8 +23,8 @@ import {
   sourceKey,
 } from '../public/js/smuggling.js?v=2fde7da3';
 import { applyStreetIndex, resolveIndexTsid } from '../public/js/street-loader.js?v=10376267';
-import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=3644ed16';
-import { smugglingFeature } from '../public/js/features/smuggling-feature.js?v=429f7338';
+import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=719c8995';
+import { smugglingFeature } from '../public/js/features/smuggling-feature.js?v=e0c71e97';
 import { createInventory, addItem } from '../public/js/inventory.js?v=6414dbdc';
 
 const PUB = join(import.meta.dirname, '..', 'public');

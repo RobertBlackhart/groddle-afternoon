@@ -19,7 +19,7 @@
  * Solo never loads any of this.
  */
 
-import { possessive } from './neighbours-mp.js?v=cf99bd39';
+import { possessive } from './neighbours-mp.js?v=be96ecec';
 
 export const HOME_STREET_MP_ID = 'home-street-mp';
 

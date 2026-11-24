@@ -57,7 +57,7 @@
  *   nothing keeps clear of it until it is put out again (putOutDispatcher).
  */
 
-import { CULTIVATION_CLASSES, HOME_LIMITS } from './homes-catalog.js?v=f3fe838d';
+import { CULTIVATION_CLASSES, HOME_LIMITS } from './homes-catalog.js?v=0367f90f';
 import {
   TOWER_CHASSIS,
   TOWER_IMG_COST,

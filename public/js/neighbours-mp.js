@@ -188,6 +188,21 @@ export function homeStreetFor(ownerId, room = 'street', floor = 0) {
   return `${room === 'interior' ? HOUSE_STREET_PREFIX : HOME_STREET_PREFIX}${id}`;
 }
 
+/** config_base.js home_limits MAX_FLOORS: a house's upper floors are 1 and 2 (homes.go houseFloorsMax). */
+const HOUSE_UPPER_FLOORS = 2;
+
+/**
+ * G1249 (#669): the realtime server's street for an upper floor of the owner's house,
+ * HOUSE_<id>_<floor> (homes.go houseFloorOwner), or ''. The floor is the owner's own room (G153):
+ * the server lets nobody else onto it, and readHomeStreet reads none, so nothing shared (drops,
+ * summons, visits) happens there; the owner's machines there are the server's word (home_machines.go).
+ */
+export function houseFloorStreet(ownerId, floor) {
+  const id = positiveId(ownerId);
+  const f = Number(floor);
+  return id && Number.isInteger(f) && f >= 1 && f <= HOUSE_UPPER_FLOORS ? `${HOUSE_STREET_PREFIX}${id}_${f}` : '';
+}
+
 /** { owner, room, floor } a realtime home street names (homeStreetFor's inverse), or null. */
 export function readHomeStreet(street) {
   const m = /^(HOME|HOUSE)_([1-9]\d{0,17})$|^TOWER_([1-9]\d{0,17})_(\d)$/.exec(String(street || ''));
@@ -232,12 +247,15 @@ export function readVisitScene(tsid) {
  * The street others share with the player now (realtime-feature's
  * realtimeStreet query): someone's home they visit, or their own home when
  * they are there. A Tower floor is TOWER_<id>_<floor> for its owner and its
- * visitors alike (MPVISIT); an upper house floor stays the owner's own room.
+ * visitors alike (MPVISIT); an upper house floor stays the owner's own room, a street of their
+ * own (houseFloorStreet, G1249).
  */
-export function sharedHomeStreet({ visit = null, me = 0, inHome = false, room = 'street', towerFloor = false, ownTowerFloor = null } = {}) {
+export function sharedHomeStreet({ visit = null, me = 0, inHome = false, room = 'street', towerFloor = false, ownTowerFloor = null, houseFloor = 0 } = {}) {
   if (visit?.owner) return homeStreetFor(visit.owner, visit.room, visit.floor);
   if (!inHome || !positiveId(me)) return '';
   if (Number.isInteger(ownTowerFloor) && ownTowerFloor >= 0) return homeStreetFor(me, 'tower', ownTowerFloor);
+  // G1249: an upper house floor is a street of the owner's alone (machines stand there, as in Glitch's one-location house).
+  if (Number(houseFloor) > 0) return houseFloorStreet(me, Number(houseFloor));
   if (towerFloor) return '';
   return homeStreetFor(me, room === 'interior' ? 'interior' : 'street');
 }

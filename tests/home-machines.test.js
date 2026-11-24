@@ -37,10 +37,12 @@ import {
   placedMachineVerbs,
   roomSpan,
   towerPlace,
+  housePlace,
+  isHousePlace,
   settleSolo,
   soloRow,
-} from '../public/js/home-machines.js?v=0d7cab1a';
-import { homeMachinesFeature } from '../public/js/features/home-machines-feature.js?v=6b356d05';
+} from '../public/js/home-machines.js?v=9bde4ea8';
+import { homeMachinesFeature } from '../public/js/features/home-machines-feature.js?v=489324e1';
 import { RECIPE_CATALOG, setRecipeCatalog } from '../public/js/making.js?v=1ec1075e';
 import { HAS_SERVER, HAS_SITE, SITE_DIR, serverPath } from '../tools/repos.mjs';
 
@@ -128,6 +130,37 @@ describe('HOMES2: in the house and in the Tower', () => {
   });
   it('findCloseStack looks in one location (player.js 1152-1186)', () => {
     assert.match(line('players/player.js', 1160), /for \(var i in this\.location\.items\)/);
+  });
+});
+
+describe('G1249 (#669): on every floor of the house, as Glitch', () => {
+  it('Glitch\'s house was one location with its floors stacked in it, and canDrop refused only near another, the ends and an instance', () => {
+    assert.match(line('locations/inc_homes.js', 189), /function homes_add_floor_at/);
+    assert.match(line('items/machine_stand.js', 790), /if \(pc\.location\.isInstance\(\)\)\{/);
+    // A Tower is a location like any other: no instance, so the stand went down there too (tower.js tower_create).
+    assert.match(line('locations/tower.js', 4), /this\.is_home = true;/);
+  });
+  it('an upper floor is a place of its own, with the house\'s walls; it pays no pool', () => {
+    assert.deepEqual([housePlace(0), housePlace(1), housePlace(2), housePlace(7)], ['house', 'house:1', 'house:2', 'house:2']);
+    assert.deepEqual(['house', 'house:1', 'house:2', 'tower:1', 'street'].map(isHousePlace), [true, true, true, false, false]);
+    const raw = { id: 'hm-00000000000000aa', class: 'woodworker', rx: 300, fuel: 50 };
+    assert.equal(normalizeMachine({ ...raw, place: 'house:1' }).place, 'house:1');
+    assert.equal(normalizeMachine({ ...raw, place: 'house:2' }).place, 'house:2');
+    assert.equal(normalizeMachine({ ...raw, place: 'house:3' }).place, 'street', 'a house has three floors at most');
+    assert.deepEqual(roomSpan('house:1', { wallSegments: 9 }), roomSpan('house', { wallSegments: 9 }));
+    assert.equal(placeCheck({ machines: [], rx: 400, span: roomSpan('house:1', { wallSegments: 7 }), classTsid: 'woodworker' }).ok, true);
+    assert.deepEqual(['house:1', 'house:2'].map(placePays), [false, false]);
+    // A save round trip keeps where a machine and its job stand.
+    const s = normalizeSlice({ machines: [{ ...raw, classTsid: 'woodworker', place: 'house:1', contents: {} }], jobs: { 'hm-00000000000000aa': { key: 'board', qty: 1, readyAt: 5, held: { plank: 4 }, place: 'house:1' } } });
+    assert.deepEqual([s.machines[0].place, s.jobs['hm-00000000000000aa'].place], ['house:1', 'house:1']);
+    assert.equal(normalizeSlice(JSON.parse(JSON.stringify(s))).machines[0].place, 'house:1');
+  });
+  it('the feature names the floor it stands on; the ground floor stays "house" (machines there stay where they are)', () => {
+    const src = readFileSync(join(root, 'public/js/features/home-machines-feature.js'), 'utf8');
+    assert.doesNotMatch(src, /if \(s\.houseFloor\) return null;/);
+    assert.match(src, /const place = housePlace\(s\.houseFloor\);\s*return \{ kind: 'own', owner, place, key: `own:\$\{place\}`, scene: s \};/);
+    // The ground floor's x starts past the back yard; an upper floor's at 0, as its scene draws it.
+    assert.match(src, /const x0 = place === PLACE_HOUSE \? homeStreetLayout/);
   });
 });
 
@@ -328,6 +361,13 @@ describe('the site decides (src/HomeMachines.php)', { skip: skipSite }, () => {
     assert.deepEqual(tower(3, 'house'), [76, 9 * 150 - 76]);
     assert.equal(tower(3, 'street'), null);
     assert.deepEqual(php('echo json_encode([H::placeId("tower:8"), H::placeId("tower:9"), H::placeId("house"), H::placeId("yard")]);'), [true, false, true, false]);
+    // G1249: an upper floor of the house while the save has it, as wide as the ground floor.
+    const floors = (n, place) => php(`$s = json_decode('{"systems":{"features":{"homes":{"decor":{"wallSegments":9},"floors":{"upper":${JSON.stringify(Array(n).fill({ placed: [] }))}}}}}}'); echo json_encode(H::span($R, "${place}", $s));`);
+    assert.deepEqual(floors(1, 'house:1'), [76, 9 * 150 - 76]);
+    assert.equal(floors(1, 'house:2'), false, 'a floor the house does not have');
+    assert.deepEqual(floors(2, 'house:2'), [76, 9 * 150 - 76]);
+    assert.deepEqual(floors(0, 'house'), [76, 9 * 150 - 76], 'the ground floor as before');
+    assert.deepEqual(php('echo json_encode([H::placeId("house:1"), H::placeId("house:2"), H::placeId("house:3"), H::placeId("house:0")]);'), [true, true, false, false]);
     const job = '["user"=>9,"key"=>"fuel_cell","qty"=>1,"need"=>1,"name"=>"Fuel Cell","at"=>0,"ready"=>1000]';
     const [, inHouse] = php(`$r = ${row}; $r["place"] = "house"; $r["job"] = ${job}; echo json_encode(H::settle($R, $r, 7, 1000));`);
     assert.equal(inHouse, null, 'a make in the house pays nobody');

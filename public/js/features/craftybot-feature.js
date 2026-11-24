@@ -44,7 +44,7 @@
  *                          wait, Collect; bot/pack/fuel: queue and run that job
  *                          (=hold stops before Collect)
  *   &craftybotspeed=N      run the bot's clock N times faster (QA only)
- * Canvas data: craftybotState, craftybotWhere, craftybotX, craftybotAnim,
+ * Canvas data: craftybotState, craftybotWhere, craftybotFloor, craftybotX, craftybotAnim,
  *   craftybotCraftState, craftybotFuel, craftybotCrystals, craftybotQueue,
  *   craftybotPanel, craftybotLast, craftybotAutoplay.
  */
@@ -53,7 +53,7 @@ import { ITEM_CATALOG, addItem, countItem, ensureItem, itemIcon, removeItem } fr
 import { canUseTool, getToolCondition, setToolRemaining } from '../tools.js?v=4156bba8';
 import { MAKING_TOOL_SKILLS, listRecipes, recipeKnown, TOOL_CATALOG } from '../making.js?v=1ec1075e';
 import { listDroppedStacks } from '../world-items.js?v=a5deb102';
-import { BACK_YARD_GROUND_Y, homesFeature } from './homes-feature.js?v=3d740f91';
+import { BACK_YARD_GROUND_Y, homesFeature } from './homes-feature.js?v=8d8007d3';
 import { cabinetTake, isCabinetClass } from '../home-storage.js?v=b0225465';
 import {
   CRAFTYBOT,
@@ -89,7 +89,7 @@ import {
   setJobTotal,
   setLocked,
   setPaused,
-} from '../craftybot.js?v=77d8315d';
+} from '../craftybot.js?v=fecab8dc';
 import { frameTexture, isLoaded, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=b8e38103';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { displayTopOf, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=e50bacca';
@@ -217,36 +217,89 @@ export function shiftBotX(state, room, dx) {
   return true;
 }
 
-function homeTsid(where) {
-  return where === 'interior' ? HOME_INTERIOR_TSID : HOME_STREET_TSID;
+/** homes-feature HOUSE_FLOOR_DROP_PREFIX: an upper house floor's own dropped stacks (G153). */
+const HOUSE_FLOOR_DROPS = 'RH_HOME_FLOOR_';
+
+/** The house's floor the bot stands on (0 the ground floor). */
+function botFloor() {
+  return bot.where === 'interior' ? Math.max(0, Math.floor(Number(bot.floor) || 0)) : 0;
+}
+
+/** The house's floors there are now (homes-feature floors: the ground floor and its upper ones). */
+function houseFloorCount() {
+  return 1 + Math.min(2, homesFeature._state?.()?.floors?.upper?.length || 0);
+}
+
+/** Where a house floor keeps its dropped stacks (homes-feature dropTsid). */
+function floorTsid(floor) {
+  return floor > 0 ? `${HOUSE_FLOOR_DROPS}${floor}` : HOME_INTERIOR_TSID;
+}
+
+function homeTsid(where, floor = 0) {
+  return where === 'interior' ? floorTsid(floor) : HOME_STREET_TSID;
+}
+
+/** A house floor's decor: the ground floor's, or an upper floor's (homes-feature floors.upper). */
+function floorDecorOf(floor) {
+  const st = homesFeature._state?.();
+  return floor > 0 ? st?.floors?.upper?.[floor - 1] || null : st?.houseDecor || null;
 }
 
 function interiorDecor() {
-  return homesFeature._state?.()?.houseDecor || null;
+  return floorDecorOf(0);
 }
 
+/** Where a floor's room x 0 is in that floor's world x: the ground floor past the back yard (G226), an upper floor at 0. */
+function floorX0(floor) {
+  return floor > 0 ? 0 : homesFeature.roomWorldX?.() || 0;
+}
+
+/** "sdb:7", "cab:9:2" on the ground floor; "sdb:7@1", "cab:9:2@1" on an upper floor. */
+const floorTag = (floor) => (floor > 0 ? `@${floor}` : '');
+
+/**
+ * G1249 (#669): what the bot reaches in the house, from whichever floor it stands on. Glitch's
+ * house was one location, every floor of it, and findItem searched it whole
+ * (npc_crafty_bot.js 1885-1932: container = this.getLocation();
+ * container.find_items_including_bags(find_item, find_args), Storage Display Boxes first), then
+ * walked to the item's x at its own y (moveToTarget 2206-2214: apiFindPath(container.x, this.y)).
+ * So here every floor's stacks, boxes and cabinets are the bot's, each at its x on the bot's floor.
+ */
 function locationRows(engine, where) {
-  const tsid = homeTsid(where);
-  const rows = listDroppedStacks(ownGroundState(engine), tsid).map((s) => ({ id: s.id, cls: s.classTsid, count: s.count, x: s.x, sdb: false }));
-  if (where === 'interior') {
+  if (where !== 'interior') {
+    return listDroppedStacks(ownGroundState(engine), HOME_STREET_TSID).map((s) => ({ id: s.id, cls: s.classTsid, count: s.count, x: s.x, sdb: false }));
+  }
+  const rows = [];
+  const here = floorX0(botFloor());
+  for (let floor = 0; floor < houseFloorCount(); floor += 1) {
+    const tsid = floorTsid(floor);
     // G226: furniture sits in room x; the bot and the dropped stacks in world x.
-    const x0 = homesFeature.roomWorldX?.() || 0;
-    for (const p of interiorDecor()?.placed || []) {
+    const x0 = floorX0(floor);
+    for (const st of listDroppedStacks(ownGroundState(engine), tsid)) rows.push({ id: st.id, cls: st.classTsid, count: st.count, x: st.x - x0 + here, sdb: false, tsid });
+    const tag = floorTag(floor);
+    for (const p of floorDecorOf(floor)?.placed || []) {
       if (p.classTsid === 'bag_furniture_sdb' && p.display?.count > 0) {
-        rows.push({ id: `sdb:${p.id}`, cls: p.display.classTsid, count: p.display.count, x: x0 + p.x, sdb: true });
+        rows.push({ id: `sdb:${p.id}${tag}`, cls: p.display.classTsid, count: p.display.count, x: here + p.x, sdb: true });
       } else if (isCabinetClass(p.classTsid) && Array.isArray(p.contents)) {
         // Ticket 85: count_items_including_bags and find_items_including_bags look inside
         // every container in the location (npc_crafty_bot.js 1918-1926: SDBs first, "then
         // other containers"), so a cabinet's stacks are the bot's too. One row per slot.
         p.contents.forEach((slot, i) => {
           if (slot?.classTsid && slot.count > 0) {
-            rows.push({ id: `cab:${p.id}:${i}`, cls: slot.classTsid, count: slot.count, x: x0 + p.x, sdb: false, points: slot.points || null });
+            rows.push({ id: `cab:${p.id}:${i}${tag}`, cls: slot.classTsid, count: slot.count, x: here + p.x, sdb: false, points: slot.points || null });
           }
         });
       }
     }
   }
   return rows;
+}
+
+/** A display box row's piece: "sdb:<id>" or "sdb:<id>@<floor>". */
+function sdbRow(id) {
+  const m = /^sdb:(\d+)(?:@([12]))?$/.exec(String(id));
+  if (!m) return null;
+  return floorDecorOf(Number(m[2] || 0))?.placed?.find((p) => String(p.id) === m[1]) || null;
 }
 
 /** A cabinet slot's tool copies that can take `wear` (count_tools: points_remaining >= tool_wear). */
@@ -263,9 +316,9 @@ function cabinetToolCount(row, wear) {
 }
 
 function cabinetSlot(id) {
-  const m = /^cab:(\d+):(\d+)$/.exec(String(id));
+  const m = /^cab:(\d+):(\d+)(?:@([12]))?$/.exec(String(id));
   if (!m) return null;
-  const row = interiorDecor()?.placed?.find((p) => String(p.id) === m[1]);
+  const row = floorDecorOf(Number(m[3] || 0))?.placed?.find((p) => String(p.id) === m[1]);
   const i = Number(m[2]);
   return row && Array.isArray(row.contents) && row.contents[i] ? { row, i, slot: row.contents[i] } : null;
 }
@@ -283,7 +336,7 @@ function makeWorld(engine) {
   const where = bot.where;
   const inLocation = where !== 'pack';
   let dirty = false;
-  const tsid = homeTsid(where);
+  const tsid = homeTsid(where, botFloor());
   const rows = () => (inLocation ? locationRows(engine, where) : null);
   const usable = (cls, toolWear) => !isToolClass(cls) || toolUsable(engine, cls, toolWear);
   // A cabinet's tools carry their own wear (slot points); the floor's and the pack's are the pack's tool state.
@@ -330,7 +383,7 @@ function makeWorld(engine) {
         return k;
       }
       if (String(id).startsWith('sdb:')) {
-        const row = interiorDecor()?.placed?.find((p) => `sdb:${p.id}` === id);
+        const row = sdbRow(id);
         if (!row?.display) return 0;
         const k = Math.min(row.display.count, n);
         row.display.count -= k;
@@ -338,14 +391,16 @@ function makeWorld(engine) {
         dirty = 'sdb';
         return k;
       }
-      const list = ownGroundRows(engine, tsid);
+      // In the house a stack may lie on any floor (G1249: the house is one location).
+      const from = where === 'interior' ? (rows().find((r) => r.id === id)?.tsid || tsid) : tsid;
+      const list = ownGroundRows(engine, from);
       const i = list.findIndex((r) => r.id === id);
       if (i < 0) return 0;
       const row = list[i];
       const k = Math.min(row.count, n);
       row.count -= k;
       if (row.count <= 0) list.splice(i, 1);
-      if (!list.length) pruneOwnGround(engine, tsid);
+      if (!list.length) pruneOwnGround(engine, from);
       dirty = dirty || 'ground';
       return k;
     },
@@ -420,11 +475,11 @@ function makeWorld(engine) {
       }
     },
     sound(key) {
-      if (view?.room === where || !inLocation) engine.playSound?.(key, { volume: 0.6 });
+      if (botInView() || !inLocation) engine.playSound?.(key, { volume: 0.6 });
     },
     stopSound() {},
     overlay(cls) {
-      if (view?.room === where) showOverlay(engine, cls);
+      if (botInView()) showOverlay(engine, cls);
     },
     crafted(cls, n) {
       engine.achievement?.(`craftybot_crafted:${cls}`, n);
@@ -528,10 +583,22 @@ function currentRoom(engine) {
   const ctx = engine.homeContext?.();
   if (!ctx?.inHome) return null;
   if (engine.streetTsid === HOME_STREET_TSID) return 'street';
-  // The house's ground floor only (G153: an upper floor, like a Tower floor, is its own room).
+  // Any floor of the house (G1249, #669: Glitch's house was one location, canDrop 729-735 asks only
+  // houses_get_interior_street() == pc.getLocation()); a Tower floor is not the house.
   const scene = homesFeature._state?.()?.scene;
-  if (engine.streetTsid === HOME_INTERIOR_TSID && scene?.tower == null && !scene?.houseFloor) return 'interior';
+  if (engine.streetTsid === HOME_INTERIOR_TSID && scene?.tower == null) return 'interior';
   return null;
+}
+
+/** The house's floor shown now (0 the ground floor). */
+function currentFloor(engine) {
+  if (currentRoom(engine) !== 'interior') return 0;
+  return Math.max(0, Math.floor(Number(homesFeature._state?.()?.scene?.houseFloor) || 0));
+}
+
+/** Whether the bot stands in the room (and on the house floor) shown now. */
+function botInView() {
+  return Boolean(view) && view.room === bot.where && (bot.where !== 'interior' || view.floor === botFloor());
 }
 
 /** The house's left end in interior world x (the back yard is left of it). */
@@ -559,7 +626,8 @@ function boxX(engine) {
  * BACK_YARD_GROUND_Y); elsewhere the scene's ground.
  */
 function groundYAt(engine, x, room = currentRoom(engine)) {
-  if (room === 'interior' && x < houseLeftX()) return BACK_YARD_GROUND_Y;
+  // Only the ground floor opens onto the back yard (an upper floor starts at x 0).
+  if (room === 'interior' && currentFloor(engine) === 0 && x < houseLeftX()) return BACK_YARD_GROUND_Y;
   return engine.groundY;
 }
 
@@ -778,12 +846,13 @@ function clearView() {
 
 function spawnView(engine, room) {
   clearView();
-  view = { room, box: null, bot: null };
-  if (room === 'interior' && !bot.owned && engine.homeContext?.().owned) {
+  view = { room, floor: currentFloor(engine), box: null, bot: null };
+  // The delivery stands by the back yard's Magic Rock: the ground floor's.
+  if (room === 'interior' && view.floor === 0 && !bot.owned && engine.homeContext?.().owned) {
     view.box = spawnBox(engine);
     if (pendingOpenAt) view.box.box.alpha = 0.5;
   }
-  if (bot.owned && bot.where === room) {
+  if (bot.owned && botInView()) {
     view.bot = spawnBot(engine);
     view.target = view.bot.target;
   }
@@ -831,7 +900,7 @@ function finishOpen(engine) {
   engine.toast?.(CRAFTYBOT_COPY.created, 3000);
   lastMsg = CRAFTYBOT_COPY.created;
   engine.save?.();
-  if (currentRoom(engine) === 'interior') {
+  if (currentRoom(engine) === 'interior' && currentFloor(engine) === 0 && view) {
     view?.box?.box?.destroy?.();
     view.box = null;
     view.bot = spawnBot(engine);
@@ -865,14 +934,11 @@ function canDropHere(engine) {
 
 /**
  * Why the bot stays in the pack here, in our words (Glitch gave none: the verb
- * was not offered). Glitch's house was one location, every floor of it; here
- * the bot fetches and crafts on the ground floor only, so an upper floor says so.
+ * was not offered). Any floor of the house takes it (G1249: Glitch's house was
+ * one location, every floor of it).
  */
 function dropRefusal(engine) {
-  if (canDropHere(engine)) return '';
-  const scene = homesFeature._state?.()?.scene;
-  const upstairs = engine.homeContext?.()?.inHome && engine.streetTsid === HOME_INTERIOR_TSID && scene?.tower == null && scene?.houseFloor > 0;
-  return upstairs ? CRAFTYBOT_COPY.dropUpstairs : CRAFTYBOT_COPY.dropOutside;
+  return canDropHere(engine) ? '' : CRAFTYBOT_COPY.dropOutside;
 }
 
 /** Put the bot down at world x (the player's feet when none is given). Returns whether it went down. */
@@ -882,6 +948,7 @@ function dropBot(engine, atX = null) {
   act(engine, () => {
     removeItem(engine.inv, BOT, 1);
     bot.where = 'interior';
+    bot.floor = currentFloor(engine);
     bot.x = Math.round(x);
     bot.move = null;
     onMoved(bot, makeWorld(engine));
@@ -1706,6 +1773,7 @@ function publish(engine) {
   const v = specsReady ? craftybotView(bot, labelFor) : null;
   engine.setData('craftybotState', bot.owned ? (bot.where === 'pack' ? 'pack' : 'bot') : view?.box ? 'box' : 'none');
   engine.setData('craftybotWhere', bot.owned ? bot.where : '');
+  engine.setData('craftybotFloor', bot.owned && bot.where === 'interior' ? String(botFloor()) : '');
   engine.setData('craftybotX', Math.round(bot.move ? moveX(bot, simNow || Date.now()) : bot.x));
   engine.setData('craftybotAnim', bot.anim);
   engine.setData('craftybotCraftState', bot.craftState);
@@ -1909,6 +1977,8 @@ export const craftybotFeature = {
    * moves with it, as items keep their place beside the house in the source.
    */
   homeRoomShifted(room, dx, engine) {
+    // Only the ground floor moves with the back yard; an upper floor starts at x 0.
+    if (room === 'interior' && botFloor() > 0) return null;
     if (shiftBotX(bot, room, dx)) {
       lastSig = null;
       publish(engine);
@@ -1919,6 +1989,12 @@ export const craftybotFeature = {
   onTick(dtMs, t, engine) {
     if (!engine.started) return;
     const room = currentRoom(engine);
+    // A Door between floors keeps the street (RH_HOME_INT): a new floor draws its own view.
+    if (room && view && view.room === room && view.floor !== currentFloor(engine)) {
+      if (view.bot?.target) engine.unregister?.(view.bot.target);
+      if (view.bot?.container && !view.bot.container.destroyed) view.bot.container.destroy({ children: true });
+      clearView();
+    }
     if (room && !view) {
       demoSetup(engine);
       spawnView(engine, room);

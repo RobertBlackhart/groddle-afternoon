@@ -45,13 +45,13 @@ import { fruitCapacityAt, resetTrantDay } from './trants.js?v=864ea9ff';
 import { ensureWoodTreeState, noteWoodCare } from './woodcutting.js?v=9e9af511';
 import { GROWN_TREE_LABELS, SEASONED_BEANS, SOIL_TIMERS, growTree, seedlingTimings } from './patches.js?v=3f6b9b05';
 import { GAME_DAY_MS, GAME_EPOCH_MS } from './game-day.js?v=a532775d';
-import { isNodeId, isRockId } from './yard-stock-mp.js?v=ef552c2f';
+import { isNodeId, isRockId } from './yard-stock-mp.js?v=f1f8764c';
 import { STICK_ANIMAL } from './yard-wander.js?v=f5fcac8b';
 import { normalizeYardMachines } from './yard-fixtures-mp.js?v=dd022fe8';
 import { capYardAnimals, yardClassCap } from './animal-crowding.js?v=64dee3e0';
-import { HOUSE_LOT_W, YARD_SEGMENT_W } from './home-cultivation.js?v=9e6e217b';
+import { HOUSE_LOT_W, YARD_SEGMENT_W } from './home-cultivation.js?v=37e25292';
 import { forceMetabolic } from './metabolics.js?v=48f784bf';
-import { HOME_LIMITS } from './homes-catalog.js?v=f3fe838d';
+import { HOME_LIMITS } from './homes-catalog.js?v=0367f90f';
 
 export const YARD_VERBS_MP_ID = 'yard-verbs-mp';
 /** js/features/homes-feature.js HOME_STREET_TSID: where an owner's save keeps the home street. */

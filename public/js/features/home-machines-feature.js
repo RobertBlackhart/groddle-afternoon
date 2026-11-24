@@ -5,8 +5,8 @@
  * house and in the Tower"). The rules, the copy and their sources are
  * js/home-machines.js.
  *
- * - Place (a machine in the pack, in your own home: the home street, the
- *   house or a Tower floor): it stands where you are, with its tank
+ * - Place (a machine in the pack, in your own home: the home street, any
+ *   floor of the house (G1249) or a Tower floor): it stands where you are, with its tank
  *   (machine_stand.js canDrop: not within 200 px of another in the same
  *   place, nor 70 px of an end of the street or a room's inner wall).
  * - Anyone on the street: Use opens the Make panel on it (the room
@@ -65,6 +65,7 @@ import {
   HOME_MACHINES_STREET,
   HOME_MACHINE_TEXT as T,
   PLACE_HOUSE,
+  housePlace,
   isRoomPlace,
   placeIsAltar,
   roomFixedXs,
@@ -93,7 +94,7 @@ import {
   expireSolo,
   tankOf,
   TAKEN_KEEP,
-} from '../home-machines.js?v=0d7cab1a';
+} from '../home-machines.js?v=9bde4ea8';
 import { CALL_PLAYER_LINES, MACHINE_HITBOX, MACHINE_SKILLS, collectLine, machineJobMs, machineMadeLine, refuelCount, runningSoundKey, takeJobIngredients } from '../machine-rooms.js?v=ca927ffd';
 import { MACHINE_ART_SHEETS, LOW_FUEL_BUBBLE_MS, LOW_FUEL_LINE, isLowFuel, machineFrame, machineSheetDef, roomMachineState } from '../machine-art.js?v=d3381a4b';
 import { FUEL_CELL, FUEL_PER_CELL, MAX_FUEL } from '../machines.js?v=5d749d26';
@@ -102,13 +103,13 @@ import { receiveToolCopy, takeToolCopy } from '../tools.js?v=4156bba8';
 import { markLeaving, takeCopies } from '../copy-picks.js?v=b368fd49';
 import { RECIPE_CATALOG } from '../making.js?v=1ec1075e';
 import { getSkillCatalog } from '../content-catalogs.js?v=10b118dd';
-import { createBackYardState, homeStreetLayout, normalizeCultivationState } from '../home-cultivation.js?v=9e6e217b';
+import { createBackYardState, homeStreetLayout, normalizeCultivationState } from '../home-cultivation.js?v=37e25292';
 import { lookOf, poseOf } from './realtime-feature.js?v=ed017c68';
-import { readVisitScene } from '../neighbours-mp.js?v=cf99bd39';
+import { readVisitScene } from '../neighbours-mp.js?v=be96ecec';
 import { saveStore } from '../save-store.js?v=4e720735';
 import { textureFromUrl } from '../textures.js?v=b8e38103';
 import { createSheetLoader } from '../sprite-sheets.js?v=d787e3c3';
-import { STREET_GROUND_Y, homesFeature } from './homes-feature.js?v=3d740f91';
+import { STREET_GROUND_Y, homesFeature } from './homes-feature.js?v=8d8007d3';
 import { payAltarBonus } from './machine-rooms-feature.js?v=df48bd74';
 import { worldToScreen } from '../street-model.js?v=a9a05f9d';
 import { nearestSurfaceY } from '../walk-surface.js?v=3c919d5b';
@@ -243,10 +244,11 @@ function createSession(engine, client) {
     const owner = mp ? Number(me()) : ME_SOLO;
     if (s.room === 'street' && tsid === HOME_MACHINES_STREET) return { kind: 'own', owner, place: PLACE_STREET, key: `own:${PLACE_STREET}`, scene: s };
     if (s.room !== 'interior' || tsid !== HOME_MACHINES_INTERIOR) return null;
-    // A Tower floor (scene.tower its index), or the house's ground floor; an upper house floor is the owner's own room (G153), not a place for a machine.
+    // A Tower floor (scene.tower its index), or a floor of the house: G1249 (#669), Glitch's house was one
+    // location, so a machine stood on any floor of it; an upper floor is the owner's own room (G153).
     if (s.tower != null) return { kind: 'own', owner, place: towerPlace(s.tower), key: `own:${towerPlace(s.tower)}`, scene: s };
-    if (s.houseFloor) return null;
-    return { kind: 'own', owner, place: PLACE_HOUSE, key: `own:${PLACE_HOUSE}`, scene: s };
+    const place = housePlace(s.houseFloor);
+    return { kind: 'own', owner, place, key: `own:${place}`, scene: s };
   }
 
   /** Where a place's machines stand in this scene's world: x0 (rx 0), the walk line, and the street layout or a room's span. */
@@ -256,7 +258,7 @@ function createSession(engine, client) {
       return { x0: layout.houseX, groundY: STREET_GROUND_Y, layout, span: null };
     }
     const span = roomSpan(place, decor);
-    // The house's left end sits past its back yard (homes-feature houseX0: homeStreetLayout(backCult).houseX); a Tower floor starts at 0.
+    // The house's left end sits past its back yard (homes-feature houseX0: homeStreetLayout(backCult).houseX); an upper house floor and a Tower floor start at 0.
     const x0 = place === PLACE_HOUSE ? homeStreetLayout(createBackYardState(backYard || {})).houseX : 0;
     return { x0, groundY: ROOM_GROUND_Y, layout: null, span };
   }

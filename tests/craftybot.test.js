@@ -35,7 +35,7 @@ import {
   setJobTotal,
   setPaused,
   serializeCraftybotState,
-} from '../public/js/craftybot.js?v=77d8315d';
+} from '../public/js/craftybot.js?v=fecab8dc';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const PUBLIC = join(ROOT, 'public');
@@ -367,10 +367,10 @@ describe('delivery and wiring', () => {
       assert.match(src, /if \(!this\.is_public && pc == this\.owner\)\{\s*\/\/ In their house[\s\S]*?var magic_rock = this\.findFirst\('magic_rock'\);[\s\S]*?createAndReturnItem\('butler_box', 1, point\.x-124, point\.y/);
     }
     const feature = readFileSync(join(PUBLIC, 'js/features/craftybot-feature.js'), 'utf8');
-    assert.match(feature, /if \(room === 'interior' && !bot\.owned && engine\.homeContext\?\.\(\)\.owned\) \{\s*view\.box = spawnBox\(engine\);/);
+    assert.match(feature, /if \(room === 'interior' && view\.floor === 0 && !bot\.owned && engine\.homeContext\?\.\(\)\.owned\) \{\s*view\.box = spawnBox\(engine\);/);
     assert.match(feature, /createBot\(bot, pendingOpenX, 'interior', t\);/);
     assert.match(feature, /t\.classId === 'magic_rock' && t\.state\?\.room === 'yard'/);
-    assert.match(feature, /if \(room === 'interior' && x < houseLeftX\(\)\) return BACK_YARD_GROUND_Y;/);
+    assert.match(feature, /if \(room === 'interior' && currentFloor\(engine\) === 0 && x < houseLeftX\(\)\) return BACK_YARD_GROUND_Y;/);
   });
 
   it('G253: the bot, pack and fuel demos start where the box opens the bot, in the house', () => {
@@ -402,9 +402,9 @@ describe('delivery and wiring', () => {
 
 describe('craftybot feature: the ingredient source and the job menu', async () => {
   // The feature imports these with their browser cache tags; load the same module instances.
-  const { craftybotFeature } = await import('../public/js/features/craftybot-feature.js?v=9195f72b');
-  const { homesFeature } = await import('../public/js/features/homes-feature.js?v=3d740f91');
-  const cbMod = await import('../public/js/craftybot.js?v=77d8315d');
+  const { craftybotFeature } = await import('../public/js/features/craftybot-feature.js?v=15012890');
+  const { homesFeature } = await import('../public/js/features/homes-feature.js?v=8d8007d3');
+  const cbMod = await import('../public/js/craftybot.js?v=fecab8dc');
   const making = await import('../public/js/making.js?v=1ec1075e');
 
   function fakeEngine(extra = {}) {
@@ -481,6 +481,56 @@ describe('craftybot feature: the ingredient source and the job menu', async () =
     assert.equal(craftybotFeature._world(fakeEngine()).count('milk_butterfly'), 0, 'from the pack it sees only the pack');
   });
 
+  it('G1249 (#669): from floor 3 it reaches the whole house, as Glitch\'s findItem searched the one location (npc_crafty_bot.js 1885-1932)', () => {
+    const src = readFileSync(join(PUBLIC, '../../glitch-GameServerJS/items/npc_crafty_bot.js'), 'utf8').split('\n');
+    assert.match(src[1906], /container = this\.getLocation\(\);/);
+    assert.match(src[1920], /container\.find_items_including_bags\(find_item, find_args\)/);
+    assert.match(src[2210], /this\.apiFindPath\(container\.x, this\.y, 0, 'onPathing'\)/, 'it walks to the x at its own y');
+    cbMod.setCraftybotSpecs(JSON.parse(readFileSync(CATALOG, 'utf8')).specs);
+    const sdb = (id, x, cls, count) => ({ id, classTsid: 'bag_furniture_sdb', x, y: 560, display: { classTsid: cls, count } });
+    homesFeature.restore({
+      decor: { starterKit: true, placed: [sdb(7, 900, 'cherry', 5)] },
+      floors: { upper: [{ placed: [sdb(7, 500, 'cherry', 2)] }, { placed: [sdb(3, 200, 'apple', 6)] }], links: [] },
+    });
+    craftybotFeature.restore({ owned: true, where: 'interior', floor: 2, x: 300 });
+    const engine = fakeEngine();
+    engine.droppedItems.streets.RH_HOME_INT = [{ id: 'world-item-3', streetTsid: 'RH_HOME_INT', classTsid: 'cherry', count: 4, x: 1320, y: 620 }];
+    engine.droppedItems.streets.RH_HOME_FLOOR_1 = [{ id: 'world-item-4', streetTsid: 'RH_HOME_FLOOR_1', classTsid: 'plum', count: 3, x: 640, y: 620 }];
+    const world = craftybotFeature._world(engine);
+    assert.equal(world.count('cherry'), 11, 'every floor\'s boxes and stacks');
+    assert.equal(world.count('apple'), 6);
+    assert.equal(world.count('plum'), 3);
+    // Each at its room x on the bot's own floor (an upper floor starts at x 0; the ground floor past the back yard).
+    const x0 = homesFeature.roomWorldX();
+    const appleX = homesFeature._state().floors.upper[1].placed[0].x;
+    const cherryUpX = homesFeature._state().floors.upper[0].placed[0].x;
+    const cherryGroundX = homesFeature._state().houseDecor.placed[0].x;
+    assert.deepEqual(world.find('apple'), { id: 'sdb:3@2', cls: 'apple', x: appleX });
+    assert.deepEqual(world.find('plum'), { id: 'world-item-4', cls: 'plum', x: 640 });
+    assert.ok(Math.abs(cherryUpX - 300) < Math.abs(cherryGroundX - 300));
+    assert.equal(world.find('cherry').id, 'sdb:7@1', 'boxes first, the nearest: the second floor\'s');
+    assert.equal(world.take('sdb:7@1', 'cherry', 9), 2);
+    assert.equal(homesFeature._state().floors.upper[0].placed[0].display, undefined);
+    assert.equal(homesFeature._state().houseDecor.placed[0].display.count, 5, 'the ground floor\'s box with the same id is another box');
+    assert.deepEqual(world.find('cherry'), { id: 'sdb:7', cls: 'cherry', x: cherryGroundX });
+    assert.equal(world.take('world-item-3', 'cherry', 9), 4, 'a stack on the ground floor');
+    assert.equal(engine.droppedItems.streets.RH_HOME_INT, undefined);
+    assert.equal(world.take('world-item-4', 'plum', 1), 1, 'a stack on the second floor');
+    assert.equal(engine.droppedItems.streets.RH_HOME_FLOOR_1[0].count, 2);
+    // What it puts down lands on its own floor.
+    world.drop('apple', 2, 333);
+    assert.deepEqual(engine.droppedItems.streets.RH_HOME_FLOOR_2.map((r) => [r.classTsid, r.count, r.x]), [['apple', 2, 333]]);
+    // The ground floor is as it was: a bot there sees the ground floor's stacks at their own world x.
+    craftybotFeature.restore({ owned: true, where: 'interior', x: 300 });
+    engine.droppedItems.streets.RH_HOME_INT = [{ id: 'world-item-9', streetTsid: 'RH_HOME_INT', classTsid: 'cherry', count: 1, x: 1320, y: 620 }];
+    const ground = craftybotFeature._world(engine);
+    assert.deepEqual(ground.find('apple'), { id: 'sdb:3@2', cls: 'apple', x: x0 + appleX });
+    assert.ok(ground.count('cherry') >= 6);
+    ground.drop('plum', 1, 400);
+    assert.equal(engine.droppedItems.streets.RH_HOME_INT.at(-1).classTsid, 'plum');
+    homesFeature.restore({});
+  });
+
   it('works from the pack: counts, takes and drops go through the pack', () => {
     craftybotFeature.restore({ owned: true, where: 'pack' });
     const engine = fakeEngine({ inv: { cherry: 6, npc_crafty_bot: 1 } });
@@ -551,17 +601,24 @@ describe('craftybot feature: the ingredient source and the job menu', async () =
       }
     });
 
-    it('an upper floor of the house names the ground floor (ours: Glitch\'s house was one location)', () => {
+    it('G1249 (#669): it goes down on an upper floor too, as Glitch\'s one-location house took it (canDrop 729-735)', () => {
+      const gsjs = readFileSync(join(PUBLIC, '../../glitch-GameServerJS/items/npc_crafty_bot.js'), 'utf8').split('\n');
+      assert.match(gsjs[729], /pc\.houses_get_interior_street\(\) && pc\.houses_get_interior_street\(\) == pc\.getLocation\(\)/);
       craftybotFeature.restore({ owned: true, where: 'pack', x: 0 });
       const engine = inHouse();
-      withScene({ room: 'interior', houseFloor: 1 }, () => {
-        assert.equal(dropVerb(engine).reason, cbMod.CRAFTYBOT_COPY.dropUpstairs);
-        assert.equal(craftybotFeature.packDrop('npc_crafty_bot', null, engine).msg, cbMod.CRAFTYBOT_COPY.dropUpstairs);
+      withScene({ room: 'interior', houseFloor: 2 }, () => {
+        const verb = dropVerb(engine);
+        assert.deepEqual([verb.enabled, verb.reason], [true, '']);
+        assert.equal(craftybotFeature.runPackVerb('npc_crafty_bot', 'drop_bot', engine), true);
       });
-      assert.equal(craftybotFeature._state().bot.where, 'pack');
-      assert.match(cbMod.CRAFTYBOT_COPY.dropUpstairs, /ground floor of your house/);
+      const { bot } = craftybotFeature._state();
+      assert.deepEqual([bot.where, bot.floor, bot.x, engine.inv.npc_crafty_bot || 0], ['interior', 2, 420, 0]);
+      // A save round trip keeps the floor; the ground floor is floor 0, and only the house has floors.
+      assert.equal(cbMod.normalizeCraftybotState(cbMod.serializeCraftybotState(bot)).floor, 2);
+      assert.equal(cbMod.normalizeCraftybotState({ owned: true, where: 'interior', x: 5 }).floor, 0);
+      assert.equal(cbMod.normalizeCraftybotState({ owned: true, where: 'street', floor: 2 }).floor, 0);
+      assert.equal(cbMod.CRAFTYBOT_COPY.dropUpstairs, undefined);
     });
-
     it('game.js sends every drop of it to the feature, and draws no second Drop row', () => {
       const game = readFileSync(join(PUBLIC, 'game.js'), 'utf8');
       assert.match(game, /if \(!isElementClass\(classTsid\) && !features\.query\('packOwnDrop', classTsid, engine\)\) rows\.push\(\{\s*attrs: 'data-pack-drop',/);
@@ -628,7 +685,7 @@ describe('the quantity box follows the count as it is typed', () => {
 // sheet still loading draws nothing until it arrives. The original client had the whole SWF at
 // once, so the bot keeps its frame until the next sheet is in.
 describe('G538: the bot never draws a sheet that is still loading', async () => {
-  const { showClipWhenLoaded } = await import('../public/js/features/craftybot-feature.js?v=9195f72b');
+  const { showClipWhenLoaded } = await import('../public/js/features/craftybot-feature.js?v=15012890');
   const fakeIo = () => {
     const loaded = new Set();
     const waiting = [];

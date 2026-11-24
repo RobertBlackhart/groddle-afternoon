@@ -33,11 +33,11 @@ import {
   pickUpFurniture,
   placeFurniture,
   surfaceHeight,
-} from '../public/js/home-decor.js?v=31c30cce';
-import { FURNITURE_CATALOG } from '../public/js/homes-catalog.js?v=f3fe838d';
+} from '../public/js/home-decor.js?v=5fde97c9';
+import { FURNITURE_CATALOG } from '../public/js/homes-catalog.js?v=0367f90f';
 import { IMAGINATION_UPGRADES, upgradeStatus, DEALT_SECRET_CARDS } from '../public/js/imagination.js?v=1bdfd77c';
 import { isOfferedInRemake, remakeStatus } from '../public/js/imagination-remake.js?v=c37ad887';
-import { visitorHomeState } from '../public/js/features/homes-feature.js?v=3d740f91';
+import { visitorHomeState } from '../public/js/features/homes-feature.js?v=8d8007d3';
 
 const spike = join(import.meta.dirname, '..');
 const pub = join(spike, 'public');

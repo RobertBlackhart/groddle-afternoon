@@ -112,12 +112,12 @@ import { runStreetTransition } from '../screen-fx.js?v=39954e0b';
 import { STREET_INDEX } from '../street-loader.js?v=10376267';
 import { ITEM_CATALOG, addItem, countItem, listPackItemSlots, removeItem } from '../inventory.js?v=6414dbdc';
 import { copyPicks, leavingWire, markLeaving, receiveWire, takeCopies } from '../copy-picks.js?v=b368fd49';
-import { cultivationDef, homeStreetLayout } from '../home-cultivation.js?v=9e6e217b';
+import { cultivationDef, homeStreetLayout } from '../home-cultivation.js?v=37e25292';
 import { getPlot, tickGarden } from '../garden.js?v=0cbb65f0';
 import { BUTLER_RIG_SCALE, ButlerPainter, butlerRigNow, loadButlerRig } from '../butler-rig.js?v=3acda854';
 import { BUTLER, BUTLER_INFO, butlerInfoText, butlerPostRx, normalizeButlerParts } from '../butler.js?v=6c66ebf5';
-import { butlerApi } from './butler-feature.js?v=4b4a1876';
-import { homesFeature, visitorHomeScene, visitorHomeState } from './homes-feature.js?v=3d740f91';
+import { butlerApi } from './butler-feature.js?v=15fef3c5';
+import { homesFeature, visitorHomeScene, visitorHomeState } from './homes-feature.js?v=8d8007d3';
 import { homeMusicFile } from '../homes.js?v=dca6b2cd';
 import { streetStyleFor } from '../home-styles.js?v=ec5d2f69';
 import { visitGardenPlots, visitSceneKey } from '../home-live.js?v=9c7abae7';
@@ -177,9 +177,9 @@ import {
   takeFreshTendActs,
   visitedTowerName,
   visitSceneTsid,
-} from '../neighbours-mp.js?v=cf99bd39';
+} from '../neighbours-mp.js?v=be96ecec';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { butlerCarries, registerButlerDrop } from '../butler-drop.js?v=58e102fb';
+import { butlerCarries, registerButlerDrop } from '../butler-drop.js?v=9f90982b';
 import { takeDragged } from '../drag-stack.js?v=4c7d198d';
 import { worldPoint } from './world-drop-feature.js?v=ff109b67';
 import { clampToExpansion, elevatorStops, floorJobFor, TOWER_JOBS } from '../home-tower.js?v=84d99af0';
@@ -1794,10 +1794,11 @@ function createSession(engine, client) {
       }
       if (visit && readVisitScene(engine.streetTsid)?.owner !== visit.owner) return '';
       const scene = homesFeature._state?.().scene;
-      // An upper house floor (G153, home-floors.js) is a room of its own; a Tower floor is shared with its visitors (MPVISIT).
-      const ownRoom = Number(scene?.houseFloor) > 0;
+      // An upper house floor (G153, home-floors.js) is a room of its own, a street of the owner's alone
+      // (G1249: its machines are the server's word); a Tower floor is shared with its visitors (MPVISIT).
+      const houseFloor = Number(scene?.houseFloor) > 0 ? Number(scene.houseFloor) : 0;
       const ownTowerFloor = Number.isInteger(scene?.tower) ? scene.tower : null;
-      return sharedHomeStreet({ visit, me: me(), inHome: home.inHome === true, room: home.room, towerFloor: ownRoom, ownTowerFloor });
+      return sharedHomeStreet({ visit, me: me(), inHome: home.inHome === true, room: home.room, houseFloor, ownTowerFloor });
     },
     /** The scene went away (an ordinary street, a reload): the visit is over. */
     left() {
