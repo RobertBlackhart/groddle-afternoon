@@ -105,7 +105,7 @@ import {
   machineSheetDef,
   roomMachineState,
 } from '../machine-art.js?v=d3381a4b';
-import { standOnFeet } from '../sprite-feet.js?v=6ffaec43';
+import { standOnFeet } from '../sprite-feet.js?v=16f962c0';
 
 export const MACHINE_ROOMS_FEATURE_ID = 'machine-rooms';
 const MUSIC_CARD = 'metalmaking_music';

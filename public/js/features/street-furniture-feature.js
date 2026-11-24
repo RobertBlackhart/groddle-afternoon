@@ -122,15 +122,15 @@ import {
   recordVisit,
   visitorLetter,
 } from '../neighbours.js?v=13f35acd';
-import { buildNeighbourBackground, neighbourLoadingColors, neighbourPlatforms } from './neighbour-scene.js?v=c8b05644';
+import { buildNeighbourBackground, neighbourLoadingColors, neighbourPlatforms } from './neighbour-scene.js?v=bb2a6a3e';
 import { closeNoteView, noteViewOpen, openBoardView, openNotePicker, openNoteView, openReportView } from '../note-view.js?v=c512b345';
 import { BOARD_MP_TEXT, boardByline } from '../boards-mp.js?v=ba766683';
 import { textureFromUrl } from '../textures.js?v=729b29ea';
-import { butlerApi } from './butler-feature.js?v=fc9f1c80';
-import { neighboursMpApi } from './neighbours-mp-feature.js?v=81ad3482';
+import { butlerApi } from './butler-feature.js?v=12ec4cd0';
+import { neighboursMpApi } from './neighbours-mp-feature.js?v=3fee726e';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { MAIL_POST_SENDER } from '../mailbox.js?v=d50d0d05';
-import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=6ffaec43';
+import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=16f962c0';
 
 export const FURNITURE_FEATURE_ID = 'street-furniture';
 const PLAYER_ID = 'player';

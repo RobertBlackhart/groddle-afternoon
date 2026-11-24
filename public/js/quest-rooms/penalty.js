@@ -37,7 +37,7 @@ import { runOutcome } from '../autoplay-log.js?v=55bb4823';
 import { onLoaded, textureFromUrl } from '../textures.js?v=729b29ea';
 import { ensureItem } from '../inventory.js?v=6414dbdc';
 import { forceMetabolic } from '../metabolics.js?v=48f784bf';
-import { standOnFeet } from '../sprite-feet.js?v=6ffaec43';
+import { standOnFeet } from '../sprite-feet.js?v=16f962c0';
 
 export const PART_1 = 'smuggle_the_smuggler_part1';
 export const PART_2 = 'smuggle_the_smuggler_part2';

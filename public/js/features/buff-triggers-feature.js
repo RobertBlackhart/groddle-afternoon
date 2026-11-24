@@ -59,12 +59,12 @@ import {
 import { husbandryPack } from '../animal-husbandry.js?v=83779ca2';
 import { itemVerbAchievementCounters } from '../item-verbs.js?v=ecade42e';
 // The same module instances js/features/index.js registers (tests/buff-triggers.test.js checks the tags).
-import { meditationFeature } from './meditation-feature.js?v=c931a0b8';
+import { meditationFeature } from './meditation-feature.js?v=6ef4f47e';
 import { teleportationFeature } from './teleportation-feature.js?v=aece67b4';
-import { rookAttackFeature } from './rook-attack-feature.js?v=cd462b62';
-import { rubeFeature } from './rube-feature.js?v=c2078e02';
-import { smugglingFeature } from './smuggling-feature.js?v=e7f89744';
-import { hellFeature } from './hell-feature.js?v=9575e2c8';
+import { rookAttackFeature } from './rook-attack-feature.js?v=f333190c';
+import { rubeFeature } from './rube-feature.js?v=246990fb';
+import { smugglingFeature } from './smuggling-feature.js?v=fe6a0554';
+import { hellFeature } from './hell-feature.js?v=1b37d6ab';
 import { isPooped } from '../hell.js?v=d77f15ef';
 import { forceMetabolic } from '../metabolics.js?v=48f784bf';
 
