@@ -146,7 +146,7 @@ describe('a Storage Display Box takes things, as the original did', () => {
 });
 
 /**
- * #314 (CoffeeSnob: a Wine of the Dead in a Storage Display Box looked squashed): the shown icon was
+ * #314 (a player: a Wine of the Dead in a Storage Display Box looked squashed): the shown icon was
  * forced to 34 x 34, so the 15 x 48 bottle became a blob. bag_furniture_sdb.js getExtraConfig 926
  * gives it `width: 34`, and the client's ItemIconView fits an icon into that box by its longer
  * side (ItemIconView.as 315-321), keeping its shape.
