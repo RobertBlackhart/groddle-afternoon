@@ -94,7 +94,7 @@ import { getSkillCatalog } from '../content-catalogs.js?v=10b118dd';
 import { worldToScreen } from '../street-model.js?v=a9a05f9d';
 import { nearestSurfaceY } from '../walk-surface.js?v=3c919d5b';
 import { textureFromUrl } from '../textures.js?v=729b29ea';
-import { createSheetLoader } from '../sprite-sheets.js?v=bac259c0';
+import { createSheetLoader } from '../sprite-sheets.js?v=d1945384';
 import {
   LOW_FUEL_BUBBLE_MS,
   LOW_FUEL_LINE,
@@ -104,7 +104,7 @@ import {
   machineFrame,
   machineSheetDef,
   roomMachineState,
-} from '../machine-art.js?v=55d312b7';
+} from '../machine-art.js?v=d3381a4b';
 import { standOnFeet } from '../sprite-feet.js?v=6ffaec43';
 
 export const MACHINE_ROOMS_FEATURE_ID = 'machine-rooms';

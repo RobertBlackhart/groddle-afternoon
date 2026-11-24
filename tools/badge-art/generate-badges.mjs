@@ -324,7 +324,8 @@ export function badgeSvg(d) {
 
 async function render(designs, outDir, { webp = false } = {}) {
   mkdirSync(outDir, { recursive: true });
-  const browser = await chromium.launch();
+  // Playwright's own Chromium where it is installed, else the system Chrome (Linux, G1195).
+  const browser = await chromium.launch().catch(() => chromium.launch({ channel: process.env.GRODDLE_BROWSER_CHANNEL || 'chrome' }));
   const page = await browser.newPage({ viewport: { width: 180, height: 180 }, deviceScaleFactor: 1 });
   for (const d of designs) {
     await page.setContent(`<html><body style="margin:0;background:transparent">${badgeSvg(d)}</body></html>`);

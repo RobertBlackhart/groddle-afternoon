@@ -28,7 +28,7 @@
  */
 
 import { GAME_DAY_MS, GAME_EPOCH_MS, GAME_HOUR_MS, dametimeParts } from './game-day.js?v=a532775d';
-import { SEASON_TIME_ZONE, urDate } from './seasons.js?v=a46a90d3';
+import { SEASON_TIME_ZONE, urDate } from './seasons.js?v=5d8f545a';
 
 export const NEW_UR_SEASON = 'new_ur';
 /** Unnu Slight (Bortola), the street with the stone dragon's head: Glitch's 2011 party street. */
@@ -238,7 +238,21 @@ export function firstUrDay(now) {
   return evesNear(t).some((m) => m.big && t >= m.at && t < m.at + GAME_DAY_MS);
 }
 
-/** Chicken party hats (a later lane): December 31 and January 1 on Ur's clock. */
+/**
+ * Sparkly Batterflies (G1195 step 7): from the big midnight to the end of January 1 on Ur's clock.
+ * The plan's first Groddle day after the big midnight (firstUrDay) is four real hours of a US
+ * afternoon; the Batterflies keep glinting through New Year's Day so every time zone sees them (ours).
+ */
+export function sparklyBatterflies(now) {
+  const t = Number(now);
+  if (firstUrDay(t)) return true;
+  const u = urDate(t);
+  if (!(u.m === 1 && u.d === 1)) return false;
+  const big = bigMidnight(u.y - 1);
+  return Boolean(big) && t >= big.at;
+}
+
+/** Chicken party hats: December 31 and January 1 on Ur's clock (js/new-ur-party.js, pot-luck-feature). */
 export function hatsOn(now) {
   const t = urDate(now);
   return (t.m === 12 && t.d === 31) || (t.m === 1 && t.d === 1);

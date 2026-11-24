@@ -15,9 +15,9 @@ import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
 import { createResourceNode, getResourceNodeDef, resourceNodeFrame, tickResourceNode } from '../public/js/resource-nodes.js?v=30b69928';
 import { setTrantTables, TRANT_META } from '../public/js/trants.js?v=864ea9ff';
-import { treeFrameUrl } from '../public/js/features/patches-feature.js?v=89a4d8cd';
+import { treeFrameUrl } from '../public/js/features/patches-feature.js?v=b198b0be';
 import { soilSpritePaths, DEAD_TRANT_CLASSES } from '../public/js/patches.js?v=3f6b9b05';
-import { HIRES_SPRITES } from '../public/js/sprite-hires.js?v=ad1e46a9';
+import { HIRES_SPRITES } from '../public/js/sprite-hires.js?v=e96be5f1';
 import { ENCHANTED_TREE_SHEETS } from '../public/js/enchanted-forests.js?v=17ac01e4';
 
 const pub = join(import.meta.dirname, '../public');

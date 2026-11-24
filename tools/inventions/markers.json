@@ -449,6 +449,9 @@
     "ours: * Ours, beyond Glitch's two seconds of sparkles:": "new-ur-countdown",
     "ours: // A warm glow on the stone dragon's head (ours: a light on the existing deco, nothing": "new-ur-countdown"
   },
+  "public/js/features/new-ur-party-feature.js": {
+    "ours: // A four-point glint (ours: the Sparkle Powder's stars, drawn": "new-ur-party"
+  },
   "public/js/features/newxp-feature.js": {
     "no-source: hubName: 'Tutorial', // remake label (G310: no source names the newxp levels'": "ours-newxp",
     "remake-own: '').trim().slice(0, TUTORIAL_NAME_MAX)); // the remake's own word filter": "word-filter"
@@ -830,9 +833,19 @@
     "remake-own: // The chores are remake design; their mood goes through the same door": "ours-neighbours",
     "remake-own: One small job per home; rewards are remake design (no source equivalent).": "ours-neighbours"
   },
+  "public/js/new-ur-party.js": {
+    "glitch-had-none: * Glitch had no New Year item, quest or badge (GSJS has none;": "new-ur-party",
+    "invented: * ours (inventions register new-ur-party). Each follows a Glitch": "new-ur-party",
+    "ours: (include/drink.js drink_mood / drink_energy): ours, a Slow Gin Fizz's size halved.": "new-ur-party",
+    "ours: * ours (inventions register new-ur-party). Each follows": "new-ur-party",
+    "ours: Rang In the New Ur (ours): achievements.json's shape, added by": "new-ur-party",
+    "ours: Toast reaches the players within this many px (ours).": "new-ur-party",
+    "ours: pc_overlay was (location.apiSendAnnouncementX). Ours: the Toy Vendor's is mixed colours, and": "new-ur-party"
+  },
   "public/js/new-ur.js": {
     "invented: * Ours (inventions register new-ur-countdown): the moment is a": "new-ur-countdown",
     "ours: * Ours (inventions register new-ur-countdown): the": "new-ur-countdown",
+    "ours: New Year's Day so every time zone sees them (ours).": "new-ur-party",
     "ours: on a New Ur midnight, in place of NewDayView's (ours).": "new-ur-countdown"
   },
   "public/js/newxp.js": {
@@ -1386,7 +1399,7 @@
     "remake-own: subway entrance, the hub map's subway icon (the remake's own: Glitch's minimap showed only signposts).": "minimap-subway-stations"
   },
   "tools/achievement-overrides.mjs": {
-    "ours: no GSJS file at all (G982: Pot Luck Day's five, ours):": "pot-luck-badges",
+    "ours: Pot Luck Day's five; G1195: Happy New Ur's one; ours):": "new-ur-party",
     "remake-adds: * Badge conditions the remake adds where Tiny Speck's own file has none,": "ours-tools-achievement-overrides"
   },
   "tools/avatar-compositor/build.mjs": {
@@ -1451,6 +1464,7 @@
     "remake-own: * - the remake's own ride times (subway.js rideTiming): 20 s between": "ours-tools-build-realtime-subway"
   },
   "tools/build-realtime-trade.mjs": {
+    "ours: // G1195: Happy New Ur's pieces (ours) stay out of trades: the keepsake is a keepsake;": "new-ur-party",
     "ours: // G982: Harvest Stuffing (ours, no GSJS file) is food like any dish; Pot's": "pot-luck-stuffing"
   },
   "tools/build-signpost-graph.mjs": {
@@ -1518,6 +1532,7 @@
     "not-source: Ours, not Tiny Speck's: a parts edit of the chicken rig, drawn as": "pot-luck-costumes",
     "ours: Ours, not Tiny Speck's: a parts edit of the chicken": "pot-luck-costumes",
     "ours: every keyframe, keeping its timing; keep: draw ours behind its own art.": "pot-luck-costumes",
+    "ours: space, and its size on a chicken's comb (ours).": "new-ur-party",
     "ours: timeline holding `els` (to draw a part, or our own shapes, alone).": "pot-luck-costumes"
   },
   "tools/quest-gates/table.mjs": {

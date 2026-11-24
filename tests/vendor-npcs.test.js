@@ -31,7 +31,7 @@ import {
   vendorNpcsFor,
   vendorSheet,
 } from '../public/js/vendor-npcs.js?v=90b0c123';
-import { VENDOR_PROFILES } from '../public/js/vendor.js?v=b9233f20';
+import { VENDOR_PROFILES } from '../public/js/vendor.js?v=9e9ce51e';
 import { getQuestCatalog, loadContentCatalogsFromDir, resetContentCatalogs } from '../public/js/content-catalogs.js?v=10b118dd';
 import { createQuestState } from '../public/js/quests.js?v=90a2ee3d';
 import {
@@ -195,7 +195,7 @@ describe('vendor NPC art', () => {
   });
 
   it('swaps every strip to a 3x render of its vector SWF on first draw, frame for frame', async () => {
-    const { FIRST_DRAW_SPRITES, HIRES_SPRITES, SPLIT_SPRITES } = await import('../public/js/sprite-hires.js?v=ad1e46a9');
+    const { FIRST_DRAW_SPRITES, HIRES_SPRITES, SPLIT_SPRITES } = await import('../public/js/sprite-hires.js?v=e96be5f1');
     const results = JSON.parse(readFileSync(join(PUBLIC, '../tools/vector-sprites/results.json'), 'utf8'));
     for (const cls of VENDOR_NPC_CLASSES) {
       for (const [state, art] of Object.entries(VENDOR_NPC_ART[cls].states)) {

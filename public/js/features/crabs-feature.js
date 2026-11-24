@@ -36,7 +36,7 @@
  * Canvas: crabs, crabLast, crabClip, crabOutcome, crabMemory, crabTalk.
  */
 
-import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=bac259c0';
+import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d1945384';
 import { addItem, countItem, ensureItem, registerItemUse, removeItem } from '../inventory.js?v=6414dbdc';
 import { MUSICBLOCK_CATALOG, ensureMusicblockItems } from '../musicblocks.js?v=fd84b634';
 import { gainMetabolic, loseMood, shiftMetabolic } from '../metabolics.js?v=48f784bf';
@@ -44,7 +44,7 @@ import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { slugsFromEffects } from '../speech-slugs.js?v=e79cecfa';
 import { getGameDayKey } from '../game-day.js?v=a532775d';
 import { cleanQuestMarkup } from '../quests.js?v=90a2ee3d';
-import { followPath } from '../street-creatures.js?v=56331684';
+import { followPath } from '../street-creatures.js?v=2d47da2d';
 import { followFloorY, walkSurfaceY } from '../walk-surface.js?v=3c919d5b';
 import { isStandable } from '../street-model.js?v=a9a05f9d';
 import {

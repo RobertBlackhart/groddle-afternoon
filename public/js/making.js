@@ -1011,6 +1011,8 @@ let seasonalRecipeCheck = () => true;
 export const SEASON_RECIPE_LINES = Object.freeze({
   pi_day: 'You can only make this item on Pi Day, observed on March 14.',
   pot_luck_day: 'You can only make this during Pot Luck Day, the week of the harvest feast.',
+  // G1195: Happy New Ur's recipes (js/new-ur-party.js NEW_UR_RECIPES).
+  new_ur: 'You can only make this for Happy New Ur, December 26 to January 3.',
 });
 
 /** @param {(season: string) => boolean} fn */

@@ -16,7 +16,8 @@
  *
  *   node tools/pot-luck-art/build.mjs                 render everything, register it, write built.json
  *   node tools/pot-luck-art/build.mjs --check         exit 1 when a file, the tool or the FLA changed since
- *   node tools/pot-luck-art/build.mjs --lineup <png>  the review lineup (plain, Turkey Tailfan, Rooster Plume)
+ *   node tools/pot-luck-art/build.mjs --lineup <png>  the review lineup (plain, Turkey Tailfan, Rooster Plume, party hat)
+ *   node tools/pot-luck-art/build.mjs --only party_hat  draw only those costumes; the rest stay as built.json has them
  *
  * The FLA is read from ~/Documents/glitch-audit/glitch-items (GRODDLE_GLITCH_ITEMS overrides).
  */
@@ -44,6 +45,8 @@ const PROVENANCE = join(ROOT, 'tools/provenance/made-sprites.json');
 export const CELL = Object.freeze([-74, 23, 148, 110]);
 export const SCALE = 3;
 export const OUT_DIR = 'assets/sprites/seasons/pot-luck';
+/** A season's costume beyond Pot Luck Day keeps its sheets in its season's folder (js/pot-luck.js SEASON_COSTUMES). */
+const COSTUME_DIRS = Object.freeze({ party_hat: 'assets/sprites/seasons/new-ur' });
 /** The pack icons: [class, 1x width, 1x height]. */
 export const ICONS = Object.freeze([['turkey_tailfan', 40, 40], ['rooster_plume', 40, 40], ['fancy_feather', 40, 40]]);
 
@@ -75,7 +78,7 @@ export async function chickenSheets() {
 }
 
 /** Where a costume's sheet for one chicken clip lives (public/). */
-export const costumePath = (costume, clip, hires = false) => `${OUT_DIR}/chicken_${costume}_${clip}${hires ? '@3x' : ''}.webp`;
+export const costumePath = (costume, clip, hires = false) => `${COSTUME_DIRS[costume] || OUT_DIR}/chicken_${costume}_${clip}${hires ? '@3x' : ''}.webp`;
 
 /** Synthetic labels "@<frame>" on the Chicken clip, so a render can start it on any frame. */
 function frameLabels(fla, frames) {
@@ -87,7 +90,8 @@ let browser = null;
 async function page() {
   if (!browser) {
     const { chromium } = await import('playwright');
-    browser = await chromium.launch();
+    // Playwright's own Chromium where it is installed, else the system Chrome (Linux, G1195).
+    browser = await chromium.launch().catch(() => chromium.launch({ channel: process.env.GRODDLE_BROWSER_CHANNEL || 'chrome' }));
   }
   return browser.newPage({ deviceScaleFactor: 1 });
 }
@@ -164,9 +168,9 @@ export function iconHiresText(src = readFileSync(ICON_HIRES_JS, 'utf8')) {
 }
 
 /** tools/vector-sprites/results.json rows for the costume sheets (js/sprite-hires.js is written from them). */
-function resultRows(sheets, align) {
+function resultRows(sheets, align, costumes = COSTUMES) {
   const rows = {};
-  for (const costume of COSTUMES) {
+  for (const costume of costumes) {
     for (const s of sheets) {
       const one = costumePath(costume, s.clip);
       const hires = costumePath(costume, s.clip, true);
@@ -183,23 +187,29 @@ function resultRows(sheets, align) {
   return rows;
 }
 
-async function build() {
+/**
+ * only: the costumes to draw (default all). The others' files, rows and align scores stay as built.json
+ * has them (G1195: the party hat was added on Linux's Chrome; Pot Luck Day's sheets were drawn on the Mac).
+ */
+async function build(only = COSTUMES) {
   if (!existsSync(FLA_FILE)) throw new Error(`no chicken FLA at ${FLA_FILE} (set GRODDLE_GLITCH_ITEMS)`);
+  const partial = only.length < COSTUMES.length;
+  const before = partial && existsSync(BUILT) ? JSON.parse(readFileSync(BUILT, 'utf8')) : null;
   const sheets = await chickenSheets();
   const base = loadFla(FLA_FILE);
   frameLabels(base, sheets.flatMap((s) => s.flaFrames));
-  const { HIRES_SPRITES } = await import('../../public/js/sprite-hires.js?v=ad1e46a9');
+  const { HIRES_SPRITES } = await import('../../public/js/sprite-hires.js?v=e96be5f1');
   const tmpDir = mkdtempSync(join(os.tmpdir(), 'pot-luck-art-'));
   const tmp = join(tmpDir, 'shot.png');
   const p = await page();
-  const files = {};
+  const files = before ? Object.fromEntries(Object.entries(before.files).filter(([rel]) => !only.some((c) => sheets.some((s) => rel === costumePath(c, s.clip) || rel === costumePath(c, s.clip, true))))) : {};
   const align = {};
   try {
     for (const s of sheets) {
       align[s.clip] = alignScores(await renderSheet(p, base, s.flaFrames, s.cols, tmp), s, HIRES_SPRITES);
       process.stdout.write(`${s.clip} ${Math.min(...align[s.clip])} `);
     }
-    for (const costume of COSTUMES) {
+    for (const costume of only) {
       const v = makeVariant(costume, base);
       for (const s of sheets) {
         const img = await renderSheet(p, v, s.flaFrames, s.cols, tmp);
@@ -209,7 +219,7 @@ async function build() {
         process.stdout.write(`\n${costume}/${s.clip}`);
       }
     }
-    for (const [cls, w, h] of ICONS) {
+    for (const [cls, w, h] of partial ? [] : ICONS) {
       const img = await renderIcon(p, base, cls, w, h, tmp);
       for (const [rel, im] of [[`assets/sprites/icons/${cls}@3x.webp`, img], [`assets/sprites/icons/${cls}.webp`, downscale(img, SCALE)]]) {
         writeWebp(im, rel, tmpDir);
@@ -222,21 +232,21 @@ async function build() {
   }
   // Register the 3x sheets and icons where the game looks them up.
   const results = JSON.parse(readFileSync(RESULTS, 'utf8'));
-  Object.assign(results, resultRows(sheets, align));
+  Object.assign(results, resultRows(sheets, align, only));
   writeFileSync(RESULTS, `${JSON.stringify(results, null, 1)}\n`);
   const { writeModule } = await import('../vector-sprites/build.mjs');
   writeModule(results);
   writeFileSync(ICON_HIRES_JS, iconHiresText());
   // The made-art provenance (tools/provenance/made-sprites.json, the Made for Groddle page) hashes each costume's stand.
   const prov = JSON.parse(readFileSync(PROVENANCE, 'utf8'));
-  for (const c of COSTUMES) if (prov.sprites[`chicken_${c}`]) prov.sprites[`chicken_${c}`].sha256 = files[costumePath(c, 'stand', true)];
+  for (const c of only) if (prov.sprites[`chicken_${c}`]) prov.sprites[`chicken_${c}`].sha256 = files[costumePath(c, 'stand', true)];
   writeFileSync(PROVENANCE, `${JSON.stringify(prov, null, 2)}\n`);
   const built = {
     about: 'Written by tools/pot-luck-art/build.mjs (G982). Do not edit: rerun it. fla: the chicken FLA it read; tool: variants.mjs + build.mjs; files: each output and its sha256; align: the plain chicken against its own 3x sheets, per clip, the worst frame.',
     fla: { path: CHICKEN_FLA_PATH, sha256: sha(readFileSync(FLA_FILE)) },
     tool: toolSha(),
     cell: CELL,
-    align: Object.fromEntries(Object.entries(align).map(([k, v]) => [k, Math.min(...v)])),
+    align: before ? before.align : Object.fromEntries(Object.entries(align).map(([k, v]) => [k, Math.min(...v)])),
     files,
   };
   writeFileSync(BUILT, `${JSON.stringify(built, null, 1)}\n`);
@@ -256,7 +266,7 @@ export async function problems() {
   }
   const sheets = await chickenSheets();
   // The game's table of the same sheets (js/pot-luck.js, which cuts the twins) must agree with this one.
-  const { CHICKEN_SHEETS, costumeSheetPath } = await import('../../public/js/pot-luck.js?v=9e001de9');
+  const { CHICKEN_SHEETS, costumeSheetPath } = await import('../../public/js/pot-luck.js?v=e704c060');
   const game = JSON.stringify(CHICKEN_SHEETS.map(({ clip, path, fw, fh, cols, frames }) => [clip, path, fw, fh, cols, frames]));
   if (game !== JSON.stringify(sheets.map(({ clip, path, fw, fh, cols, frames }) => [clip, path, fw, fh, cols, frames]))) bad.push('public/js/pot-luck.js CHICKEN_SHEETS differs from the chicken sheets this tool draws');
   for (const c of COSTUMES) for (const s of sheets) if (costumeSheetPath(c, s.clip) !== costumePath(c, s.clip)) bad.push(`js/pot-luck.js names ${costumePath(c, s.clip)} differently`);
@@ -281,7 +291,7 @@ async function lineup(out) {
   const L = { walk: 0, flying: 24, land: 108, verb: 332, pecking_once: 427, sit: 459, idle1: 669, idle2: 736, idle3: 783 };
   frameLabels(base, shots.map(([c, n]) => L[c] + n));
   const box = [CELL[0] + 20, CELL[1], CELL[2] - 20, CELL[3]];
-  const names = { chicken: 'Chicken (Tiny Speck)', turkey_tailfan: 'Turkey Tailfan', rooster_plume: 'Rooster Plume' };
+  const names = { chicken: 'Chicken (Tiny Speck)', turkey_tailfan: 'Turkey Tailfan', rooster_plume: 'Rooster Plume', party_hat: 'Party hat (New Ur)' };
   const rows = ['chicken', ...COSTUMES].map((kind) => {
     const v = makeVariant(kind, base);
     return `<div class="row"><div class="name">${names[kind]}</div>${shots.map(([c, n]) => `<figure>${frameSvg(v, 0, { scale: 1.6, box, start: { Chicken: `@${L[c] + n}` } })}<figcaption>${c} ${n}</figcaption></figure>`).join('')}</div>`;
@@ -308,6 +318,7 @@ if (process.argv[1] === fileURLToPath(import.meta.url)) {
   } else if (args.includes('--lineup')) {
     await lineup(args[args.indexOf('--lineup') + 1] || join(ROOT, 'lineup-costumes.png'));
   } else {
-    await build();
+    const i = args.indexOf('--only');
+    await build(i >= 0 ? args[i + 1].split(',').filter((c) => COSTUMES.includes(c)) : COSTUMES);
   }
 }

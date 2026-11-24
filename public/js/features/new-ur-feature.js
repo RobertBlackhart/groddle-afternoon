@@ -35,7 +35,7 @@
 
 import { OVERLAY_USES, playCountdownArt, playWindowOverlay, windowOverlayFit } from '../overlays.js?v=1f5027a3';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
-import { parseSeasonDate } from '../seasons.js?v=a46a90d3';
+import { parseSeasonDate } from '../seasons.js?v=5d8f545a';
 import { fireworksUnder, viewport } from './spirit-loneliness-feature.js?v=799f3b74';
 import {
   DRAGON_AT,
@@ -52,7 +52,7 @@ import {
   qaClockOffset,
   recordMidnight,
   takeTrip,
-} from '../new-ur.js?v=3f97edd7';
+} from '../new-ur.js?v=a5efbd09';
 
 export const NEW_UR_FEATURE_ID = 'new-ur';
 
@@ -420,6 +420,11 @@ export const newUrFeature = {
 
   newUrGoParty(engine) {
     return goParty(engine);
+  },
+
+  /** The clock the show runs on (the server's online, a QA offset, else the device's): new-ur-party-feature. */
+  newUrClock() {
+    return clock();
   },
 
   save() {

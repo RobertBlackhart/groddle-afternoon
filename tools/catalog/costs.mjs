@@ -67,6 +67,8 @@ export const NOT_SELLABLE = Object.freeze({
   'js/quest-rooms/juju-camp.js': ['juju_trowel', 'note_hint', 'juju_paperweight'],
   'js/quest-rooms/esquibeth.js': ['conch'],
   'game.js': ['stoot_barfield_pullstring_doll'],
+  // G1195: Happy New Ur's keepsake (ours).
+  'js/new-ur-party.js': ['midnight_sparkly'],
 });
 /** How many `sellable: false` flags each file in NOT_SELLABLE carries (one entry may cover a loop). */
 export const NOT_SELLABLE_FLAGS = Object.freeze({ 'js/quest-rooms/catalog.js': 6, 'js/animal-husbandry.js': 2, 'js/features/small-items-feature.js': 2, 'js/features/imagination-feature.js': 2, 'js/features/swf-feature.js': 2, 'js/quest-rooms/juju-camp.js': 3 });

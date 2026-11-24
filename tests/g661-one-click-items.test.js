@@ -23,7 +23,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { GLITCH_ONE_CLICK, GLITCH_ONE_CLICK_ABSENT, ONE_CLICK_ITEM_OF, isOneClick, oneClickChoice, oneClickItem, oneClickVerbId, worldContextAction } from '../public/js/world-context-menu.js?v=e4c99c05';
 import { cabinetVerbs } from '../public/js/home-storage.js?v=b0225465';
-import { poleVerbs } from '../public/js/home-street-mp.js?v=8b462bb2';
+import { poleVerbs } from '../public/js/home-street-mp.js?v=cb37f90c';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

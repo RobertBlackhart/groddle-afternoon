@@ -830,6 +830,53 @@
    ]
   },
   {
+   "id": "new-ur-party",
+   "title": "Happy New Ur's party pieces: the Midnight Sparkly keepsake (one a year) and the badge Rang In the New Ur for a midnight seen (online on the server's word), the Confetti Popper (Toy Vendor, or a Tinkertool with Paper, a Sparkly and an Element for its colour; a bang and a confetti burst the street sees, everyone near jumps), Bubbly (Cocktail Shaker: grapes and a Tiny Bubble) and its Toast, Sparkly Batterflies from the big midnight to the end of January 1, party hats on street Chickens on December 31 and January 1",
+   "kind": "content",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/new-ur-party.js",
+     "symbol": "NEW_UR_ITEMS"
+    },
+    {
+     "file": "public/js/new-ur-party.js",
+     "symbol": "keepsakeDue"
+    },
+    {
+     "file": "public/js/new-ur-party.js",
+     "symbol": "NEW_UR_RECIPES"
+    },
+    {
+     "file": "public/js/new-ur-party.js",
+     "symbol": "NEW_UR_BADGES"
+    },
+    {
+     "file": "public/js/features/new-ur-party-feature.js",
+     "symbol": "newUrPartyFeature"
+    },
+    {
+     "file": "public/js/new-ur.js",
+     "symbol": "sparklyBatterflies"
+    },
+    {
+     "file": "public/js/pot-luck.js",
+     "symbol": "SEASON_COSTUMES"
+    },
+    {
+     "file": "tools/pot-luck-art/variants.mjs",
+     "symbol": "partyHatEls"
+    },
+    {
+     "file": "tools/new-ur-art/build.mjs"
+    }
+   ],
+   "why": "Austin's picks 2026-11-23 (G1195, research/seasonal/new-year-plan.md steps 4 to 8): the popper (Toy Vendor and made from Paper + Sparkly in Element colours), Bubbly and Toast, sparkly Batterflies, Chicken party hats, a keepsake and badge for anyone online at a midnight. Glitch had no New Year item, quest or badge. Glitch habits followed: the Glitchmas Cracker (seasonal Toy Vendor stock, single use, GLITCHMAS_CRACKER bang, the burst seen by the street), Sno Cones taking their colour from an Element, include/drink.js drinks, Pot Luck Day's costume system with Tiny Speck's CC0 party_hat. Ours: every rule, number and word; the Batterflies run to the end of January 1 rather than the plan's one Groddle day; the popper and badge centre icons are placeholders until Grok Bot's pack (research/art-briefs/new-ur-2026-11-23).",
+   "rows": [
+    "G1195"
+   ]
+  },
+  {
    "id": "made-decos",
    "title": "Made decos for rebuilt streets and quest rooms (AI-generated or own work, CC0)",
    "kind": "visual",
@@ -889,7 +936,7 @@
   },
   {
    "id": "made-sprites",
-   "title": "Made sprites (the Fire Dragon walk, the quest book award, the Pot Luck Day chicken costumes, its badge pictures and Harvest Stuffing's icon)",
+   "title": "Made sprites (the Fire Dragon walk, the quest book award, the Pot Luck Day chicken costumes, its badge pictures Harvest Stuffing's icon and the New Ur chicken party hat)",
    "kind": "visual",
    "status": "proposed",
    "where": [
@@ -908,6 +955,7 @@
    "rows": [],
    "family": "made-sprites",
    "members": [
+    "chicken_party_hat",
     "chicken_rooster_plume",
     "chicken_turkey_tailfan",
     "harvest_stuffing",

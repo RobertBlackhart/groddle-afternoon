@@ -107,6 +107,15 @@
    "rim": "wood",
    "number": "11",
    "deco": "laurel"
+  },
+  "nu_rang_in_the_new_ur": {
+   "subject": "PLACEHOLDER until Grok Bot's centre picture lands (research/art-briefs/new-ur-2026-11-23, picture B): the Midnight Sparkly icon (Tiny Speck's Sparkly recoloured, tools/new-ur-art)",
+   "icon": "midnight_sparkly",
+   "placeholder": "grok-bot: research/art-briefs/new-ur-2026-11-23 B",
+   "disc": "teal",
+   "rim": "gold",
+   "number": "",
+   "deco": "laurel"
   }
  }
 }

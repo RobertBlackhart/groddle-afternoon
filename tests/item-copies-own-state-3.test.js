@@ -38,7 +38,7 @@ import { cabinetMove, cabinetPut, cabinetTake, normalizeContents } from '../publ
 import { CUBIMAL_NAMING } from '../public/js/cubimals.js?v=07f59f2f';
 import { FAVOR_GIANTS } from '../public/js/potions.js?v=4f4c996d';
 import { HOPPER_CEILING, STILL } from '../public/js/machines.js?v=5d749d26';
-import { teachPhrase } from '../public/js/seasons.js?v=a46a90d3';
+import { teachPhrase } from '../public/js/seasons.js?v=5d8f545a';
 import { addItem, countItem, createInventory } from '../public/js/inventory.js?v=6414dbdc';
 
 /** A copy of the feature of its own (its realtime binding is module state). */

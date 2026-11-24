@@ -53,7 +53,7 @@ import { ITEM_CATALOG, countItem, ensureItem, itemIcon } from '../inventory.js?v
 import { canUseTool, useToolCondition, workStepCost } from '../tools.js?v=4156bba8';
 import { acceptOffer, npcQuestOffers } from '../quest-offers.js?v=32d4127e';
 import { getQuestCatalog, getSkillCatalog } from '../content-catalogs.js?v=10b118dd';
-import { listRecipesProducing } from '../making.js?v=5a718e7f';
+import { listRecipesProducing } from '../making.js?v=1ec1075e';
 import { JOB_ASK_TEXT, itemAskSubject, itemGetHref, itemMakeNote, skillRankLabel } from '../street-job-asks.js?v=84b712a3';
 import { XP_FOR_LEVEL } from '../progression.js?v=05ff0260';
 import {

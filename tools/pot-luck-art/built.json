@@ -4,7 +4,7 @@
   "path": "inhabitants/chicken/npc_chicken.fla",
   "sha256": "80d41e6b91ac79625d66de65b1cc979c6193c698e2881272251807418724fcff"
  },
- "tool": "4c40ffe8c4d167d4e1a461d2ddf6d7e5571c9bddb8d8f13ed242edcb0e223768",
+ "tool": "8e40325958fef40788edf6323af433bdf5e728d725eb2c9fb8e37b3b5a0b60bc",
  "cell": [
   -74,
   23,
@@ -84,6 +84,32 @@
   "assets/sprites/icons/rooster_plume@3x.webp": "c66fb8ee833a31147dbf04a3111039b79140353a6d2f167016ab49b84a5dbf1f",
   "assets/sprites/icons/rooster_plume.webp": "6eceea5542619f7e16f33677ba2a67938c4ee7533ff88e6de3f8cc947c692ad2",
   "assets/sprites/icons/fancy_feather@3x.webp": "f7d58d17b0bc21100e84e6396b84638ebcce023d52a742bf5246cd616506e120",
-  "assets/sprites/icons/fancy_feather.webp": "f1689a81b37232316b86155babba4d0531d4724b1f032908285ead1202de974f"
+  "assets/sprites/icons/fancy_feather.webp": "f1689a81b37232316b86155babba4d0531d4724b1f032908285ead1202de974f",
+  "assets/sprites/seasons/new-ur/chicken_party_hat_walk.webp": "900033788c613d2c6057e186dd58e5e130953a4a05b2e93a2b4d57613d6a1ac5",
+  "assets/sprites/seasons/new-ur/chicken_party_hat_walk@3x.webp": "3c4c9962b8f3355b2d1ca7af3979c28818e77947efccf0ec569e655162193940",
+  "assets/sprites/seasons/new-ur/chicken_party_hat_pecking_once.webp": "03f7448661a90f5726fadc17a6304b08a54b18981d624d6efd3f8fe3957c44a8",
+  "assets/sprites/seasons/new-ur/chicken_party_hat_pecking_once@3x.webp": "adb5ab4ebf2b92da6ee73035ebd7aa2a634250ef1d84652fa63380f036b59402",
+  "assets/sprites/seasons/new-ur/chicken_party_hat_sit.webp": "ec29936ec3ea947f6ca38ab1e342d1cd244cc9a39f6bddbff384d1a7ce209c1c",
+  "assets/sprites/seasons/new-ur/chicken_party_hat_sit@3x.webp": "7c9aa229698703ec9f3ed71f60be9ff173fb5fee3ebf95313b7fd80b415bac9a",
+  "assets/sprites/seasons/new-ur/chicken_party_hat_stand.webp": "42d9067a2b441e2c83b019bcb77242f3662b3e7bcce1efae236e39df8b22f8ad",
+  "assets/sprites/seasons/new-ur/chicken_party_hat_stand@3x.webp": "e25c3b17fcd1c31b4f53c55cd012306529ad30c73bd4f318864597fbddce5687",
+  "assets/sprites/seasons/new-ur/chicken_party_hat_flying.webp": "ba0100f2e7f623efd7062c2ae5c2ad3d494456eeea23a7ad161aeca5691a7970",
+  "assets/sprites/seasons/new-ur/chicken_party_hat_flying@3x.webp": "0b0f529f42b9575d8c131736d315b0e1192d993abbbb62a7563ea8d82be6c049",
+  "assets/sprites/seasons/new-ur/chicken_party_hat_flying_no_feathers.webp": "873d86bcc7be12d8d437985981694b98e572e979396c8702300d0681c3b123f8",
+  "assets/sprites/seasons/new-ur/chicken_party_hat_flying_no_feathers@3x.webp": "ea5bcfdbfab8b0f11da379a25d121141c1a53f2a7388b673e0f7b34db6776680",
+  "assets/sprites/seasons/new-ur/chicken_party_hat_land.webp": "a0c6382ba8321199a7a5dc775fed98f5b15a14341ce35e0019276f4877ed5a4d",
+  "assets/sprites/seasons/new-ur/chicken_party_hat_land@3x.webp": "74126966d9a5b2da9b25dd22a9464039a405aa01a33f8710f222847e7ad95b5e",
+  "assets/sprites/seasons/new-ur/chicken_party_hat_idle1.webp": "b73ab607c8eec231effe3bc3c4bfdb12fcfb434a78b819c0c9f2f95478f5a104",
+  "assets/sprites/seasons/new-ur/chicken_party_hat_idle1@3x.webp": "74fb25f600a27a598e61eee3d5d93f15738eefcaa7b95dd506723d4dbab7680a",
+  "assets/sprites/seasons/new-ur/chicken_party_hat_idle2.webp": "e3492834b0faae0b6f254655db8900d40993798d619934c23160527f62dc36be",
+  "assets/sprites/seasons/new-ur/chicken_party_hat_idle2@3x.webp": "70e29a6225e770c797bdaed58e9e3eaf835d267b24c13bc598cb525541dd8199",
+  "assets/sprites/seasons/new-ur/chicken_party_hat_idle3.webp": "6680d5d355b05914b13618c19aad28daa3c632658bd22251d7a9c08fe5bfd955",
+  "assets/sprites/seasons/new-ur/chicken_party_hat_idle3@3x.webp": "0ffe2829ccc612f8648a2a897870e0624aff1a30770a248548a7df4bd0cab7b7",
+  "assets/sprites/seasons/new-ur/chicken_party_hat_pause.webp": "4b3df04d9b452443d21ca6d340dc6c004980860a99025e8caac6c03a823a4c2d",
+  "assets/sprites/seasons/new-ur/chicken_party_hat_pause@3x.webp": "668c5fc343659ceb292f54004d45ab82da5e599e03b0f288d8f57f427f4d05f9",
+  "assets/sprites/seasons/new-ur/chicken_party_hat_pecking_twice.webp": "d750f6edd2c11c9ef8449220be17741e1c979c3af64aab933af6b22060e6c481",
+  "assets/sprites/seasons/new-ur/chicken_party_hat_pecking_twice@3x.webp": "2e38f622f11c34f5e2636fdf6291b3140d68d982400caf380cd393d0415e8685",
+  "assets/sprites/seasons/new-ur/chicken_party_hat_verb.webp": "845c347ba493e25fb90f514fe67dcc76fffe78c4cc268940afe3988a1ca727fe",
+  "assets/sprites/seasons/new-ur/chicken_party_hat_verb@3x.webp": "9464d103eceb6c665edba95b435f0f37d30fdfe7e007ea3d93c77e557fa36a01"
  }
 }

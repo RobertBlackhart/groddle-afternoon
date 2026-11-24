@@ -57,7 +57,7 @@
  */
 
 import { slugsFromEffects } from '../speech-slugs.js?v=e79cecfa';
-import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=bac259c0';
+import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d1945384';
 import { nearestSurfaceY } from '../walk-surface.js?v=3c919d5b';
 import { displayTopOf, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=95f23414';
 import { SET_FREE, applySetFree, canSetFree, setFreeGoneLine, setFreePrompt } from '../animal-set-free.js?v=6fcd8355';
@@ -112,18 +112,18 @@ import {
   stepHogtie,
   stickPlaceState,
 } from '../animal-husbandry.js?v=83779ca2';
-import { batterflyBaseY, batterflyResponseFor, flightFloorFor } from '../street-creatures.js?v=56331684';
+import { batterflyBaseY, batterflyResponseFor, flightFloorFor } from '../street-creatures.js?v=2d47da2d';
 import { loseEnergy, shiftMetabolic, topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import { textureFromUrl } from '../textures.js?v=729b29ea';
 import { PIGGY_DEATH_DROPS, PIGGY_DEATH_PUFF, SAD_BABY, forcedRoll, isSadIn } from '../animal-mood.js?v=a49495fc';
-import { animalCrowdChanged, animalCrowdSad, animalPlaceIsDepressing, crowdLimit, ownsPlace, smokePuff as sharedSmokePuff } from './animal-mood-feature.js?v=3c9bf3b3';
+import { animalCrowdChanged, animalCrowdSad, animalPlaceIsDepressing, crowdLimit, ownsPlace, smokePuff as sharedSmokePuff } from './animal-mood-feature.js?v=c9713c99';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { followYardPath, freeYardSpot, holdYardWalk } from '../yard-wander.js?v=9f957f8b';
-import { showsChickenIdle, yardChickenPose } from '../chicken-idle-art.js?v=ead8cdf8';
+import { followYardPath, freeYardSpot, holdYardWalk } from '../yard-wander.js?v=7da3769e';
+import { showsChickenIdle, yardChickenPose } from '../chicken-idle-art.js?v=5180bd30';
 import { chickenWaitPose } from '../chicken-idles.js?v=eef0279b';
 import { PACKED_SHEETS } from '../packed-sheets-data.js?v=192c6f15';
-import { createPackedLoader } from '../packed-sheets.js?v=796f36f8';
+import { createPackedLoader } from '../packed-sheets.js?v=177aef6a';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 
 export const HUSBANDRY_FEATURE_ID = 'animal-husbandry';

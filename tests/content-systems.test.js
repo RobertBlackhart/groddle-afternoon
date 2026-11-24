@@ -198,7 +198,7 @@ describe('achievement runner on mined catalog', () => {
     assert.ok(state.unlocked.includes('first_spriggan_emblem'));
   });
 
-  it('browses all 668 badges by status, category, and human-readable search', () => {
+  it('browses all 669 badges by status, category, and human-readable search', () => {
     const state = createAchievementState();
     state.unlocked.push('able_chopper');
     state.progress.collection_musicblocks_dg = {

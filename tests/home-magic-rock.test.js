@@ -156,11 +156,11 @@ describe('source wording', { skip: !existsSync(ROCK_JS) }, () => {
  * shiftCKeyHandler 816-828; HouseManager.as startCultivation 102-118).
  */
 describe('the home street rock (G231)', async () => {
-  const { homesFeature } = await import('../public/js/features/homes-feature.js?v=a0dd7513');
-  const { towerApi } = await import('../public/js/features/home-tower-feature.js?v=82b6552e');
-  const { shiftButlerRuntime } = await import('../public/js/features/butler-feature.js?v=047e97e3');
+  const { homesFeature } = await import('../public/js/features/homes-feature.js?v=a630d0a5');
+  const { towerApi } = await import('../public/js/features/home-tower-feature.js?v=fb54608d');
+  const { shiftButlerRuntime } = await import('../public/js/features/butler-feature.js?v=fc9f1c80');
   const { homeEditing } = await import('../public/js/features/camera-mode-feature.js?v=2a8eeea8');
-  const { newxpFeature, __newxpTest } = await import('../public/js/features/newxp-feature.js?v=da214043');
+  const { newxpFeature, __newxpTest } = await import('../public/js/features/newxp-feature.js?v=f6f3e1cd');
   const street = { classId: 'magic_rock', state: { room: 'street' } };
   const yard = { classId: 'magic_rock', state: { room: 'yard' } };
   const towerQuest = { active: { build_a_tower: { started: 1 } }, completed: [], offers: {} };
@@ -285,7 +285,7 @@ describe('the home street rock (G231)', async () => {
  * (NCMsgHandler.as 3093-3096). Solo: no visitors, so only the stipend.
  */
 describe('the rock’s daily iMG and the house sign (G232)', async () => {
-  const { homesFeature } = await import('../public/js/features/homes-feature.js?v=a0dd7513');
+  const { homesFeature } = await import('../public/js/features/homes-feature.js?v=a630d0a5');
   const street = { classId: 'magic_rock', state: { room: 'street' } };
   const yard = { classId: 'magic_rock', state: { room: 'yard' } };
   const quiet = { active: {}, completed: [], offers: {} };

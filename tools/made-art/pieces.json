@@ -739,6 +739,39 @@
           "text": "Sold by the Toy Vendor during Pot Luck Day. Drop it on a Chicken and everyone on the street sees it, until the season ends."
         }
       ]
+    },
+    {
+      "id": "chicken_party_hat",
+      "name": "Chicken in a party hat",
+      "caption": "Happy New Ur's street Chickens wear party hats on December 31 and January 1. Glitch never dressed its animals, so this is new, but nothing in it is newly drawn: Tiny Speck's own party hat, the one Glitches wore, sits on Tiny Speck's own Chicken, inside its rig, so it walks, pecks, flaps and sits in it.",
+      "display": {
+        "w": 296,
+        "h": 220
+      },
+      "image": {
+        "label": "Made for Groddle",
+        "alt": "A white Chicken standing with a small blue party hat dotted with gold stars and a gold pompom on top of its head."
+      },
+      "original": {
+        "file": "public/assets/sprites/animals/npc_chicken_stand@3x.webp",
+        "kind": "original",
+        "label": "Tiny Speck's Chicken, the drawing it is made from",
+        "alt": "Tiny Speck's white Chicken standing, with its small red comb and short dark tail."
+      },
+      "facts": [
+        {
+          "label": "How it was made",
+          "text": "Made by {tool}, under Austin's direction: the hat's own shapes and colours from Tiny Speck's party hat, set on the Chicken's comb, so every pose of the original carries it."
+        },
+        {
+          "label": "How it was checked",
+          "text": "The plain Chicken drawn the same way matches Tiny Speck's own pictures frame by frame, so the hat rides exactly where the head does."
+        },
+        {
+          "label": "In the game",
+          "text": "Every Chicken out on the streets wears one on December 31 and January 1, for everyone."
+        }
+      ]
     }
   ]
 }

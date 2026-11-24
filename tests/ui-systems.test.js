@@ -20,7 +20,7 @@ import {
   isToolItem,
   getItemUseInfo,
 } from '../public/js/inventory.js?v=6414dbdc';
-import { starterToolsInventory, ensureMakingItems } from '../public/js/making.js?v=5a718e7f';
+import { starterToolsInventory, ensureMakingItems } from '../public/js/making.js?v=1ec1075e';
 import {
   createQuestState,
   assignQuest,
@@ -42,7 +42,7 @@ import {
   listBuyOffers,
   listSellOffers,
   createVendorSellQuote,
-} from '../public/js/vendor.js?v=b9233f20';
+} from '../public/js/vendor.js?v=9e9ce51e';
 import {
   buildMapGraph,
   buildHubMapView,

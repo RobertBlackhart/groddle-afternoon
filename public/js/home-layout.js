@@ -37,8 +37,8 @@
  * site runs it through its word filter). The site writes every label itself;
  * nothing the game sends is shown as words except a Tower's filtered name.
  */
-import { HIRES_SPRITES, SPLIT_SPRITES } from './sprite-hires.js?v=ad1e46a9';
-import { HIRES_ICONS } from './icon-hires.js?v=fb952dde';
+import { HIRES_SPRITES, SPLIT_SPRITES } from './sprite-hires.js?v=e96be5f1';
+import { HIRES_ICONS } from './icon-hires.js?v=60e2474b';
 import { CULTIVATION_CLASSES } from './homes-catalog.js?v=f3fe838d';
 import { TOWER_CHASSIS, TOWER_PROTO } from './home-tower.js?v=84d99af0';
 import { GROWN_TREE_LABELS } from './patches.js?v=3f6b9b05';

@@ -32,7 +32,7 @@ import {
   urDateLine,
   urHolidaysOn,
   urYear,
-} from '../calendar.js?v=37ae7009';
+} from '../calendar.js?v=630c584c';
 
 export const CALENDAR_FEATURE_ID = 'calendar';
 export const CALENDAR_EVENT = 'groddle:calendar';

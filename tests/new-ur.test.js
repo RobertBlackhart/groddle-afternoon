@@ -31,10 +31,10 @@ import {
   qaClockOffset,
   recordMidnight,
   takeTrip,
-} from '../public/js/new-ur.js?v=3f97edd7';
+} from '../public/js/new-ur.js?v=a5efbd09';
 import { GAME_DAY_MS, dametimeParts, getGameDayStartMs } from '../public/js/game-day.js?v=a532775d';
-import { SEASONS, SEASONAL_STOCK, activeSeasons, daysLeft, seasonYearKey } from '../public/js/seasons.js?v=a46a90d3';
-import { calendarEvents, midnightsLine, newUrEve } from '../public/js/calendar.js?v=37ae7009';
+import { SEASONS, SEASONAL_STOCK, activeSeasons, daysLeft, seasonYearKey } from '../public/js/seasons.js?v=5d8f545a';
+import { calendarEvents, midnightsLine, newUrEve } from '../public/js/calendar.js?v=630c584c';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (rel) => readFileSync(join(ROOT, rel), 'utf8');
@@ -168,8 +168,8 @@ describe('hooks for the later pieces', () => {
     assert.deepEqual(createNewUrState({ seen: { 2026: [9, 'x', 2], bad: [1] }, trips: ['2026', 'x'] }), { seen: { 2026: [2] }, trips: ['2026'] });
   });
 
-  it('leaves the stock, the batterflies and the hats a test each', () => {
-    assert.deepEqual(SEASONAL_STOCK.new_ur, { toys: [] });
+  it('fills the stock and keeps the batterflies\' and hats\' clocks (tests/new-ur-party.test.js tests the pieces)', () => {
+    assert.deepEqual(SEASONAL_STOCK.new_ur.toys.map((o) => o.classTsid), ['confetti_popper']);
     assert.equal(firstUrDay(BIG_2026), true);
     assert.equal(firstUrDay(BIG_2026 + GAME_DAY_MS), false);
     assert.equal(firstUrDay(BIG_2026 - 1), false);

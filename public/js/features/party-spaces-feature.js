@@ -86,7 +86,7 @@ import {
   teleporterPhase,
 } from '../party-spaces.js?v=b026ad60';
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=729b29ea';
-import { readVisitScene } from '../neighbours-mp.js?v=c47d9fe2';
+import { readVisitScene } from '../neighbours-mp.js?v=94cfc9df';
 import { STREET_INDEX } from '../street-loader.js?v=10376267';
 import { isNeighbourSceneTsid } from '../neighbours.js?v=13f35acd';
 import { energyMax as tankEnergyMax, loseEnergy } from '../metabolics.js?v=48f784bf';

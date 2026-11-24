@@ -175,7 +175,7 @@ import {
   swatchFilters,
   trayFilters,
 } from '../ui/home-builder.js?v=d73e840b';
-import { RECIPE_CATALOG } from '../making.js?v=5a718e7f';
+import { RECIPE_CATALOG } from '../making.js?v=1ec1075e';
 import {
   createBackYardState,
   fixtureObstacles,
@@ -215,16 +215,16 @@ import {
 import { PROTO_DEPLETED_ART } from '../home-proto-art.js?v=9309e9f3';
 import { DISPATCHER_HALF, DISPATCHER_TEXT, MOVABLE_FIXTURES, MOVABLE_FIXTURE_IDS, dispatcherAway, fixtureFits, fixtureText, savedFixtureRx, signpostX } from '../home-street-fixtures.js?v=bad831a1';
 import { displayTopOf, itemstackOverlayPoint, overlayAlpha, overlayLifeMs, playPoofIn, trackOverlay } from '../overlay-art.js?v=95f23414';
-import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=bac259c0';
+import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d1945384';
 import { fadeInNewNear } from '../poof-fade.js?v=83361da5';
-import { projectApi } from './street-jobs-feature.js?v=3ff85583';
+import { projectApi } from './street-jobs-feature.js?v=ce8dc20f';
 import { TOWER_CHASSIS, TOWER_CONFIG, TOWER_DOOR_DX, TOWER_GEO, TOWER_PROTO, normalizeTowerState } from '../home-tower.js?v=84d99af0';
-import { drawTowerBench, drawTowerElevator, drawTowerExit, towerApi, visitorTowerView } from './home-tower-feature.js?v=82b6552e';
+import { drawTowerBench, drawTowerElevator, drawTowerExit, towerApi, visitorTowerView } from './home-tower-feature.js?v=fb54608d';
 import { pieceUrl, roomPieces, surfaceAt, swatchPiece, wallTargetAt } from '../home-wallpaper.js?v=99228166';
 import { maxTextureSizeOf, sharpDeco, wantsHiresDecos } from '../deco-hires.js?v=34f36d77';
 import { SHARP_DECOS } from '../deco-sharp-list.js?v=7d615f20';
-import { resourceNodesFeature } from './resource-nodes-feature.js?v=fad31f0e';
-import { patchesFeature } from './patches-feature.js?v=89a4d8cd';
+import { resourceNodesFeature } from './resource-nodes-feature.js?v=3711aa7c';
+import { patchesFeature } from './patches-feature.js?v=b198b0be';
 import { GROWN_TREE_LABELS, createPlot, growTree, plotLabel } from '../patches.js?v=3f6b9b05';
 import { WOTD_DEPLETE_MS, WOTD_TEXT, nearestPourTarget, pourButton, pourConditions, pourConfirmText } from '../wine-pour.js?v=6daa23a7';
 import { WOTD_TOOL, pourApproach, pourDropTip } from '../wine-pour-fx.js?v=364e22d2';

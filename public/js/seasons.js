@@ -34,7 +34,8 @@
 
 import { SEASON_DATA } from './seasons-data.js?v=b5174bc9';
 import { filterText } from './word-filter.js?v=9a7a7ebb';
-import { FANCY_FEATHER, FEATHER_ROTS_TO, POT_LUCK_STOCK } from './pot-luck.js?v=9e001de9';
+import { FANCY_FEATHER, FEATHER_ROTS_TO, POT_LUCK_STOCK } from './pot-luck.js?v=e704c060';
+import { KEEPSAKE as NEW_UR_KEEPSAKE, NEW_UR_RECIPES, NEW_UR_STOCK } from './new-ur-party.js?v=05952cd9';
 
 const DAY_MS = 86_400_000;
 
@@ -529,8 +530,8 @@ export const SEASONAL_STOCK = Object.freeze({
   }),
   // G982: ours, the chicken costumes (js/pot-luck.js).
   pot_luck_day: POT_LUCK_STOCK,
-  // G1195: Happy New Ur's stock, Dec 26 to Jan 3. Empty until the Confetti Popper and Bubbly lanes add their rows.
-  new_ur: Object.freeze({ toys: Object.freeze([]) }),
+  // G1195: Happy New Ur's stock, Dec 26 to Jan 3: the Confetti Popper (js/new-ur-party.js).
+  new_ur: NEW_UR_STOCK,
 });
 export const SEASONAL_ITEMS = Object.freeze(
   Object.fromEntries(Object.entries(SEASONAL_STOCK).flatMap(([season, stores]) =>
@@ -659,6 +660,8 @@ export function seasonalConversions() {
     { inputs: [...EGG_CLASSES], tool: null, outputs: [EGG_HUNT.trophy], source: `collection:${EGG_HUNT.badge}` },
     // G982: Fancy Feathers rot into loam when Pot Luck Day ends (js/pot-luck.js).
     { inputs: [FANCY_FEATHER], tool: null, outputs: [FEATHER_ROTS_TO], source: 'season:pot_luck_rot' },
+    // G1195: Happy New Ur's recipes, made only Dec 26 to Jan 3 (js/new-ur-party.js NEW_UR_RECIPES).
+    ...Object.values(NEW_UR_RECIPES).map((r) => ({ inputs: r.inputs.map((i) => i.classTsid), tool: r.tool, outputs: r.outputs.map((o) => o.classTsid), source: 'season:new_ur_recipe' })),
   ];
 }
 
@@ -669,6 +672,8 @@ export function seasonalSources() {
     ['glitchmas_present', 'season:glitchmas_quest'],
     // G982: a dressed Chicken's squeeze (js/pot-luck.js featherDrop).
     [FANCY_FEATHER, 'season:pot_luck_squeeze'],
+    // G1195: a Groddle midnight on December 31 seen (js/new-ur-party.js keepsakeDue).
+    [NEW_UR_KEEPSAKE, 'season:new_ur_midnight'],
     // Not seasonal: petting an Egg Plant rolls egg_plant_pet all year.
     ...EGG_CLASSES.map((id) => [id, `drop:${EGG_HUNT.pet.table}`]),
   ];

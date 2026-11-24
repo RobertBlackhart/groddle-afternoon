@@ -30,7 +30,7 @@ import {
   clearPlot,
   SEED_CATALOG,
   GARDEN_HARVEST_FAILED_LINES,
-} from '../public/js/garden.js?v=765c6ddf';
+} from '../public/js/garden.js?v=0cbb65f0';
 import {
   loadRecipeCatalogFromFile,
   ensureMakingItems,
@@ -44,7 +44,7 @@ import {
   craftRecipeBatch,
   craftUnitDurations,
   MACHINE_EXTRA_WAIT_MS,
-} from '../public/js/making.js?v=5a718e7f';
+} from '../public/js/making.js?v=1ec1075e';
 import { createInventory, countItem } from '../public/js/inventory.js?v=6414dbdc';
 import { createToolConditionState, getToolCondition } from '../public/js/tools.js?v=4156bba8';
 

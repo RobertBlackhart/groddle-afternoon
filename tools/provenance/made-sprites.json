@@ -84,6 +84,27 @@
       },
       "prompt": "Austin 2026-11-17 (G982): Rooster Plume, a taller red comb and a tall sweeping tail plume, a parts edit of the same chicken FLA; flat fills, no strokes, the chicken's own palette and darker steps of it; every clip the game's Chicken plays."
     },
+    "chicken_party_hat": {
+      "file": "public/assets/sprites/seasons/new-ur/chicken_party_hat_stand@3x.webp",
+      "sha256": "e25c3b17fcd1c31b4f53c55cd012306529ad30c73bd4f318864597fbddce5687",
+      "licence": "own-work-CC0",
+      "author": "Austin Ginder (directed), Claude (placed the parts as code)",
+      "tool": "Claude, putting Tiny Speck's own party hat on Tiny Speck's own chicken drawing",
+      "made": "2026-11-23",
+      "uses": [
+        "Happy New Ur (G1195): every street Chicken wears a party hat on December 31 and January 1, in every clip it plays (js/features/pot-luck-feature.js, js/features/new-ur-party-feature.js)"
+      ],
+      "inputs": [
+        "sprite:inhabitants/chicken/npc_chicken.fla (Tiny Speck, glitch-items, CC0): its rig, parts and timeline, edited in memory",
+        "sprite:wardrobe/hat/party_hat.swf (Tiny Speck, glitch-avatars, CC0): its side view and first colourway, as public/assets/avatar/articles/hat/party_hat.json holds them"
+      ],
+      "source": {
+        "tool": "tools/pot-luck-art/build.mjs --only party_hat (variants.mjs partyHatEls)",
+        "files": "26 sheets (13 clips at 1x and 3x), each hashed in tools/pot-luck-art/built.json",
+        "cut": "the hat rides the comb symbol, so it follows the head through every frame of both rigs"
+      },
+      "prompt": "Austin 2026-11-23 (G1195 picks): party hats on street Chickens, Tiny Speck's CC0 party_hat art on the Pot Luck costume system; no new drawing, the hat's own shapes and colours, its strap left off."
+    },
     "pld_badge_feast_bringer": {
       "file": "public/assets/sprites/made/pot-luck/badge-feast-bringer.webp",
       "sha256": "e28d2190087b064e81d2b4daf7608e4bba25d3b64cae3e7a1cc6b29e5ce0ba72",

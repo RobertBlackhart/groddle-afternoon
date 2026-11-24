@@ -40,7 +40,7 @@ import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs, setZoneStreetsSho
 import { platformsScreen, streetWidth } from '../public/js/street-model.js?v=a9a05f9d';
 import { ecologyForStreet, planStreetPlacements, populationForStreet, setStreetEcologyCatalog, streetReservedSpots } from '../public/js/street-ecology.js?v=ff90efe4';
 import { ITEM_CATALOG } from '../public/js/inventory.js?v=6414dbdc';
-import { loadRecipeCatalogFromFile } from '../public/js/making.js?v=5a718e7f';
+import { loadRecipeCatalogFromFile } from '../public/js/making.js?v=1ec1075e';
 import { SHRINE_ITEM_BASE_COSTS, donationValueFor, giantForStreet } from '../public/js/shrines.js?v=d5d7a471';
 import { ITEM_BASE_COSTS } from '../public/js/store-catalog.js?v=c6ebb2bd';
 import { TOOL_CONDITION_CATALOG } from '../public/js/tools.js?v=4156bba8';

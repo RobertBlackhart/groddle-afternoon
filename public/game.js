@@ -2,9 +2,9 @@
  * Groddle Afternoon — original street geometry + layered decos
  * PixiJS 8 · locations-xml streets · CoU PNG decos · quests/items
  */
-import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=9e8197df';
+import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=61432cc9';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=a6d93f62';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=7ef02b5d';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE, playerClickBox } from './js/reach.js?v=456da8a8';
@@ -673,13 +673,13 @@ import {
   verbBatchWornLine,
   recipeToolChosen,
   pluralizeItem,
-} from './js/making.js?v=5a718e7f';
+} from './js/making.js?v=1ec1075e';
 import { outputIconsHtml, outputsPhrase, productHaveRows, recipeOutputRows } from './js/ui/recipe-outputs.js?v=610c067f';
 import { MAKE_TOOL_SHEETS } from './js/make-tool-sheets.js?v=6f758e09';
-import { createTestTubePanel, tryTileHtml, TRY_TILE_LABEL } from './js/test-tube-panel.js?v=09f0d86f';
-import { COMPOUND_RECIPE_IDS, EXPERIMENT_TOOL, experimentTooltip } from './js/test-tube.js?v=3ee87e2d';
+import { createTestTubePanel, tryTileHtml, TRY_TILE_LABEL } from './js/test-tube-panel.js?v=e5bfa842';
+import { COMPOUND_RECIPE_IDS, EXPERIMENT_TOOL, experimentTooltip } from './js/test-tube.js?v=e1b34dd2';
 import { groupMakingTools, makeToolCounts, makeToolCountLine, makeToolSpokenLine, makeOpeningTool, gridStep, stationForRecipe, MAKING_BUSY } from './js/make-tools.js?v=86877c3e';
-import { LOW_FUEL_LINE, craftSessionElapsedMs, isLowFuel, isMachineArt, machineArtHtml, packMakeState, playMachineHandOver, setMachineArtFrame } from './js/machine-art.js?v=55d312b7';
+import { LOW_FUEL_LINE, craftSessionElapsedMs, isLowFuel, isMachineArt, machineArtHtml, packMakeState, playMachineHandOver, setMachineArtFrame } from './js/machine-art.js?v=d3381a4b';
 import {
   createGarden,
   fitGardenToBed,
@@ -709,7 +709,7 @@ import {
   hasHoe,
   plantSeedChoices,
   PLANT_PICK_TITLE,
-} from './js/garden.js?v=765c6ddf';
+} from './js/garden.js?v=0cbb65f0';
 import { GARDEN_SCALE, PLOT_H as GARDEN_PLOT_H, PLOT_W as GARDEN_PLOT_W, gardenFrame, gardenLayout, gardenStyle, plotPieces } from './js/garden-view.js?v=04fe8467';
 import { nearestPlotIndex } from './js/garden-view.js?v=04fe8467';
 import {
@@ -937,7 +937,7 @@ import {
   vendorSellUnitPrice,
   vendorBuyUnitPrice,
   VENDOR_BAG_HOLDS,
-} from './js/vendor.js?v=b9233f20';
+} from './js/vendor.js?v=9e9ce51e';
 import {
   createAnimalState,
   resetAnimalDay,
@@ -1085,10 +1085,10 @@ import {
   gardenPlacementRequest,
   ROCK_SHAPE_WIDTHS,
 } from './js/street-ecology.js?v=ff90efe4';
-import { CHICKEN_PAUSE, chickenPauseRoll, easeToward, flightFloorAt, flightFloorFor, flyerLift } from './js/street-creatures.js?v=56331684';
-import { chickenPose, chickenIdleSheetsAsked } from './js/chicken-idle-art.js?v=ead8cdf8';
+import { CHICKEN_PAUSE, chickenPauseRoll, easeToward, flightFloorAt, flightFloorFor, flyerLift } from './js/street-creatures.js?v=2d47da2d';
+import { chickenPose, chickenIdleSheetsAsked } from './js/chicken-idle-art.js?v=5180bd30';
 import { chickenWaitPose } from './js/chicken-idles.js?v=eef0279b';
-import { itemOverlayStats } from './js/item-overlay.js?v=c498066d';
+import { itemOverlayStats } from './js/item-overlay.js?v=008319d9';
 import { isCrowdSad } from './js/animal-crowding.js?v=64dee3e0';
 import { createSoundBoard, DEFAULT_SFX_VOLUME, watchButtonClicks, watchPanelSounds } from './js/sound-board.js?v=f41980b8';
 import {
@@ -1108,7 +1108,7 @@ import {
 } from './js/sound-moments.js?v=3e66996f';
 import { energyMax, forceMetabolic, gainMetabolic, loseMood, moodMax, setMetabolicGainGate, setMetabolicLossGate, setMoodLossNotice } from './js/metabolics.js?v=48f784bf';
 import { MOOD_DECAY_TEXT } from './js/mood-decay.js?v=49175993';
-import { installHiresIcons } from './js/icon-hires.js?v=fb952dde';
+import { installHiresIcons } from './js/icon-hires.js?v=60e2474b';
 import { IT_TAKES_TWO_HINT, IT_TAKES_TWO_QUEST } from './js/help-dig.js?v=7a854b00';
 import { MEDITATE_TOGETHER_HINT, MEDITATE_TOGETHER_QUEST } from './js/quests-mp.js?v=e697cec3';
 import { installHiresDecos, maxTextureSizeOf } from './js/deco-hires.js?v=34f36d77';
@@ -1119,7 +1119,7 @@ import { drawHudCount, installTopBar, renderTopBar } from './js/ui/topbar.js?v=6
 import { focusBack, installFocusReturn, lastInput } from './js/ui/focus-return.js?v=da190597';
 import { installContextGuard } from './js/ui/context-guard.js?v=0f71ac17';
 import { QUOIN_FRAME_BOB, advanceQuoinClock, quoinBobBetweenFrames } from './js/quoin-motion.js?v=ea0bd408';
-import { installHiresFirstDraw, installHiresSprites, upgradeSource } from './js/sprite-hires.js?v=ad1e46a9';
+import { installHiresFirstDraw, installHiresSprites, upgradeSource } from './js/sprite-hires.js?v=e96be5f1';
 import { textureBytes } from './js/onscreen-sharp.js?v=75b8a30d';
 import { wholeStatAmounts, wholeEffects } from './js/stat-text.js?v=f96d8fd3';
 import { createNotifier, effectTokens, floatKey, offerCardDrop, stackFloat, tokenText, wordsOverNotices } from './js/notify.js?v=4226f585';
@@ -1148,7 +1148,7 @@ import { HOME_SCREEN_TIP_CACHE, mountHomeScreenTip, runsStandalone } from './js/
 import { EAT_PICK_TEXT, bestFoodIndex, eatChoices, eatTip } from './js/eat-pick.js?v=8fb763d0';
 import { heldDirection, installHeldKeyGuard, isMacPlatform } from './js/held-keys.js?v=a28eb293';
 import { isOneClickDoor, oneClickChoice, signpostArmRows, worldContextAction } from './js/world-context-menu.js?v=e4c99c05';
-import { blockedPlayerVerbs, listPlayerTarget, opensPlayerMenu, playerMenuRows } from './js/ui/player-menu.js?v=fe995d04';
+import { blockedPlayerVerbs, listPlayerTarget, opensPlayerMenu, playerMenuRows } from './js/ui/player-menu.js?v=202e86b4';
 import { forgetTexture, frameTexture, isFailed, isLoaded, onFailed, onLoaded, textureFromUrl, whenLoaded } from './js/textures.js?v=729b29ea';
 import { FALLBACK_MAX as WORLD_ART_FALLBACK_MAX, worldArtFor } from './js/world-art.js?v=2b3cf8d5';
 import { HOME_PIP_PX, drawLockPip, homeMarkNote, homePipShown, homeStackMark } from './js/home-stack-marks.js?v=0ff4c29f';
@@ -36417,7 +36417,7 @@ async function main() {
   }
   // Garden talkback QA (js/garden-talk-qa.js): ?gardentalkdemo=herb|crop.
   if (new URLSearchParams(location.search).has('gardentalkdemo')) {
-    import('./js/garden-talk-qa.js?v=8805433a').then((m) => m.runGardenTalkDemo({ engine, executeVerb, params: new URLSearchParams(location.search) }));
+    import('./js/garden-talk-qa.js?v=64d8169a').then((m) => m.runGardenTalkDemo({ engine, executeVerb, params: new URLSearchParams(location.search) }));
   }
   // MEMQA (ticket 21, Safari's memory reload in Naraka): ?memqa=1 lets a probe walk streets through the
   // real street trip (tools/qa/street-memory.mjs). Solo pages only: online pages drop their params.

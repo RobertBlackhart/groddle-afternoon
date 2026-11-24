@@ -2,6 +2,51 @@
   "note": "Written by tools/made-art/build-data.mjs from the provenance lists in tools/provenance/, tools/made-art/showcase.json and tools/made-art/pieces.json. Edit those, never this file.",
   "pieces": [
     {
+      "id": "chicken_party_hat",
+      "anchor": "made-chicken-in-a-party-hat",
+      "name": "Chicken in a party hat",
+      "made": "2026-11-23",
+      "madeLabel": "23 November 2026",
+      "caption": "Happy New Ur's street Chickens wear party hats on December 31 and January 1. Glitch never dressed its animals, so this is new, but nothing in it is newly drawn: Tiny Speck's own party hat, the one Glitches wore, sits on Tiny Speck's own Chicken, inside its rig, so it walks, pecks, flaps and sits in it.",
+      "display": {
+        "w": 296,
+        "h": 220
+      },
+      "image": {
+        "src": "/assets/sprites/seasons/new-ur/chicken_party_hat_stand@3x.webp",
+        "w": 444,
+        "h": 330,
+        "label": "Made for Groddle",
+        "alt": "A white Chicken standing with a small blue party hat dotted with gold stars and a gold pompom on top of its head."
+      },
+      "original": {
+        "src": "/assets/sprites/animals/npc_chicken_stand@3x.webp",
+        "w": 444,
+        "h": 330,
+        "kind": "original",
+        "alt": "Tiny Speck's white Chicken standing, with its small red comb and short dark tail.",
+        "label": "Tiny Speck's Chicken, the drawing it is made from"
+      },
+      "facts": [
+        {
+          "label": "How it was made",
+          "text": "Made by Claude, putting Tiny Speck's own party hat on Tiny Speck's own chicken drawing, under Austin's direction: the hat's own shapes and colours from Tiny Speck's party hat, set on the Chicken's comb, so every pose of the original carries it."
+        },
+        {
+          "label": "How it was checked",
+          "text": "The plain Chicken drawn the same way matches Tiny Speck's own pictures frame by frame, so the hat rides exactly where the head does."
+        },
+        {
+          "label": "In the game",
+          "text": "Every Chicken out on the streets wears one on December 31 and January 1, for everyone."
+        },
+        {
+          "label": "Licence",
+          "text": "Dedicated to the public domain under CC0 1.0, like the Tiny Speck art it is made from."
+        }
+      ]
+    },
+    {
       "id": "decos:cc",
       "anchor": "made-coral-caves-crystals-spires-and-kelp",
       "name": "Coral Caves' crystals, spires and kelp",

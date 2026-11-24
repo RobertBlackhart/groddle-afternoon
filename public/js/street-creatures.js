@@ -52,7 +52,7 @@
  * the server keeps its own count of them too and refuses past the limit.
  */
 
-import { isCostume } from './pot-luck.js?v=9e001de9';
+import { isCostume } from './pot-luck.js?v=e704c060';
 import { GAME_EPOCH_MS } from './game-day.js?v=a532775d';
 import { INCUBATION } from './animal-husbandry.js?v=83779ca2';
 import { isStandable } from './street-model.js?v=a9a05f9d';

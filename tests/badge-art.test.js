@@ -20,7 +20,7 @@ function pngSize(rel) {
 describe('badge art coverage', () => {
   it('resolves every catalog row to an existing square PNG', () => {
     const ids = Object.keys(catalog);
-    assert.equal(ids.length, 668);
+    assert.equal(ids.length, 669);
     const small = [];
     for (const id of ids) {
       const rel = official[id] || generated[id]?.path;

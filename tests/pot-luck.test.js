@@ -11,10 +11,10 @@ import { existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { imageSize } from '../tools/image-size.mjs';
-import { HIRES_SPRITES } from '../public/js/sprite-hires.js?v=ad1e46a9';
-import { HIRES_ICONS } from '../public/js/icon-hires.js?v=fb952dde';
+import { HIRES_SPRITES } from '../public/js/sprite-hires.js?v=e96be5f1';
+import { HIRES_ICONS } from '../public/js/icon-hires.js?v=60e2474b';
 import { PACKED_SHEETS } from '../public/js/packed-sheets-data.js?v=192c6f15';
-import { SEASONS, SEASONAL_STOCK, SEASONAL_ITEMS, activeSeasons, calendarSeasons, daysLeft, parseSeasonDate, potLuckWindow, seasonalConversions, seasonalSources } from '../public/js/seasons.js?v=a46a90d3';
+import { SEASONS, SEASONAL_STOCK, SEASONAL_ITEMS, activeSeasons, calendarSeasons, daysLeft, parseSeasonDate, potLuckWindow, seasonalConversions, seasonalSources } from '../public/js/seasons.js?v=5d8f545a';
 import {
   CHICKEN_SHEETS,
   COSTUME_CLASSES,
@@ -27,10 +27,10 @@ import {
   dressVerbs,
   dressWhy,
   featherDrop,
-} from '../public/js/pot-luck.js?v=9e001de9';
-import { applyCreatureState } from '../public/js/street-creatures.js?v=56331684';
+} from '../public/js/pot-luck.js?v=e704c060';
+import { applyCreatureState } from '../public/js/street-creatures.js?v=2d47da2d';
 import { dropFor } from '../public/js/world-drop.js?v=a8956ae5';
-import { potLuckFeature } from '../public/js/features/pot-luck-feature.js?v=c7b6c660';
+import { potLuckFeature } from '../public/js/features/pot-luck-feature.js?v=bbe49c64';
 import { problems } from '../tools/pot-luck-art/build.mjs';
 
 const pub = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');

@@ -47,7 +47,7 @@ import {
   dressWhy,
   featherDrop,
   isCostume,
-} from '../pot-luck.js?v=9e001de9';
+} from '../pot-luck.js?v=e704c060';
 
 export const POT_LUCK_FEATURE_ID = 'pot-luck';
 
@@ -318,9 +318,11 @@ export const potLuckFeature = {
       }
       publish(engine);
     }
+    // G1195: a season's costume beyond Pot Luck Day (new-ur-party-feature: the party hat, Dec 31 and Jan 1).
+    const seasonal = engine.query?.('chickenCostume', null, engine) || '';
     for (const t of engine.interactables || []) {
       if (!isStreetChicken(t) || !t.sprite) continue;
-      const c = on ? costumeOf(engine, t) : '';
+      const c = (on ? costumeOf(engine, t) : '') || seasonal;
       const w = t.sprite[WRAP];
       if (!c && !w?.costume) continue;
       if (!w || w.costume !== c || (c && w.shown !== c && w.tick !== loadedTick)) {

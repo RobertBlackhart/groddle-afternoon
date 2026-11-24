@@ -9,7 +9,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { FIRST_DRAW_SPRITES, HIRES_SPRITES, hiresSpriteUrl } from '../public/js/sprite-hires.js?v=ad1e46a9';
+import { FIRST_DRAW_SPRITES, HIRES_SPRITES, hiresSpriteUrl } from '../public/js/sprite-hires.js?v=e96be5f1';
 import { fruitState } from '../tools/vector-sprites/trant-states.mjs';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

@@ -64,7 +64,8 @@ describe('Made for Groddle data (tools/made-art/build-data.mjs)', () => {
     // 2026-11-22 leads: Coral Caves' crystals, spires and kelp (lane corak, G223).
     // G1160 (lane paradk): Cloud Rings' cloud hoop (made 2026-11-17, Grok Bot pack 2) follows Harvest Stuffing in the curated order.
     // G982: Pot Luck Day's badge pictures and Harvest Stuffing's icon lead the curated list; (2026-11-17, after them in the curated order): Pot Luck Day's two chicken costumes, a parts edit of Tiny Speck's Chicken.
-    assert.deepEqual(made.pieces.map((p) => p.id), ['decos:cc', 'pld_badge_feast_bringer', 'pld_badge_plume_fluffer', 'pld_badge_good_neighbor', 'harvest_stuffing', 'decos:cr', 'decos:vv', 'decos:om', 'chicken_turkey_tailfan', 'chicken_rooster_plume', 'decos:ww', 'decos:ww:room', 'decos:wh', 'decos:lp', 'decos:lp:room', 'decos:rg', 'decos:rg:room', 'map:58', 'decos:ezc', 'decos:ezc:room', 'subway:paper', 'world:2x', 'quest_book_award']);
+    // G1195 (2026-11-23, newest): Happy New Ur's party hat on the street Chickens.
+    assert.deepEqual(made.pieces.map((p) => p.id), ['chicken_party_hat', 'decos:cc', 'pld_badge_feast_bringer', 'pld_badge_plume_fluffer', 'pld_badge_good_neighbor', 'harvest_stuffing', 'decos:cr', 'decos:vv', 'decos:om', 'chicken_turkey_tailfan', 'chicken_rooster_plume', 'decos:ww', 'decos:ww:room', 'decos:wh', 'decos:lp', 'decos:lp:room', 'decos:rg', 'decos:rg:room', 'map:58', 'decos:ezc', 'decos:ezc:room', 'subway:paper', 'world:2x', 'quest_book_award']);
     const book = made.pieces.find((p) => p.id === 'quest_book_award');
     assert.equal(book.madeLabel, '12 November 2026');
     assert.deepEqual([book.original.src, book.original.w, book.original.h, book.original.pixelated], ['/assets/ui/quest-book.webp', 86, 58, true]);

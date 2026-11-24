@@ -184,11 +184,21 @@ export const CHICKEN_SHEETS = Object.freeze([
 
 export const COSTUME_CELL = Object.freeze([148, 110]);
 
+/**
+ * Costumes drawn on the chicken sheets beyond Pot Luck Day's two (no item: a season puts them on):
+ * Happy New Ur's party hat (G1195, js/new-ur-party.js; Tiny Speck's party_hat on the chicken rig,
+ * tools/pot-luck-art). Each costume's sheets live in its season's folder.
+ */
+export const SEASON_COSTUMES = Object.freeze({ party_hat: 'new-ur' });
+/** Every costume with chicken sheets: Pot Luck Day's and the seasons'. */
+export const SHEET_COSTUMES = Object.freeze([...COSTUME_CLASSES, ...Object.keys(SEASON_COSTUMES)]);
+const hasSheets = (c) => SHEET_COSTUMES.includes(c);
+
 /** A costume's sheet for one chicken clip (public/ path). */
-export const costumeSheetPath = (costume, clip) => `assets/sprites/seasons/pot-luck/chicken_${costume}_${clip}.webp`;
+export const costumeSheetPath = (costume, clip) => `assets/sprites/seasons/${SEASON_COSTUMES[costume] || 'pot-luck'}/chicken_${costume}_${clip}.webp`;
 
 /** Every costume sheet as a plain sheet def ({ path, fw, fh, cols, frames }), by costume then clip. */
-export const COSTUME_SHEETS = Object.freeze(Object.fromEntries(COSTUME_CLASSES.map((costume) => [costume, Object.freeze(Object.fromEntries(CHICKEN_SHEETS.map((s) => [s.clip, Object.freeze({ path: costumeSheetPath(costume, s.clip), fw: COSTUME_CELL[0], fh: COSTUME_CELL[1], cols: s.cols, frames: s.frames })])))])));
+export const COSTUME_SHEETS = Object.freeze(Object.fromEntries(SHEET_COSTUMES.map((costume) => [costume, Object.freeze(Object.fromEntries(CHICKEN_SHEETS.map((s) => [s.clip, Object.freeze({ path: costumeSheetPath(costume, s.clip), fw: COSTUME_CELL[0], fh: COSTUME_CELL[1], cols: s.cols, frames: s.frames })])))])));
 
 const BY_PATH = new Map(CHICKEN_SHEETS.map((s) => [s.path, s]));
 
@@ -199,7 +209,7 @@ const BY_PATH = new Map(CHICKEN_SHEETS.map((s) => [s.path, s]));
  */
 export function costumeFrame(costume, url, frame) {
   const s = BY_PATH.get(String(url || '').replace(/^\.?\//, '').replace(/[?#].*$/, ''));
-  if (!s || !isCostume(costume) || !frame) return null;
+  if (!s || !hasSheets(costume) || !frame) return null;
   const k = Math.round(Number(frame.y) / s.fh) * s.cols + Math.round(Number(frame.x) / s.fw);
   if (!(k >= 0 && k < s.frames)) return null;
   const [w, h] = COSTUME_CELL;

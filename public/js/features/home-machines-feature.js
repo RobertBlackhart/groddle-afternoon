@@ -95,21 +95,21 @@ import {
   TAKEN_KEEP,
 } from '../home-machines.js?v=c828cba7';
 import { CALL_PLAYER_LINES, MACHINE_HITBOX, MACHINE_SKILLS, collectLine, machineJobMs, machineMadeLine, refuelCount, runningSoundKey, takeJobIngredients } from '../machine-rooms.js?v=ca927ffd';
-import { MACHINE_ART_SHEETS, LOW_FUEL_BUBBLE_MS, LOW_FUEL_LINE, isLowFuel, machineFrame, machineSheetDef, roomMachineState } from '../machine-art.js?v=55d312b7';
+import { MACHINE_ART_SHEETS, LOW_FUEL_BUBBLE_MS, LOW_FUEL_LINE, isLowFuel, machineFrame, machineSheetDef, roomMachineState } from '../machine-art.js?v=d3381a4b';
 import { FUEL_CELL, FUEL_PER_CELL, MAX_FUEL } from '../machines.js?v=5d749d26';
 import { ITEM_CATALOG, addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=6414dbdc';
 import { receiveToolCopy, takeToolCopy } from '../tools.js?v=4156bba8';
 import { markLeaving, takeCopies } from '../copy-picks.js?v=01de4c58';
-import { RECIPE_CATALOG } from '../making.js?v=5a718e7f';
+import { RECIPE_CATALOG } from '../making.js?v=1ec1075e';
 import { getSkillCatalog } from '../content-catalogs.js?v=10b118dd';
 import { createBackYardState, homeStreetLayout, normalizeCultivationState } from '../home-cultivation.js?v=9e6e217b';
 import { lookOf, poseOf } from './realtime-feature.js?v=34ae9ffb';
-import { readVisitScene } from '../neighbours-mp.js?v=c47d9fe2';
+import { readVisitScene } from '../neighbours-mp.js?v=94cfc9df';
 import { saveStore } from '../save-store.js?v=4e720735';
 import { textureFromUrl } from '../textures.js?v=729b29ea';
-import { createSheetLoader } from '../sprite-sheets.js?v=bac259c0';
-import { STREET_GROUND_Y, homesFeature } from './homes-feature.js?v=a0dd7513';
-import { payAltarBonus } from './machine-rooms-feature.js?v=e83e9814';
+import { createSheetLoader } from '../sprite-sheets.js?v=d1945384';
+import { STREET_GROUND_Y, homesFeature } from './homes-feature.js?v=a630d0a5';
+import { payAltarBonus } from './machine-rooms-feature.js?v=22b59c44';
 import { worldToScreen } from '../street-model.js?v=a9a05f9d';
 import { nearestSurfaceY } from '../walk-surface.js?v=3c919d5b';
 import { standOnFeet } from '../sprite-feet.js?v=6ffaec43';

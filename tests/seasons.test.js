@@ -9,8 +9,8 @@ import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { HIRES_SPRITES } from '../public/js/sprite-hires.js?v=ad1e46a9';
-import { HIRES_ICONS } from '../public/js/icon-hires.js?v=fb952dde';
+import { HIRES_SPRITES } from '../public/js/sprite-hires.js?v=e96be5f1';
+import { HIRES_ICONS } from '../public/js/icon-hires.js?v=60e2474b';
 import {
   CANDY_DAILY_MAX,
   CARVED_CLASSES,
@@ -50,7 +50,7 @@ import {
   teachPhrase,
   yetiMailDue,
   yetiQuote,
-} from '../public/js/seasons.js?v=a46a90d3';
+} from '../public/js/seasons.js?v=5d8f545a';
 import { SEASON_DATA } from '../public/js/seasons-data.js?v=b5174bc9';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
@@ -317,7 +317,7 @@ describe('Egg Hunt and Pi Day', () => {
   });
 
   it('counts each egg into the collection however it arrives, then gives the trophy for them (seasons-feature)', async () => {
-    const { seasonsFeature } = await import('../public/js/features/seasons-feature.js?v=88112936');
+    const { seasonsFeature } = await import('../public/js/features/seasons-feature.js?v=44be575b');
     const { createInventory, addItem, countItem, removeItem } = await import('../public/js/inventory.js?v=6414dbdc');
     const unlocked = [];
     const counted = {};
@@ -391,7 +391,7 @@ describe('supply paths', () => {
 
 describe('a ?season= preview leaves the save alone (G342)', () => {
   it('a carved pumpkin survives previewing another season, and the save still remembers Zilloween', async () => {
-    const { seasonsFeature } = await import('../public/js/features/seasons-feature.js?v=88112936');
+    const { seasonsFeature } = await import('../public/js/features/seasons-feature.js?v=44be575b');
     const { createInventory, addItem, countItem } = await import('../public/js/inventory.js?v=6414dbdc');
     const inv = createInventory();
     addItem(inv, 'pumpkin_carved_1', 2);

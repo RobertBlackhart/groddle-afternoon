@@ -28,9 +28,9 @@ import {
   setSlotCount,
   slotsToInputs,
   stampKnownCompounds,
-} from '../public/js/test-tube.js?v=3ee87e2d';
-import { COMPOUND_DISCOVERY_FEATURE_ID, compoundDiscoveryFeature } from '../public/js/features/compound-discovery-feature.js?v=9577b7e1';
-import { RECIPE_CATALOG, TOOL_CATALOG, canCraft, compoundKnown, ensureMakingItems, loadRecipeCatalogFromFile, recipeBlockedLine, recipeKnown, searchRecipes } from '../public/js/making.js?v=5a718e7f';
+} from '../public/js/test-tube.js?v=e1b34dd2';
+import { COMPOUND_DISCOVERY_FEATURE_ID, compoundDiscoveryFeature } from '../public/js/features/compound-discovery-feature.js?v=fb490c50';
+import { RECIPE_CATALOG, TOOL_CATALOG, canCraft, compoundKnown, ensureMakingItems, loadRecipeCatalogFromFile, recipeBlockedLine, recipeKnown, searchRecipes } from '../public/js/making.js?v=1ec1075e';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
 import { createPlayerSave, parsePlayerSave, serializePlayerSave } from '../public/js/player-save.js?v=bfaedb35';
 

@@ -10,9 +10,15 @@
 // Every clip, pose and timing stays the chicken's: the edits replace or add art inside the
 // part symbols, so the rig's transforms carry them through every frame of both rigs (Chicken_*
 // and new_Chicken*, the FLA's idle and rooked frames hand over to the second).
+//   party_hat       Happy New Ur (G1195): Tiny Speck's party_hat (glitch-avatars wardrobe hat/party_hat.swf,
+//                   CC0; its side view and first colourway as public/assets/avatar/ holds them) on the comb
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { loadFla } from '../overlay-art/xfl-svg.mjs';
+import { applyCM, colorMatrixFor } from '../../public/js/avatar-rig.js?v=b67f0da8';
 
-export const COSTUMES = Object.freeze(['turkey_tailfan', 'rooster_plume']);
+export const COSTUMES = Object.freeze(['turkey_tailfan', 'rooster_plume', 'party_hat']);
 
 const ID = [1, 0, 0, 1, 0, 0];
 const mul = (p, q) => [p[0] * q[0] + p[2] * q[1], p[1] * q[0] + p[3] * q[1], p[0] * q[2] + p[2] * q[3], p[1] * q[2] + p[3] * q[3], p[0] * q[4] + p[2] * q[5] + p[4], p[1] * q[4] + p[3] * q[5] + p[5]];
@@ -105,6 +111,47 @@ function plume() {
   return PLUME.map(([spine, w, style]) => sickle(spine, w, style));
 }
 
+const AVATAR = join(dirname(fileURLToPath(import.meta.url)), '../../public/assets/avatar');
+/** The hat's side view, its strap left off (a chicken has no chin): the article's shape ids. */
+const HAT_STRAP = new Set([31]);
+/** Where the cone's brim sits in the article's space, and its size on a chicken's comb (ours). */
+const HAT_BRIM = [6, -16];
+const HAT_SCALE = 0.56;
+
+/**
+ * Tiny Speck's party hat as shapes: each part of the article's sideHat (frame 0) coloured by the
+ * first colourway as the avatar compositor colours it (AvatarSwf colour filters, js/avatar-rig.js
+ * colorMatrixFor), a hidden group (alpha 0) left out, moved so its brim sits on (0, 1) at HAT_SCALE.
+ */
+export function partyHatEls() {
+  const art = JSON.parse(readFileSync(join(AVATAR, 'articles/hat/party_hat.json'), 'utf8'));
+  const cat = JSON.parse(readFileSync(join(AVATAR, 'catalog.json'), 'utf8'));
+  const item = cat.types.hat.find((i) => i.name === 'party_hat');
+  const fields = ['tintColor', 'brightness', 'saturation', 'contrast', 'tintAmount', 'alpha'];
+  const colors = Object.fromEntries(Object.entries(item.variants[0].colors).map(([k, v]) => [k, Object.fromEntries(String(v).split(' ').map((x, i) => [fields[i], x]))]));
+  const place = mul(tr(0, 1), mul([HAT_SCALE, 0, 0, HAT_SCALE, 0, 0], tr(-HAT_BRIM[0], -HAT_BRIM[1])));
+  const els = [];
+  for (const part of art.parts.sideHat.variants[0]) {
+    if (HAT_STRAP.has(part.s)) continue;
+    const cm = (part.g || []).reduce((m, g) => m || colorMatrixFor(colors[g]), null);
+    const fills = new Map();
+    const paths = [];
+    const tint = (c) => applyCM(cm, c).map((v, k) => (k < 3 ? Math.round(v) : v));
+    art.shapes[String(part.s)].p.forEach((p, i) => {
+      // A flat fill [r, g, b, a], or a gradient { t, m, st: [[ratio, r, g, b, a]] } (the same shape xfl-svg draws).
+      let fill;
+      if (Array.isArray(p.f)) fill = { t: 's', c: tint(p.f) };
+      else fill = { ...p.f, st: p.f.st.map(([o, ...c]) => [o, ...tint(c)]) };
+      const alpha = fill.t === 's' ? fill.c[3] : Math.max(...fill.st.map((x) => x[4]));
+      if (alpha <= 0.01) return;
+      fills.set(i + 1, fill);
+      paths.push([i + 1, p.d]);
+    });
+    if (paths.length) els.push({ k: 'shape', m: mul(place, part.m), fills, paths, strokeStyles: new Map(), strokes: new Map() });
+  }
+  return els;
+}
+
 function* allEls(els) { for (const e of els) { yield e; if (e.k === 'group') yield* allEls(e.members); } }
 
 /** Replace what a symbol draws on every keyframe, keeping its timing; keep: draw ours behind its own art. */
@@ -152,6 +199,9 @@ export function makeVariant(kind, fla) {
   if (kind === 'turkey_tailfan') {
     each(WATTLE, (tl) => scaleArt(tl, 1.45, 1.45, [0, 0]));
     each(TAIL, (tl) => replaceArt(tl, tailfan(), true));
+  } else if (kind === 'party_hat') {
+    // In front of the comb, on every frame of it (the hat rides the head through every clip).
+    each(COMB, (tl) => tl.layers.forEach((L, j) => { if (j === 0) L.frames.forEach((f) => { f.els = [...f.els, ...partyHatEls()]; }); }));
   } else if (kind === 'rooster_plume') {
     each(COMB, (tl) => scaleArt(tl, 1.15, 1.9, baseOf(tl)));
     each(WATTLE, (tl) => scaleArt(tl, 1.2, 1.3, [0, 0]));
