@@ -38,7 +38,7 @@ import { isLoaded, onLoaded, textureFromUrl } from '../textures.js?v=b8e38103';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import { SEED_CATALOG } from '../garden.js?v=0cbb65f0';
-import { openListDialog } from '../ui/storage-windows.js?v=10748089';
+import { openListDialog } from '../ui/storage-windows.js?v=6e34133f';
 import { feastDayKey, servingsText } from '../feast-day.js?v=c5ec0820';
 import {
   DISHES_NEEDED,

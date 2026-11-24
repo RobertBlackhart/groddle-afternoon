@@ -304,7 +304,7 @@ describe('tile art at the tile\'s pixel size', () => {
     assert.match(homeMp, /addTarget\(\{ classId: CLASS_SALE, label, subtitle, sprite: box, chooserIcon,/);
     assert.match(homeMp, /addTarget\(\{ classId: CLASS_PROTO, label, subtitle: T\.wornOut, sprite: box, chooserIcon,/);
     // The pictures of the report's pieces are on disk: a plain chair, the Fire and the storage box upgrades.
-    const { pieceArt } = await import('../public/js/home-decor.js?v=4abc83ab');
+    const { pieceArt } = await import('../public/js/home-decor.js?v=31c30cce');
     const pub = join(dirname(fileURLToPath(import.meta.url)), '../public/');
     for (const [cls, id] of [['furniture_chair', ''], ['furniture_tabledeco', '708'], ['furniture_chair', '15'], ['bag_furniture_sdb', '550']]) {
       const art = pieceArt(cls, id);

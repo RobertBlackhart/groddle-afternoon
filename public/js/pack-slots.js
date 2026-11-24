@@ -150,6 +150,55 @@ export const BAG_SORT_COPY = Object.freeze({
   stackUp: Object.freeze({ id: 'stack_up', label: 'Stack up', tooltip: 'Finds all partial stacks in all your bags and cleans them up', sortOn: 66, done: 'Your inventory has been stacked up!' }),
 });
 
+/**
+ * G1246 (ours, Austin 2026-11-24; Glitch never showed a bag's sort): the item whose icon stands for
+ * each sort, on the sorted bag's corner badge (Modern), in place of the dot on its count strip
+ * (Classic), on the open bag's tray head and beside each sort in the Sort menu. Each one is a class
+ * the sort really takes (SORT_TAG_CLASSES). Staples A+B takes Plain Bean: Grain, the design's pick,
+ * is pale yellow and washes out on the cream disc at 13 px, and Meat and Cherry are Staples A's and
+ * B's own. One-kind bags (toolbox, spice rack...) can't be sorted, so they never show one.
+ */
+export const BAG_SORT_ICONS = Object.freeze({
+  sort_keys: 'door_key_1',
+  sort_cards: 'upgrade_card_reshuffle',
+  sort_alchemy: 'sparkle_powder',
+  sort_manufacturing: 'plank',
+  sort_mining: 'metal_rock',
+  sort_herbs: 'purple_flower',
+  sort_crops: 'carrot',
+  sort_musicblocks: 'musicblock_d_green_01',
+  sort_emblems: 'emblem_friendly',
+  sort_drinks: 'beer',
+  sort_food: 'sammich',
+  sort_staples_ab: 'bean_plain',
+  sort_staples_b: 'cherry',
+  sort_staples_a: 'meat',
+});
+
+/** The class whose icon stands for a sort, or '' (no sort, or one the bag can't have). */
+export function bagSortIcon(sortId) {
+  return bagSort(sortId) ? BAG_SORT_ICONS[sortId] || '' : '';
+}
+
+/** A sort in running words, "mining", "staples A" (its name without "Sort: " or ", etc."). */
+export function sortWords(sortId) {
+  const name = bagSort(sortId)?.name.replace(/^Sort: /, '').replace(/, etc\.$/, '') || '';
+  return name ? name[0].toLowerCase() + name.slice(1) : '';
+}
+
+/**
+ * G1246: what a sorted bag says it is sorted for, in the Sort menu's own words: `line` "Sorted for
+ * mining" (the tip, the screen reader), `takes` the sort's tooltip after "Specialize this bag for"
+ * ("ore chunks, rock chunks and metal ingots"; '' when that only repeats the sort's name). null for none.
+ */
+export function bagSortText(sortId) {
+  const row = bagSort(sortId);
+  if (!row) return null;
+  const words = sortWords(sortId);
+  const takes = row.tooltip.replace(/^Specialize this bag for /, '');
+  return { words, line: `Sorted for ${words}`, takes: takes.toLowerCase() === words.toLowerCase() ? '' : takes };
+}
+
 export function canSpecializeBag(cls) {
   return SPECIALIZABLE.has(String(cls || ''));
 }

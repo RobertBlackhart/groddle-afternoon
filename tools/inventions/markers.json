@@ -26,12 +26,14 @@
   },
   "public/css/classic.css": {
     "no-original: as small page-colour controls; the help line has no original.": "ours-classic-css",
+    "ours: G1246 (ours): a sorted bag's strip shows its sort's icon at": "ours-bag-sort-badge",
     "reimagined: #avatar-panel .avatar-reimagined-tag { background: var(--c-classic-tip); color:": "ours-classic-css",
     "reimagined: #avatar-panel .avatar-tile .avatar-reimagined-tag { border-radius: 0 0 3px 3px;": "ours-classic-css",
     "remake-own: Reactions (js/ui/reaction-strip.js; the remake's own, the client had none): in the chat": "chat-reactions",
     "remake-own: Threads (js/chat-threads.js; the remake's own): the reply button dressed as the add-reaction": "chat-threads"
   },
   "public/game.js": {
+    "glitch-had-none: // G1246 (ours, Austin 2026-11-24: Glitch never showed a bag's sort): a sorted bag carries its": "ours-bag-sort-badge",
     "glitch-had-none: // draws no pins (Glitch had none), so its cards have no Pin button, no menu row": "ours-game-js-questsheet",
     "guess: // without turning the hidden-object beat into guesswork.": "not-an-invention",
     "invented: * G1009 (ours, inventions feast-day-piles): whether `classTsid` could be": "feast-day-piles",
@@ -39,6 +41,7 @@
     "no-source: 16973-16978, 679); the old hub label had no source.": "not-an-invention",
     "no-source: perms (paradiseSourceGeometry). A course with no source street gets": "not-an-invention",
     "ours: * G1009 (ours, inventions feast-day-piles): whether": "feast-day-piles",
+    "ours: // G1246 (ours, Austin 2026-11-24: Glitch never showed a bag's": "ours-bag-sort-badge",
     "ours: // Only ours (important): Pixi's own inline size stays, under": "not-an-invention",
     "ours: // menu of ours ([data-ctx]) or a plain HUD button; text fields,": "right-click-menus",
     "ours: Q+V render switch, 1916-1921), so this one is ours.": "ours-game-js-walkinput",
@@ -889,7 +892,9 @@
     "stand-in: client source: PACK_FLIGHT.risePx is the guessed stand-in": "pack-flight-rise"
   },
   "public/js/pack-slots.js": {
+    "glitch-had-none: * G1246 (ours, Austin 2026-11-24; Glitch never showed a bag's sort): the item whose icon stands": "ours-bag-sort-badge",
     "not-source: for the house too (js/home-trophies.js), made, not in the GSJS": "pot-luck-cornucopia",
+    "ours: * G1246 (ours, Austin 2026-11-24; Glitch never showed a bag's": "ours-bag-sort-badge",
     "ours: // Our own short words where the client only refused the": "ours-pack-slots",
     "ours: by v0.20.0-v0.23.0 goes straight into a pouch. Our own": "remake-copy"
   },
@@ -1406,6 +1411,7 @@
     "remake-own: The remake's own window without a stick (animal-husbandry-feature": "flyer-hover-bob"
   },
   "public/style.css": {
+    "ours: G1246 (ours, Austin 2026-11-24): a sorted bag's badge, its": "ours-bag-sort-badge",
     "reimagined: .avatar-reimagined-tag": "ours-style-css",
     "reimagined: .avatar-reimagined-tag #2": "ours-style-css",
     "reimagined: .badge-reimagined": "ours-style-css",

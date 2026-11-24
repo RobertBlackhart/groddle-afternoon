@@ -22,8 +22,8 @@ import { after, before, describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { layoutHeld, layoutPack } from '../public/js/pack-slots.js?v=11aa0ad5';
-import { createDroppedItemState, setDownStack } from '../public/js/world-items.js?v=b984e516';
+import { layoutHeld, layoutPack } from '../public/js/pack-slots.js?v=38e4aea5';
+import { createDroppedItemState, setDownStack } from '../public/js/world-items.js?v=a5deb102';
 import { ITEM_CATALOG } from '../public/js/inventory.js?v=6414dbdc';
 import { GAME_DIR } from '../tools/repos.mjs';
 

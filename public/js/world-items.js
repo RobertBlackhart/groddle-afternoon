@@ -8,7 +8,7 @@
  */
 import { addItem, ITEM_CATALOG, removeItem } from './inventory.js?v=6414dbdc';
 import { canRenameBag, cleanBagName } from './bag-names.js?v=bba085e1';
-import { bagKeep, stackMaxOf } from './pack-slots.js?v=11aa0ad5';
+import { bagKeep, stackMaxOf } from './pack-slots.js?v=38e4aea5';
 import { ITEM_PLURALS } from './item-plurals-data.js?v=62e96051';
 import { TOOL_CONDITION_CATALOG, copyTagKind, keepsOwnStack } from './tools.js?v=4156bba8';
 

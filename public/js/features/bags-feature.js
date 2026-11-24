@@ -107,11 +107,13 @@ import {
   bagKeep,
   bagLeavesLast,
   bagSort,
+  bagSortIcon,
   canMagicSort,
   canSpecializeBag,
   giveBag,
   magicSort,
   sortName,
+  sortWords,
   specializeBag,
   stackUp,
   isBagClass as isBag,
@@ -126,7 +128,7 @@ import {
   unitOrder,
   unitPlaces,
   unitRankAt,
-} from '../pack-slots.js?v=11aa0ad5';
+} from '../pack-slots.js?v=38e4aea5';
 import { TOOL_CONDITION_CATALOG, moveToolCopy, pickToolCopies, placeToolCopies } from '../tools.js?v=4156bba8';
 import { createMinnAccount } from '../minn-account.js?v=c6a70577';
 import { BAG_NAME_MAX, BAG_RENAME_COPY, BAG_RENAME_HINT, bagLabel, canRenameBag, cleanBagName, renamedTo } from '../bag-names.js?v=bba085e1';
@@ -661,10 +663,14 @@ function sortVerbs(engine, cls) {
       current: unsorted,
       reason: unsorted ? BAG_SORT_COPY.all.unsorted : '',
       tooltip: BAG_SORT_COPY.all.tooltip,
+      // G1246: All has no picture; its room keeps the sorts' words in line.
+      icon: '',
     }];
     for (const row of BAG_SORTS) {
       const current = box.sort === row.id;
-      sub.push({ id: `bags_sort:${row.id}`, label: plainSortLabel(row.label), enabled: !current, current, reason: current ? row.reason : '', tooltip: row.tooltip });
+      // G1246: each sort shows the icon its bags carry (pack-slots.js BAG_SORT_ICONS), so the menu teaches the badges.
+      const icon = bagSortIcon(row.id);
+      sub.push({ id: `bags_sort:${row.id}`, label: plainSortLabel(row.label), enabled: !current, current, reason: current ? row.reason : '', tooltip: row.tooltip, icon: ITEM_CATALOG[icon]?.icon || `assets/sprites/icons/${icon}.webp` });
     }
     const now = sub.find((v) => v.current);
     out.push({
@@ -672,7 +678,7 @@ function sortVerbs(engine, cls) {
       label: BAG_SORT_COPY.menu.label,
       enabled: true,
       reason: '',
-      tooltip: unsorted ? BAG_SORT_COPY.menu.tooltip : BAG_SORT_COPY.menu.sortedBy(now.label),
+      tooltip: unsorted ? BAG_SORT_COPY.menu.tooltip : BAG_SORT_COPY.menu.sortedBy(sortWords(box.sort)),
       backTip: BAG_SORT_COPY.menu.back,
       sub,
     });

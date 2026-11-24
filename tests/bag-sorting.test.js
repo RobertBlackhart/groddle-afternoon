@@ -29,10 +29,10 @@ import {
   specializeBag,
   stackUp,
   unitOrder,
-} from '../public/js/pack-slots.js?v=11aa0ad5';
+} from '../public/js/pack-slots.js?v=38e4aea5';
 import { SORT_TAG_CLASSES } from '../public/js/pack-slots-data.js?v=800f664c';
 import { ITEM_CATALOG, isToolItem } from '../public/js/inventory.js?v=6414dbdc';
-import { bagsFeature } from '../public/js/features/bags-feature.js?v=2b188e8d';
+import { bagsFeature } from '../public/js/features/bags-feature.js?v=af96f8bc';
 import { createToolConditionState } from '../public/js/tools.js?v=4156bba8';
 import { remakeStatus, isOfferedInRemake } from '../public/js/imagination-remake.js?v=c37ad887';
 
@@ -336,7 +336,8 @@ describe('the bag menu (features/bags-feature.js)', () => {
     assert.equal(mining.reason, 'This bag is currently sorted by mining goods');
     assert.equal(row.sub[0].enabled, true);
     assert.equal(row.sub[0].reason, '');
-    assert.equal(row.tooltip, 'Sorted for Mining, etc. · choose another sort');
+    // G1246: in the same running words as the badge's tip and tray head ("Sorted for mining").
+    assert.equal(row.tooltip, 'Sorted for mining · choose another sort');
     // All takes the sort off again through the same verb id.
     assert.equal(bagsFeature.runPackVerb('bag_bigger', 'bags_sort:sort_all', engine), true);
     assert.equal(engine.data.packLast, `sorted:b1:sort_all`);

@@ -3,7 +3,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { aggressiveHoeingFeature, hoeModeNote } from '../public/js/features/aggressive-hoeing-feature.js?v=977f9355';
-import { packSlotTip } from '../public/js/ui/pack-row.js?v=8c1f055d';
+import { packSlotTip } from '../public/js/ui/pack-row.js?v=615f7790';
 
 const CARD = ['hoeing_more_img_more_wear'];
 

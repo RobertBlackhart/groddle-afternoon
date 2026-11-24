@@ -75,12 +75,14 @@ export function plainWords(s) {
 /**
  * A row's inner markup: the key cap, the words and what sits on the right.
  * @param {{ key?: string, label: string, cost?: number, gain?: string, count?: string,
- *   next?: boolean, back?: boolean, disabled?: boolean, current?: boolean }} row
+ *   next?: boolean, back?: boolean, disabled?: boolean, current?: boolean, icon?: string }} row
  */
 export function verbRowInner(row) {
   const key = row.key ? `<span class="vm-key kcap" aria-hidden="true">${escapeText(row.key)}</span>` : '<span class="vm-key vm-key-none" aria-hidden="true"></span>';
   const back = row.back ? BACK_ICON : '';
-  const label = `<span class="vm-label">${escapeText(row.label)}</span>`;
+  // G1246: a row's picture before its words (a bag's sorts); '' keeps the room so the words line up.
+  const pic = typeof row.icon !== 'string' ? '' : row.icon ? `<img class="vm-icon" src="${escapeText(row.icon)}" alt="" />` : '<span class="vm-icon" aria-hidden="true"></span>';
+  const label = `${pic}<span class="vm-label">${escapeText(row.label)}</span>`;
   let end = '';
   if (row.current) end = CHECK_ICON;
   else if (row.disabled) end = LOCK_ICON;

@@ -54,7 +54,7 @@
  */
 
 import { cleanCopyTag } from './tools.js?v=4156bba8';
-import { pileMaxOf } from './world-items.js?v=b984e516';
+import { pileMaxOf } from './world-items.js?v=a5deb102';
 
 /** Where the site and server ids come from (drops.go dropOpRe). */
 export const DROP_OP = /^drop-[0-9a-f]{16}$/;

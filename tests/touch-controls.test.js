@@ -23,7 +23,7 @@ import {
   stickKeys,
   touchTapPlan,
 } from '../public/js/touch-controls.js?v=6ed23498';
-import { chooseVerbRow, stepVerbRow } from '../public/js/ui/verb-menu.js?v=424b9a35';
+import { chooseVerbRow, stepVerbRow } from '../public/js/ui/verb-menu.js?v=4cb51d52';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const game = readFileSync(join(root, 'public/game.js'), 'utf8');

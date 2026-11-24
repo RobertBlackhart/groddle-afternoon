@@ -60,7 +60,7 @@ import { getSkillCatalog } from '../content-catalogs.js?v=10b118dd';
 import { listRecipesProducing } from '../making.js?v=1ec1075e';
 import { GIANTS } from '../shrines.js?v=01962b40';
 import { giantDisplayName } from '../giant-names.js?v=0e295891';
-import { teleportationFeature } from './teleportation-feature.js?v=67bd0b27';
+import { teleportationFeature } from './teleportation-feature.js?v=6d31bc0a';
 import {
   SOLO_DIVISOR,
   WORK_UNIT_MS,

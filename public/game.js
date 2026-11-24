@@ -2,9 +2,9 @@
  * Groddle Afternoon — original street geometry + layered decos
  * PixiJS 8 · locations-xml streets · CoU PNG decos · quests/items
  */
-import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=7ef2b106';
+import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=0e701611';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=28d82d59';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=05340b0d';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE, playerClickBox } from './js/reach.js?v=456da8a8';
@@ -538,11 +538,11 @@ import {
 } from './js/inventory.js?v=6414dbdc';
 import { TROPHY_FIND_TEXT, trophyOfBadge } from './js/home-trophies.js?v=649b111e';
 import { HELD_AT_ONCE, HELD_AT_ONCE_TEXT } from './js/collection-trophies.js?v=e45565a7';
-import { PACK_COPY, isBagClass, isElementClass, layoutHeld, ownBagLabel, unitRankAt } from './js/pack-slots.js?v=11aa0ad5';
+import { PACK_COPY, bagSortIcon, bagSortText, isBagClass, isElementClass, layoutHeld, ownBagLabel, unitRankAt } from './js/pack-slots.js?v=38e4aea5';
 import { beginDrag, installDropRegistry, packStackOf, registerDropTarget, touchLift } from './js/drop-targets.js?v=59e6edb4';
 import { FLOAT_TEXT_Z, SPEECH_BUBBLE_Z } from './js/fx-z.js?v=18dda7e3';
 import { hasPouch } from './js/elemental-pouch.js?v=42702eda';
-import { createPackRow, mountPackClearance, packBandRange, packCountText, packSearchEntries, packSearchResults, packSlotTip } from './js/ui/pack-row.js?v=8c1f055d';
+import { createPackRow, mountPackClearance, packBandRange, packCountText, packSearchEntries, packSearchResults, packSlotTip } from './js/ui/pack-row.js?v=615f7790';
 import { listAnimalFeedOptions, piggyFeedTip } from './js/animals.js?v=56071914';
 import { pickerEmptyLine, pickerMaxCount, pickerOptionsFor, pickerTakesCount } from './js/animals.js?v=56071914';
 import {
@@ -558,8 +558,8 @@ import {
   placeDroppedBag,
   setDownStack,
   takeDroppedRecord,
-} from './js/world-items.js?v=b984e516';
-import { ownRowToSharedFloor, packToSharedFloor } from './js/home-floor-share.js?v=c272558b';
+} from './js/world-items.js?v=a5deb102';
+import { ownRowToSharedFloor, packToSharedFloor } from './js/home-floor-share.js?v=3fa0382c';
 import {
   createPlayerSave,
   inspectPlayerSave,
@@ -869,7 +869,7 @@ import { MODERN, onUiModeChange, readUiCache, uiState, writeUiCache } from './js
 // ZOOM: the world zoom (a device preference) and Classic's frame scale under it; both load before main().
 import { worldZoom, setWorldZoom, stepWorldZoom, onZoomChange, zoomKeyAction, zoomKeyToast, zoomFixed, setZoomFixed, onZoomFixedChange, phoneZoom } from './js/world-zoom.js?v=38816228';
 import { nightTint, nightTintOn, onNightTintChange, worldTintOpacity } from './js/night-tint.js?v=1dfc9c89';
-import { streetMapSetting, toggleStreetMap } from './js/ui/street-minimap.js?v=bb94ac3e';
+import { streetMapSetting, toggleStreetMap } from './js/ui/street-minimap.js?v=037752cc';
 import './js/classic/classic-zoom.js?v=c8611f87';
 import { mountImaginationHub } from './js/ui/imagination-hub.js?v=6928c5b7';
 import { newDayBubble, shuffleNewDayMessages, waitForScreenGates } from './js/screen-queue.js?v=cf0132c0';
@@ -1117,7 +1117,7 @@ import { installHiresDecos, maxTextureSizeOf } from './js/deco-hires.js?v=34f36d
 import { loadAudioLevels, loadMutedPreference, loadOtherMusic, saveAudioLevel, saveMutedPreference, saveOtherMusic } from './js/audio-pref.js?v=80d433c3';
 import { createAudioBuses, fadeGain } from './js/audio-buses.js?v=af167b54';
 import { applyAudioSession, streetMusicWanted } from './js/other-music.js?v=f58af5e6';
-import { drawHudCount, installTopBar, renderTopBar } from './js/ui/topbar.js?v=413e2845';
+import { drawHudCount, installTopBar, renderTopBar } from './js/ui/topbar.js?v=86765c23';
 import { focusBack, installFocusReturn, lastInput } from './js/ui/focus-return.js?v=da190597';
 import { installContextGuard } from './js/ui/context-guard.js?v=0f71ac17';
 import { QUOIN_FRAME_BOB, advanceQuoinClock, quoinBobBetweenFrames } from './js/quoin-motion.js?v=ea0bd408';
@@ -1130,17 +1130,17 @@ import { createMusicVoice } from './js/music-voice.js?v=75c8cf57';
 import { contextNeedsResume, createAudioResumer } from './js/audio-resume.js?v=7e1b9661';
 import { bubbleMs } from './js/read-time.js?v=3151fb1a';
 import { mountNotifyView } from './js/notify-view.js?v=0fbfad68';
-import { mountSocialDrawer } from './js/ui/social-drawer.js?v=934e247f';
+import { mountSocialDrawer } from './js/ui/social-drawer.js?v=06c37291';
 import { installPhonePill, mountPhoneLayout, socialPillCount } from './js/ui/phone-layout.js?v=2ab28c97';
 import { bindChatLinks } from './js/chat-links.js?v=b717fac7';
 import { SIDE_SHEET_IDS, bindTabs, inSideSheet, mountPanelShell, sheetKeyToWorld } from './js/ui/panel-shell.js?v=06a0d3fe';
-import { createQuestSheet, failedQuestPin, questLogNeedsSwap, questStep, visibleRowCount } from './js/ui/quest-sheet.js?v=b612c898';
+import { createQuestSheet, failedQuestPin, questLogNeedsSwap, questStep, visibleRowCount } from './js/ui/quest-sheet.js?v=3e7ac77b';
 import { resolveQuestPins } from './js/features/quest-pins-feature.js?v=0e07d9a1';
-import { createQuestTracker } from './js/ui/quest-tracker.js?v=54c1d111';
-import { bindContextTrigger, createContextMenu, isContextMenuKey as isMenuKey, MORE_KEYS_LABEL } from './js/ui/context-menu.js?v=dee0ecde';
+import { createQuestTracker } from './js/ui/quest-tracker.js?v=0f7ea620';
+import { bindContextTrigger, createContextMenu, isContextMenuKey as isMenuKey, MORE_KEYS_LABEL } from './js/ui/context-menu.js?v=587d8585';
 import { bindCountField, countKeyValue, countStepMarkup, createCountChooser, focusedCountField, heldPress, keepCountCaret, openCountField, restoreCountCaret, saveCountCaret, typedCount } from './js/ui/count-chooser.js?v=75f69512';
 import { createScrollKeep } from './js/ui/scroll-keep.js?v=2898b5b1';
-import { actVerbMenu, bindVerbMenu, centerVerbMenu, chooseVerbRow, dropVerbMenuActs, fitPickGrid, fitVerbMenuRows, focusVerbRow, lockVerbMenuSize, makePickTile, makeVerbRow, pickGridCols, placeVerbMenu, plainWords, refuseVerbRow, setVerbMenuIcon, settleVerbMenu, stepVerbRow, syncVerbDetail, verbMenuKey, verbMenuWaiting, verbRowAttrs, verbRowInner, verbRowKeys } from './js/ui/verb-menu.js?v=424b9a35';
+import { actVerbMenu, bindVerbMenu, centerVerbMenu, chooseVerbRow, dropVerbMenuActs, fitPickGrid, fitVerbMenuRows, focusVerbRow, lockVerbMenuSize, makePickTile, makeVerbRow, pickGridCols, placeVerbMenu, plainWords, refuseVerbRow, setVerbMenuIcon, settleVerbMenu, stepVerbRow, syncVerbDetail, verbMenuKey, verbMenuWaiting, verbRowAttrs, verbRowInner, verbRowKeys } from './js/ui/verb-menu.js?v=4cb51d52';
 import { createPromptSettler, promptId, promptSideStep } from './js/prompt-settle.js?v=cb790f3a';
 import { clientKeyAction, createHotkeysSheet, emoteKeyAction, isHotkeySheetRelease, isPlainKey } from './js/client-hotkeys.js?v=5c5a4301';
 import { ENCYCLOPEDIA_MENU_LABEL, createEncyclopedia, isEncyclopediaKey } from './js/encyclopedia-links.js?v=0c3b2863';
@@ -1150,7 +1150,7 @@ import { HOME_SCREEN_TIP_CACHE, iosSafari, mountHomeScreenTip, runsStandalone } 
 import { EAT_PICK_TEXT, bestFoodIndex, eatChoices, eatTip } from './js/eat-pick.js?v=8fb763d0';
 import { heldDirection, installHeldKeyGuard, isMacPlatform } from './js/held-keys.js?v=a28eb293';
 import { isOneClickDoor, oneClickChoice, signpostArmRows, worldContextAction } from './js/world-context-menu.js?v=e4c99c05';
-import { blockedPlayerVerbs, listPlayerTarget, opensPlayerMenu, playerMenuRows } from './js/ui/player-menu.js?v=cb901a1c';
+import { blockedPlayerVerbs, listPlayerTarget, opensPlayerMenu, playerMenuRows } from './js/ui/player-menu.js?v=a6415e67';
 import { forgetTexture, frameTexture, isFailed, isLoaded, onFailed, onLoaded, textureFromUrl, whenLoaded } from './js/textures.js?v=b8e38103';
 import { FALLBACK_MAX as WORLD_ART_FALLBACK_MAX, worldArtFor } from './js/world-art.js?v=a67514c8';
 import { HOME_PIP_PX, drawLockPip, homeMarkNote, homePipShown, homeStackMark } from './js/home-stack-marks.js?v=0ff4c29f';
@@ -1179,7 +1179,7 @@ import { filterText } from './js/word-filter.js?v=9a7a7ebb'; // the remake's own
 import { mountStartStreet } from './js/start-street.js?v=7d8ce49c'; // #349: the start card names the save's street
 import { arrangeMapCards, fitMapExtras } from './js/map-extras.js?v=16e261b1'; // the Map's Shortcuts
 // The interface skin (js/classic/ui-mode.js) sets <html data-ui> as it loads: before main(), so before the boot cover lifts.
-import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=5b7e7560';
+import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=ce59e867';
 import { standOnFeet, anchorBottomCentre } from './js/sprite-feet.js?v=11303931';
 import { markLeaving, packPicks, takeCopies } from './js/copy-picks.js?v=b368fd49';
 import { holdKeepsBusy } from './js/instance-holds.js?v=ff3a63a3';
@@ -4590,7 +4590,7 @@ function packTipFor(el) {
     const layout = features.query('packLayout', engine);
     const box = layout?.bags?.[el.dataset.packBag];
     if (!box) return null;
-    return packSlotTip({ bag: { label: box.label, used: box.slots.length, capacity: box.capacity, open: features.query('packOpenBag') === box.key } });
+    return packSlotTip({ bag: { label: box.label, used: box.slots.length, capacity: box.capacity, open: features.query('packOpenBag') === box.key, sortLine: bagSortText(box.sort)?.line || '', sortIcon: sortIconHref(bagSortIcon(box.sort)) } });
   }
   const isTool = el.classList.contains('pack-tool');
   const use = isTool ? null : getPackUseInfo(cls);
@@ -5574,6 +5574,8 @@ function renderPackPopover(classTsid, anchor = null) {
     reason: verb.reason || '',
     tip: verb.tooltip || '',
     ...(typeof verb.current === 'boolean' ? { current: verb.current } : {}),
+    // G1246: a choice's picture (a bag's sorts: each sort's icon, '' keeps the room for one).
+    ...(typeof verb.icon === 'string' ? { icon: verb.icon } : {}),
   });
   let subVerb = null;
   let countVerb = null;
@@ -6169,7 +6171,9 @@ function renderPackRow(box, slots, opts = {}) {
       slot.classList.toggle('is-open', Boolean(s.bag.open));
       slot.setAttribute('aria-haspopup', 'true');
       slot.setAttribute('aria-expanded', s.bag.open ? 'true' : 'false');
-      slot.setAttribute('aria-label', `${s.bag.label || shownLabel}, ${s.bag.used} of ${s.bag.capacity} slots used, ${s.bag.open ? 'open' : 'closed'}`);
+      // G1246: a sorted bag says what for (its corner badge's words).
+      const sortWords = bagSortText(s.bag.sort)?.words;
+      slot.setAttribute('aria-label', `${s.bag.label || shownLabel}${sortWords ? `, sorted for ${sortWords}` : ''}, ${s.bag.used} of ${s.bag.capacity} slots used, ${s.bag.open ? 'open' : 'closed'}`);
       slot.setAttribute('aria-controls', 'pack-bag');
     }
     // Every slot drags; dragstart cancels a drag with nowhere to go (a tool with no vendor open).
@@ -6205,6 +6209,20 @@ function renderPackRow(box, slots, opts = {}) {
       opener.className = 'pack-bag-opener';
       opener.dataset.packOpener = '1';
       opener.innerHTML = `<b>${s.bag.used}/${s.bag.capacity}</b><i aria-hidden="true"></i>`;
+      // G1246 (ours, Austin 2026-11-24: Glitch never showed a bag's sort): a sorted bag carries its sort's
+      // icon (pack-slots.js BAG_SORT_ICONS), on a cream disc in the slot's top right corner in Modern, in
+      // place of the opener strip's dot in Classic. The full marker keeps the backdrop and bar, the open
+      // marker the ring and caret.
+      const sortIcon = bagSortIcon(s.bag.sort);
+      if (sortIcon) {
+        slot.dataset.packSort = s.bag.sort;
+        slot.style.setProperty('--pack-sort-icon', `url("${sortIconHref(sortIcon)}")`);
+        const badge = document.createElement('span');
+        badge.className = 'pack-bag-sort';
+        badge.setAttribute('aria-hidden', 'true');
+        slot.appendChild(badge);
+        opener.querySelector('i').classList.add('is-sorted');
+      }
       // The modern bag button draws the opener as its fill bar; the tray's Options opens the bag's card.
       opener.style.setProperty('--pack-fill', String(s.bag.capacity ? Math.min(1, s.bag.used / s.bag.capacity) : 0));
       // G656 (mr granberry's Ideas post): a full bag's bar reads full at a glance (Classic shows the count).
@@ -6344,7 +6362,7 @@ function packRowSignature(slots, opts) {
     opts.emptyCount ?? 4, Boolean(opts.ghost), Boolean(opts.fillEmpty), Boolean(opts.toolRow), opts.container || '', opts.rock || null, opts.query || '',
     slots.map((s) => {
       const c = getToolCondition(toolState, s.classTsid, s.copy != null ? { copy: s.copy } : {});
-      return [s.classTsid, s.count, s.container ?? '', s.index ?? '', s.icon || '', s.bag ? [s.bag.used, s.bag.capacity, s.bag.open, s.bag.label] : 0,
+      return [s.classTsid, s.count, s.container ?? '', s.index ?? '', s.icon || '', s.bag ? [s.bag.used, s.bag.capacity, s.bag.open, s.bag.label, s.bag.sort || ''] : 0,
         s.inBag?.label || '', packNamed(s.classTsid, s.copy)?.label || '', c.tracked ? [c.remaining, c.broken] : 0];
     }),
   ]);
@@ -6399,7 +6417,7 @@ function packLayoutEntry(slot, container, index, layout, openKey) {
   if (slot.kind === 'bag') {
     const box = layout.bags[slot.key];
     entry.isTool = false;
-    entry.bag = { key: slot.key, used: box?.slots.length || 0, capacity: box?.capacity || 0, open: openKey === slot.key, label: box?.label || entry.label, holds: box?.holds || 'any' };
+    entry.bag = { key: slot.key, used: box?.slots.length || 0, capacity: box?.capacity || 0, open: openKey === slot.key, label: box?.label || entry.label, holds: box?.holds || 'any', sort: box?.sort || '' };
   }
   return entry;
 }
@@ -6417,16 +6435,19 @@ function renderOpenBagRow(layout, openKey) {
   // A stack out of the pack's view (layoutHeld: a drop shown before its answer) is drawn as free.
   const entries = box ? box.slots.map((slot, i) => (slot.held ? null : packLayoutEntry(slot, box.key, i, layout, openKey))).filter(Boolean) : [];
   const rowOpts = { emptyCount: shown ? free : 0, fillEmpty: true, ghost: true, container: box?.key || '' };
+  const sortIcon = bagSortIcon(box?.sort);
   const tray = packRow.drawTray(box && {
     key: box.key,
     label: box.label,
     icon: itemIconUrl(box.cls),
+    // G1246: the sort's badge on the head's bag and its words under the head.
+    sort: sortIcon ? { icon: sortIconHref(sortIcon), ...bagSortText(box.sort) } : null,
     used: shown,
     capacity: box.capacity,
     // The same bag drawing the same stacks keeps its tray as it is (updateHud runs about once a second).
     // Its stacks' part is the row's own signature (packRowSignature): a tool's wear, a break or a repair,
     // a name, a bag inside it redraw it too (Austin 2026-11-01: a repair showed only after a close and open).
-    sig: JSON.stringify([box.key, box.label, box.capacity, packRowSignature(entries, rowOpts)]),
+    sig: JSON.stringify([box.key, box.label, box.capacity, box.sort || '', packRowSignature(entries, rowOpts)]),
     cells: shown + (free && shown ? 1 : 0),
     // PackSlot.as:310-313: the opener strip's Options, here a button in the tray's head.
     optionsLabel: PACK_COPY.options,
@@ -30538,6 +30559,14 @@ function craftOpts(recipe = null) {
 
 function itemIconUrl(classTsid) {
   return ITEM_CATALOG[classTsid]?.icon || `assets/sprites/icons/${classTsid}.webp`;
+}
+
+/**
+ * G1246: a sort's icon as a full URL, for --pack-sort-icon: a url() in a custom property resolves
+ * against the stylesheet that uses it (css/classic.css sits a folder down), so a relative one breaks there.
+ */
+function sortIconHref(classTsid) {
+  return classTsid ? new URL(itemIconUrl(classTsid), document.baseURI).href : '';
 }
 
 /** #491: the 22 px icon on a Make ingredient or "you have" row; style.css keeps its shape (object-fit). */

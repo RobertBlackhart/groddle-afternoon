@@ -1027,6 +1027,13 @@
 :root[data-ui="classic"] #game-root .pack-slots .pack-slot.pack-bag.is-open .pack-bag-opener { background: var(--c-classic-tab-off); }
 :root[data-ui="classic"] #game-root .pack-slots .pack-slot.pack-bag.is-open .pack-bag-opener b { color: var(--c-classic-panel); text-shadow: none; }
 :root[data-ui="classic"] #game-root .pack-slots .pack-slot.pack-bag.is-open .pack-bag-opener i { background: var(--c-classic-panel); }
+/* G1246 (ours): a sorted bag's strip shows its sort's icon at 14 px in place of the dot (game.js
+   --pack-sort-icon); an unsorted bag keeps the dot. No badge disc here: the strip is the frame's own. */
+:root[data-ui="classic"] #game-root .pack-slots .pack-slot.pack-bag .pack-bag-opener i.is-sorted,
+:root[data-ui="classic"] #game-root .pack-slots .pack-slot.pack-bag.is-open .pack-bag-opener i.is-sorted { width: 14px; height: 14px; border-radius: 0; background: var(--pack-sort-icon) center / contain no-repeat; }
+:root[data-ui="classic"] #game-root .pack-bag-sort { display: none; }
+:root[data-ui="classic"] #game-root .pack-bag-sort-line { background: var(--c-classic-well); color: var(--c-classic-text); font-family: var(--font-classic-body); }
+:root[data-ui="classic"] #game-root .pack-bag-sort-line b { color: var(--c-classic-title); }
 /* The open bag's panel, over the row by its bag: padding 4, radius 5, #c6d2d3 with a #b2bfc0 edge. */
 :root[data-ui="classic"] #game-root .pack-bag-row {
   border: 1px solid var(--c-classic-bag-border);

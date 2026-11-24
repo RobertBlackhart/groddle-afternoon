@@ -9,8 +9,8 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { bagKeep, giveBag, layoutPack, ownBagLabel, takeBag } from '../public/js/pack-slots.js?v=11aa0ad5';
-import { createDroppedItemState, parseDroppedItemState, placeDroppedBag, serializeDroppedItemState, takeDroppedRecord } from '../public/js/world-items.js?v=b984e516';
+import { bagKeep, giveBag, layoutPack, ownBagLabel, takeBag } from '../public/js/pack-slots.js?v=38e4aea5';
+import { createDroppedItemState, parseDroppedItemState, placeDroppedBag, serializeDroppedItemState, takeDroppedRecord } from '../public/js/world-items.js?v=a5deb102';
 import { cabinetPut, cabinetTake, normalizeContents, slotHoldsBag } from '../public/js/home-storage.js?v=b0225465';
 
 const root = join(import.meta.dirname, '..');

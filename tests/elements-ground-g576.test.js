@@ -14,8 +14,8 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { PACK_COPY, roomFor } from '../public/js/pack-slots.js?v=11aa0ad5';
-import { getVerbsFor } from '../public/content.js?v=7ef2b106';
+import { PACK_COPY, roomFor } from '../public/js/pack-slots.js?v=38e4aea5';
+import { getVerbsFor } from '../public/content.js?v=0e701611';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
 import { itemVerbsMoreFeature, disperseGroundElements } from '../public/js/features/item-verbs-more-feature.js?v=086abf59';
 

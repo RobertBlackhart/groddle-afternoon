@@ -5825,6 +5825,47 @@
    "rows": [
     "G1244"
    ]
+  },
+  {
+   "id": "ours-bag-sort-badge",
+   "title": "A sorted bag shows its sort: a small round badge with one item icon in the bag slot's top right corner (Modern), the icon in place of the count strip's dot (Classic), the sort's words in the tip, the tray head and the bag's label, and each sort's icon in the Sort menu",
+   "kind": "UI",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/pack-slots.js",
+     "symbol": "BAG_SORT_ICONS bagSortIcon sortWords bagSortText"
+    },
+    {
+     "file": "public/game.js",
+     "symbol": "pack-bag-sort sortIconHref"
+    },
+    {
+     "file": "public/js/ui/pack-row.js",
+     "symbol": "packSlotTip drawTray pack-bag-sort-line"
+    },
+    {
+     "file": "public/js/features/bags-feature.js",
+     "symbol": "sortVerbs"
+    },
+    {
+     "file": "public/js/ui/verb-menu.js",
+     "symbol": "verbRowInner vm-icon"
+    },
+    {
+     "file": "public/style.css",
+     "symbol": ".pack-bag-sort .pack-bag-sort-line .pack-tip-note"
+    },
+    {
+     "file": "public/css/classic.css",
+     "symbol": ".pack-bag-opener i.is-sorted"
+    }
+   ],
+   "why": "Glitch never showed what a bag was sorted for: doSpecialize (items/bag.js 783-801) only gave an unnamed bag the sort's name, and glitch-client has no display for it, so a renamed sorted bag said nothing. A player asked for an indicator, possibly symbols (Ideas board). Each badge is an existing item icon the sort takes; one-kind bags (Toolbox, Spice Rack, Alchemistry Kit, Cubimal Case, Elemental Pouch) get none.",
+   "ruling": "Austin 2026-11-24 (G1246, the Sorted Bag Badges design): Option A, the corner badge; no badge on one-kind bags; Staples A+B one icon; icons as designed; keep Glitch's Sort: Staples names; Sort menu icons in the same change; words back up the symbol; Classic draws it on the strip.",
+   "rows": [
+    "G1246"
+   ]
   }
  ]
 }

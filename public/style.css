@@ -3045,6 +3045,45 @@ button.play-context-head:focus-visible {
   border-bottom: 6px solid var(--status-warn);
   pointer-events: none;
 }
+/* G1246 (ours, Austin 2026-11-24): a sorted bag's badge, its sort's icon (game.js --pack-sort-icon) at 13 px
+   on a 17 px cream disc in the slot's top right corner. Inside the slot, never overhanging, so the phone's
+   scrolling row can't clip it. The full marker owns the backdrop and bar, the open marker the ring and caret;
+   the disc's own edge reads on a full bag's grey. Classic draws the icon in its count strip instead. */
+.pack-bag-sort {
+  position: absolute;
+  top: 1px;
+  right: 1px;
+  z-index: var(--z-raised);
+  box-sizing: border-box;
+  width: 17px;
+  height: 17px;
+  padding: 2px;
+  border-radius: var(--radius-round);
+  background: var(--pack-sort-icon) center / contain no-repeat content-box, var(--surface-raised);
+  box-shadow: 0 0 0 1px var(--border-strong), var(--shadow-1);
+  pointer-events: none;
+}
+/* The open bag's tray head repeats it on the bag's picture, and says what the sort takes under the head
+   (the tip's words; on a phone, with no hover, the only ones). */
+.pack-bag-head-pic { position: relative; flex: none; display: inline-grid; place-items: center; }
+.pack-bag-head-pic .pack-bag-sort { top: -4px; right: -4px; }
+.pack-bag-sort-line {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  box-sizing: border-box;
+  /* As wide as the tray's slots, never wider: a long sort (Manufacturing) wraps rather than stretching the tray. */
+  contain: inline-size;
+  margin: calc(-1 * var(--sp-1)) 0 var(--sp-4);
+  padding: var(--sp-1) var(--sp-4) var(--sp-1) var(--sp-2);
+  border-radius: var(--radius-lg);
+  background: var(--surface-moss);
+  color: var(--text-muted);
+  font-size: var(--fs-sm);
+  font-weight: 700;
+}
+.pack-bag-sort-line i { flex: none; width: 16px; height: 16px; background: var(--pack-sort-icon) center / contain no-repeat; }
+.pack-bag-sort-line b { color: var(--text); font-weight: var(--fw-heavy); }
 .pack-slots .pack-slot.is-drop-target {
   background: var(--surface-moss);
   box-shadow: 0 0 0 2px var(--status-info);
@@ -3243,6 +3282,11 @@ button.play-context-head:focus-visible {
 .pack-tip[hidden] { display: none; }
 .pack-tip-sub { font-weight: 600; opacity: 0.86; }
 .pack-tip-sub::before { content: "· "; }
+/* G1246: a sorted bag's tip: its name, then "Sorted for food" with the sort's icon, then its slots line. */
+.pack-tip.has-note { flex-direction: column; gap: var(--sp-1); }
+.pack-tip.has-note .pack-tip-sub::before { content: none; }
+.pack-tip-note { display: flex; align-items: center; gap: var(--sp-2); font-weight: 600; opacity: 0.86; }
+.pack-tip-note i { flex: none; width: 14px; height: 14px; background: var(--pack-sort-icon) center / contain no-repeat; }
 @media (prefers-reduced-motion: reduce) {
   .pack-slots .pack-slot,
   .pack-pager,
@@ -12568,6 +12612,8 @@ body:has(#quest-dialogue:not([hidden])) .prompt-stack { z-index: calc(var(--z-mo
 [data-ui="modern"] .vm-row .vm-lock,
 [data-ui="modern"] .vm-row .vm-backicon { flex: none; color: var(--text-muted); }
 [data-ui="modern"] .vm-row .vm-check { flex: none; color: var(--good); }
+/* G1246: a choice's picture before its words (a bag's sorts, each with the icon its badge shows). */
+.vm-row .vm-icon { flex: none; width: 18px; height: 18px; object-fit: contain; }
 [data-ui="modern"] .vm-row.vm-back .vm-label { color: var(--text-muted); }
 /* A verb's picture level (Feed what?, Incubate what?, Deposit what?; makePickTile): the stacks as
    their pictures in 50 px buttons 2 px apart, one row up to 7, then a grid, centred, the card as

@@ -244,10 +244,14 @@ export function packCountText({ used = 0, capacity = 16, bagFree = 0, bags = 0 }
   return { text, label };
 }
 
-/** The tooltip for a slot: its name and count, and what a click does. */
+/**
+ * The tooltip for a slot: its name and count, and what a click does. A sorted bag's tip says what it
+ * is sorted for on its own line (`note`, G1246: bag.sortLine, "Sorted for food", with bag.sortIcon).
+ */
 export function packSlotTip({ label = '', count = 1, tool = false, bag = null, quickVerb = '', inBag = '', note = '' } = {}) {
   if (bag) {
-    return { title: bag.label || label, sub: `${bag.used} of ${bag.capacity} slots · Click to ${bag.open ? 'close' : 'open'}` };
+    const sub = `${bag.used} of ${bag.capacity} slots · Click to ${bag.open ? 'close' : 'open'}`;
+    return { title: bag.label || label, ...(bag.sortLine ? { note: bag.sortLine, noteIcon: bag.sortIcon || '' } : {}), sub };
   }
   const title = `${label}${count > 1 ? ` x${count}` : ''}`;
   const parts = [];
@@ -447,13 +451,25 @@ export function createPackRow({ document: doc = globalThis.document, setData = (
     row.hidden = false;
     row.dataset.packBag = bag.key;
     row.dataset.packContainer = bag.key;
-    row.setAttribute('aria-label', `${bag.label}, ${bag.used} of ${bag.capacity} slots used`);
+    row.setAttribute('aria-label', `${bag.label}${bag.sort?.words ? `, sorted for ${bag.sort.words}` : ''}, ${bag.used} of ${bag.capacity} slots used`);
     row.textContent = '';
     const head = doc.createElement('div');
     head.className = 'pack-bag-head';
     const icon = doc.createElement('img');
     icon.src = bag.icon;
     icon.alt = '';
+    // G1246: a sorted bag's head repeats its badge on the bag's picture (its own box, so the head's
+    // img and span rules leave it alone).
+    let pic = icon;
+    if (bag.sort?.icon) {
+      pic = doc.createElement('i');
+      pic.className = 'pack-bag-head-pic';
+      const badge = doc.createElement('b');
+      badge.className = 'pack-bag-sort';
+      badge.style.setProperty('--pack-sort-icon', `url("${bag.sort.icon}")`);
+      badge.setAttribute('aria-hidden', 'true');
+      pic.append(icon, badge);
+    }
     const name = doc.createElement('strong');
     name.textContent = bag.label;
     const fill = doc.createElement('span');
@@ -476,14 +492,30 @@ export function createPackRow({ document: doc = globalThis.document, setData = (
     const close = button('pack-bag-close', 'close', `Close ${bag.label}`,
       '<svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m4 4 8 8M12 4l-8 8"/></svg>',
       () => bag.onClose?.());
-    head.append(icon, name, fill, options, close);
+    head.append(pic, name, fill, options, close);
     const slots = doc.createElement('div');
     slots.className = 'pack-slots pack-bag-slots';
     slots.setAttribute('role', 'list');
     slots.dataset.packContainer = bag.key;
     slots.dataset.cells = String(bag.cells || 0);
     slots.style.setProperty('--pack-tray-cols', String(trayColumns(bag.cells)));
-    row.append(head, slots);
+    row.append(head);
+    // G1246: on a phone there is no hover, so the head says what the bag is sorted for, in the Sort menu's words.
+    if (bag.sort?.line) {
+      const line = doc.createElement('p');
+      line.className = 'pack-bag-sort-line';
+      const mark = doc.createElement('i');
+      mark.setAttribute('aria-hidden', 'true');
+      mark.style.setProperty('--pack-sort-icon', `url("${bag.sort.icon}")`);
+      const words = doc.createElement('span');
+      const lead = doc.createElement('b');
+      lead.textContent = bag.sort.line;
+      words.append(lead);
+      if (bag.sort.takes) words.append(` · ${bag.sort.takes}`);
+      line.append(mark, words);
+      row.append(line);
+    }
+    row.append(slots);
     if (!bag.used) {
       const empty = doc.createElement('p');
       empty.className = 'pack-bag-empty';
@@ -735,6 +767,20 @@ export function createPackRow({ document: doc = globalThis.document, setData = (
     title.className = 'pack-tip-title';
     title.textContent = info.title;
     tip.append(title);
+    // G1246: a sorted bag's tip stacks its name, "Sorted for food" with the sort's icon, and its slots line.
+    tip.classList.toggle('has-note', Boolean(info.note));
+    if (info.note) {
+      const note = doc.createElement('span');
+      note.className = 'pack-tip-note';
+      if (info.noteIcon) {
+        const mark = doc.createElement('i');
+        mark.setAttribute('aria-hidden', 'true');
+        mark.style.setProperty('--pack-sort-icon', `url("${info.noteIcon}")`);
+        note.append(mark);
+      }
+      note.append(info.note);
+      tip.append(note);
+    }
     if (info.sub) {
       const sub = doc.createElement('span');
       sub.className = 'pack-tip-sub';

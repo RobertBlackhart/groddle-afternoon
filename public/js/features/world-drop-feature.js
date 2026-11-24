@@ -22,12 +22,12 @@
 import { ITEM_CATALOG } from '../inventory.js?v=6414dbdc';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import { listAnimalFeedOptions } from '../animals.js?v=56071914';
-import { isBagClass } from '../pack-slots.js?v=11aa0ad5';
+import { isBagClass } from '../pack-slots.js?v=38e4aea5';
 import { dropFor, dropTip } from '../world-drop.js?v=a8956ae5';
 import { canUseTool } from '../tools.js?v=4156bba8';
 import { chooseTool } from '../tool-choice.js?v=e0dcb60e';
 import { registerDropTarget } from '../drop-targets.js?v=59e6edb4';
-import { draggedStack, markDragged } from '../drag-stack.js?v=b4aa7198';
+import { draggedStack, markDragged } from '../drag-stack.js?v=4c7d198d';
 
 export const WORLD_DROP_FEATURE_ID = 'world-drop';
 
