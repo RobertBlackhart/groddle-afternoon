@@ -15520,7 +15520,14 @@ body.is-booting .touch-controls { display: none; }
 :root.phone-layout[data-ui="modern"] #game-root #street-nameplate > #favor-stat[data-neutral] strong { display: none; }
 /* The tutorial's hidden stats (newxp nx-hide-meta) take favor with them, as when it sat in the stats. */
 :root.phone-layout[data-ui="modern"] body.nx-hide-meta #game-root #street-nameplate > #favor-stat { display: none; }
-:root.phone-layout[data-ui="modern"] #game-root #street-nameplate > #favor-stat img { width: 16px; height: 16px; filter: drop-shadow(0 1px 2px color-mix(in srgb, var(--c-black) 60%, transparent)); }
+/* G1230 (#595): the Giant's symbol is drawn in the pill's dark brown, made for a cream pill; on the
+   caption, straight over the street, it was too dark or see-through. It stands on its own cream disc,
+   so it reads on any street, a dark cave or a bright sky. */
+:root.phone-layout[data-ui="modern"] #game-root #street-nameplate > #favor-stat img {
+  box-sizing: border-box; width: 20px; height: 20px; padding: 2px; object-fit: contain;
+  border-radius: var(--radius-round); background: var(--surface-card);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--c-black) 25%, transparent), 0 1px 3px color-mix(in srgb, var(--c-black) 50%, transparent);
+}
 :root.phone-layout[data-ui="modern"] #game-root #street-nameplate > #favor-stat strong { font-size: inherit; color: inherit; }
 :root.phone-layout[data-ui="modern"] #game-root #street-nameplate > .smm-phone-btn:not([hidden]) { color: inherit; background: none; box-shadow: none; filter: drop-shadow(0 1px 2px color-mix(in srgb, var(--c-black) 60%, transparent)); }
 @media (orientation: landscape) {

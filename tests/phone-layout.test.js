@@ -196,6 +196,16 @@ describe('G1230 (#595): the Social pill counts chat and IMs, not the Activity lo
   });
 });
 
+describe('G1230 (#595): favor\'s symbol on the caption reads on any street', () => {
+  it('stands on its own cream disc (the symbol is drawn dark, for a cream pill)', () => {
+    assert.match(read('public/assets/sprites/giant-symbols/spriggan.svg'), /fill="#71675b"/, 'the symbols are dark brown');
+    const rule = css.match(/#street-nameplate > #favor-stat img \{([^}]*)\}/)?.[1] || '';
+    assert.match(rule, /background: var\(--surface-card\)/);
+    assert.match(rule, /border-radius: var\(--radius-round\)/);
+    assert.doesNotMatch(rule, /opacity/);
+  });
+});
+
 describe('phone layout: wiring', () => {
   it('the pill shows only its four icons, so it cannot grow', () => {
     assert.deepEqual([...PILL_IDS], ['fullscreen-btn', 'bug-btn', 'social-btn', 'more-btn']);
