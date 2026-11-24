@@ -62,8 +62,9 @@ describe('home stack marks: the wiring', () => {
 
   it('refreshDroppedWorldItems marks your own stacks and the shared ones only at your own home', () => {
     assert.match(game, /const ownHome = demo \|\| features\.query\('homeStackMarks', engine\) === true;/);
-    assert.match(game, /spawnDroppedItemStack\(stack, homeStackMark\(\{ ownHome, fromSave: !\(demo && i % 2\), shared: true \}\)\)/);
-    assert.match(game, /for \(const stack of sharedStacks\) spawnDroppedItemStack\(stack, homeStackMark\(\{ ownHome, shared: stack\.shared === true \}\)\);/);
+    assert.match(game, /spawnDroppedItemStack\(grown\?\.\[stack\.id\] \? \{ \.\.\.stack, count: stack\.count \+ grown\[stack\.id\] \} : stack, homeStackMark\(\{ ownHome, fromSave: !\(demo && i % 2\), shared: true \}\)\)/);
+    // A shared stack being set on a shelf (drops-mp-feature claim, shown before the answer) is drawn locked, as decor.
+    assert.match(game, /for \(const stack of sharedStacks\) spawnDroppedItemStack\(stack, homeStackMark\(\{ ownHome, fromSave: stack\.pendingDecor === true, shared: stack\.shared === true \}\)\);/);
     // The demo is solo QA only, at your own home.
     assert.match(game, /const demo = HOME_MARKS_DEMO && \(\(\{ inHome, owned \}\) => Boolean\(inHome && owned\)\)\(engine\.homeContext\(\)\);/);
   });

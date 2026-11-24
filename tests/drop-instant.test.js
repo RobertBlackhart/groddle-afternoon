@@ -23,6 +23,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { layoutHeld, layoutPack } from '../public/js/pack-slots.js?v=11aa0ad5';
+import { createDroppedItemState, setDownStack } from '../public/js/world-items.js?v=220d7a7a';
 import { ITEM_CATALOG } from '../public/js/inventory.js?v=6414dbdc';
 import { GAME_DIR } from '../tools/repos.mjs';
 
@@ -308,5 +309,122 @@ describe('the pack view: the stack the drop came from shows the fewer, an emptie
     const bar = game.slice(game.indexOf('function renderPackBar() {'), game.indexOf('/** G255: the quest log markup'));
     assert.match(bar, /layoutHeld\(features\.query\('packLayout', engine\), features\.query\('packHeld', engine\), features\.query\('packTakes', engine\)\)/);
     assert.match(bar, /if \(slot\.held\) \{\s+heldSlots \+= 1;\s+return;\s+\}/);
+  });
+});
+
+/**
+ * Austin 2026-11-24 (yes to the follow-up): Decoration Mode's move of a shared floor stack onto a shelf or
+ * table (claimSharedStack: the server's whole pickup, then the site's answer sets it down in the save,
+ * locked) is instant too: off the floor and on the shelf at once, locked, on the like stack of yours it
+ * joins or on its own. Refused or timed out, it is back on the floor where it was; a late answer still
+ * sets it on the shelf, once. The save changes only on the answer, as before.
+ */
+describe('a shared stack set on a shelf or table shows there at once and settles to the site\'s word', () => {
+  const ROOM = 'RH_HOME_INT';
+  let r;
+  let state;
+  before(async () => {
+    globalThis.document = { baseURI: 'https://groddle.localhost/' };
+    globalThis.GRODDLE_MP_BOOT = { nonce: 'abcdef0123' };
+    globalThis.fetch = async (url) => {
+      const body = String(url).includes('trade-items.json') ? TABLE : { drops: [] };
+      return { status: 200, ok: true, headers: { get: () => null }, json: async () => body, text: async () => JSON.stringify(body) };
+    };
+    r = await rig({ inv: { apple: 1 }, tag: 'claim' });
+    state = createDroppedItemState({ streets: { [ROOM]: [{ id: 'world-item-1', classTsid: 'apple', count: 3, x: 1000, y: 400, on: 4, decor: true }] } });
+    r.engine.droppedItems = state;
+    r.engine.placeOwnStack = (tsid, c, n, opts) => setDownStack(state, tsid, c, n, { x: opts.x, y: opts.y }, opts);
+    r.client.emit('msg:ground_state', { street: 'HOUSE_7', stacks: [stack(hex(1), 'apple', 30, 300), stack(hex(2), 'emblem_mab', 12, 500), stack(hex(3), 'plank', 2, 600), stack(hex(4), 'plank', 5, 700), stack(hex(5), 'gem_moonstone', 3, 800)] });
+  });
+  after(() => {
+    delete globalThis.document;
+    delete globalThis.GRODDLE_MP_BOOT;
+    delete globalThis.fetch;
+    delete globalThis.groddleDrops;
+  });
+  /** What this player sees of a class: { floor (shared), shelf (the save's rows, as drawn), pack }. */
+  const seen = (c) => {
+    const grown = r.s.ownGrowth(ROOM) || {};
+    const rows = (state.streets[ROOM] || []).filter((x) => x.classTsid === c);
+    const list = r.s.list(ROOM).filter((x) => x.classTsid === c);
+    return {
+      floor: list.filter((x) => !x.pendingDecor).reduce((n, x) => n + x.count, 0),
+      shelf: rows.reduce((n, x) => n + x.count + (grown[x.id] || 0), 0) + list.filter((x) => x.pendingDecor).reduce((n, x) => n + x.count, 0),
+      pack: r.engine.inv[c] || 0,
+    };
+  };
+  const total = (c) => Object.values(seen(c)).reduce((a, b) => a + b, 0);
+  const pickups = () => r.client.sent.filter(([k]) => k === 'ground_pickup').map(([, p]) => p);
+
+  it('settled: onto your shelf\'s apples at once (the stubbed slow server takes 400 ms), the save\'s stack swapped in on the answer', async () => {
+    const all = total('apple');
+    const t0 = performance.now();
+    assert.deepEqual(r.feature.claimSharedStack(hex(1), { tsid: ROOM, x: 1004, y: 400, on: 4, into: 'world-item-1' }, r.engine), { ok: true });
+    const shownMs = performance.now() - t0;
+    assert.deepEqual(seen('apple'), { floor: 0, shelf: 33, pack: 1 }, 'off the floor, on the shelf stack at once');
+    assert.equal(state.streets[ROOM][0].count, 3, 'the save itself unchanged until the answer');
+    assert.ok(shownMs < 50, `shown in ${shownMs.toFixed(1)} ms`);
+    assert.deepEqual(pickups().at(-1), { id: hex(1), ox: 750 });
+    await wait(SLOW_MS);
+    r.client.emit('msg:ground_gone', { id: hex(1), by: { id: 7, name: 'Ada' }, why: 'picked' });
+    assert.equal(total('apple'), all, 'between the two messages');
+    r.client.emit('msg:ground_taken', { op: `${hex(1)}-t`, id: hex(1), status: 'settled', item: { c: 'apple', n: 30 } });
+    assert.deepEqual(seen('apple'), { floor: 0, shelf: 33, pack: 1 });
+    assert.deepEqual([state.streets[ROOM][0].count, r.s.ownGrowth(ROOM), r.s.claims.length], [33, null, 0]);
+  });
+
+  it('alone on a table: drawn there at once, locked (decor), a pile of 12 emblems', async () => {
+    await wait(1100);
+    r.feature.claimSharedStack(hex(2), { tsid: ROOM, x: 820, y: 500, on: 3, into: null }, r.engine);
+    const ph = r.s.list(ROOM).find((x) => x.pendingDecor);
+    assert.deepEqual([ph.classTsid, ph.count, ph.x, ph.y, ph.on, ph.decor], ['emblem_mab', 12, 820, 500, 3, true]);
+    assert.equal(r.s.list(ROOM).some((x) => x.id === hex(2)), false, 'off the floor');
+    r.client.emit('msg:ground_taken', { op: `${hex(2)}-t`, id: hex(2), status: 'settled', item: { c: 'emblem_mab', n: 12 } });
+    const row = state.streets[ROOM].find((x) => x.classTsid === 'emblem_mab');
+    assert.deepEqual([row.count, row.on, row.decor, r.s.list(ROOM).some((x) => x.pendingDecor)], [12, 3, true, false]);
+  });
+
+  it('refused: back on the floor where it was; the save unchanged', async () => {
+    await wait(1100);
+    const before = JSON.stringify(state);
+    r.feature.claimSharedStack(hex(3), { tsid: ROOM, x: 820, y: 400, on: 4 }, r.engine);
+    assert.deepEqual(seen('plank').floor, 5, 'only the other planks on the floor');
+    r.client.emit('msg:ground_taken', { op: `${hex(3)}-t`, id: hex(3), status: 'refused', why: 'gone', text: 'Someone is already picking that up.' });
+    const back = r.s.list(ROOM).find((x) => x.id === hex(3));
+    assert.deepEqual([back.count, back.x, JSON.stringify(state)], [2, 600 + 750, before]);
+  });
+
+  it('timed out: back on the floor; a late answer sets it on the shelf, once, never in the pack', async () => {
+    await wait(1100);
+    r.feature.claimSharedStack(hex(3), { tsid: ROOM, x: 900, y: 400, on: 4 }, r.engine);
+    r.s.tick(Date.now() + 16000);
+    assert.equal(r.s.list(ROOM).find((x) => x.id === hex(3))?.x, 600 + 750, 'back where it was');
+    assert.equal(r.s.claims.length, 0);
+    r.client.emit('msg:ground_gone', { id: hex(3), by: { id: 7, name: 'Ada' }, why: 'picked' });
+    r.client.emit('msg:ground_taken', { op: `${hex(3)}-t`, id: hex(3), status: 'settled', item: { c: 'plank', n: 2 } });
+    r.client.emit('msg:ground_taken', { op: `${hex(3)}-t`, id: hex(3), status: 'settled', item: { c: 'plank', n: 2 } });
+    const rows = state.streets[ROOM].filter((x) => x.classTsid === 'plank');
+    assert.deepEqual([rows.map((x) => [x.count, x.x, x.on]), r.engine.inv.plank], [[[2, 900, 4]], undefined]);
+  });
+
+  it('a quick burst: each off the floor and on the shelf at once, sent one at a time; nothing lost or twice', async () => {
+    await wait(1100);
+    r.client.emit('msg:ground_added', { stack: stack(hex(6), 'gem_moonstone', 2, 900) });
+    const all = { plank: total('plank'), gem_moonstone: total('gem_moonstone') };
+    const sentBefore = pickups().length;
+    r.feature.claimSharedStack(hex(4), { tsid: ROOM, x: 300, y: 400, on: 4 }, r.engine);
+    r.feature.claimSharedStack(hex(5), { tsid: ROOM, x: 400, y: 400, on: 4 }, r.engine);
+    r.feature.claimSharedStack(hex(6), { tsid: ROOM, x: 1400, y: 400, on: 5 }, r.engine);
+    assert.deepEqual([seen('plank').floor, seen('gem_moonstone').floor], [0, 0], 'all three off the floor at once');
+    assert.deepEqual([seen('plank').shelf, seen('gem_moonstone').shelf], [7, 5], 'and on the shelves');
+    assert.equal(pickups().length - sentBefore, 1, 'one weighed at a time');
+    for (const [id, c, n] of [[hex(4), 'plank', 5], [hex(5), 'gem_moonstone', 3], [hex(6), 'gem_moonstone', 2]]) {
+      assert.equal(pickups().at(-1).id, id, 'in order');
+      r.client.emit('msg:ground_gone', { id, by: { id: 7, name: 'Ada' }, why: 'picked' });
+      r.client.emit('msg:ground_taken', { op: `${id}-t`, id, status: 'settled', item: { c, n } });
+      assert.deepEqual([total('plank'), total('gem_moonstone')], [all.plank, all.gem_moonstone], `after ${id}`);
+      await wait(20);
+    }
+    assert.deepEqual([r.s.claims.length, r.s.ownGrowth(ROOM), state.streets[ROOM].filter((x) => x.classTsid === 'gem_moonstone').length], [0, null, 2]);
   });
 });

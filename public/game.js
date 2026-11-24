@@ -16029,8 +16029,11 @@ function refreshDroppedWorldItems() {
   // QA: &homemarks=demo marks them in solo at your own home too, every second one of your own drawn as shared.
   const demo = HOME_MARKS_DEMO && (({ inHome, owned }) => Boolean(inHome && owned))(engine.homeContext());
   const ownHome = demo || features.query('homeStackMarks', engine) === true;
-  streetStacks.forEach((stack, i) => spawnDroppedItemStack(stack, homeStackMark({ ownHome, fromSave: !(demo && i % 2), shared: true })));
-  for (const stack of sharedStacks) spawnDroppedItemStack(stack, homeStackMark({ ownHome, shared: stack.shared === true }));
+  // A shared stack being set on a shelf or table shows there at once (features/drops-mp-feature.js claim):
+  // on the like stack of yours it joins (its count grown here, drawn only) or on its own, locked as decor.
+  const grown = features.query('ownStackGrowth', droppedStacksTsid(), engine);
+  streetStacks.forEach((stack, i) => spawnDroppedItemStack(grown?.[stack.id] ? { ...stack, count: stack.count + grown[stack.id] } : stack, homeStackMark({ ownHome, fromSave: !(demo && i % 2), shared: true })));
+  for (const stack of sharedStacks) spawnDroppedItemStack(stack, homeStackMark({ ownHome, fromSave: stack.pendingDecor === true, shared: stack.shared === true }));
   updateHomeStackPips();
 }
 

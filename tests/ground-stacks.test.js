@@ -149,12 +149,13 @@ describe('Decoration Mode at the owner\'s own house online', () => {
     assert.equal(all.find((s) => s.id === OP).x, 1050, 'drawn from the house\'s left end, as Decoration Mode hits it');
   });
 
-  it('moving the 30 honey onto the shelf\'s older honey asks the server for all of it, and nothing moves yet', () => {
+  it('moving the 30 honey onto the shelf\'s older honey asks the server for all of it, and the save does not change yet', () => {
     const res = dropsMpFeature.claimSharedStack(OP, { tsid: 'RH_HOME_INT', x: 1004, y: 400, on: 4, into: 'world-item-1' }, engine);
     assert.deepEqual(res, { ok: true });
     assert.deepEqual(client.sent.at(-1), ['ground_pickup', { id: OP, ox: 750 }], 'the whole stack: no count');
     assert.equal(state.streets.RH_HOME_INT[0].count, 3);
-    assert.equal(dropsMpFeature.claimSharedStack(OP2, { tsid: 'RH_HOME_INT', x: 1, y: 1 }, engine).reason, 'busy', 'one pickup at a time');
+    assert.equal(dropsMpFeature.claimSharedStack(OP, { tsid: 'RH_HOME_INT', x: 1, y: 1 }, engine).reason, 'busy', 'already on its way to the shelf');
+    assert.equal(client.sent.filter(([k]) => k === 'ground_pickup').length, 1, 'one pickup at a time');
   });
 
   it('the site\'s answer stacks it with the older honey in the save, locked to the owner, never through the pack', async () => {

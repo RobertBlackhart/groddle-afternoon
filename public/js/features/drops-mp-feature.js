@@ -51,7 +51,10 @@
  * or on its own (list), while the server weighs it; a floor move shows at its new spot the same way.
  * That is display only: the pack, the save and the ledger change on the server's answer as before
  * (apply). A refusal, a timeout or a lost connection puts the count back in the pack's view and takes
- * the stack away; a settled answer swaps it for the real one. The drops wait their turn in the queue
+ * the stack away; a settled answer swaps it for the real one. Decoration Mode's move of a shared stack
+ * onto a shelf or table (claim) shows the same way: off the floor at once and on the shelf, locked, on
+ * the like stack it joins (ownStackGrowth) or on its own; refused or timed out, it is back on the floor
+ * where it was (a late answer still sets it on the shelf, once). The drops wait their turn in the queue
  * (the server weighs one drop at a time per player, and the save is written before each), each shown
  * from the moment it is dropped.
  *
@@ -64,6 +67,8 @@ import { ITEM_CATALOG, addItem, countItem, removeItem } from '../inventory.js?v=
 import { TOOL_CONDITION_CATALOG, leavingCopyTag, leavingToolWear, receiveToolCopy, takeToolCopy } from '../tools.js?v=4156bba8';
 import { createMinnAccount } from '../minn-account.js?v=ca9fb98e';
 import { saveStore, savedThrough } from '../save-store.js?v=4e720735';
+import { ownGroundRows } from '../ground-stacks.js?v=22792362';
+import { pileMaxOf } from '../world-items.js?v=220d7a7a';
 import { DROP_OP, DROP_QUEUE_MAX, DROP_TEXT, bucketTake, dropEffect, dropRefusalText, eatenStack, floorPileMax, groundFrom, homePlaceOf, isFloorPlace, isPublicStreet, likeSharedStack, normalizeGroundStack, normalizeItem, normalizeMine, pickupAsk, pigAnimalKey, shareReason, stackAt, stackLeft } from '../drops-mp.js?v=dec58c3d';
 
 export const DROPS_MP_FEATURE_ID = 'drops-mp';
@@ -120,6 +125,15 @@ function createSession(engine, client) {
    */
   const pending = [];
   let pendN = 0;
+  /**
+   * Decoration Mode's claims shown before the server's answer, in order (sent one at a time: the
+   * server weighs one pickup per player): { id ('pend-claim-<n>', the stack drawn on the shelf), sid
+   * (the shared stack), c, n, tsid, x, y, on, into, sent, done }.
+   */
+  const claims = [];
+  let claimTimer = null;
+  /** A claim whose answer did not come in time, by shared stack id: a late answer still sets it on the shelf. */
+  const lateClaims = new Map();
 
   function loadTable() {
     if (table || tableLoading) return tableLoading;
@@ -150,6 +164,7 @@ function createSession(engine, client) {
   /** The drops shown changed: the done ones go, the pack and the stacks are drawn again. */
   function pendingChanged() {
     for (let i = pending.length - 1; i >= 0; i -= 1) if (pending[i].done) pending.splice(i, 1);
+    for (let i = claims.length - 1; i >= 0; i -= 1) if (claims[i].done) claims.splice(i, 1);
     engine.refreshPack?.();
     redraw();
   }
@@ -170,10 +185,42 @@ function createSession(engine, client) {
   }
 
   function endAllPending() {
-    if (!pending.length && !moving) return;
+    if (!pending.length && !claims.length && !moving) return;
     for (const q of pending) q.done = true;
+    for (const q of claims) q.done = true;
     moving = null;
     pendingChanged();
+  }
+
+  /** The like stack of the save a claim shown joins on its shelf (setDownStack's into), and how many it takes there. */
+  function claimJoin(q) {
+    if (!q.into) return null;
+    const row = ownGroundRows(engine, q.tsid).find((r) => r?.id === q.into && r.classTsid === q.c && Number(r.count) > 0);
+    if (!row) return null;
+    const k = Math.max(0, Math.min(q.n, pileMaxOf(q.c) - Number(row.count)));
+    return k > 0 ? { row, k } : null;
+  }
+
+  /** What the claims shown add to the save's own stacks at a place ({ row id: n }), or null (game.js draws them so). */
+  function ownGrowth(tsid) {
+    const out = {};
+    for (const q of claims) {
+      if (q.done || q.tsid !== tsid) continue;
+      const j = claimJoin(q);
+      if (j) out[j.row.id] = (out[j.row.id] || 0) + j.k;
+    }
+    return Object.keys(out).length ? out : null;
+  }
+
+  /** The claims shown on their shelf or table at a place, each on its own (what does not join a stack of the save). */
+  function claimsShown(tsid) {
+    const out = [];
+    for (const q of claims) {
+      if (q.done || q.tsid !== tsid) continue;
+      const n = q.n - (claimJoin(q)?.k || 0);
+      if (n > 0) out.push({ id: q.id, streetTsid: tsid, classTsid: q.c, count: n, x: q.x, y: q.y, ...(q.on != null ? { on: q.on } : {}), droppedAt: q.at, decor: true, pending: true, pendingDecor: true, shared: true });
+    }
+    return out;
   }
 
   /** The stack a drop shown joins, as an id in `map` (an earlier shown one now settled is its real stack), or null. */
@@ -210,6 +257,8 @@ function createSession(engine, client) {
       else rest += q.joinN;
       if (rest > 0) out.set(q.id, shownOwn(q, rest));
     }
+    // A stack being set on a shelf or table is off the floor at once.
+    for (const q of claims) if (!q.done) out.delete(q.sid);
     const s = moving && out.get(moving.id);
     if (s) {
       const t = moving.into ? out.get(moving.into) : null;
@@ -294,7 +343,7 @@ function createSession(engine, client) {
    * R50: a claimed stack (Decoration Mode) set down in the owner's save where it was moved: true when
    * it is down. Its tool wear and one copy's words go with it, as an own drop keeps them (dropOwn).
    */
-  function setDownClaim(claim, item) {
+  function setDownClaim(claim, item, sounded = false) {
     const it = normalizeItem(item);
     if (!it || !claim?.tsid || typeof engine.placeOwnStack !== 'function') return false;
     const res = engine.placeOwnStack(claim.tsid, it.c, it.n, {
@@ -306,7 +355,7 @@ function createSession(engine, client) {
       ...(it.t != null && it.n === 1 ? { tags: [it.t] } : {}),
     });
     if (!res?.ok) return false;
-    engine.playSound?.('ITEM_DROP', { volume: 0.45 });
+    if (!sounded) engine.playSound?.('ITEM_DROP', { volume: 0.45 });
     engine.save?.();
     tell(DROP_TEXT.claimed(it.n, it.n === 1 ? itemLabel(it.c) : itemLabel(it.c, it.n)));
     engine.query?.('homeStackClaimed', res.id, engine);
@@ -319,7 +368,7 @@ function createSession(engine, client) {
    */
   function apply(op, side, item, at = null, copy = null, claim = null, { sounded = false } = {}) {
     if (!op || engine.query?.('ledgerReceipt', op, engine) !== true) return false;
-    if (side === 'took' && claim && setDownClaim(claim, item)) return true;
+    if (side === 'took' && claim && setDownClaim(claim, item, sounded)) return true;
     const fx = dropEffect(side, item, itemLabel);
     if (!fx) return false;
     const inv = engine.inv;
@@ -466,15 +515,27 @@ function createSession(engine, client) {
   });
 
   client.on('msg:ground_taken', (msg) => {
-    const claim = picking?.claim && picking.id === String(msg.id || '') ? picking.claim : null;
-    picking = null;
+    const id = String(msg.id || '');
+    const mine = picking && picking.id === id ? picking : null;
+    // A claim that timed out still sets it on the shelf when its answer comes late.
+    const late = mine ? null : lateClaims.get(id);
+    const claim = mine?.claim || late?.claim || null;
+    const entry = mine?.entry || null;
+    if (!picking || mine) picking = null;
+    lateClaims.delete(id);
     if (msg.status !== 'settled') {
+      // Refused: the claim shown is back on the floor where it was.
+      endClaim(entry);
       tell(String(msg.text || DROP_TEXT.gone));
       if (claim) engine.query?.('homeStackClaimed', null, engine);
+      pumpClaims();
       return;
     }
-    const s = stacks.get(String(msg.id || ''));
-    apply(String(msg.op || ''), 'took', msg.item, shown(s) || engine.player, null, claim);
+    endClaim(entry, { quiet: true });
+    const s = stacks.get(id);
+    apply(String(msg.op || ''), 'took', msg.item, shown(s) || engine.player, null, claim, { sounded: Boolean(entry) });
+    pendingChanged();
+    pumpClaims();
   });
 
   client.on('msg:ground_back', (msg) => {
@@ -487,6 +548,8 @@ function createSession(engine, client) {
       // Off the server: its stacks are not drawn, and an answer under way comes back through the site's list.
       // The drops still waiting stay in the pack.
       dropping = null;
+      // A claim under way: its answer comes through the site's list, and still sets it on the shelf.
+      if (picking?.claim) lateClaims.set(picking.id, { claim: picking.claim });
       picking = null;
       dropQueue();
       endAllPending();
@@ -512,7 +575,9 @@ function createSession(engine, client) {
         if (m.side === 'dropped' && dropping) continue; // its answer may still come
         // A claim's answer may still come, to set it down where Decoration Mode moved it (R50).
         if (m.side === 'took' && picking?.claim && picking.id === m.id && Date.now() - picking.at < WAIT_MS) continue;
-        apply(m.op, m.side, m.item);
+        const late = m.side === 'took' ? lateClaims.get(m.id) : null;
+        if (late) lateClaims.delete(m.id);
+        apply(m.op, m.side, m.item, null, null, late?.claim || null);
       }
     } catch (err) {
       console.warn('[drops]', err?.message || err);
@@ -666,7 +731,7 @@ function createSession(engine, client) {
   function pickup(target, count = Infinity) {
     const id = String(target?.state?.id || target?.worldItemId || '');
     // A drop still shown before its answer: it is not on the floor yet.
-    if (/^pend-\d+$/.test(id)) {
+    if (/^pend-/.test(id)) {
       engine.toast?.(DROP_TEXT.busy, 2400);
       return false;
     }
@@ -702,7 +767,7 @@ function createSession(engine, client) {
   function claim(id, to = {}) {
     const p = here();
     const sid = String(id || '');
-    if (/^pend-\d+$/.test(sid)) return { ok: false, reason: 'busy', msg: DROP_TEXT.busy };
+    if (/^pend-/.test(sid)) return { ok: false, reason: 'busy', msg: DROP_TEXT.busy };
     if (!DROP_OP.test(sid)) return null;
     if (!p?.ownHome || !homePlaceOf(p.street)) return { ok: false, reason: 'place', msg: DROP_TEXT.notHome };
     const s = stacks.get(sid);
@@ -711,16 +776,60 @@ function createSession(engine, client) {
       return { ok: false, reason: 'gone', msg: DROP_TEXT.gone };
     }
     if (client.state !== 'online') return { ok: false, reason: 'offline', msg: DROP_TEXT.offline };
-    if (picking && Date.now() - picking.at < WAIT_MS) return { ok: false, reason: 'busy', msg: DROP_TEXT.picking };
+    // Already on its way to a shelf, or too many waiting.
+    const live = claims.filter((q) => !q.done);
+    if (live.some((q) => q.sid === sid) || live.length >= DROP_QUEUE_MAX) return { ok: false, reason: 'busy', msg: DROP_TEXT.picking };
     const tsid = String(to.tsid || '');
     const x = Number(to.x);
     const y = Number(to.y);
     if (!tsid || !Number.isFinite(x) || !Number.isFinite(y)) return { ok: false, reason: 'where' };
-    if (!bucketTake(rate, Date.now()).ok) return { ok: false, reason: 'slow', msg: DROP_TEXT.slow };
-    picking = { id: sid, n: null, at: Date.now(), claim: { tsid, x: Math.round(x), y: Math.round(y), on: to.on ?? null, into: to.into ? String(to.into) : null, c: s.classTsid } };
-    client.send('ground_pickup', { id: sid, ...(p.ox ? { ox: p.ox } : {}) });
-    publish();
+    // Shown at once: off the floor, on the shelf or table (locked), on the like stack it joins there.
+    pendN += 1;
+    claims.push({ id: `pend-claim-${pendN}`, sid, c: s.classTsid, n: s.count, tsid, x: Math.round(x), y: Math.round(y), on: to.on ?? null, into: to.into ? String(to.into) : null, at: Date.now(), sent: false, done: false });
+    engine.playSound?.('ITEM_DROP', { volume: 0.45 });
+    pumpClaims();
+    pendingChanged();
     return { ok: true };
+  }
+
+  /** A claim shown ends: refused or given up, the stack is back on the floor; settled, the save's stack takes its place. */
+  function endClaim(q, { quiet = false } = {}) {
+    if (!q || q.done) return;
+    q.done = true;
+    if (!quiet) pendingChanged();
+  }
+
+  /** Sends the next claim waiting when no pickup is being weighed and the rate allows (drops.go: one pickup at a time). */
+  function pumpClaims() {
+    if (claimTimer) {
+      clearTimeout(claimTimer);
+      claimTimer = null;
+    }
+    while (!picking) {
+      const q = claims.find((o) => !o.done && !o.sent);
+      if (!q) break;
+      const p = here();
+      if (!p?.ownHome) {
+        for (const o of claims) o.done = true;
+        pendingChanged();
+        break;
+      }
+      // Taken by someone else while it waited: it is gone, nothing to set down.
+      if (!stacks.has(q.sid)) {
+        endClaim(q);
+        tell(DROP_TEXT.gone);
+        continue;
+      }
+      const go = bucketTake(rate, Date.now());
+      if (!go.ok) {
+        claimTimer = setTimeout(pumpClaims, go.waitMs);
+        break;
+      }
+      q.sent = true;
+      picking = { id: q.sid, n: null, at: Date.now(), claim: { tsid: q.tsid, x: q.x, y: q.y, on: q.on, into: q.into, c: q.c }, entry: q };
+      client.send('ground_pickup', { id: q.sid, ...(p.ox ? { ox: p.ox } : {}) });
+    }
+    publish();
   }
 
   /**
@@ -732,7 +841,7 @@ function createSession(engine, client) {
   function move(id, to = {}) {
     const p = here();
     const sid = String(id || '');
-    if (/^pend-\d+$/.test(sid)) return { ok: false, reason: 'busy', msg: DROP_TEXT.busy };
+    if (/^pend-/.test(sid)) return { ok: false, reason: 'busy', msg: DROP_TEXT.busy };
     if (!DROP_OP.test(sid)) return null;
     const place = p ? homePlaceOf(p.street) : null;
     if (!p?.ownHome || !place || (place.room !== 'interior' && place.room !== 'tower')) return { ok: false, reason: 'place', msg: DROP_TEXT.notHome };
@@ -789,7 +898,7 @@ function createSession(engine, client) {
     const p = here();
     if (!p || tsid !== p.key || street !== p.street) return [];
     const all = [...view(p).values()];
-    return p.ox ? all.map((s) => stackAt(s, p.ox)) : all;
+    return [...(p.ox ? all.map((s) => stackAt(s, p.ox)) : all), ...claimsShown(p.key)];
   }
 
   publish();
@@ -804,7 +913,9 @@ function createSession(engine, client) {
     get picking() { return picking; },
     get moving() { return moving; },
     get pending() { return pending.filter((q) => !q.done).map((q) => ({ ...q })); },
+    get claims() { return claims.filter((q) => !q.done).map((q) => ({ ...q })); },
     held,
+    ownGrowth,
     drop,
     pickup,
     claim,
@@ -831,6 +942,14 @@ function createSession(engine, client) {
       if (dropping && now - dropping.at >= WAIT_MS) {
         giveUp();
         pump();
+      }
+      // A claim with no answer in time: back on the floor; a late answer still sets it on the shelf.
+      if (picking && now - picking.at >= WAIT_MS) {
+        const q = picking.entry || null;
+        if (q) lateClaims.set(picking.id, { claim: picking.claim });
+        picking = null;
+        endClaim(q);
+        pumpClaims();
       }
       if (moving && ((moving.settled && now >= moving.until) || (!moving.settled && now - moving.at >= WAIT_MS))) {
         moving = null;
@@ -898,6 +1017,13 @@ export const dropsMpFeature = {
   packHeld(engine) {
     if (!multiplayer || !session || engine?.mode !== 'multiplayer') return null;
     return session.held();
+  },
+
+  /** game.js refreshDroppedWorldItems: what Decoration Mode's claims shown add to the save's own stacks here ({ row id: n }), or null. */
+  ownStackGrowth(tsid, engine) {
+    if (!multiplayer || !session || engine?.mode !== 'multiplayer') return null;
+    const p = session.here();
+    return p && String(tsid || '') === p.key ? session.ownGrowth(p.key) : null;
   },
 
   /** game.js shareOwnStack: whether `count` of a class goes to the shared floor here as one stack. */
