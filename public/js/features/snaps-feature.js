@@ -37,7 +37,7 @@
  * snapsCount, snapsLast. window.groddleSnaps in multiplayer.
  */
 
-import { createMinnAccount } from '../minn-account.js?v=83127c18';
+import { createMinnAccount } from '../minn-account.js?v=ca9fb98e';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import { worldCanvasFont } from '../world-text.js?v=6b49f88c';
 import { ITEM_CATALOG, countItem, ensureItem, itemIcon } from '../inventory.js?v=6414dbdc';

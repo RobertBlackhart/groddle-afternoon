@@ -35,13 +35,13 @@
  * QA: /play/ on groddle.localhost, Menu, Account; /play/online/, Menu, Sign out.
  */
 
-import { createMinnAccount } from '../minn-account.js?v=83127c18';
+import { createMinnAccount } from '../minn-account.js?v=ca9fb98e';
 import { mountAccountForms, mountAccountSettings, mountPresenceSetting } from '../account-forms.js?v=683e1475';
 import { createBrowserSaveStore, freezeSoloSaves, restoreSoloSave, saveStore, savedAtOf, soloSaveSnapshot, thawSoloSaves } from '../save-store.js?v=4e720735';
 import { formatGameDayLabel } from '../game-day.js?v=a532775d';
 import { multiplayerEntryUrl } from '../game-mode.js?v=1ecf2899';
-import { markContinued, quietSession } from '../online-boot.js?v=172dc26f';
-import { installCharacterSwitcher } from '../character-switcher.js?v=9a08acd8';
+import { markContinued, quietSession } from '../online-boot.js?v=f1f2766b';
+import { installCharacterSwitcher } from '../character-switcher.js?v=265e3b6a';
 import { mountChangeName } from '../change-name.js?v=4685ccda';
 
 /** Which slot a new backup goes to: the first empty one, else the oldest (which then needs a yes). */

@@ -42,11 +42,11 @@ import {
 } from '../public/js/neighbours-mp.js?v=a336ee09';
 import { createButlerState, giveGiftTo, newestVisit, nextHandover, normalizeButlerState, packagesAndMessagesForOwner, recordVisitor, setGift, visitorsReport } from '../public/js/butler.js?v=6c66ebf5';
 import { GARDEN_SPEEDUP, SEED_CATALOG as GARDEN_SEEDS, createGarden, tickGarden } from '../public/js/garden.js?v=0cbb65f0';
-import { butlerApi } from '../public/js/features/butler-feature.js?v=bf0ca155';
+import { butlerApi } from '../public/js/features/butler-feature.js?v=b1f8ec3b';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
 import { acceptOffer, routeQuestEvent } from '../public/js/quest-offers.js?v=32d4127e';
-import { neighboursMpFeature } from '../public/js/features/neighbours-mp-feature.js?v=aee50257';
-import { createMinnAccount } from '../public/js/minn-account.js?v=83127c18';
+import { neighboursMpFeature } from '../public/js/features/neighbours-mp-feature.js?v=075f5551';
+import { createMinnAccount } from '../public/js/minn-account.js?v=ca9fb98e';
 import { HAS_SERVER, HAS_SITE, SITE_DIR, serverPath, sitePath } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');

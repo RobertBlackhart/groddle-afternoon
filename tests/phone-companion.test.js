@@ -17,8 +17,8 @@ import { existsSync, readFileSync, statSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import vm from 'node:vm';
 import { sitePath, skipWithoutSite } from '../tools/repos.mjs';
-import { createMinnAccount } from '../public/js/minn-account.js?v=83127c18';
-import { REPORT_PICTURE } from '../public/js/reports.js?v=c8204bf7';
+import { createMinnAccount } from '../public/js/minn-account.js?v=ca9fb98e';
+import { REPORT_PICTURE } from '../public/js/reports.js?v=e861d5aa';
 import {
   DEVICE_KEY,
   PHONE_TEXT,
@@ -40,7 +40,7 @@ import {
   takenMailIds,
   unreadLetters,
   whereWords,
-} from '../public/js/phone/companion-data.js?v=9ab42bf3';
+} from '../public/js/phone/companion-data.js?v=464e4058';
 
 const pub = join(import.meta.dirname, '..', 'public');
 const read = (p) => readFileSync(join(pub, p), 'utf8');
@@ -229,10 +229,11 @@ describe('play/phone/ (the companion page)', () => {
   it('loads the account\'s core only, and every call its pages make is in the core', async () => {
     assert.ok(graph.includes('js/minn-account-core.js'), graph.join(' '));
     assert.ok(!graph.includes('js/minn-account.js'), 'the game-only calls stay out of the phone');
-    const { createMinnAccountCore } = await import('../public/js/minn-account-core.js?v=3ed80184');
+    const { createMinnAccountCore } = await import('../public/js/minn-account-core.js?v=5baee954');
     const core = createMinnAccountCore({ baseUri: 'https://groddle.localhost/', fetch: async () => ({}) });
     const used = new Set();
-    for (const f of ['js/phone/companion.js', 'js/account-forms.js', 'js/online-boot.js', 'js/phone/companion-data.js']) {
+    // #636: the Account tab's module and the Change name form it mounts call the core too.
+    for (const f of ['js/phone/companion.js', 'js/account-forms.js', 'js/online-boot.js', 'js/phone/companion-data.js', 'js/phone/account-tab.js', 'js/change-name.js']) {
       const src = readFileSync(join(pub, f), 'utf8').replace(/\/\*[\s\S]*?\*\/|\/\/[^\n]*/g, '');
       for (const m of src.matchAll(/\baccount\.([a-zA-Z]+)/g)) used.add(m[1]);
     }

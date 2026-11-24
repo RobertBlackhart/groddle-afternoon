@@ -4,7 +4,7 @@
  * and start from it, so the phone (tests/phone-companion.test.js, 240 KB) never loads them.
  * createMinnAccount() answers one object with both.
  */
-import { accountParts, minnUrls } from './minn-account-core.js?v=3ed80184';
+import { accountParts, minnUrls } from './minn-account-core.js?v=5baee954';
 
 export { minnUrls };
 
@@ -130,20 +130,11 @@ export function createMinnAccount(opts = {}) {
     },
 
     /**
-     * The player's profile (register G338, groddle-afternoon-site/src/Profiles.php):
-     * { id, name, url, about, aboutMax, avatar: { key, at, url } | null,
-     * home: { key, at, url } | null }. Each write answers the same. Pictures
-     * are base64 PNGs (the site checks and re-encodes them). A refusal
-     * throws with .status, .code and the site's .message.
+     * The profile's pictures (register G338, groddle-afternoon-site/src/Profiles.php; profile() and
+     * saveAbout() are in js/minn-account-core.js, the phone page writes the description too). Pictures
+     * are base64 PNGs (the site checks and re-encodes them). A refusal throws with .status, .code and
+     * the site's .message.
      */
-    async profile() {
-      return buddyCall('Loading your profile', 'profile');
-    },
-
-    async saveAbout(about) {
-      return buddyCall('Saving your profile', 'profile', { method: 'PUT', body: { about: String(about ?? '') } });
-    },
-
     async uploadAvatar({ key, avatar, tile }) {
       return buddyCall('Saving your avatar picture', 'profile/avatar', { method: 'PUT', body: { key, avatar, tile } });
     },

@@ -34,7 +34,7 @@ import {
   switchStreetStyle,
 } from '../public/js/home-styles.js?v=ec5d2f69';
 import { HOME_STYLES } from '../public/js/homes.js?v=10f6604f';
-import { besideSpot, landscapeItemHalf, landscapeNearSpots } from '../public/js/features/homes-feature.js?v=cc185e5a';
+import { besideSpot, landscapeItemHalf, landscapeNearSpots } from '../public/js/features/homes-feature.js?v=ce5bc123';
 import { templateNames, templatePair } from '../tools/home-styles/build.mjs';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');

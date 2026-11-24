@@ -16,9 +16,9 @@ import { existsSync, readFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 
-import { createMinnAccountCore } from '../public/js/minn-account-core.js?v=3ed80184';
+import { createMinnAccountCore } from '../public/js/minn-account-core.js?v=5baee954';
 import { EMAIL_LINK_COPY, SETTINGS_COPY, emailLinkFrom, emailLinkOutcome, fillCopy, resetLinkFrom, verifyLinkFrom } from '../public/js/account-forms.js?v=683e1475';
-import { GATE_COPY } from '../public/js/online-boot.js?v=172dc26f';
+import { GATE_COPY } from '../public/js/online-boot.js?v=f1f2766b';
 import { SITE_DIR, sitePath, skipWithoutSite } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');

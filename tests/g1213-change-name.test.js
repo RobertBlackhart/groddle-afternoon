@@ -21,7 +21,7 @@ import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { SITE_DIR, serverPath, sitePath, skipWithoutServer, skipWithoutSite } from '../tools/repos.mjs';
 import { CHANGE_NAME_COPY, RENAME_COST, RENAME_DAYS, applyRename, mountChangeName, renameDate, renameProblem } from '../public/js/change-name.js?v=4685ccda';
-import { createMinnAccountCore } from '../public/js/minn-account-core.js?v=3ed80184';
+import { createMinnAccountCore } from '../public/js/minn-account-core.js?v=5baee954';
 import { createRealtimeClient } from '../public/js/realtime-client.js?v=5e2348b7';
 
 const root = join(import.meta.dirname, '..');

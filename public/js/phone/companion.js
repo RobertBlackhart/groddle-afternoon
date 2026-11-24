@@ -4,9 +4,10 @@
  * #phone-gate script), because the game is more than a phone tab holds. It
  * signs the player in with the game's own forms (js/account-forms.js, the
  * /play/online/ gate's flow: js/online-session.js quietSession, suspendedNow),
- * then shows three tabs over the routes the game already uses
+ * then shows four tabs over the routes the game already uses
  * (js/phone/companion-data.js): Reports (read, reply, close, write a new one
- * with a photo), Mail (read only) and Friends (who is playing and where).
+ * with a photo), Mail (read only), Friends (who is playing and where) and
+ * Account (#636, js/phone/account-tab.js).
  * It never loads Pixi, game.js or the game's assets.
  *
  * Deep links the game's emails use keep working: #report=<id> opens that
@@ -14,7 +15,7 @@
  * finish a sign-up or a password reset.
  *
  * QA hooks: <main id="phone-app" data-phone="checking|signed-out|ready|...">,
- * [data-phone-tab=reports|mail|friends] with .pc-badge, panels
+ * [data-phone-tab=reports|mail|friends|account] with .pc-badge, panels
  * [data-phone-panel=...] with data-view, [data-phone-signout],
  * [data-phone-full], [data-ticket=<id>], [data-letter=<id>],
  * [data-friend=<id>], #pc-report-text, #pc-photo, #pc-reply-text, #pc-reply-photo.
@@ -34,12 +35,12 @@
  * photo that is sent and shown on its thumbnail ("1 mark", [data-phone-photo-marks]).
  */
 
-import { createMinnAccountCore } from '../minn-account-core.js?v=3ed80184';
+import { createMinnAccountCore } from '../minn-account-core.js?v=5baee954';
 import { mountAccountForms, resetLinkFrom, verifyLinkFrom } from '../account-forms.js?v=683e1475';
 import { gateFor, quietSession, suspendedNow } from '../online-session.js?v=6f1348c8';
-import { REPORT_MAX, REPORT_TEXT, STATUS_WORDS, canEditFirst, createReportsApi, messagePictures, numberedLine, pictureRefused, pictureSrc, refusalWords, reportFromHash, reportNumber, unreadCount, whenWords } from '../reports.js?v=c8204bf7';
-import { PICTURE_TEXT, REPORT_PICTURES, convertPicture, refusalWords as pictureRefusal, roomFor, takeForRoom } from '../report-pictures.js?v=80e6320d';
-import { DEVICE_KEY, PHONE_TEXT as T, PLAY_ONCE_HASH, PLAY_ONCE_KEY, POLL_MS, createPresenceApi, friendsView, fullGameHref, itemNamesFrom, itemWords, mailRows, mailboxFromSave, mergePlayerMail, phoneContext, phoneDevice, takenMailIds, unreadLetters } from './companion-data.js?v=9ab42bf3';
+import { REPORT_MAX, REPORT_TEXT, STATUS_WORDS, canEditFirst, createReportsApi, messagePictures, numberedLine, pictureRefused, pictureSrc, refusalWords, reportFromHash, reportNumber, unreadCount, whenWords } from '../reports.js?v=e861d5aa';
+import { PICTURE_TEXT, REPORT_PICTURES, convertPicture, refusalWords as pictureRefusal, roomFor, takeForRoom } from '../report-pictures.js?v=84c52271';
+import { DEVICE_KEY, PHONE_TEXT as T, PLAY_ONCE_HASH, PLAY_ONCE_KEY, POLL_MS, createPresenceApi, friendsView, fullGameHref, itemNamesFrom, itemWords, mailRows, mailboxFromSave, mergePlayerMail, phoneContext, phoneDevice, takenMailIds, unreadLetters } from './companion-data.js?v=464e4058';
 
 const doc = globalThis.document;
 
@@ -239,7 +240,8 @@ async function boot() {
 
 // —— signed in ——
 
-const TABS = ['reports', 'mail', 'friends'];
+const TABS = ['reports', 'mail', 'friends', 'account'];
+let homeSession = null;
 let tabs = {};
 let panels = {};
 let active = 'reports';
@@ -254,6 +256,7 @@ function badge(tab, n, label) {
 }
 
 function showHome(session) {
+  homeSession = session;
   reports = createReportsApi({ baseUri: doc.baseURI, nonce: account.nonce });
   setState('ready');
   gate.hidden = true;
@@ -300,6 +303,25 @@ function select(id, { quiet = false } = {}) {
   if (id === 'reports') loadReports();
   if (id === 'mail') loadMail();
   if (id === 'friends') loadFriends();
+  if (id === 'account') loadAccount();
+}
+
+let accountModule = null;
+const loadAccountModule = () => (accountModule ||= import('./account-tab.js?v=60fd9ebb').catch((err) => { accountModule = null; throw err; }));
+
+async function loadAccount() {
+  const panel = panels.account;
+  if (!panel || panel.dataset.view === 'account') return;
+  panel.dataset.view = 'loading';
+  panel.replaceChildren(el('p', { class: 'pc-note' }, T.loading));
+  try {
+    const { mountPhoneAccount } = await loadAccountModule();
+    mountPhoneAccount(panel, { account, session: homeSession, doc });
+    panel.dataset.view = 'account';
+  } catch {
+    panel.dataset.view = 'failed';
+    panel.replaceChildren(el('p', { class: 'pc-note' }, T.failed));
+  }
 }
 
 function startPolling() {
@@ -550,10 +572,10 @@ function editFirst(t, m, li, body, edit) {
 
 /** The pictures over the page (js/ui/picture-lightbox.js, plain DOM), loaded at the first tap on a picture. */
 let lightboxModule = null;
-const loadLightbox = () => (lightboxModule ||= import('../ui/picture-lightbox.js?v=35d91d38').catch((err) => { lightboxModule = null; throw err; }));
+const loadLightbox = () => (lightboxModule ||= import('../ui/picture-lightbox.js?v=e049f063').catch((err) => { lightboxModule = null; throw err; }));
 /** G808: the rings module, loaded with the lightbox at the first tap on a photo about to go. */
 let marksModule = null;
-const loadMarks = () => (marksModule ||= import('../ui/picture-marks.js?v=9816f40b').catch((err) => { marksModule = null; throw err; }));
+const loadMarks = () => (marksModule ||= import('../ui/picture-marks.js?v=85e99881').catch((err) => { marksModule = null; throw err; }));
 
 /**
  * A picture link that opens `gallery` (each { src, width, height, alt }) at `index` over the page on

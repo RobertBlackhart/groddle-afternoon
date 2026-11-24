@@ -9,9 +9,9 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { MARKS, MARK_COLOURS, MARK_TEXT, clampRing, createMarkBook, dragRing, isTap, paintRings, ringKey, ringPlace, ringStroke, tapRing } from '../public/js/ui/picture-marks.js?v=9816f40b';
-import { openLightbox } from '../public/js/ui/picture-lightbox.js?v=35d91d38';
-import { mountReportsSheet } from '../public/js/ui/reports-sheet.js?v=49109600';
+import { MARKS, MARK_COLOURS, MARK_TEXT, clampRing, createMarkBook, dragRing, isTap, paintRings, ringKey, ringPlace, ringStroke, tapRing } from '../public/js/ui/picture-marks.js?v=85e99881';
+import { openLightbox } from '../public/js/ui/picture-lightbox.js?v=e049f063';
+import { mountReportsSheet } from '../public/js/ui/reports-sheet.js?v=32d2617d';
 
 const root = join(import.meta.dirname, '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

@@ -28,7 +28,7 @@ import {
 } from '../public/js/street-jobs.js?v=3fc80dcd';
 import { projectTable } from '../tools/build-realtime-projects.mjs';
 import { PROJECTS_TEXT } from '../public/js/projects-tracker.js?v=28ac735e';
-import { streetJobsFeature, projectApi } from '../public/js/features/street-jobs-feature.js?v=a36ad88f';
+import { streetJobsFeature, projectApi } from '../public/js/features/street-jobs-feature.js?v=9e2d3f86';
 import { createToolConditionState } from '../public/js/tools.js?v=4156bba8';
 import { Display, FakeEl, fakePixi } from './fake-scene.js';
 

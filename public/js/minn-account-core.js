@@ -426,6 +426,15 @@ export function accountParts({ baseUri, fetch: fetchFn = globalThis.fetch?.bind(
       return buddyCall('Changing how you show', 'account/presence', { method: 'PUT', body: { off: Boolean(off) } });
     },
 
+    /** The profile (G338, site Profiles.php): { id, name, url, about, aboutMax, avatar, home }; #636: the phone writes it too. */
+    async profile() {
+      return buddyCall('Loading your profile', 'profile');
+    },
+
+    async saveAbout(about) {
+      return buddyCall('Saving your profile', 'profile', { method: 'PUT', body: { about: String(about ?? '') } });
+    },
+
     /** The mail between players (the rest of the family: js/minn-account.js). */
     async playerMail() {
       return buddyCall('Checking your mail', 'mail');

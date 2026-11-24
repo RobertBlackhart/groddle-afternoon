@@ -8,7 +8,7 @@
  */
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
-import { createMinnAccountCore } from '../public/js/minn-account-core.js?v=3ed80184';
+import { createMinnAccountCore } from '../public/js/minn-account-core.js?v=5baee954';
 
 describe('the account helper never stays signed out by mistake', () => {
   it('fetches a nonce and retries once when a call made without one gets 401', async () => {

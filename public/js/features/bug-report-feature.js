@@ -82,9 +82,9 @@
  * window.groddleBugReport.open('list'|'new'), .openTicket(id), .refresh() in multiplayer.
  */
 
-import { createReportsApi, REPORT_PICTURE, REPORT_TEXT, UNREAD_POLL_MS, base64Size, isPictureKey, pictureSize, reportFromHash } from '../reports.js?v=c8204bf7';
-import { mountReportsSheet } from '../ui/reports-sheet.js?v=49109600';
-import { PICTURE_TEXT } from '../report-pictures.js?v=80e6320d';
+import { createReportsApi, REPORT_PICTURE, REPORT_TEXT, UNREAD_POLL_MS, base64Size, isPictureKey, pictureSize, reportFromHash } from '../reports.js?v=e861d5aa';
+import { mountReportsSheet } from '../ui/reports-sheet.js?v=32d2617d';
+import { PICTURE_TEXT } from '../report-pictures.js?v=84c52271';
 import { canvasTransparent } from '../render-probe.js?v=ac5e3810';
 import { marksLine, startBaitCheck } from '../extension-marks.js?v=36c70f4b';
 

@@ -7,9 +7,9 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { LIGHTBOX_FIT, LIGHTBOX_PAN_STEP, LIGHTBOX_TEXT, fitPicture, lightboxFocusTarget, lightboxLink, openLightbox, plainClick, zoomScroll } from '../public/js/ui/picture-lightbox.js?v=35d91d38';
-import { mountReportsSheet } from '../public/js/ui/reports-sheet.js?v=49109600';
-import { REPORT_TEXT } from '../public/js/reports.js?v=c8204bf7';
+import { LIGHTBOX_FIT, LIGHTBOX_PAN_STEP, LIGHTBOX_TEXT, fitPicture, lightboxFocusTarget, lightboxLink, openLightbox, plainClick, zoomScroll } from '../public/js/ui/picture-lightbox.js?v=e049f063';
+import { mountReportsSheet } from '../public/js/ui/reports-sheet.js?v=32d2617d';
+import { REPORT_TEXT } from '../public/js/reports.js?v=e861d5aa';
 
 const root = join(import.meta.dirname, '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

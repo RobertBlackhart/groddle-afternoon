@@ -20,7 +20,7 @@
  *   player's game on another device.
  */
 
-import { REPORT_PICTURE, base64Size, pictureSize } from '../reports.js?v=c8204bf7';
+import { REPORT_PICTURE, base64Size, pictureSize } from '../reports.js?v=e861d5aa';
 import { listMailboxMessages, mailSender, normalizeMailboxState } from '../mailbox.js?v=d50d0d05';
 import { addedYouOnly, normalizeList } from '../buddies.js?v=4457d8a4';
 import { letterRow, normalizePlayerMailSlice } from '../player-mail.js?v=b6003af8';
@@ -68,7 +68,7 @@ export const PHONE_TEXT = Object.freeze({
   signedOutTitle: 'Your Groddle Afternoon, on your phone',
   signedOutBody: 'Sign in to read your reports, your mail and see which friends are playing.',
   checking: 'Checking whether you are signed in…',
-  tabs: { reports: 'Reports', mail: 'Mail', friends: 'Friends' },
+  tabs: { reports: 'Reports', mail: 'Mail', friends: 'Friends', account: 'Account' },
   computer: 'Groddle Afternoon plays best on a computer with a keyboard.',
   computerMore: 'Here you can keep up with your reports, letters and friends.',
   playTitle: 'Play on this phone',

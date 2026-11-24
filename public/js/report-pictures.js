@@ -19,7 +19,7 @@
  * and drawer, so the tests run it without a page (tests/report-pictures.test.js).
  */
 
-import { REPORT_PICTURE, base64Size, pictureSize } from './reports.js?v=c8204bf7';
+import { REPORT_PICTURE, base64Size, pictureSize } from './reports.js?v=e861d5aa';
 
 export const REPORT_PICTURES = Object.freeze({
   /** The most pictures one message carries (src/ReportPicture.php MAX_PER_MESSAGE). */
