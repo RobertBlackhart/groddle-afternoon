@@ -14774,6 +14774,26 @@ body:has(#quest-dialogue:not([hidden])) .prompt-stack { z-index: calc(var(--z-mo
 @media (orientation: portrait) {
   :root.touch-phone { --safe-t: calc(env(safe-area-inset-top, 0px) + min(14px, env(safe-area-inset-top, 0px) * 1000)); }
 }
+/* #632, #653, #595 (an iPhone on iOS 27, the game on the Home Screen, upright): since iOS 26.1 a Home
+   Screen web app with a black-translucent status bar and viewport-fit=cover gets the system's Liquid
+   Glass edge over its top: a blur that reaches about 40 px past the status bar and sits above the web
+   view, so the page cannot turn it off (the Wayback Machine's Home Screen app shows the same fog). Austin
+   2026-11-24 chose clearance over dropping black-translucent: the game stays edge to edge, and in the Home
+   Screen app held upright everything at the top moves below the fade, the inset plus 2.5rem (40 px)
+   instead of 14 px. Every top offset reads --safe-t (the pills, the street caption, notices and route
+   cards, the pinned quest, the dark strip body::before, and js/ui/phone-layout.js), so they all move
+   once. The Home Screen app on iOS: display-mode standalone where -webkit-touch-callout is supported
+   (only WebKit on iOS has it), or navigator.standalone (iOS only) setting .ios-home-app
+   (js/touch-controls.js). min() keeps 0 when the inset is 0 (an opaque status bar, an Android phone).
+   A Safari tab keeps its 14 px; sideways, Android and computers are unchanged. Not checked on an iPhone. */
+@media (orientation: portrait) and (display-mode: standalone) {
+  @supports (-webkit-touch-callout: none) {
+    :root.touch-phone { --safe-t: calc(env(safe-area-inset-top, 0px) + min(2.5rem, env(safe-area-inset-top, 0px) * 1000)); }
+  }
+}
+@media (orientation: portrait) {
+  :root.touch-phone.ios-home-app { --safe-t: calc(env(safe-area-inset-top, 0px) + min(2.5rem, env(safe-area-inset-top, 0px) * 1000)); }
+}
 /* #595 (an iPhone on iOS 27, Safari upright): a light fog over the street above the HUD, in the status
    bar. Safari's Liquid Glass (iOS 26 on) runs the page under the status bar in its own window too
    (the pills sit under it, --safe-t) and fades that strip to the page's colour, or to the colour of

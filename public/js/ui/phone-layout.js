@@ -400,11 +400,22 @@ export function mountPhoneLayout({ doc = globalThis.document, root, sheets = {},
     const r = el.getBoundingClientRect();
     return { left: r.left, top: r.top, right: r.right, bottom: r.bottom };
   };
+  // #653: --safe-t upright is a calc() (the inset plus 14 px, or 40 px in the Home Screen app), and a
+  // custom property's computed value is that calc() unresolved: parseFloat read 0, so the notices sat
+  // over the pills on a phone with a notch. A probe's padding resolves the four to px.
+  let insetProbe = null;
   function safeInsets() {
     try {
-      const cs = win.getComputedStyle(html);
-      const px = (n) => parseFloat(cs.getPropertyValue(n)) || 0;
-      return { t: px('--safe-t'), r: px('--safe-r'), b: px('--safe-b'), l: px('--safe-l') };
+      if (!insetProbe || !insetProbe.isConnected) {
+        insetProbe = doc.createElement('div');
+        insetProbe.setAttribute('aria-hidden', 'true');
+        insetProbe.style.cssText = 'position:fixed;left:0;top:0;width:0;height:0;visibility:hidden;pointer-events:none;'
+          + 'padding:var(--safe-t,0px) var(--safe-r,0px) var(--safe-b,0px) var(--safe-l,0px)';
+        (doc.body || html).appendChild(insetProbe);
+      }
+      const cs = win.getComputedStyle(insetProbe);
+      const px = (n) => parseFloat(cs[n]) || 0;
+      return { t: px('paddingTop'), r: px('paddingRight'), b: px('paddingBottom'), l: px('paddingLeft') };
     } catch {
       return {};
     }

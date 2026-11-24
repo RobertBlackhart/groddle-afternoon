@@ -310,6 +310,8 @@ export function installTouchControls({ root, press, release, jump, act = null, a
     <button type="button" class="touch-jump" data-touch-jump aria-label="Jump">Jump</button>`;
   root.appendChild(el);
   doc.documentElement.classList.add('touch-phone');
+  // #653: the iOS Home Screen app (navigator.standalone is iOS only) clears the system's top fade (style.css --safe-t).
+  if (win?.navigator?.standalone === true) doc.documentElement.classList.add('ios-home-app');
   const zone = el.querySelector('[data-touch-stick]');
   const base = el.querySelector('.touch-stick-base');
   const knob = el.querySelector('.touch-stick-knob');
@@ -561,7 +563,7 @@ export function installTouchControls({ root, press, release, jump, act = null, a
       if (typeof offFloat === 'function') offFloat();
       floatSwitch?.destroy?.();
       el.remove();
-      doc.documentElement.classList.remove('touch-phone');
+      doc.documentElement.classList.remove('touch-phone', 'ios-home-app');
     },
   };
 }

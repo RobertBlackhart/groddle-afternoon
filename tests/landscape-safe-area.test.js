@@ -25,6 +25,48 @@ const rule = (sel) => {
   return block.slice(i, block.indexOf('}', i));
 };
 
+/**
+ * #653: the --safe-t a phone gets, from the block's rules in cascade order: each `--safe-t:` declaration
+ * with the selector, @media and @supports round it, evaluated with env(safe-area-inset-top) = inset and
+ * 1rem = 16 px. `c`: { portrait, standalone, ios (-webkit-touch-callout), homeClass, touch }.
+ */
+function safeTop(css, c, inset) {
+  const src = css.replace(/\/\*[\s\S]*?\*\//g, '');
+  let best = null;
+  const re = /([^{};]*)\{\s*--safe-t:\s*([^;]+);/g;
+  for (let m; (m = re.exec(src));) {
+    const sel = m[1].trim();
+    const before = src.slice(0, m.index);
+    // The open @media / @supports blocks round this declaration.
+    const open = [];
+    for (const t of before.matchAll(/(@(?:media|supports)[^{]*)\{|\{|\}/g)) {
+      if (t[1]) open.push(t[1].trim());
+      else if (t[0] === '{') open.push('');
+      else open.pop();
+    }
+    const at = open.filter(Boolean);
+    const okMedia = at.every((q) => {
+      if (/orientation: portrait/.test(q) && !c.portrait) return false;
+      if (/display-mode: standalone/.test(q) && !c.standalone) return false;
+      if (/-webkit-touch-callout/.test(q) && !c.ios) return false;
+      return true;
+    });
+    const okSel = sel === ':root' || (sel === ':root.touch-phone' && c.touch !== false)
+      || (sel === ':root.touch-phone.ios-home-app' && c.touch !== false && c.homeClass);
+    if (!okMedia || !okSel) continue;
+    const spec = sel.split('.').length;
+    if (!best || spec >= best.spec) best = { spec, value: m[2] };
+  }
+  assert.ok(best, 'a --safe-t applies');
+  const expr = best.value
+    .replace(/env\(safe-area-inset-top, 0px\)/g, `${inset}px`)
+    .replace(/([\d.]+)rem/g, (_, n) => `${Number(n) * 16}px`)
+    .replace(/px/g, '')
+    .replace(/calc\(/g, '(')
+    .replace(/min\(/g, 'Math.min(');
+  return Function(`return ${expr}`)();
+}
+
 describe('edge to edge on a phone', () => {
   it('both play pages cover the whole screen', () => {
     for (const page of ['public/play/index.html', 'public/play/online/index.html']) {
@@ -54,8 +96,44 @@ describe('edge to edge on a phone', () => {
     // dark strip under the status bar is as tall as --safe-t, so it grows with it.
     const plain = block.slice(0, i);
     assert.match(plain, /:root \{\n  --safe-t: env\(safe-area-inset-top, 0px\);/);
-    assert.equal((block.match(/--safe-t:/g) || []).length, 2, 'set in two places only');
+    // The plain inset, the upright 14 px, and the Home Screen app's two hooks (#653, below).
+    assert.equal((block.match(/--safe-t:/g) || []).length, 4, 'set in four places only');
     assert.match(block, /:root\.touch-phone body::before \{[^}]*height: var\(--safe-t\);/);
+  });
+  // #632, #653, #595: since iOS 26.1 a Home Screen web app (black-translucent, viewport-fit=cover) gets the
+  // system's Liquid Glass edge over its top, about 40 px past the status bar, above the web view. Austin
+  // 2026-11-24 chose clearance: in the iOS Home Screen app held upright, the top is the inset plus 40 px.
+  it('#653: upright in the iOS Home Screen app the top clears the fade: the inset plus 40 px, still 0 at inset 0', () => {
+    const cases = {
+      tab: { portrait: true, standalone: false, ios: true, homeClass: false },
+      home: { portrait: true, standalone: true, ios: true, homeClass: false },
+      homeByClass: { portrait: true, standalone: true, ios: true, homeClass: true },
+      homeSideways: { portrait: false, standalone: true, ios: true, homeClass: true },
+      androidApp: { portrait: true, standalone: true, ios: false, homeClass: false },
+      computer: { portrait: false, standalone: false, ios: false, homeClass: false, touch: false },
+    };
+    const want = {
+      tab: [62 + 14, 0], home: [62 + 40, 0], homeByClass: [62 + 40, 0],
+      homeSideways: [62, 0], androidApp: [62 + 14, 0], computer: [62, 0],
+    };
+    for (const [name, c] of Object.entries(cases)) {
+      for (const [k, inset] of [[0, 62], [1, 0]]) {
+        assert.equal(safeTop(block, { touch: true, ...c }, inset), want[name][k], `${name} at inset ${inset}`);
+      }
+    }
+    const i = block.indexOf('@media (orientation: portrait) and (display-mode: standalone) {');
+    assert.ok(i > block.indexOf('min(14px'), 'after the 14 px rule, so it wins in the app');
+    const note = block.slice(block.lastIndexOf('/*', i), i).replace(/\s+/g, ' ');
+    for (const w of ['iOS 26.1', 'Liquid Glass', 'cannot turn it off', 'Austin', '2026-11-24', 'Not checked on an iPhone']) assert.ok(note.includes(w), w);
+  });
+  it('#653: navigator.standalone (iOS only) sets the class hook; layout C reads --safe-t resolved to px', () => {
+    const tc = read('public/js/touch-controls.js');
+    assert.match(tc, /if \(win\?\.navigator\?\.standalone === true\) doc\.documentElement\.classList\.add\('ios-home-app'\);/);
+    assert.match(tc, /classList\.remove\('touch-phone', 'ios-home-app'\)/);
+    // A custom property's computed value is its calc() unresolved: parseFloat read 0 and the notices sat over the pills.
+    const pl = read('public/js/ui/phone-layout.js');
+    assert.doesNotMatch(pl, /getPropertyValue\(n\)/);
+    assert.match(pl, /padding:var\(--safe-t,0px\) var\(--safe-r,0px\) var\(--safe-b,0px\) var\(--safe-l,0px\)/);
   });
   it('the top bar, the name, the drawer, the pack, the buffs and the route card keep inside it', () => {
     const bar = rule('html:not(.stage-pinned)[data-ui="modern"] #wrap > .top-bar');
