@@ -2814,9 +2814,44 @@
   "deployed": "2026-11-24"
  },
  "git": {
-  "commits": 3363,
+  "commits": 3373,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-24",
+    "kind": "fix",
+    "text": "Under a low street on a phone the view shows ground, not a band of yellow sky"
+   },
+   {
+    "date": "2026-11-24",
+    "kind": "fix",
+    "text": "On a phone the buff chips have their own place under the street's name"
+   },
+   {
+    "date": "2026-11-24",
+    "kind": "fix",
+    "text": "A picture that fails to load no longer leaves an unhandled error behind"
+   },
+   {
+    "date": "2026-11-24",
+    "kind": "fix",
+    "text": "In the iPhone Home Screen app the top bar sits below the status bar's fog"
+   },
+   {
+    "date": "2026-11-24",
+    "kind": "fix",
+    "text": "Street art that failed to load once comes back instead of staying blank"
+   },
+   {
+    "date": "2026-11-24",
+    "kind": "fix",
+    "text": "Home street music changes with the street style"
+   },
+   {
+    "date": "2026-11-24",
+    "kind": "fix",
+    "text": "The Game Show wheel can be spun the moment it appears"
+   },
    {
     "date": "2026-11-24",
     "kind": "new",
@@ -2901,41 +2936,6 @@
     "date": "2026-11-23",
     "kind": "fix",
     "text": "A Sloth up in its tree shows Feed greyed with its reason, not an empty menu"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "improve",
-    "text": "The Buddies list opens at the top, keeps its place, and can be sorted A to Z"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "Teleportation Scripts can be sold to vendors and given to shrines"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "new",
-    "text": "Doors out of a place show on the street map, with walk-to rows on the phone"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "The Bureaucratic Hall has its office behind the counter, and the TV hangs in front of the light"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "Dino and subway entrances show on the street map and the loading picture"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "improve",
-    "text": "Decoration Mode keeps the house floor shared, and a floor full of stacks draws in one pass"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "Each home street, house and Tower floor you visit remembers your own last visit there"
    }
   ]
  },
