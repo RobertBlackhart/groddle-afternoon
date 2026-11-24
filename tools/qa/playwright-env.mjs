@@ -8,6 +8,8 @@
  * to skip its apt-based dependency check. Ubuntu, Debian, macOS and Windows are left alone.
  */
 import { existsSync, readFileSync } from 'node:fs';
+import { homedir } from 'node:os';
+import { join } from 'node:path';
 
 function debianLike() {
   try {
@@ -20,4 +22,9 @@ function debianLike() {
 if (process.platform === 'linux' && process.arch === 'x64' && !process.env.PLAYWRIGHT_HOST_PLATFORM_OVERRIDE && !debianLike() && !existsSync('/etc/debian_version')) {
   process.env.PLAYWRIGHT_HOST_PLATFORM_OVERRIDE = 'ubuntu24.04-x64';
   process.env.PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS ||= '1';
+  // The GStreamer plugins setup-webkit.sh adds when this machine lacks gst-plugins-good: without an
+  // autoaudiosink, WebKit's web process aborts on the game's first <audio> load.
+  const webkit = JSON.parse(readFileSync(new URL('../../node_modules/playwright-core/browsers.json', import.meta.url), 'utf8')).browsers.find((b) => b.name === 'webkit');
+  const plugins = join(process.env.PLAYWRIGHT_BROWSERS_PATH || join(homedir(), '.cache/ms-playwright'), `webkit-${webkit?.revision}`, 'gst-plugins');
+  if (existsSync(plugins)) process.env.GST_PLUGIN_PATH = [plugins, process.env.GST_PLUGIN_PATH].filter(Boolean).join(':');
 }
