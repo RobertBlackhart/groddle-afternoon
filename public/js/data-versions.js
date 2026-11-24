@@ -9057,7 +9057,7 @@
       "encyclopedia/search.json": "bd627848",
       "landing/card-explore.webp": "7a2c1124",
       "landing/full/card-explore.webp": "cbce4e96",
-      "restoration/gaps.json": "49171106",
+      "restoration/gaps.json": "443272e2",
       "restoration/made.json": "523cebf2",
       "restoration/maps.json": "9725e490",
       "restoration/maps/2012/alakol.webp": "33373357",

@@ -5137,6 +5137,26 @@
       "commits": [
         "game:c065829a6d6"
       ]
+    },
+    {
+      "id": "G1221",
+      "area": "Transit",
+      "text": "The subway platform's Red Button faced the opposite way from Glitch's.",
+      "show": "fixing",
+      "commits": [
+        "game:f38b41bbc47"
+      ]
+    },
+    {
+      "id": "G1186",
+      "area": "Homes",
+      "text": "Glitch's neighbourhoods of houses were gone: there was nowhere to see other players' houses side by side.",
+      "show": "fixing",
+      "commits": [
+        "game:5b798a9b6b0",
+        "server:41cc9a7",
+        "site:3ef3033"
+      ]
     }
   ]
 }

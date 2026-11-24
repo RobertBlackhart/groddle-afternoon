@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.61.0",
+  "release": "v0.62.0",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -42,7 +42,7 @@
     "fixing": 3,
     "known": 15,
     "unreleased": 0,
-    "fixed": 510,
+    "fixed": 512,
     "lost": 5,
     "purpose": 16,
     "idea": 10
@@ -1215,6 +1215,12 @@
           "text": "Tower and street project parts did not say which skills making them takes.",
           "state": "fixed",
           "version": "v0.61.0"
+        },
+        {
+          "id": "G1186",
+          "text": "Glitch's neighbourhoods of houses were gone: there was nowhere to see other players' houses side by side.",
+          "state": "fixed",
+          "version": "v0.62.0"
         },
         {
           "id": "G48",
@@ -3034,6 +3040,12 @@
           "text": "At a subway station you stood at the foot of the steps instead of walking up to the entrance.",
           "state": "fixed",
           "version": "v0.51.1"
+        },
+        {
+          "id": "G1221",
+          "text": "The subway platform's Red Button faced the opposite way from Glitch's.",
+          "state": "fixed",
+          "version": "v0.62.0"
         }
       ]
     },
