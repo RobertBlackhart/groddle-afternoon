@@ -1828,10 +1828,15 @@ export function mountSocialDrawer({
   // The keyboard's own steps (the visual viewport) and the box taking focus keep it there too.
   let logAtEnd = true;
   let logSeenH = -1;
+  // #646: the Buddies tab is a list read from the top, not a log read from its end; the end-keeping above
+  // must leave it alone (hiding the chat box there makes the log taller, which fired it and jumped the list
+  // to the bottom just after it opened at the top).
+  const listShown = () => current()?.kind === 'buddies';
   const keepLogEnd = () => {
-    if (logAtEnd) log.scrollTop = log.scrollHeight;
+    if (logAtEnd && !listShown()) log.scrollTop = log.scrollHeight;
   };
   log.addEventListener('scroll', () => {
+    if (listShown()) return;
     const atEnd = log.scrollHeight - log.scrollTop - log.clientHeight < 24;
     const resized = logSeenH >= 0 && log.clientHeight !== logSeenH;
     logSeenH = log.clientHeight;

@@ -734,3 +734,12 @@ describe('"Add to buddy list" on a player\'s page (site PlayerPages, players/bud
     assert.equal(note.textContent, 'Ada is off your buddy list.');
   });
 });
+
+describe('#646: the Buddies list is read from the top', () => {
+  it('the chat log\'s keep-at-the-end watcher leaves the Buddies list alone', () => {
+    const src = readFileSync(new URL('../public/js/ui/social-drawer.js', import.meta.url), 'utf8');
+    assert.match(src, /const listShown = \(\) => current\(\)\?\.kind === 'buddies';/);
+    assert.match(src, /const keepLogEnd = \(\) => \{\s*if \(logAtEnd && !listShown\(\)\) log\.scrollTop = log\.scrollHeight;/);
+    assert.match(src, /log\.addEventListener\('scroll', \(\) => \{\s*if \(listShown\(\)\) return;/);
+  });
+});
