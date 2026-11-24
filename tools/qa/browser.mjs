@@ -13,7 +13,8 @@
  * own Chromium). launchBrowser() alone launches without the lock: only for code that already
  * holds it.
  */
-import { chromium } from 'playwright';
+import './playwright-env.mjs'; // before playwright: the WebKit build on a non-Ubuntu Linux (R52)
+import { chromium, webkit } from 'playwright';
 import { acquireLock } from './browser-lock.mjs';
 
 /**
@@ -39,7 +40,10 @@ export function browserArgs({ online = false, extra = [] } = {}) {
 }
 
 /** Launches Chrome; the caller must already hold the browser lock. */
-export async function launchBrowser({ online = false, headless = true, extra = [], channel = process.env.GRODDLE_BROWSER_CHANNEL ?? 'chrome' } = {}) {
+export async function launchBrowser({ online = false, headless = true, extra = [], channel = process.env.GRODDLE_BROWSER_CHANNEL ?? 'chrome', engine = process.env.GRODDLE_BROWSER_ENGINE || 'chromium' } = {}) {
+  // R52: engine 'webkit' is Safari's engine (iPhone and iPad reports), set up by tools/qa/setup-webkit.sh.
+  // It takes no Chrome flags; pair it with devices['iPhone 15 Pro'] and the like for a phone's context.
+  if (engine === 'webkit') return webkit.launch({ headless });
   return chromium.launch({ ...(channel ? { channel } : {}), headless, args: browserArgs({ online, extra }) });
 }
 
@@ -48,11 +52,11 @@ export async function launchBrowser({ online = false, headless = true, extra = [
  * safe to call more than once. Lock options (label, waitMs, staleMs, handleSignals, log) pass
  * through to acquireLock.
  */
-export async function openBrowser({ online = false, headless = true, extra = [], channel, ...lockOptions } = {}) {
+export async function openBrowser({ online = false, headless = true, extra = [], channel, engine, ...lockOptions } = {}) {
   const lock = await acquireLock(lockOptions);
   let browser;
   try {
-    browser = await launchBrowser({ online, headless, extra, ...(channel !== undefined ? { channel } : {}) });
+    browser = await launchBrowser({ online, headless, extra, ...(channel !== undefined ? { channel } : {}), ...(engine ? { engine } : {}) });
   } catch (e) {
     lock.release();
     throw e;
