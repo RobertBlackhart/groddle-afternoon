@@ -40,7 +40,7 @@ import {
   settleSolo,
   soloRow,
 } from '../public/js/home-machines.js?v=34c6403b';
-import { homeMachinesFeature } from '../public/js/features/home-machines-feature.js?v=eb6f871a';
+import { homeMachinesFeature } from '../public/js/features/home-machines-feature.js?v=ce41ad56';
 import { RECIPE_CATALOG, setRecipeCatalog } from '../public/js/making.js?v=1ec1075e';
 import { HAS_SERVER, HAS_SITE, SITE_DIR, serverPath } from '../tools/repos.mjs';
 

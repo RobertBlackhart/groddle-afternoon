@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=f41be695';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=3c784ea8';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=86263fd9';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE, playerClickBox } from './js/reach.js?v=456da8a8';
@@ -559,7 +559,7 @@ import {
   setDownStack,
   takeDroppedRecord,
 } from './js/world-items.js?v=f5f9e017';
-import { ownRowToSharedFloor, packToSharedFloor } from './js/home-floor-share.js?v=703dac80';
+import { ownRowToSharedFloor, packToSharedFloor } from './js/home-floor-share.js?v=d6cfdacd';
 import {
   createPlayerSave,
   inspectPlayerSave,
@@ -1150,7 +1150,7 @@ import { HOME_SCREEN_TIP_CACHE, iosSafari, mountHomeScreenTip, runsStandalone } 
 import { EAT_PICK_TEXT, bestFoodIndex, eatChoices, eatTip } from './js/eat-pick.js?v=8fb763d0';
 import { heldDirection, installHeldKeyGuard, isMacPlatform } from './js/held-keys.js?v=a28eb293';
 import { isOneClickDoor, oneClickChoice, signpostArmRows, worldContextAction } from './js/world-context-menu.js?v=e4c99c05';
-import { blockedPlayerVerbs, listPlayerTarget, opensPlayerMenu, playerMenuRows } from './js/ui/player-menu.js?v=909b6cbb';
+import { blockedPlayerVerbs, listPlayerTarget, opensPlayerMenu, playerMenuRows } from './js/ui/player-menu.js?v=292634f0';
 import { forgetTexture, frameTexture, isFailed, isLoaded, onFailed, onLoaded, textureFromUrl, whenLoaded } from './js/textures.js?v=729b29ea';
 import { FALLBACK_MAX as WORLD_ART_FALLBACK_MAX, worldArtFor } from './js/world-art.js?v=a67514c8';
 import { HOME_PIP_PX, drawLockPip, homeMarkNote, homePipShown, homeStackMark } from './js/home-stack-marks.js?v=0ff4c29f';
@@ -14837,10 +14837,11 @@ const engine = {
    * shared floor (G1190), as Glitch's takeable_drop left a stack anyone's unless the plat under it
    * was a piece's (house_lock only for plats[i].source, items/include/takeable.js 179-198): it goes
    * through the server as Drop does (features/drops-mp-feature.js sharedDrop) and `beforeShare(n)`
-   * marks the dragged stack for the server's answer. On a shelf or table, or wherever the floor is
+   * marks the dragged stack for the server's answer; `into` the like shared stack it was set on (it
+   * joins it, below its stackmax), `merge: false` beside one. On a shelf or table, or wherever the floor is
    * not shared (solo, offline, a class the server does not carry), it stays the owner's own decor.
    */
-  dropPackStackAt(classTsid, count, x, y, { beforeRemove = null, floor = false, beforeShare = null } = {}) {
+  dropPackStackAt(classTsid, count, x, y, { beforeRemove = null, floor = false, beforeShare = null, into = null, merge = true } = {}) {
     if (!state.started || !currentStreetTsid) return { ok: false, reason: 'not_started' };
     const blocked = packDropBlockReason(classTsid);
     // A class a feature puts down itself (the Crafty Bot): its own drop and its own reason.
@@ -14851,7 +14852,7 @@ const engine = {
     const n = normalizeStackQuantity(count, inv[classTsid] || 0);
     if (!n) return { ok: false, reason: 'missing', msg: 'That stack is no longer in your pack.' };
     // On the floor at your own home online: the shared floor, through the server (the pack changes on its answer).
-    if (packToSharedFloor(features, engine, { classTsid, count: n, x, y, floor })) {
+    if (packToSharedFloor(features, engine, { classTsid, count: n, x, y, floor, into, merge })) {
       beforeShare?.(n);
       closePackPopover();
       return { ok: true, shared: true, count: n };
@@ -14895,9 +14896,9 @@ const engine = {
    * floor can't carry (a bag, a named stack, worn tools, a class or count the server does not take) or
    * one the pack has no room for stays the owner's own: { ok: false, reason: 'own' | 'full' | 'gone' }.
    */
-  shareOwnStack(id, x, y) {
+  shareOwnStack(id, x, y, { into = null, merge = true } = {}) {
     if (!state.started || !currentStreetTsid) return { ok: false, reason: 'not_started' };
-    const result = ownRowToSharedFloor(features, engine, { state: droppedItemState, key: droppedStacksTsid(), inv, id, x, y });
+    const result = ownRowToSharedFloor(features, engine, { state: droppedItemState, key: droppedStacksTsid(), inv, id, x, y, into, merge });
     if (result.reason === 'full') return { ...result, msg: PACK_COPY.pickupFull };
     if (result.ok || result.reason === 'own') {
       saveDroppedItems();

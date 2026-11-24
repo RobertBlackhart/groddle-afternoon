@@ -25,8 +25,8 @@ import { existsSync, readFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { isTakeOp, normalizeGroundStack, normalizeMine, pickupAsk, stackLeft } from '../public/js/drops-mp.js?v=3b0174f2';
-import { dropsMpFeature } from '../public/js/features/drops-mp-feature.js?v=0a784417';
+import { isTakeOp, normalizeGroundStack, normalizeMine, pickupAsk, stackLeft } from '../public/js/drops-mp.js?v=8852c611';
+import { dropsMpFeature } from '../public/js/features/drops-mp-feature.js?v=6addc8d5';
 import { pickupCountToAsk } from '../public/js/world-items.js?v=f5f9e017';
 import { HAS_SERVER, SITE_DIR, serverPath, skipWithoutSite } from '../tools/repos.mjs';
 

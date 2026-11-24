@@ -71,6 +71,7 @@ export const DROP_TEXT = Object.freeze({
   // R50: Decoration Mode set a stack dropped here for everyone down as the owner's own (game.js dropPackStackAt's line).
   claimed: (n, label) => `You set down ${n}× ${label}.`,
   notHome: 'Only the owner can set that down here.', // ours: Decoration Mode is the owner's
+  moving: 'Wait a moment, you are still moving something.', // ours, one move at a time (drops.go)
   picking: 'Wait a moment, you are still picking something up.', // ours, one pickup at a time (drops.go)
   by: (name) => `Dropped by ${name}`, // ours
   busy: 'Wait a moment, you are still dropping something.', // drops.go
@@ -81,7 +82,7 @@ export const DROP_TEXT = Object.freeze({
   locked: 'You are not allowed to pick this up.', // takeable.js:39
   offline: "You're offline.",
   // The drop verb's tooltip on every item (e.g. items/apple.js:84): the pack's drop prompt when the
-  // stack is dropped for everyone (stacks dropped for others never merge: drops.go).
+  // stack is dropped for everyone (on a street those never merge; a house floor's do: drops.go).
   prompt: 'Drop it on the ground.',
 });
 
@@ -279,11 +280,12 @@ export function dropEffect(side, item, label = (c) => c) {
 
 /**
  * A take's op: the stack's id and -t for the whole of it, -t<from> for a part (the site's
- * LedgerDrop takePart: from is the count it was taken from, so each part has its own).
+ * LedgerDrop takePart: from is the count it was taken from, so each part has its own), and
+ * -t<from>-g<gen> for a part of a stack a merge on a house floor has grown (LedgerDrop partId).
  */
 export function isTakeOp(op, id) {
   const o = String(op || '');
-  return DROP_OP.test(String(id || '')) && o.startsWith(`${id}-t`) && /^(?:[1-9][0-9]{0,3})?$/.test(o.slice(String(id).length + 2));
+  return DROP_OP.test(String(id || '')) && o.startsWith(`${id}-t`) && /^(?:[1-9][0-9]{0,3}(?:-g[1-9][0-9]{0,8})?)?$/.test(o.slice(String(id).length + 2));
 }
 
 /** A row of GET groddle/v1/drops as an op the save applies: { op, side, item } or null. */

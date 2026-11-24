@@ -55,7 +55,7 @@ import { ITEM_CATALOG, addItem, countItem, removeItem } from '../inventory.js?v=
 import { TOOL_CONDITION_CATALOG, leavingCopyTag, leavingToolWear, receiveToolCopy, takeToolCopy } from '../tools.js?v=4156bba8';
 import { createMinnAccount } from '../minn-account.js?v=ca9fb98e';
 import { saveStore, savedThrough } from '../save-store.js?v=4e720735';
-import { DROP_OP, DROP_QUEUE_MAX, DROP_TEXT, bucketTake, dropEffect, dropRefusalText, eatenStack, groundFrom, homePlaceOf, isPublicStreet, normalizeGroundStack, normalizeItem, normalizeMine, pickupAsk, pigAnimalKey, shareReason, stackAt, stackLeft } from '../drops-mp.js?v=3b0174f2';
+import { DROP_OP, DROP_QUEUE_MAX, DROP_TEXT, bucketTake, dropEffect, dropRefusalText, eatenStack, groundFrom, homePlaceOf, isPublicStreet, normalizeGroundStack, normalizeItem, normalizeMine, pickupAsk, pigAnimalKey, shareReason, stackAt, stackLeft } from '../drops-mp.js?v=8852c611';
 
 export const DROPS_MP_FEATURE_ID = 'drops-mp';
 const TABLE_URL = 'assets/content/trade-items.json';
@@ -96,6 +96,8 @@ function createSession(engine, client) {
   let pumpTimer = null;
   /** The stack a pickup asked for: { id, at }. */
   let picking = null;
+  /** The owner's floor-to-floor move the server is weighing: { id, at }. */
+  let moving = null;
   let lastLine = '';
   let lastEaten = '';
   let syncing = false;
@@ -322,8 +324,21 @@ function createSession(engine, client) {
       return;
     }
     const s = normalizeGroundStack(msg.stack, street);
-    apply(String(msg.op || ''), 'dropped', s ? { c: s.classTsid, n: s.count } : d ? { c: d.c, n: d.n } : null, shown(s), d?.copy ?? null);
+    // A drop that joined a like stack on a house floor says what left the pack (`item`); the stack it
+    // joined comes again as ground_added, with its new count (drops.go "Merging").
+    const it = normalizeItem(msg.item);
+    const joined = msg.into ? stacks.get(String(msg.into)) : null;
+    apply(String(msg.op || ''), 'dropped', it ? { c: it.c, n: it.n } : s ? { c: s.classTsid, n: s.count } : d ? { c: d.c, n: d.n } : null, shown(s || joined), d?.copy ?? null);
     pump();
+  });
+
+  // The owner's floor move settled or was refused (drops.go moveFrame); where it went comes as ground_added.
+  client.on('msg:ground_moved', (msg) => {
+    const id = String(msg.id || '');
+    if (moving?.id === id) moving = null;
+    if (msg.status !== 'settled') tell(String(msg.text || DROP_TEXT.gone));
+    else engine.playSound?.('ITEM_DROP', { volume: 0.45 });
+    publish();
   });
 
   client.on('msg:ground_taken', (msg) => {
@@ -349,6 +364,7 @@ function createSession(engine, client) {
       // The drops still waiting stay in the pack.
       dropping = null;
       picking = null;
+      moving = null;
       queue.length = 0;
       if (stacks.size) {
         stacks.clear();
@@ -387,7 +403,7 @@ function createSession(engine, client) {
    * sent while another is being weighed waits its turn (the server weighs one at a time and answered
    * "Wait a moment"); each goes when the last is answered and the server's rate allows.
    */
-  function drop({ classTsid, count, x, y, copy = null }) {
+  function drop({ classTsid, count, x, y, copy = null, into = null, merge = true }) {
     const p = here();
     const c = String(classTsid || '');
     if (!p) return null;
@@ -402,7 +418,7 @@ function createSession(engine, client) {
       engine.toast?.(DROP_TEXT.busy, 2400);
       return true;
     }
-    queue.push({ street: p.street, classTsid: c, count, x, y, copy });
+    queue.push({ street: p.street, classTsid: c, count, x, y, copy, into: into ? String(into) : null, merge: merge !== false });
     pump();
     return true;
   }
@@ -433,7 +449,7 @@ function createSession(engine, client) {
   }
 
   /** One drop to the server, its count cut to what the pack has now (the drops before it went first). */
-  function send(p, { classTsid: c, count, x, y, copy }) {
+  function send(p, { classTsid: c, count, x, y, copy, into = null, merge = true }) {
     if (reasonAt(p, c)) return false;
     const n = Math.min(Math.max(1, Math.floor(Number(count) || 1)), countItem(engine.inv, c));
     if (n < 1) return false;
@@ -457,7 +473,8 @@ function createSession(engine, client) {
     persist(engine).then(() => {
       if (dropping?.ref !== ref) return;
       // On a home street the server keeps the stack's x from the house: ox is the house's x as drawn here.
-      if (!client.send('ground_drop', { ref, item, x: dropping.x, y: dropping.y, ...(p.ox ? { ox: p.ox } : {}) })) {
+      // On a house floor: the like stack it was set on, or merge false (set beside one): drops.go "Merging".
+      if (!client.send('ground_drop', { ref, item, x: dropping.x, y: dropping.y, ...(p.ox ? { ox: p.ox } : {}), ...(into && DROP_OP.test(into) ? { into } : {}), ...(merge === false ? { merge: false } : {}) })) {
         const d = dropping;
         dropping = null;
         dropOwn(d);
@@ -525,6 +542,35 @@ function createSession(engine, client) {
     return { ok: true };
   }
 
+  /**
+   * The owner's Decoration Mode move of a stack on their own house or Tower floor (main.js doModifyItem
+   * 4852-4890): it stays on the floor for everyone, moved by the server (drops.go moveFrame), onto the
+   * like stack `to.into` there if named. `to`: { x, y, into } as this game draws them. { ok } or
+   * { ok: false, reason, msg }.
+   */
+  function move(id, to = {}) {
+    const p = here();
+    const sid = String(id || '');
+    if (!DROP_OP.test(sid)) return null;
+    const place = p ? homePlaceOf(p.street) : null;
+    if (!p?.ownHome || !place || (place.room !== 'interior' && place.room !== 'tower')) return { ok: false, reason: 'place', msg: DROP_TEXT.notHome };
+    if (!stacks.has(sid)) {
+      redraw();
+      return { ok: false, reason: 'gone', msg: DROP_TEXT.gone };
+    }
+    if (client.state !== 'online') return { ok: false, reason: 'offline', msg: DROP_TEXT.offline };
+    if (moving && Date.now() - moving.at < WAIT_MS) return { ok: false, reason: 'busy', msg: DROP_TEXT.moving };
+    const x = Number(to.x);
+    const y = Number(to.y);
+    if (!Number.isFinite(x) || !Number.isFinite(y)) return { ok: false, reason: 'where' };
+    if (!bucketTake(rate, Date.now()).ok) return { ok: false, reason: 'slow', msg: DROP_TEXT.slow };
+    const into = to.into && DROP_OP.test(String(to.into)) && String(to.into) !== sid ? String(to.into) : null;
+    moving = { id: sid, at: Date.now() };
+    client.send('ground_move', { id: sid, x: Math.round(x), y: Math.round(y), ...(p.ox ? { ox: p.ox } : {}), ...(into ? { into } : {}) });
+    publish();
+    return { ok: true };
+  }
+
   /** Whether a pack stack of this class would be dropped for everyone here now. */
   function wouldShare(classTsid) {
     const p = here();
@@ -564,9 +610,11 @@ function createSession(engine, client) {
     get dropping() { return dropping; },
     get queued() { return queue.map((q) => ({ ...q })); },
     get picking() { return picking; },
+    get moving() { return moving; },
     drop,
     pickup,
     claim,
+    move,
     list,
     wouldShare,
     fits,
@@ -629,6 +677,12 @@ export const dropsMpFeature = {
   claimSharedStack(id, to, engine) {
     if (!multiplayer || !session || engine?.mode !== 'multiplayer') return null;
     return session.claim(id, to);
+  },
+
+  /** homes-feature Decoration Mode: the owner moved a shared stack along their floor; it stays shared (drops.go moveFrame). */
+  moveSharedStack(id, to, engine) {
+    if (!multiplayer || !session || engine?.mode !== 'multiplayer') return null;
+    return session.move(id, to);
   },
 
   /** game.js pack drop prompt: the drop verb's own words when the stack goes to everyone (shared stacks never merge). */

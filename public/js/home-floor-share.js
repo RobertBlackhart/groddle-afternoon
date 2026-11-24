@@ -18,15 +18,18 @@
  *   goes down the same way. A refusal leaves it in the pack, never gone; one the shared floor can't
  *   carry stays in the save (the caller moves it there); a full pack refuses.
  *
+ * `into` names the like shared stack it was set on (drops.go "Merging": it joins it below its stackmax);
+ * `merge: false` sets it down on its own (HandOfDecorator.as shouldMerge 1656-1670 sent no_merge off a stack).
+ *
  * `features` is the game's feature host (js/feature-host.js query), `engine` what the hooks take.
  */
 import { dropInventoryStack, pickupDroppedStack } from './world-items.js?v=f5f9e017';
 
 /** Whether `count` of a pack class set down at (x, y) went to the shared floor (true: the server weighs it). */
-export function packToSharedFloor(features, engine, { classTsid, count, x, y, floor = false } = {}) {
+export function packToSharedFloor(features, engine, { classTsid, count, x, y, floor = false, into = null, merge = true } = {}) {
   if (!floor || !features?.query) return false;
   if (features.query('sharedDropFits', classTsid, count, engine) !== true) return false;
-  return Boolean(features.query('sharedDrop', { classTsid, count, x, y, copy: null }, engine));
+  return Boolean(features.query('sharedDrop', { classTsid, count, x, y, copy: null, into, merge }, engine));
 }
 
 /**
@@ -35,7 +38,7 @@ export function packToSharedFloor(features, engine, { classTsid, count, x, y, fl
  * { ok: false, reason: 'own' (stays in the save) | 'full' (the pack has no room) | 'gone' }.
  * `now`: the clock, for a stack put back where it lay.
  */
-export function ownRowToSharedFloor(features, engine, { state, key, inv, id, x, y } = {}) {
+export function ownRowToSharedFloor(features, engine, { state, key, inv, id, x, y, into = null, merge = true } = {}) {
   const rows = state?.streets?.[String(key ?? '')];
   const row = Array.isArray(rows) ? rows.find((r) => r.id === id) : null;
   if (!row) return { ok: false, reason: 'gone' };
@@ -49,7 +52,7 @@ export function ownRowToSharedFloor(features, engine, { state, key, inv, id, x, 
   const was = { x: row.x, y: row.y, on: row.on, decor: row.decor === true, droppedAt: row.droppedAt };
   const lifted = pickupDroppedStack(state, inv, key, id, Infinity);
   if (!lifted.ok) return { ok: false, reason: 'gone' };
-  if (features.query('sharedDrop', { classTsid: cls, count: lifted.count, x, y, copy: null }, engine)) {
+  if (features.query('sharedDrop', { classTsid: cls, count: lifted.count, x, y, copy: null, into, merge }, engine)) {
     return { ok: true, shared: true, count: lifted.count };
   }
   // Not taken after all: back down where it lay, as it was.

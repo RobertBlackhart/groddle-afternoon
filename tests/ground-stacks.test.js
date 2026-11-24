@@ -249,7 +249,8 @@ describe('nothing reads the save\'s floor store but js/ground-stacks.js', () => 
     assert.match(src, /function stackAt\(engine, p\) \{\n\s+const rows = roomStacks\(engine\);/);
     assert.match(src, /function stackRow\(engine, id\) \{\n\s+return roomStacks\(engine\)/);
     assert.match(src, /if \(row\.shared\) return claimShared\(engine, row, target, into\);/);
-    // As Glitch, the floor is everyone's: only furniture takes a shared stack as the owner's decor.
-    assert.match(src, /function claimShared\(engine, row, target, into\) \{[\s\S]{0,300}if \(target\.on == null\) \{\n\s+engine\.toast\(BUILDER_TEXT\.sharedFloor\);/);
+    // As Glitch, the floor is everyone's: only furniture takes a shared stack as the owner's decor; along
+    // the floor the server moves it and it stays shared (tests/floor-merge.test.js).
+    assert.match(src, /function claimShared\(engine, row, target, into\) \{[\s\S]{0,400}if \(target\.on == null\) return moveSharedOnFloor\(engine, row, target\);/);
   });
 });

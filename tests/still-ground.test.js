@@ -16,7 +16,7 @@ import { copyForVerb, copyTags, createToolConditionState, keepsOwnStack, setCopy
 import { STILL, STILL_TEXT, createStillState, distillInStill, stillCollectCheck, stillDistillCheck } from '../public/js/machines.js?v=5d749d26';
 import { supplyFeature } from '../public/js/features/supply-feature.js?v=8bcdd0a7';
 import { createDroppedItemState, dropInventoryStack, pickupDroppedStack } from '../public/js/world-items.js?v=f5f9e017';
-import { shareReason } from '../public/js/drops-mp.js?v=3b0174f2';
+import { shareReason } from '../public/js/drops-mp.js?v=8852c611';
 import { dropFor } from '../public/js/world-drop.js?v=a8956ae5';
 import { STILL_ART, STILL_ART_CELL, stillArtFrame, stillArtState, stillSheetDef } from '../public/js/still-art.js?v=2eeb65ff';
 

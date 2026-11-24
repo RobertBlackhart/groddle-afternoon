@@ -175,7 +175,7 @@ import {
   placeCostText,
   swatchFilters,
   trayFilters,
-} from '../ui/home-builder.js?v=48a63287';
+} from '../ui/home-builder.js?v=03679434';
 import { RECIPE_CATALOG } from '../making.js?v=1ec1075e';
 import {
   createBackYardState,
@@ -218,7 +218,7 @@ import { DISPATCHER_HALF, DISPATCHER_TEXT, MOVABLE_FIXTURES, MOVABLE_FIXTURE_IDS
 import { displayTopOf, itemstackOverlayPoint, overlayAlpha, overlayLifeMs, playPoofIn, trackOverlay } from '../overlay-art.js?v=95f23414';
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d1945384';
 import { fadeInNewNear } from '../poof-fade.js?v=83361da5';
-import { projectApi } from './street-jobs-feature.js?v=9e2d3f86';
+import { projectApi } from './street-jobs-feature.js?v=94e5ef34';
 import { TOWER_CHASSIS, TOWER_CONFIG, TOWER_DOOR_DX, TOWER_GEO, TOWER_PROTO, normalizeTowerState } from '../home-tower.js?v=84d99af0';
 import { drawTowerBench, drawTowerElevator, drawTowerExit, towerApi, visitorTowerView } from './home-tower-feature.js?v=0880b24a';
 import { pieceUrl, roomPieces, surfaceAt, swatchPiece, wallTargetAt } from '../home-wallpaper.js?v=99228166';
@@ -6123,11 +6123,26 @@ const placeTarget = (engine) => ({
  * dragged stack (markDragged).
  */
 function packDropOpts(engine, was, target) {
+  const into = sharedLikeAt(engine, { id: '', classTsid: was.classTsid, count: 1 }, target);
   return {
     beforeRemove: (n) => takeDragged(engine, was.ds, n),
     floor: target?.on == null,
     beforeShare: (n) => markDragged(engine, was.ds, n),
+    // Set on a like shared stack it joins it (drops.go "Merging"); beside one, on its own
+    // (HandOfDecorator.as shouldMerge 1656-1670 sent no_merge unless dropped directly on a stack).
+    ...(into ? { into } : { merge: false }),
   };
+}
+
+/**
+ * The like stack on the shared floor (G1190) a stack set on the floor at `target` lands on, or null: its
+ * id. The same rule as a save stack's (js/world-items.js likeStackAt: its class, 12 px, below its
+ * stackmax); a class whose copies keep their own stack never joins (js/tools.js keepsOwnStack).
+ */
+function sharedLikeAt(engine, row, target) {
+  if (!row || !target || target.on != null || keepsOwnStack(row.classTsid)) return null;
+  const shared = roomStacks(engine).filter((s) => s.shared && /^drop-[0-9a-f]{16}$/.test(String(s.id))).map((s) => ({ ...s, shared: false }));
+  return likeStackAt(shared, { ...row, shared: false }, target.x + roomX0(), null)?.id || null;
 }
 
 /** The home's drop targets (registered once; registering again replaces them with this engine). */
@@ -6236,6 +6251,9 @@ function overPack(clientX, clientY) {
  */
 function moveJoins(engine, row, target) {
   if (!row || !target || keepsOwnStack(row.classTsid)) return null;
+  // On the floor online it joins a like stack on the shared floor (drops.go "Merging").
+  const onShared = sharedLikeAt(engine, row, target);
+  if (onShared) return stackRow(engine, onShared);
   // A shared stack set down here becomes the owner's own (claimShared), so it joins as one of theirs would.
   return likeStackAt(roomStackRows(engine), row.shared ? { ...row, shared: false } : row, target.x + roomX0(), target.on);
 }
@@ -6256,7 +6274,7 @@ function moveStack(engine, id, p) {
   // On the floor the lock comes off (doModifyItem deletes house_lock and sets it again only on a
   // furniture plat, main.js 4852-4890): online at your own home it goes to the shared floor.
   if (target.on == null) {
-    const shared = shareOwnStack(engine, row, target);
+    const shared = shareOwnStack(engine, row, target, sharedLikeAt(engine, row, target));
     if (shared) return shared;
   }
   const joined = into ? mergeDroppedStacks(ownGroundState(engine), groundKey(engine), id, into.id, target.on != null ? { decor: true } : {}) : null;
@@ -6289,9 +6307,9 @@ function moveStack(engine, id, p) {
  * stack set on the floor (main.js doModifyItem 4852-4890). Null when it stays the owner's own (solo,
  * offline, a stack the shared floor can't carry): the caller moves it in the save. A full pack refuses.
  */
-function shareOwnStack(engine, row, target) {
+function shareOwnStack(engine, row, target, into = null) {
   if (typeof engine.shareOwnStack !== 'function') return null;
-  const res = engine.shareOwnStack(row.id, target.x + roomX0(), target.y);
+  const res = engine.shareOwnStack(row.id, target.x + roomX0(), target.y, into ? { into } : { merge: false });
   if (res?.ok) {
     engine.playSound?.('ITEM_DROP', { volume: 0.45 });
     engine.setData('homeStackLast', `shared:${row.id}:floor`);
@@ -6318,13 +6336,9 @@ function shareOwnStack(engine, row, target) {
  */
 function claimShared(engine, row, target, into) {
   // As Glitch: the floor is everyone's (takeable.js 29-44); only what the owner sets on furniture is
-  // locked to them (house_lock 179-198). Moved onto the floor, a shared stack stays where it was.
-  if (target.on == null) {
-    engine.toast(BUILDER_TEXT.sharedFloor);
-    engine.playSound?.('CLICK_FAILURE', { volume: 0.4 });
-    engine.setData('homeStackLast', `refused:${row.id}:floor`);
-    return { ok: false, reason: 'floor' };
-  }
+  // locked to them (house_lock 179-198). Moved along the floor it stays shared (doModifyItem moved any
+  // stack in the house, main.js 4852-4890): the server moves it, onto a like stack there too.
+  if (target.on == null) return moveSharedOnFloor(engine, row, target);
   const res = engine.query?.('claimSharedStack', row.id, { tsid: groundKey(engine), x: target.x + roomX0(), y: target.y, on: target.on ?? null, into: into?.id ?? null }, engine);
   if (!res?.ok) {
     if (res?.msg) engine.toast(res.msg);
@@ -6337,6 +6351,27 @@ function claimShared(engine, row, target, into) {
   drawStackSelection(engine);
   renderBar(engine);
   return { ok: true, target, claiming: row.id };
+}
+
+/**
+ * A shared stack moved along the owner's floor in Decoration Mode: drops-mp-feature moveSharedStack asks
+ * the server, which moves it for everyone (drops.go moveFrame), joining the like shared stack it was set
+ * on. Until the answer it stays where it was.
+ */
+function moveSharedOnFloor(engine, row, target) {
+  const into = sharedLikeAt(engine, row, target);
+  const res = engine.query?.('moveSharedStack', row.id, { x: target.x + roomX0(), y: target.y, into }, engine);
+  if (!res?.ok) {
+    if (res?.msg) engine.toast(res.msg);
+    engine.playSound?.('CLICK_FAILURE', { volume: 0.4 });
+    engine.setData('homeStackLast', `refused:${row.id}:${res?.reason || 'shared'}`);
+    return { ok: false, reason: res?.reason || 'shared' };
+  }
+  engine.setData('homeStackLast', `moving:${row.id}:floor${into ? `:${into}` : ''}`);
+  selected = null;
+  drawStackSelection(engine);
+  renderBar(engine);
+  return { ok: true, target, moving: row.id, ...(into ? { merged: into } : {}) };
 }
 
 /**

@@ -24,7 +24,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { createFeatureHost } from '../public/js/feature-host.js?v=b87e2cbc';
 import { dropsMpFeature } from '../public/js/features/drops-mp-feature.js?fresh=floorshare';
-import { ownRowToSharedFloor, packToSharedFloor } from '../public/js/home-floor-share.js?v=703dac80';
+import { ownRowToSharedFloor, packToSharedFloor } from '../public/js/home-floor-share.js?v=d6cfdacd';
 import { createDroppedItemState, dropInventoryStack, likeStackAt, mergeDroppedStacks, setDownStack } from '../public/js/world-items.js?v=f5f9e017';
 import { GAME_DIR } from '../tools/repos.mjs';
 
@@ -129,7 +129,7 @@ describe('Decoration Mode at your own house online: the floor is shared, furnitu
     assert.match(homes, /function packDropOpts\(engine, was, target\) \{[\s\S]{0,200}floor: target\?\.on == null,/);
     const game = readFileSync(join(GAME_DIR, 'public/game.js'), 'utf8');
     const at = game.slice(game.indexOf('  dropPackStackAt(classTsid, count, x, y,'), game.indexOf('  takeDroppedStack(id) {'));
-    assert.ok(at.indexOf('packToSharedFloor(features, engine, { classTsid, count: n, x, y, floor })') > 0, 'game.js asks first');
+    assert.ok(at.indexOf('packToSharedFloor(features, engine, { classTsid, count: n, x, y, floor, into, merge })') > 0, 'game.js asks first');
     assert.ok(at.indexOf('packToSharedFloor(') < at.indexOf('beforeRemove?.(n);'), 'before the pack changes');
   });
 
@@ -174,7 +174,7 @@ describe('Decoration Mode at your own house online: the floor is shared, furnitu
   it('homes-feature: a move to the floor shares the save\'s stack and takes the lock off; a shelf keeps it', () => {
     const homes = readFileSync(join(GAME_DIR, 'public/js/features/homes-feature.js'), 'utf8');
     const mv = homes.slice(homes.indexOf('function moveStack('), homes.indexOf('function claimShared('));
-    assert.match(mv, /if \(target\.on == null\) \{\s+const shared = shareOwnStack\(engine, row, target\);\s+if \(shared\) return shared;\s+\}/);
+    assert.match(mv, /if \(target\.on == null\) \{\s+const shared = shareOwnStack\(engine, row, target, sharedLikeAt\(engine, row, target\)\);\s+if \(shared\) return shared;\s+\}/);
     assert.match(mv, /if \(target\.on != null\) row\.decor = true;\s+else delete row\.decor;/);
     assert.doesNotMatch(mv, /^\s+row\.decor = true;$/m, 'never locked on the floor');
   });
