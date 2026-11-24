@@ -10,7 +10,17 @@
  *   snaps.upload: debug/API.as 348-381) with the street and the spot. "Snap
  *   Saved!" follows (GlitchrSavedDialog.as 160-225). camera-mode-feature asks
  *   this feature (cameraSnap, cameraSnapHint).
- * - Menu, Snaps: your snaps, with Delete (the website's snaps/manage).
+ * - Menu, Snaps: your snaps, each in its own shape (the website's
+ *   snaps/manage). A click opens the viewer (G1240): the picture whole on a
+ *   dark scrim, its caption, street and date, Previous and Next (arrow keys,
+ *   a swipe), and Go there (the Camera's snap travel, so it needs a Camera
+ *   and recharges it), Download, Copy link (public only), Make public or
+ *   Make private, and Delete with a confirm step. After Save, "Snap Saved!"
+ *   offers View, Download and Make public / Copy link, as
+ *   GlitchrSavedDialog.as 165-169 offered the photo's page, a download and a
+ *   short URL. A Snap starts private; a public one shows on your profile
+ *   page (the site's /players/<you>/snaps/<id>/) and may come up on other
+ *   players' Cameras.
  * - The Camera: the Toy Vendor sells it (catalog_stores.js 1455-1458, 1100);
  *   "take a picture with" (items/camera.js 93-119) opens the snap travel
  *   screen (SnapTravelView.as): "In Soviet <street>, picture takes you!", a
@@ -32,20 +42,24 @@
  *   keeps only the picture.
  *
  * The site decides who may snap (the card and level 5 from the save), the
- * limits, and which Snap the Camera sees; pictures are checked and written
- * again there. Canvas data: snapStage, snapTravelStreet, snapDialog,
- * snapsCount, snapsLast. window.groddleSnaps in multiplayer.
+ * limits, and which Snap the Camera sees (public ones only); pictures are
+ * checked and written again there, and served only through its own route.
+ * A Snap is drawn at the view's own pixels on this screen (snapResolution),
+ * up to the site's 1920x1200, and smaller only to fit 1 MB (snapSteps).
+ * Canvas data: snapStage, snapTravelStreet, snapDialog, snapsCount,
+ * snapsLast, snapViewer, snapSize. window.groddleSnaps in multiplayer.
  */
 
-import { createMinnAccount } from '../minn-account.js?v=ca9fb98e';
+import { createMinnAccount } from '../minn-account.js?v=c6a70577';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import { worldCanvasFont } from '../world-text.js?v=6b49f88c';
 import { ITEM_CATALOG, countItem, ensureItem, itemIcon } from '../inventory.js?v=6414dbdc';
 import { STREET_INDEX, resolveIndexTsid } from '../street-loader.js?v=10376267';
 import {
-  CAMERA_CLASS, CAPTION_MAX, FORGET_RECHARGE_SEC, RECHARGE_BUFF, SNAP_COPY as T, SNAP_MAX_BYTES, SNAP_QUALITY, SNAP_WIDTHS, TRAVEL,
-  base64Bytes, canSnap, cleanCaption, isSnapUrl, jpegBase64, snapAuthor, snapPlace, snapStreet, takePictureState, withCamera,
-} from '../snaps.js?v=55d4c257';
+  CAMERA_CLASS, CAPTION_MAX, FORGET_RECHARGE_SEC, RECHARGE_BUFF, SNAP_COPY as T, SNAP_MAX_BYTES, TRAVEL,
+  albumSnaps, base64Bytes, canSnap, cleanCaption, isSnapDownload, isSnapUrl, jpegBase64, savedActions, snapAuthor, snapDate, snapPlace,
+  snapResolution, snapShareUrl, snapSteps, snapStreet, takePictureState, viewerActions, viewerStep, withCamera,
+} from '../snaps.js?v=42fd955b';
 import { VINTAGE_TEXT, applyFilter, filterComponents, filtersFor } from '../snap-filters.js?v=32315cf1';
 
 export const SNAPS_FEATURE_ID = 'snaps';
@@ -89,12 +103,40 @@ const STYLE = `
 .snap-win-x { margin-left: auto; border: 0; background: transparent; font: 700 var(--fs-xl)/var(--lh-none) var(--font-system); color: var(--text-subtle); cursor: pointer; padding: var(--sp-1) var(--sp-3); border-radius: var(--radius-sm); }
 .snap-win-body { overflow-y: auto; padding: var(--sp-3) var(--sp-7) var(--sp-7); }
 .snap-win-foot { display: flex; justify-content: space-between; align-items: center; gap: var(--sp-5); padding: var(--sp-3) var(--sp-7) var(--sp-5); color: var(--text-subtle); font-size: var(--fs-sm); }
-.snap-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: var(--sp-5); }
+.snap-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--sp-5); align-items: start; }
 .snap-card { background: var(--surface-bright); border-radius: var(--radius-sm); box-shadow: var(--shadow-1); padding: var(--sp-3) var(--sp-3) var(--sp-4); display: flex; flex-direction: column; gap: var(--sp-2); }
-.snap-card img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; background: var(--c-grey-90); border-radius: var(--radius-xs); }
+.snap-card-open { display: block; position: relative; width: 100%; border: 0; padding: 0; background: transparent; cursor: zoom-in; border-radius: var(--radius-xs); }
+.snap-card-open:focus-visible { outline: 2px solid var(--c-violet-50); outline-offset: 2px; }
+.snap-card img { display: block; width: 100%; height: auto; max-height: min(420px, 60vh); object-fit: contain; background: var(--c-grey-90); border-radius: var(--radius-xs); }
+.snap-card-badge { position: absolute; left: var(--sp-2); top: var(--sp-2); padding: 1px var(--sp-3); border-radius: var(--radius-lg); background: color-mix(in srgb, var(--c-black) 65%, transparent); color: var(--text-inverse); font: 700 var(--fs-xs)/var(--lh-snug) var(--font-system); }
 .snap-card b { font-size: var(--fs-sm); color: var(--c-violet-36); }
 .snap-card i { font-size: var(--fs-sm); color: var(--c-mauve-46); overflow-wrap: anywhere; }
 .snap-card .snap-link { align-self: flex-start; font-size: var(--fs-sm); }
+.snap-viewer { position: fixed; inset: 0; z-index: calc(var(--z-dialog) + 6); display: flex; flex-direction: column; background: color-mix(in srgb, var(--c-black) 94%, transparent); color: var(--text-inverse); font: var(--fs-md)/var(--lh-normal) var(--font-system); pointer-events: auto; padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px); }
+.snap-viewer[hidden], .snap-viewer [hidden] { display: none !important; }
+.snap-viewer-stage { position: relative; flex: 1 1 auto; min-height: 0; display: flex; align-items: center; justify-content: center; padding: var(--sp-6) 64px var(--sp-3); touch-action: pan-y; }
+.snap-viewer-img { display: block; max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; background: var(--c-black); box-shadow: 0 6px 30px color-mix(in srgb, var(--c-black) 60%, transparent); user-select: none; -webkit-user-drag: none; }
+.snap-viewer-x, .snap-viewer-step { position: absolute; display: inline-grid; place-items: center; border: 0; border-radius: 999px; background: color-mix(in srgb, var(--c-black) 55%, transparent); color: var(--text-inverse); cursor: pointer; }
+.snap-viewer-x { top: var(--sp-4); right: var(--sp-4); width: 44px; height: 44px; font: 400 var(--fs-4xl)/1 var(--font-system); z-index: var(--z-raised); }
+.snap-viewer-step { top: 50%; transform: translateY(-50%); width: 48px; height: 48px; font: 700 var(--fs-3xl)/1 var(--font-system); }
+.snap-viewer-step[data-snap-step="prev"] { left: var(--sp-3); }
+.snap-viewer-step[data-snap-step="next"] { right: var(--sp-3); }
+.snap-viewer-step:disabled { opacity: 0.25; cursor: default; }
+.snap-viewer-x:hover, .snap-viewer-step:hover:not(:disabled) { background: color-mix(in srgb, var(--c-black) 80%, transparent); }
+.snap-viewer :focus-visible { outline: 2px solid var(--c-gold-55); outline-offset: 2px; }
+.snap-viewer-info { flex: none; display: flex; flex-direction: column; align-items: center; gap: var(--sp-2); padding: var(--sp-3) var(--sp-6) var(--sp-6); text-align: center; }
+.snap-viewer-caption { margin: 0; font: 700 var(--fs-lg)/var(--lh-snug) var(--font-ui); overflow-wrap: anywhere; max-width: 60em; }
+.snap-viewer-meta, .snap-viewer-state { margin: 0; font-size: var(--fs-sm); opacity: 0.85; }
+.snap-viewer-actions, .snap-viewer-confirm { display: flex; flex-wrap: wrap; gap: var(--sp-3); justify-content: center; margin-top: var(--sp-2); }
+.snap-viewer-btn { display: inline-flex; align-items: center; min-height: 36px; padding: 0 var(--sp-6); border: 1px solid color-mix(in srgb, var(--c-white) 45%, transparent); border-radius: 999px; background: transparent; color: var(--text-inverse); font: 700 var(--fs-sm)/var(--lh-tight) var(--font-ui); text-decoration: none; cursor: pointer; }
+.snap-viewer-btn:hover:not(:disabled) { background: color-mix(in srgb, var(--c-white) 14%, transparent); }
+.snap-viewer-btn:disabled { opacity: 0.45; cursor: default; }
+.snap-viewer-btn[data-snap-action="delete"], .snap-viewer-btn[data-snap-confirm="yes"] { border-color: color-mix(in srgb, var(--c-red-50) 80%, transparent); }
+.snap-viewer-confirm p { width: 100%; margin: 0; font-weight: 700; }
+.snap-viewer-msg { min-height: 1.3em; margin: 0; font-size: var(--fs-sm); }
+.snap-viewer-msg input { width: min(420px, 90vw); margin-top: var(--sp-2); padding: var(--sp-2) var(--sp-3); border: 0; border-radius: var(--radius-sm); font: inherit; color: var(--text); background: var(--surface-bright); }
+.snap-saved-links { display: flex; flex-wrap: wrap; gap: var(--sp-5); justify-content: center; margin-top: var(--sp-4); }
+.snap-saved-links a { color: var(--c-violet-50); font: 600 var(--fs-md)/var(--lh-tight) var(--font-system); padding: 0.2rem; }
 .snap-note { color: var(--text-subtle); margin: var(--sp-3) 0; }
 .snap-filters { display: flex; gap: var(--sp-4); justify-content: center; flex-wrap: wrap; margin: var(--sp-4) 0 0; }
 .snap-filter { display: flex; flex-direction: column; align-items: center; gap: var(--sp-1); border: 0; background: transparent; padding: 0; cursor: pointer; font: 600 var(--fs-xs)/var(--lh-tight) var(--font-system); color: var(--text-subtle); }
@@ -134,7 +176,9 @@ function createSession(engine) {
     travel: null, // { el, snap, timers, stage }
     dialog: null, // { el, stage }
     win: null,
+    viewer: null, // { el, index, close() }
     last: '',
+    size: '',
   };
   if (!document.getElementById('snaps-style')) {
     const style = el('style', { id: 'snaps-style' });
@@ -151,9 +195,10 @@ function createSession(engine) {
   }
   // G738: a QA lever (js/qa-gate.js): solo, or online on a local host only.
   exposeQA('groddleSnaps', {
-    state: () => ({ stage: s.travel?.stage || 'idle', dialog: s.dialog?.stage || 'closed', album: s.album, last: s.last, travelSnap: s.travel?.snap || null }),
+    state: () => ({ stage: s.travel?.stage || 'idle', dialog: s.dialog?.stage || 'closed', album: s.album, last: s.last, travelSnap: s.travel?.snap || null, viewer: s.viewer ? s.viewer.index : -1, size: s.size }),
     album: () => loadAlbum(s, true),
     openAlbum: () => openAlbum(engine, s),
+    openViewer: (index = 0) => openViewer(engine, s, index),
     takePicture: () => openTravel(engine, s),
     snap: () => snapNow(engine, s, {}),
   });
@@ -167,6 +212,8 @@ function publish(engine, s) {
   engine.setData?.('snapDialog', s.dialog?.stage || 'closed');
   engine.setData?.('snapsCount', s.album ? String(s.album.snaps.length) : '');
   engine.setData?.('snapsLast', s.last);
+  engine.setData?.('snapViewer', s.viewer ? String(s.viewer.index) : '');
+  engine.setData?.('snapSize', s.size);
 }
 
 function note(engine, s, line) {
@@ -174,11 +221,15 @@ function note(engine, s, line) {
   publish(engine, s);
 }
 
+/** The album from a site answer ({ snaps, max }): the site's own pictures only. */
+function setAlbum(s, a) {
+  s.album = { snaps: albumSnaps(a?.snaps), max: Number(a?.max) || 60 };
+  return s.album;
+}
+
 async function loadAlbum(s, fresh = false) {
   if (s.album && !fresh) return s.album;
-  const a = await s.account.snaps();
-  s.album = { snaps: Array.isArray(a?.snaps) ? a.snaps.filter((x) => isSnapUrl(x?.url)) : [], max: Number(a?.max) || 60 };
-  return s.album;
+  return setAlbum(s, await s.account.snaps());
 }
 
 function upgrades(engine) {
@@ -198,27 +249,17 @@ function streetMeta(tsid) {
 /* Taking a Snap                                                       */
 /* ------------------------------------------------------------------ */
 
-/** The view as a JPEG no larger than the site keeps. */
+/**
+ * The view as a JPEG no larger than the site keeps (G1240): drawn at the
+ * renderer's own resolution (the screen's pixels: 1920x1200 for the
+ * computer view on a 2x screen), capped at the site's 1920x1200, and made
+ * smaller or lower quality only when that is over 1 MB (snapSteps).
+ */
 function drawSnap(engine) {
-  const view = engine.snapshotView?.({ resolution: 1 });
+  const resolution = snapResolution({ viewW: engine.viewWidth, resolution: engine.renderer?.resolution || globalThis.devicePixelRatio || 1 });
+  const view = engine.snapshotView?.({ resolution });
   if (!view?.width || !view?.height) return null;
-  for (const width of SNAP_WIDTHS) {
-    const w = Math.min(width, view.width);
-    const h = Math.round((view.height * w) / view.width);
-    const c = document.createElement('canvas');
-    c.width = w;
-    c.height = h;
-    const ctx = c.getContext('2d');
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, w, h);
-    ctx.imageSmoothingEnabled = true;
-    ctx.imageSmoothingQuality = 'high';
-    ctx.drawImage(view, 0, 0, w, h);
-    const url = c.toDataURL('image/jpeg', SNAP_QUALITY);
-    const b64 = jpegBase64(url);
-    if (b64 && base64Bytes(b64) <= SNAP_MAX_BYTES) return { url, b64, w, h, canvas: c };
-  }
-  return null;
+  return encodeSnap(view);
 }
 
 /* ------------------------------------------------------------------ */
@@ -289,21 +330,25 @@ async function drawThumb(target, tsid) {
   target.src = small.toDataURL('image/png');
 }
 
-/** The picture as the site keeps it: a JPEG under the cap, made smaller until it fits. */
+/** The picture as the site keeps it: a JPEG under the cap, its own size first, smaller or lower quality until it fits (snapSteps). */
 function encodeSnap(canvas) {
-  for (const width of [canvas.width, ...SNAP_WIDTHS.filter((w) => w < canvas.width)]) {
-    // On white, as drawSnap draws the view (a JPEG has no alpha: Shift's edge would go black).
-    const c = document.createElement('canvas');
-    c.width = width;
-    c.height = Math.round((canvas.height * width) / canvas.width);
-    const ctx = c.getContext('2d');
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, c.width, c.height);
-    ctx.imageSmoothingQuality = 'high';
-    ctx.drawImage(canvas, 0, 0, c.width, c.height);
-    const url = c.toDataURL('image/jpeg', SNAP_QUALITY);
+  let c = null;
+  for (const step of snapSteps(canvas.width, canvas.height)) {
+    if (!c || c.width !== step.w || c.height !== step.h) {
+      // On white (a JPEG has no alpha: Shift's edge would go black).
+      c = document.createElement('canvas');
+      c.width = step.w;
+      c.height = step.h;
+      const ctx = c.getContext('2d');
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, c.width, c.height);
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(canvas, 0, 0, c.width, c.height);
+    }
+    const url = c.toDataURL('image/jpeg', step.quality);
     const b64 = jpegBase64(url);
-    if (b64 && base64Bytes(b64) <= SNAP_MAX_BYTES) return { url, b64, w: c.width, h: c.height, canvas: c };
+    if (b64 && base64Bytes(b64) <= SNAP_MAX_BYTES) return { url, b64, w: c.width, h: c.height, canvas: c, quality: step.quality };
   }
   return null;
 }
@@ -459,6 +504,8 @@ function snapNow(engine, s, ctx) {
     engine.toast?.(T.error('the view could not be drawn'), 3000);
     return true;
   }
+  s.size = `${picture.w}x${picture.h}`;
+  publish(engine, s);
   const spot = snapSpot(engine);
   flash(() => openPolaroid(engine, s, picture, spot, ctx));
   return true;
@@ -501,10 +548,11 @@ function openPolaroid(engine, s, picture, spot, ctx) {
       if (filters?.tsid) note(engine, s, `filter:${filters.tsid}`);
       shown = kept;
       const out = await s.account.saveSnap({ image: kept.b64, caption: cleanCaption(input.value), street: spot.street, x: spot.x, y: spot.y });
-      s.album = { snaps: (out?.snaps || []).filter((x) => isSnapUrl(x?.url)), max: Number(out?.max) || 60 };
+      setAlbum(s, out);
+      s.size = `${kept.w || shown.w}x${kept.h || shown.h}`;
       note(engine, s, `saved:${out?.snap?.id || ''}`);
       ctx?.end?.();
-      showSaved(engine, s, shown);
+      showSaved(engine, s, shown, out?.snap?.id);
     } catch (err) {
       if (!s.dialog) return;
       s.dialog.stage = 'error';
@@ -530,7 +578,13 @@ function openPolaroid(engine, s, picture, spot, ctx) {
   });
 }
 
-function showSaved(engine, s, picture) {
+/**
+ * "Snap Saved!" (GlitchrSavedDialog.as 160-225, which gave the photo's
+ * page, a download and the short URL): View opens the viewer on it,
+ * Download saves the file, Make public puts it on your profile and then
+ * offers Copy link (savedActions).
+ */
+function showSaved(engine, s, picture, id) {
   if (!s.dialog) return;
   const card = s.dialog.el.querySelector('.snap-polaroid');
   s.dialog.stage = 'saved';
@@ -539,8 +593,68 @@ function showSaved(engine, s, picture) {
   done.addEventListener('click', () => closeDialog(engine, s));
   const row = el('div', { class: 'snap-row' });
   row.append(done);
-  card.replaceChildren(el('h2', {}, T.saved), el('img', { alt: '', src: picture.url }), el('p', {}, T.savedBody), row);
+  const links = el('div', { class: 'snap-saved-links' });
+  const msg = el('p', { class: 'snap-saved-msg', role: 'status', 'aria-live': 'polite' });
+  const snapNow = () => s.album?.snaps.find((x) => x.id === id) || null;
+  const drawLinks = () => {
+    links.replaceChildren();
+    const snap = snapNow();
+    for (const action of savedActions(snap)) {
+      if (action === 'view') {
+        const b = el('button', { type: 'button', class: 'snap-link', 'data-snap-saved': 'view' }, T.view);
+        b.addEventListener('click', () => {
+          const index = s.album.snaps.findIndex((x) => x.id === id);
+          closeDialog(engine, s);
+          openViewer(engine, s, index);
+        });
+        links.append(b);
+      } else if (action === 'download') {
+        links.append(el('a', { href: snap.download, download: '', 'data-snap-saved': 'download' }, T.download));
+      } else if (action === 'copy') {
+        const b = el('button', { type: 'button', class: 'snap-link', 'data-snap-saved': 'copy' }, T.copyLink);
+        b.addEventListener('click', () => copyLink(snapNow(), msg));
+        links.append(b);
+      } else if (action === 'public') {
+        const b = el('button', { type: 'button', class: 'snap-link', 'data-snap-saved': 'public' }, T.makePublic);
+        b.addEventListener('click', async () => {
+          b.disabled = true;
+          try {
+            setAlbum(s, await s.account.setSnapPublic(id, true));
+            note(engine, s, `public:${id}`);
+            msg.textContent = T.madePublic;
+            drawLinks();
+            links.querySelector('[data-snap-saved="copy"]')?.focus();
+          } catch (err) {
+            b.disabled = false;
+            msg.textContent = err?.message || T.failed;
+          }
+        });
+        links.append(b);
+      }
+    }
+  };
+  drawLinks();
+  const img = el('img', { alt: '', src: picture.url });
+  card.replaceChildren(el('h2', {}, T.saved), img, el('p', {}, T.savedBody), links, msg, row);
   done.focus();
+}
+
+/** Copy link: the public Snap's page, to the clipboard (or shown to copy by hand). */
+async function copyLink(snap, msg) {
+  const url = snapShareUrl(snap?.page, document.baseURI);
+  if (!url) return false;
+  try {
+    await navigator.clipboard.writeText(url);
+    msg.replaceChildren(document.createTextNode(T.copied));
+    return true;
+  } catch {
+    // No clipboard (an older browser, or no permission): the link to copy by hand.
+    const field = el('input', { type: 'text', readonly: true, value: url, 'aria-label': T.copyLink, 'data-snap-share': '' });
+    msg.replaceChildren(document.createTextNode(T.copyFailed), field);
+    field.focus?.();
+    field.select?.();
+    return false;
+  }
 }
 
 /* ------------------------------------------------------------------ */
@@ -572,11 +686,12 @@ function openAlbum(engine, s) {
   shade.append(win);
   document.body.append(shade);
   s.win = shade;
-  const close = () => { shade.remove(); if (s.win === shade) s.win = null; };
+  const close = () => { closeViewer(engine, s); shade.remove(); if (s.win === shade) s.win = null; };
   x.addEventListener('click', close);
   shade.addEventListener('pointerdown', (e) => { if (e.target === shade) close(); });
   shade.addEventListener('keydown', (e) => { e.stopPropagation(); if (e.key === 'Escape') close(); });
 
+  // Each card keeps its Snap's own shape (G1240: they were cropped to 16:9); a click opens the viewer.
   const draw = () => {
     const a = s.album || { snaps: [], max: 60 };
     count.textContent = T.count(a.snaps.length, a.max);
@@ -586,37 +701,260 @@ function openAlbum(engine, s) {
       return;
     }
     const grid = el('div', { class: 'snap-grid' });
-    for (const snap of a.snaps) {
+    a.snaps.forEach((snap, index) => {
       const c = el('div', { class: 'snap-card', 'data-snap-id': String(snap.id) });
-      c.append(el('img', { alt: snap.caption || '', src: snap.url, loading: 'lazy' }));
+      const open = el('button', { type: 'button', class: 'snap-card-open', 'data-snap-open': String(snap.id), 'aria-label': `${T.view}: ${snap.caption || placeText(snap.street) || T.viewer}` });
+      // Its own width and height: the card takes the Snap's shape before the picture loads.
+      const size = snap.width > 0 && snap.height > 0 ? { width: String(snap.width), height: String(snap.height) } : {};
+      open.append(el('img', { alt: '', src: isSnapUrl(snap.small) ? snap.small : snap.url, loading: 'lazy', decoding: 'async', ...size }));
+      if (snap.public === true) open.append(el('span', { class: 'snap-card-badge', 'data-snap-public': '' }, T.publicBadge));
+      open.addEventListener('click', () => openViewer(engine, s, index, open));
+      c.append(open);
       const where = placeText(snap.street);
       if (where) c.append(el('b', {}, where));
       if (snap.caption) c.append(el('i', {}, snap.caption));
-      const del = el('button', { type: 'button', class: 'snap-link', 'data-snap-delete': String(snap.id) }, T.remove);
-      del.addEventListener('click', async () => {
-        del.disabled = true;
-        del.textContent = T.removing;
-        try {
-          const out = await s.account.deleteSnap(snap.id);
-          s.album = { snaps: (out?.snaps || []).filter((y) => isSnapUrl(y?.url)), max: Number(out?.max) || 60 };
-          note(engine, s, `deleted:${snap.id}`);
-          draw();
-        } catch (err) {
-          del.disabled = false;
-          del.textContent = T.remove;
-          engine.toast?.(err?.message || 'That didn\'t work. Try again in a moment.', 2600);
-        }
-      });
-      c.append(del);
       grid.append(c);
-    }
+    });
     body.append(grid);
   };
+  shade.redraw = draw;
   body.append(el('p', { class: 'snap-note' }, 'Loading…'));
   loadAlbum(s, true).then(() => { draw(); publish(engine, s); }).catch((err) => {
-    body.replaceChildren(el('p', { class: 'snap-note' }, err?.message || 'That didn\'t work. Try again in a moment.'));
+    body.replaceChildren(el('p', { class: 'snap-note' }, err?.message || T.failed));
   });
   title.focus({ preventScroll: true });
+}
+
+/** The album window's grid drawn again (after a change in the viewer). */
+function redrawAlbum(s) {
+  s.win?.redraw?.();
+}
+
+/* ------------------------------------------------------------------ */
+/* The viewer (G1240)                                                   */
+/* ------------------------------------------------------------------ */
+
+function closeViewer(engine, s) {
+  const v = s.viewer;
+  if (!v) return;
+  s.viewer = null;
+  v.el.remove();
+  publish(engine, s);
+  // Focus goes back to the card of the Snap it was showing (the one it opened on, after Previous and Next), else the album.
+  const back = s.win?.querySelector?.(`[data-snap-open="${v.lastId}"]`) || (v.returnTo?.isConnected ? v.returnTo : null) || s.win?.querySelector?.('#snaps-title');
+  back?.focus?.({ preventScroll: true });
+}
+
+/** Elements Tab may stop on inside the viewer. */
+function focusables(root) {
+  return root.all ? root.all().filter((n) => (n.tag === 'button' || n.tag === 'a' || n.tag === 'input') && !n.disabled && !n.hidden) : [...root.querySelectorAll('button:not([disabled]), a[href], input')].filter((n) => !n.closest('[hidden]'));
+}
+
+/** Whether a Go there could start now (the Camera's rules, items/camera.js 104-111): the reason when not. */
+function goState(engine, snap) {
+  const meta = streetMeta(snap?.street);
+  if (!meta) return { enabled: false, reason: T.goNowhere };
+  if (countItem(engine.inv, CAMERA_CLASS) < 1) return { enabled: false, reason: T.goNeedCamera };
+  const st = takePictureState({ recharging: Boolean(engine.hasBuff?.(RECHARGE_BUFF)), dead: dead(engine) });
+  return st.enabled ? { enabled: true, reason: '' } : st;
+}
+
+/**
+ * The full-size viewer over everything: the Snap uncropped on a dark scrim,
+ * its caption, street and date, Previous and Next (arrow keys, a swipe),
+ * and its actions (viewerActions). Escape closes it; Tab stays inside it;
+ * focus goes back to the card that opened it.
+ */
+function openViewer(engine, s, index = 0, returnTo = null) {
+  const list = () => s.album?.snaps || [];
+  if (!list().length) return false;
+  closeViewer(engine, s);
+  const shade = el('div', { class: 'snap-viewer', role: 'dialog', 'aria-modal': 'true', 'aria-label': T.viewer, 'data-snap-viewer': '' });
+  const stage = el('div', { class: 'snap-viewer-stage' });
+  const img = el('img', { class: 'snap-viewer-img', alt: '', 'data-snap-viewer-img': '' });
+  const x = el('button', { type: 'button', class: 'snap-viewer-x', 'aria-label': `${T.close} (Esc)`, 'data-snap-viewer-close': '' }, '×');
+  const prev = el('button', { type: 'button', class: 'snap-viewer-step', 'data-snap-step': 'prev', 'aria-label': T.prev }, '‹');
+  const next = el('button', { type: 'button', class: 'snap-viewer-step', 'data-snap-step': 'next', 'aria-label': T.next }, '›');
+  stage.append(img, prev, next);
+  const info = el('div', { class: 'snap-viewer-info' });
+  const caption = el('p', { class: 'snap-viewer-caption', 'data-snap-viewer-caption': '' });
+  const meta = el('p', { class: 'snap-viewer-meta', 'data-snap-viewer-meta': '' });
+  const state = el('p', { class: 'snap-viewer-state', 'data-snap-viewer-state': '' });
+  const actions = el('div', { class: 'snap-viewer-actions', 'data-snap-actions': '' });
+  const confirm = el('div', { class: 'snap-viewer-confirm', 'data-snap-confirm-row': '', hidden: true });
+  const msg = el('p', { class: 'snap-viewer-msg', role: 'status', 'aria-live': 'polite', 'data-snap-viewer-msg': '' });
+  info.append(caption, meta, state, actions, confirm, msg);
+  shade.append(x, stage, info);
+  document.body.append(shade);
+  const v = { el: shade, index: Math.max(0, Math.min(list().length - 1, Number(index) || 0)), returnTo, lastId: null, busy: false };
+  s.viewer = v;
+
+  const current = () => list()[v.index] || null;
+  const off = new Set(); // buttons that stay disabled (Go there without a Camera)
+  const setBusy = (on) => {
+    v.busy = on;
+    for (const b of actions.children) if ('disabled' in b || b.tagName === 'BUTTON') b.disabled = on || off.has(b);
+  };
+  const button = (action, label, fn, extra = {}) => {
+    const b = el('button', { type: 'button', class: 'snap-viewer-btn', 'data-snap-action': action, ...extra }, label);
+    b.addEventListener('click', fn);
+    actions.append(b);
+    return b;
+  };
+  const changed = (out, line) => {
+    setAlbum(s, out);
+    redrawAlbum(s);
+    note(engine, s, line);
+  };
+  const draw = (focusAction = '') => {
+    const snap = current();
+    if (!snap) {
+      closeViewer(engine, s);
+      return;
+    }
+    v.lastId = snap.id;
+    img.src = snap.url;
+    if (snap.width > 0 && snap.height > 0) {
+      img.setAttribute('width', String(snap.width));
+      img.setAttribute('height', String(snap.height));
+    }
+    img.alt = snap.caption || '';
+    caption.textContent = snap.caption || '';
+    caption.hidden = !snap.caption;
+    meta.textContent = [placeText(snap.street), snapDate(snap.at), T.position(v.index + 1, list().length)].filter(Boolean).join(' · ');
+    state.textContent = snap.public === true ? T.publicNote : T.privateNote;
+    prev.disabled = viewerStep(list().length, v.index, -1) < 0;
+    next.disabled = viewerStep(list().length, v.index, 1) < 0;
+    confirm.hidden = true;
+    actions.hidden = false;
+    actions.replaceChildren();
+    off.clear();
+    for (const action of viewerActions(snap)) {
+      if (action === 'go') {
+        const st = goState(engine, snap);
+        const b = button('go', T.goThere, () => goThere(engine, s, snap), { title: st.reason || null });
+        if (!st.enabled) { b.disabled = true; off.add(b); }
+      } else if (action === 'download') {
+        actions.append(el('a', { class: 'snap-viewer-btn', href: snap.download, download: '', 'data-snap-action': 'download' }, T.download));
+      } else if (action === 'copy') {
+        button('copy', T.copyLink, () => copyLink(current(), msg));
+      } else if (action === 'public' || action === 'private') {
+        button(action, action === 'public' ? T.makePublic : T.makePrivate, async () => {
+          if (v.busy) return;
+          setBusy(true);
+          const on = action === 'public';
+          try {
+            changed(await s.account.setSnapPublic(snap.id, on), `${on ? 'public' : 'private'}:${snap.id}`);
+            v.index = Math.max(0, list().findIndex((y) => y.id === snap.id));
+            setBusy(false);
+            draw(on ? 'copy' : 'public');
+            msg.textContent = on ? T.madePublic : T.madePrivate;
+          } catch (err) {
+            setBusy(false);
+            msg.textContent = err?.message || T.failed;
+          }
+        });
+      } else if (action === 'delete') {
+        button('delete', T.remove, () => askDelete(snap));
+      }
+    }
+    publish(engine, s);
+    if (focusAction) actions.querySelector(`[data-snap-action="${focusAction}"]`)?.focus?.();
+  };
+  // Delete asks first, in place of the actions.
+  const askDelete = (snap) => {
+    actions.hidden = true;
+    confirm.hidden = false;
+    const yes = el('button', { type: 'button', class: 'snap-viewer-btn', 'data-snap-confirm': 'yes' }, T.confirmYes);
+    const no = el('button', { type: 'button', class: 'snap-viewer-btn', 'data-snap-confirm': 'no' }, T.confirmNo);
+    confirm.replaceChildren(el('p', {}, T.confirmDelete), yes, no);
+    no.addEventListener('click', () => draw('delete'));
+    yes.addEventListener('click', async () => {
+      if (v.busy) return;
+      v.busy = true;
+      yes.disabled = true;
+      no.disabled = true;
+      yes.textContent = T.removing;
+      try {
+        changed(await s.account.deleteSnap(snap.id), `deleted:${snap.id}`);
+        v.busy = false;
+        if (!list().length) {
+          closeViewer(engine, s);
+          return;
+        }
+        v.index = Math.min(v.index, list().length - 1);
+        draw();
+        msg.textContent = T.deleted;
+        x.focus?.();
+      } catch (err) {
+        v.busy = false;
+        draw('delete');
+        msg.textContent = err?.message || T.failed;
+      }
+    });
+    no.focus?.();
+  };
+  const step = (dir) => {
+    const to = viewerStep(list().length, v.index, dir);
+    if (to < 0 || v.busy) return;
+    v.index = to;
+    msg.textContent = '';
+    draw();
+  };
+  prev.addEventListener('click', () => step(-1));
+  next.addEventListener('click', () => step(1));
+  x.addEventListener('click', () => closeViewer(engine, s));
+  shade.addEventListener('keydown', (e) => {
+    e.stopPropagation();
+    if (e.key === 'Escape') {
+      e.preventDefault?.();
+      closeViewer(engine, s);
+    } else if ((e.key === 'ArrowLeft' || e.key === 'ArrowRight') && e.target?.tagName !== 'INPUT') {
+      e.preventDefault?.();
+      step(e.key === 'ArrowLeft' ? -1 : 1);
+    } else if (e.key === 'Tab') {
+      // The focus stays inside the viewer while it is open.
+      const all = focusables(shade);
+      if (!all.length) return;
+      const at = all.indexOf(document.activeElement);
+      const to = e.shiftKey ? (at <= 0 ? all.length - 1 : at - 1) : (at < 0 || at === all.length - 1 ? 0 : at + 1);
+      e.preventDefault?.();
+      all[to].focus?.();
+    }
+  });
+  // A swipe across the picture: left for the next Snap, right for the previous.
+  let swipe = null;
+  stage.addEventListener('pointerdown', (e) => {
+    if (e.pointerType === 'mouse') return;
+    swipe = { x: e.clientX, y: e.clientY };
+  });
+  stage.addEventListener('pointerup', (e) => {
+    if (!swipe) return;
+    const dx = e.clientX - swipe.x;
+    const dy = e.clientY - swipe.y;
+    swipe = null;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) step(dx < 0 ? 1 : -1);
+  });
+  stage.addEventListener('pointercancel', () => { swipe = null; });
+  // A click on the dark scrim beside the picture closes it.
+  stage.addEventListener('click', (e) => { if (e.target === stage) closeViewer(engine, s); });
+  draw();
+  x.focus?.({ preventScroll: true });
+  return true;
+}
+
+/** Go there from the viewer: the Camera's snap travel to one of your own Snaps (doGo's rules and costs). */
+function goThere(engine, s, snap) {
+  const st = goState(engine, snap);
+  if (!st.enabled) {
+    engine.toast?.(st.reason, 2600);
+    return false;
+  }
+  const target = { tsid: resolveIndexTsid(snap.street), x: Number(snap.x), y: Number(snap.y) };
+  if (!travelTo(engine, s, target)) return false;
+  closeViewer(engine, s);
+  if (s.win) { s.win.remove(); s.win = null; }
+  return true;
 }
 
 /* ------------------------------------------------------------------ */
@@ -630,6 +968,36 @@ function closeTravel(engine, s) {
   t.el.remove();
   s.travel = null;
   publish(engine, s);
+}
+
+/** Whether a teleport may start here (a quest room or the street's own gate says no); toasts why not. */
+function travelGateOk(engine, target) {
+  const gate = engine.transientInstance?.() ? { ok: false, msg: 'You cannot teleport right now.' } : engine.travelGate?.(target.tsid) || { ok: true };
+  if (gate.ok === false) {
+    engine.toast?.(gate.msg || 'You cannot teleport right now.', 2600);
+    return false;
+  }
+  return true;
+}
+
+/**
+ * Go there! (main.js 7605-7615): camera_recharging, Tottly's Toys, hit1 for
+ * 1 s, then teleportToLocationDelayed (500 ms) to the Snap's spot. The
+ * travel screen and the viewer (G1240) both go this way.
+ */
+function travelTo(engine, s, target, gated = false) {
+  if (!target?.tsid || (!gated && !travelGateOk(engine, target))) return false;
+  engine.applyBuff?.(RECHARGE_BUFF);
+  engine.featsIncrement?.('tottlys_toys', 1);
+  engine.playHit?.('hit1', TRAVEL.hitMs);
+  note(engine, s, `go:${target.tsid}`);
+  setTimeout(() => {
+    Promise.resolve(engine.enter?.(target.tsid, { spawnX: target.x, spawnY: target.y })).catch((err) => {
+      console.warn('[snaps] travel', err?.message || err);
+      engine.toast?.('The teleport fizzled.', 2400);
+    });
+  }, TRAVEL.goDelayMs);
+  return true;
 }
 
 /** take_picture: the snap travel screen (SnapTravelView.show). */
@@ -718,26 +1086,11 @@ function openTravel(engine, s) {
   };
   const doGo = () => {
     if (s.travel !== t || !t.target || go.disabled) return;
-    const target = t.target;
-    const gate = engine.transientInstance?.() ? { ok: false, msg: 'You cannot teleport right now.' } : engine.travelGate?.(target.tsid) || { ok: true };
-    if (gate.ok === false) {
-      engine.toast?.(gate.msg || 'You cannot teleport right now.', 2600);
-      return;
-    }
+    if (!travelGateOk(engine, t.target)) return;
     go.disabled = true;
-    // main.js 7605-7615: the buff, Tottly's Toys, hit1 for 1 s, then teleportToLocationDelayed (500 ms).
-    engine.applyBuff?.(RECHARGE_BUFF);
-    engine.featsIncrement?.('tottlys_toys', 1);
-    engine.playHit?.('hit1', TRAVEL.hitMs);
     t.stage = 'going';
-    note(engine, s, `go:${target.tsid}`);
     closeTravel(engine, s);
-    setTimeout(() => {
-      Promise.resolve(engine.enter?.(target.tsid, { spawnX: target.x, spawnY: target.y })).catch((err) => {
-        console.warn('[snaps] travel', err?.message || err);
-        engine.toast?.('The teleport fizzled.', 2400);
-      });
-    }, TRAVEL.goDelayMs);
+    travelTo(engine, s, t.target, true);
   };
   go.addEventListener('click', doGo);
   forget.addEventListener('click', doForget);

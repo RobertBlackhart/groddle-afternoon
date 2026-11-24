@@ -19,8 +19,8 @@ import {
   PROFILE_ABOUT_MAX, PROFILE_COPY, RETRY_MS,
   aboutCounter, aboutLength, avatarKeyOf, base64Bytes, cleanAbout, homeKeyOf, homeSizes, imageBase64, pngBase64, profileSlug, shortHash, shouldUpload, stillTransform,
 } from '../public/js/profiles.js?v=054ca723';
-import { createMinnAccount } from '../public/js/minn-account.js?v=ca9fb98e';
-import { FEATURES } from '../public/js/features/index.js?v=c1a62d71';
+import { createMinnAccount } from '../public/js/minn-account.js?v=c6a70577';
+import { FEATURES } from '../public/js/features/index.js?v=8dace3e9';
 import { SITE_DIR, skipWithoutSite } from '../tools/repos.mjs';
 import { loadContentCatalogsFromDir, getSkillCatalog } from '../public/js/content-catalogs.js?v=10b118dd';
 import { skillTitle } from '../public/js/skill-tree.js?v=df9b7332';
@@ -240,11 +240,14 @@ describe('the site side (groddle-afternoon-site)', { skip: skipWithoutSite }, ()
     assert.deepEqual(routes('PlayerPages.php'), [
       'Get /players Public',
       'Get /players/ Public',
+      'Get /players/{id:\\d+}/snaps/{snap:\\d+}/{kind:picture|small|download} Public',
       'Get /players/{id:\\d+}/{kind:avatar|tile|home|home-small} Public',
       'Get /players/{slug:[a-z0-9][a-z0-9.-]*} Public',
       'Get /players/{slug:[a-z0-9][a-z0-9.-]*}/ Public',
-      'Get /players/{slug:[a-z0-9][a-z0-9.-]*}/{tab:skills|achievements|buddies} Public',
-      'Get /players/{slug:[a-z0-9][a-z0-9.-]*}/{tab:skills|achievements|buddies}/ Public',
+      'Get /players/{slug:[a-z0-9][a-z0-9.-]*}/snaps/{snap:\\d+} Public',
+      'Get /players/{slug:[a-z0-9][a-z0-9.-]*}/snaps/{snap:\\d+}/ Public',
+      'Get /players/{slug:[a-z0-9][a-z0-9.-]*}/{tab:snaps|skills|achievements|buddies} Public',
+      'Get /players/{slug:[a-z0-9][a-z0-9.-]*}/{tab:snaps|skills|achievements|buddies}/ Public',
       'Post /players/{slug:[a-z0-9][a-z0-9.-]*}/buddy/ Public',
     ]);
   });
@@ -398,7 +401,8 @@ describe('a profile\'s pages: skills, badges and buddies (G338, Glitch\'s /profi
 
   it('every page of a profile goes through one door with the level rule', () => {
     const src = pages();
-    assert.match(src, /private const TABS = \['' => 'Profile', 'skills' => 'Skills', 'achievements' => 'Badges', 'buddies' => 'Buddies'\];/);
+    // G1240: the Snaps a player made public have a tab of their own.
+    assert.match(src, /private const TABS = \['' => 'Profile', 'snaps' => 'Snaps', 'skills' => 'Skills', 'achievements' => 'Badges', 'buddies' => 'Buddies'\];/);
     assert.match(src, /public function profile\(Request \$request, string \$slug\): Response\n\s+\{\n\s+return \$this->tab\(\$request, \$slug, ''\);/);
     assert.match(src, /public function subpage\(Request \$request, string \$slug, string \$tab\): Response\n\s+\{\n\s+return \$this->tab\(\$request, \$slug, \$tab\);/);
     assert.equal([...src.matchAll(/Profiles::LISTED_LEVEL && !\$own\)/g)].length, 1, 'one level check, shared by all four pages');

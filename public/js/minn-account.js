@@ -415,8 +415,9 @@ export function createMinnAccount(opts = {}) {
 
     /**
      * Snaps (G332, groddle-afternoon-site src/Snaps.php): snaps() your album
-     * { snaps, max, captionMax }; saveSnap({ image, caption, street, x, y })
-     * { snap, ...album }; deleteSnap(id); randomSnap(exclude) the Camera's
+     * { snaps, max, captionMax, profile }; saveSnap({ image, caption, street, x, y })
+     * { snap, ...album }; deleteSnap(id); setSnapPublic(id, on) { snap, ...album }
+     * (G1240: public on your profile, or private); randomSnap(exclude) the Camera's
      * { snap: { id, url, street, x, y, caption, owner: { id, name } } | null }.
      */
     async snaps() {
@@ -429,6 +430,10 @@ export function createMinnAccount(opts = {}) {
 
     async deleteSnap(id) {
       return buddyCall('Deleting the snap', `snaps/${Number(id)}`, { method: 'DELETE' });
+    },
+
+    async setSnapPublic(id, on) {
+      return buddyCall(on ? 'Making the snap public' : 'Making the snap private', `snaps/${Number(id)}/public`, { method: 'POST', body: { public: Boolean(on) } });
     },
 
     async randomSnap(exclude = '') {

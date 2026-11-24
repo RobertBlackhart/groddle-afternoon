@@ -18,9 +18,9 @@ import { join } from 'node:path';
 import {
   CAMERA_OFFER, FORGET_RECHARGE_SEC, RECHARGE_BUFF, SNAP_COPY, SNAPSHOTTERY, TRAVEL,
   canSnap, cleanCaption, isSnapStreet, isSnapUrl, snapAuthor, snapPlace, snapStreet, takePictureState, withCamera,
-} from '../public/js/snaps.js?v=55d4c257';
-import { snapsFeature } from '../public/js/features/snaps-feature.js?v=683320bb';
-import { FEATURES } from '../public/js/features/index.js?v=c1a62d71';
+} from '../public/js/snaps.js?v=42fd955b';
+import { snapsFeature } from '../public/js/features/snaps-feature.js?v=cd48cd07';
+import { FEATURES } from '../public/js/features/index.js?v=8dace3e9';
 import { HAS_SITE, SITE_DIR, skipWithoutSite } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');
@@ -102,9 +102,9 @@ describe('snaps: the rules from the source', () => {
     assert.equal([...cleanCaption('x'.repeat(600))].length, 500);
   });
 
-  it('loads only the site\'s own Snap files', () => {
-    assert.ok(isSnapUrl('/wp-content/uploads/groddle-snaps/0123456789abcdef01234567.jpg'));
-    for (const bad of ['https://evil.example/x.jpg', '/wp-content/uploads/groddle-snaps/../wp-config.php', 'javascript:alert(1)', '/wp-content/uploads/groddle-snaps/0123456789abcdef01234567.php', '//evil.example/wp-content/uploads/groddle-snaps/0123456789abcdef01234567.jpg']) assert.equal(isSnapUrl(bad), false, bad);
+  it('loads only the site\'s own Snap pictures (G1240: its checked route, never a file\'s address)', () => {
+    assert.ok(isSnapUrl('/players/99/snaps/7/picture'));
+    for (const bad of ['https://evil.example/x.jpg', '/wp-content/uploads/groddle-snaps/0123456789abcdef01234567.jpg', '/players/99/snaps/7/../../../wp-config.php', 'javascript:alert(1)', '//evil.example/players/99/snaps/7/picture']) assert.equal(isSnapUrl(bad), false, bad);
   });
 
   it('the Toy Vendor gains the Camera once', () => {
@@ -251,14 +251,14 @@ describe('snaps feature: multiplayer', () => {
   let saved;
   beforeEach(() => {
     calls = [];
-    random = { snap: { id: 7, url: '/wp-content/uploads/groddle-snaps/0123456789abcdef01234567.jpg', street: 'GLI3272LOTD1B1F', x: 900, y: -120, caption: 'hi', owner: { id: 99, name: 'Zz Bo' } } };
+    random = { snap: { id: 7, url: '/players/99/snaps/7/picture', street: 'GLI3272LOTD1B1F', x: 900, y: -120, caption: 'hi', owner: { id: 99, name: 'Zz Bo' } } };
     saved = [];
     globalThis.document = fakeDocument();
     globalThis.requestAnimationFrame = (fn) => fn();
     globalThis.GRODDLE_MP_BOOT = { nonce: 'abcdef0123' };
     globalThis.fetch = fakeFetch((path, q, init) => {
       if (path === 'snaps/random') return { body: random };
-      if (path === 'snaps' && (init.method || 'GET') === 'POST') { saved.push(JSON.parse(init.body)); return { status: 201, body: { snap: { id: 1, url: '/wp-content/uploads/groddle-snaps/aaaaaaaaaaaaaaaaaaaaaaaa.jpg' }, snaps: [], max: 60 } }; }
+      if (path === 'snaps' && (init.method || 'GET') === 'POST') { saved.push(JSON.parse(init.body)); return { status: 201, body: { snap: { id: 1, url: '/players/7/snaps/1/picture' }, snaps: [], max: 60 } }; }
       if (path === 'snaps') return { body: { snaps: [], max: 60 } };
       return null;
     }, calls);
@@ -380,7 +380,7 @@ describe('snaps: the site (groddle-afternoon-site)', { skip: skipWithoutSite }, 
     assert.match(src, /s\.user_id <> \? AND s\.street <> '' AND s\.street <> \?/);
     assert.match(src, /i\.user_id = \? AND i\.ignored_id = s\.user_id\) OR \(i\.user_id = s\.user_id AND i\.ignored_id = \?/);
     // Only names it wrote are ever deleted from disk.
-    assert.match(src, /FILE = '\/\^\[0-9a-f\]\{24\}\\\.jpg\$\/'/);
+    assert.match(src, /FILE = '\/\^\[0-9a-f\]\{24\}\(\?:\[0-9a-f\]\{8\}\)\?\\\.jpg\$\/'/);
     // No WordPress function.
     for (const f of ['src/Snaps.php', 'src/SnapImage.php']) assert.doesNotMatch(site(f), /\b(wp_[a-z_]+|get_option|update_option|esc_[a-z]+|sanitize_[a-z_]+|add_action|add_filter)\(/, f);
   });
@@ -414,7 +414,7 @@ describe('snaps: the site (groddle-afternoon-site)', { skip: skipWithoutSite }, 
       streetPrivate: 'groddle_snap_street:400',
       streetEmpty: 'ok:',
       streetPath: 'groddle_snap_street:400',
-      url: '/wp-content/uploads/groddle-snaps/0123456789abcdef01234567.jpg',
+      url: '/players/910/snaps/12/picture',
     });
   });
 });

@@ -83,5 +83,5 @@ echo json_encode([
     'streetPrivate' => $try(static fn () => Snaps::street('HOME_57')),
     'streetEmpty' => $try(static fn () => Snaps::street('')),
     'streetPath' => $try(static fn () => Snaps::street('../../wp-config')),
-    'url' => Snaps::url('0123456789abcdef01234567.jpg'),
+    'url' => Snaps::url(910, 12),
 ], JSON_UNESCAPED_SLASHES) . "\n";

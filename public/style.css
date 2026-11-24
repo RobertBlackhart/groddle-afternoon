@@ -13724,11 +13724,12 @@ body:has(#quest-dialogue:not([hidden])) .prompt-stack { z-index: calc(var(--z-mo
 @media (prefers-reduced-motion: reduce) {
   [data-ui="modern"] #imagination-panel .img-card-shell { animation: none; }
 }
-/* Snaps (features/snaps-feature.js, multiplayer: Menu, Snaps): the shell's centred frame over a scrim. */
+/* Snaps (features/snaps-feature.js, multiplayer: Menu, Snaps): the shell's centred frame over a scrim.
+   G1240: wider, so the cards (each in its Snap's own shape) are big enough to see; a click opens the viewer. */
 [data-ui="modern"] .snap-shade-win.ui-sheet-center { align-items: center; padding: calc(var(--hud-h) + 12px) var(--hud-inset) var(--space-4); background: var(--scrim); }
 [data-ui="modern"] .snap-shade-win .snap-win {
-  width: min(720px, 100%);
-  max-height: min(720px, 100%);
+  width: min(1000px, 100%);
+  max-height: min(860px, 100%);
   overflow: hidden;
   border: 1px solid var(--border);
   border-radius: var(--radius-l);
@@ -13758,9 +13759,13 @@ body:has(#quest-dialogue:not([hidden])) .prompt-stack { z-index: calc(var(--z-mo
 [data-ui="modern"] .snap-shade-win .snap-win-x:hover { background: var(--surface-hover); color: var(--text); }
 [data-ui="modern"] .snap-shade-win .snap-win-x:focus-visible { outline: 2px solid var(--focus); outline-offset: 1px; }
 [data-ui="modern"] .snap-shade-win .snap-win-body { flex: 1 1 auto; min-height: 0; padding: var(--space-1) var(--space-4) var(--space-3); scrollbar-width: thin; }
-[data-ui="modern"] .snap-shade-win .snap-grid { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: var(--space-3); }
+[data-ui="modern"] .snap-shade-win .snap-grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr)); gap: var(--space-3); align-items: start; }
 [data-ui="modern"] .snap-shade-win .snap-card { gap: 2px; padding: var(--space-2); border: 1px solid var(--border); border-radius: var(--radius-m); background: var(--surface-raised); box-shadow: none; }
 [data-ui="modern"] .snap-shade-win .snap-card img { border-radius: var(--radius-s); background: var(--surface-sunken); }
+[data-ui="modern"] .snap-shade-win .snap-card-open { border-radius: var(--radius-s); }
+[data-ui="modern"] .snap-shade-win .snap-card-open:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+[data-ui="modern"] .snap-viewer { font-family: var(--font-ui); }
+[data-ui="modern"] .snap-viewer :focus-visible { outline-color: var(--focus); }
 [data-ui="modern"] .snap-shade-win .snap-card b { color: var(--text); font-size: var(--fs-m); font-weight: var(--fw-heavy); }
 [data-ui="modern"] .snap-shade-win .snap-card i { color: var(--text-muted); font-size: var(--fs-s); }
 [data-ui="modern"] .snap-shade-win .snap-link { color: var(--accent); font: var(--fw-heavy) var(--fs-s)/var(--lh-tight) var(--font-ui); }
@@ -13785,6 +13790,18 @@ body:has(#quest-dialogue:not([hidden])) .prompt-stack { z-index: calc(var(--z-mo
   border-radius: var(--radius-xs);
 }
 @media (prefers-reduced-motion: reduce) { [data-ui="modern"] .snap-shade-win .snap-win { animation: none; } }
+/* G1240 on a phone: the album and the viewer fill the screen (the safe areas kept), one card a row,
+   and the viewer's buttons are a thumb's size; Previous and Next sit over the picture's edges. */
+:root.touch-phone .snap-shade-win.ui-sheet-center,
+:root.touch-phone[data-ui="modern"] .snap-shade-win.ui-sheet-center { padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px) env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px); align-items: stretch; }
+:root.touch-phone .snap-shade-win .snap-win,
+:root.touch-phone[data-ui="modern"] .snap-shade-win .snap-win { width: 100%; height: 100%; max-width: none; max-height: none; border-radius: 0; border: 0; }
+:root.touch-phone .snap-shade-win .snap-grid,
+:root.touch-phone[data-ui="modern"] .snap-shade-win .snap-grid { grid-template-columns: minmax(0, 1fr); }
+:root.touch-phone .snap-viewer-stage { padding: 64px var(--sp-2) var(--sp-2); }
+:root.touch-phone .snap-viewer-step { width: 44px; height: 44px; }
+:root.touch-phone .snap-viewer-btn { min-height: 44px; }
+:root.touch-phone .snap-viewer-info { padding: var(--sp-2) var(--sp-4) var(--sp-5); }
 /* Home and Mail: the shell's centred frame over a scrim (Home narrow, Mail wide for its two panes). */
 [data-ui="modern"] #game-root :is(#home-panel, #mail-panel).ui-sheet-center {
   padding: calc(var(--hud-h) + 12px) var(--hud-inset) calc(var(--pack-live-height, 72px) + 8px);
@@ -14999,8 +15016,9 @@ body.is-booting .touch-controls { display: none; }
    8 px short on the right of an upright phone. #604: every .verb-menu layer (the naming boxes, a
    Rename prompt) and .glitch-modal is such a scrim too, and so are the street map's sheet and the
    keys card's shade; their cards keep their own widths. G1178: the house's Customize sheet (.hp-card)
-   runs edge to edge upright, docked under the street (js/ui/house-picker.js). */
-:root.touch-phone[data-ui="modern"] :is(.glitch-modal-card, .side-card, .ui-sheet, [role="dialog"]):not(.ui-sheet-center, .award-screen, .new-day-screen, .hog-haul-screen, .overlay, .quest-dialogue, .rook-museum-exhibit, .feed-picker, .emotional-bear-picker, .verb-menu, .glitch-modal, .smm-sheet, .hotkeys-shade, .imagination-hub, .img-reveal, .game-splash, .vog-overlay, .hp-card) { max-width: calc(100vw - 8px); }
+   runs edge to edge upright, docked under the street (js/ui/house-picker.js). G1240: the Snaps album and
+   viewer fill a phone's screen. */
+:root.touch-phone[data-ui="modern"] :is(.glitch-modal-card, .side-card, .ui-sheet, [role="dialog"]):not(.ui-sheet-center, .award-screen, .new-day-screen, .hog-haul-screen, .overlay, .quest-dialogue, .rook-museum-exhibit, .feed-picker, .emotional-bear-picker, .verb-menu, .glitch-modal, .smm-sheet, .hotkeys-shade, .imagination-hub, .img-reveal, .game-splash, .vog-overlay, .hp-card, .snap-win, .snap-viewer) { max-width: calc(100vw - 8px); }
 :root.touch-phone[data-ui="modern"] body { overflow-x: hidden; }
 /* The tutorial's pill (top left) waits while a sheet or window is open: it covered their titles. */
 :root.touch-phone[data-ui="modern"]:has(#game-root :is(.ui-sheet, .side-panel, .glitch-modal, .map-panel):not([hidden])) #newxp-pill { visibility: hidden; }

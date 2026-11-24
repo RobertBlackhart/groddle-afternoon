@@ -5808,6 +5808,27 @@
    "why": "G1190 made dropped things in a house, yard or Tower shared while what the owner sets in Decoration Mode stays theirs; the two look the same on the floor.",
    "ruling": "Austin 2026-11-23 (the day's calls): asked for a way for owners to tell decor from freebies; built as a proposal",
    "rows": []
+  },
+  {
+   "id": "snap-viewer-go-there",
+   "title": "Go there from your own Snaps: the album's viewer teleports you to where one of your Snaps was taken, with the Camera's own rules (a Camera in the pack, camera_recharging for 90 s, Tottly's Toys, hit1)",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/features/snaps-feature.js",
+     "symbol": "goThere"
+    },
+    {
+     "file": "public/js/snaps.js",
+     "symbol": "viewerActions"
+    }
+   ],
+   "why": "Glitch's Camera only took you to a random Snap by someone else (items/camera.js 93-119, SnapTravelView.as); its website's snaps had no teleport. Austin asked for Go there in the viewer when the Camera's travel fits (G1240); this lets a player pick the destination, every 90 s.",
+   "ruling": "Austin 2026-11-24 (G1240 build list): Go there, the travel behaviour the Camera already has, if it fits; built gated on the Camera as a proposal",
+   "rows": [
+    "G1240"
+   ]
   }
  ]
 }
