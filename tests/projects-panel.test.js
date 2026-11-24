@@ -462,7 +462,7 @@ describe('Projects panel wiring', () => {
   it('Classic draws it as a 2012 window like the Quest Log; Modern styles the cards from tokens', () => {
     assert.match(classic, /:is\(#skills-panel, #buffs-panel, #achieve-panel, #quest-panel, #projects-panel, #vine-radio-panel, #map-panel, #make-panel\):not\(\[hidden\]\)/);
     assert.match(classic, /:is\(#skills-panel, #buffs-panel, #achieve-panel, #quest-panel, #projects-panel, #vine-radio-panel\) > \.side-card,/);
-    assert.match(classic, /:is\(#quest-panel, #projects-panel, #vine-radio-panel, #make-panel\) \.ui-sheet-body/);
+    assert.match(classic, /:is\(#quest-panel, #projects-panel, #make-panel\) \.ui-sheet-body/);
     assert.match(classic, /#projects-list \.pj-card \{/);
     assert.match(style, /\[data-ui="modern"\] #projects-list \.pj-card \{/);
     assert.match(style, /\.more-menu:has\(\.pj-dot:not\(\[hidden\]\)\) \.more-btn::before/);

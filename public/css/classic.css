@@ -2014,7 +2014,9 @@
 :root[data-ui="classic"] #game-root #make-panel .ui-sheet-head { min-height: calc(67 * var(--cu)); flex-wrap: wrap; }
 :root[data-ui="classic"] #game-root :is(#quest-panel, #projects-panel, #vine-radio-panel, #make-panel, #map-panel) .ui-sheet-icon { width: auto; height: calc(28 * var(--cu)); }
 /* The sheet's body scrolls; its foot is the window's white footer (Making: head 67, body 320, foot 64). */
-:root[data-ui="classic"] #game-root :is(#quest-panel, #projects-panel, #vine-radio-panel, #make-panel) .ui-sheet-body { flex: 1 1 auto; min-height: calc(200 * var(--cu)); overflow-y: auto; padding-top: calc(10 * var(--cu)); padding-bottom: calc(10 * var(--cu)); }
+:root[data-ui="classic"] #game-root :is(#quest-panel, #projects-panel, #make-panel) .ui-sheet-body { flex: 1 1 auto; min-height: calc(200 * var(--cu)); overflow-y: auto; padding-top: calc(10 * var(--cu)); padding-bottom: calc(10 * var(--cu)); }
+/* G1245: the Vine Radio's Choose music window scrolls its body the same way (a rule of its own: Make's low-window rule follows the shared one). */
+:root[data-ui="classic"] #game-root #vine-radio-panel .ui-sheet-body { flex: 1 1 auto; min-height: calc(200 * var(--cu)); overflow-y: auto; padding-top: calc(10 * var(--cu)); padding-bottom: calc(10 * var(--cu)); }
 /* Make's tool screens put the Tools row and the search (about 89) between the head and the body. In a
    low window (1280 x 720) the head, those rows, the body's 200 and the foot came to more than the game's
    height holds, and the foot was pushed out of the window's bottom edge (24 px of its 75 cut, its line
