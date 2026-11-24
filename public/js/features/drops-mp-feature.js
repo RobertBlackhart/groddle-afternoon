@@ -46,8 +46,17 @@
  * verb's tooltip, "Drop it on the ground.", when the stack is dropped for
  * everyone: shared stacks never merge.
  *
+ * A drop shows at once (Austin 2026-11-24, "make it feel instant"): its count leaves the pack's view
+ * (packHeld, game.js renderPackBar) and its stack shows where it lands, on the like stack it will join
+ * or on its own (list), while the server weighs it; a floor move shows at its new spot the same way.
+ * That is display only: the pack, the save and the ledger change on the server's answer as before
+ * (apply). A refusal, a timeout or a lost connection puts the count back in the pack's view and takes
+ * the stack away; a settled answer swaps it for the real one. The drops wait their turn in the queue
+ * (the server weighs one drop at a time per player, and the save is written before each), each shown
+ * from the moment it is dropped.
+ *
  * QA: canvas data sharedStacks, dropState (none|dropping|picking|claiming), dropLast,
- * dropEaten (the last bite: id:left:pig);
+ * dropEaten (the last bite: id:left:pig), dropPending (drops shown, not yet answered);
  * window.groddleDrops.
  */
 
@@ -55,7 +64,7 @@ import { ITEM_CATALOG, addItem, countItem, removeItem } from '../inventory.js?v=
 import { TOOL_CONDITION_CATALOG, leavingCopyTag, leavingToolWear, receiveToolCopy, takeToolCopy } from '../tools.js?v=4156bba8';
 import { createMinnAccount } from '../minn-account.js?v=ca9fb98e';
 import { saveStore, savedThrough } from '../save-store.js?v=4e720735';
-import { DROP_OP, DROP_QUEUE_MAX, DROP_TEXT, bucketTake, dropEffect, dropRefusalText, eatenStack, floorPileMax, groundFrom, homePlaceOf, isFloorPlace, isPublicStreet, normalizeGroundStack, normalizeItem, normalizeMine, pickupAsk, pigAnimalKey, shareReason, stackAt, stackLeft } from '../drops-mp.js?v=8852c611';
+import { DROP_OP, DROP_QUEUE_MAX, DROP_TEXT, bucketTake, dropEffect, dropRefusalText, eatenStack, floorPileMax, groundFrom, homePlaceOf, isFloorPlace, isPublicStreet, likeSharedStack, normalizeGroundStack, normalizeItem, normalizeMine, pickupAsk, pigAnimalKey, shareReason, stackAt, stackLeft } from '../drops-mp.js?v=dec58c3d';
 
 export const DROPS_MP_FEATURE_ID = 'drops-mp';
 const TABLE_URL = 'assets/content/trade-items.json';
@@ -103,6 +112,14 @@ function createSession(engine, client) {
   let syncing = false;
   let syncedAt = 0;
   let refN = 0;
+  /**
+   * Drops shown before the server answers, in order: { key, id ('pend-<n>', the stack drawn), street, c,
+   * n (out of the pack's view), sx, y (where it lands, as the server keeps x), target (the stack it is
+   * drawn joining: a server id or an earlier one's 'pend-' id), joinN, restN (drawn on its own), op
+   * (once settled: the real stack it lies in, its own or the one it joined), at, done }.
+   */
+  const pending = [];
+  let pendN = 0;
 
   function loadTable() {
     if (table || tableLoading) return tableLoading;
@@ -120,6 +137,88 @@ function createSession(engine, client) {
     engine.setData?.('dropQueue', String(queue.length));
     engine.setData?.('dropLast', lastLine);
     engine.setData?.('dropEaten', lastEaten);
+    engine.setData?.('dropPending', String(pending.filter((q) => !q.done).length));
+  }
+
+  /** The pack's view of what the drops shown take out of it ({ class: n }), or null. */
+  function held() {
+    const out = {};
+    for (const q of pending) if (!q.done) out[q.c] = (out[q.c] || 0) + q.n;
+    return Object.keys(out).length ? out : null;
+  }
+
+  /** The drops shown changed: the done ones go, the pack and the stacks are drawn again. */
+  function pendingChanged() {
+    for (let i = pending.length - 1; i >= 0; i -= 1) if (pending[i].done) pending.splice(i, 1);
+    engine.refreshPack?.();
+    redraw();
+  }
+
+  /** A drop shown ends (answered, refused, given up): its count shows in the pack again until the answer applies. */
+  function endPending(q, { quiet = false } = {}) {
+    if (!q || q.done) return;
+    q.done = true;
+    // The drops shown on it, and those waiting to be set on it, are on its real stack now (or, refused, on their own).
+    const now = q.op && stacks.has(q.op) ? q.op : null;
+    for (const o of pending) if (o.target === q.id) o.target = now;
+    for (const w of queue) {
+      if (w.into !== q.id) continue;
+      w.into = now;
+      if (!now) w.merge = false;
+    }
+    if (!quiet) pendingChanged();
+  }
+
+  function endAllPending() {
+    if (!pending.length && !moving) return;
+    for (const q of pending) q.done = true;
+    moving = null;
+    pendingChanged();
+  }
+
+  /** The stack a drop shown joins, as an id in `map` (an earlier shown one now settled is its real stack), or null. */
+  function targetIn(q, map) {
+    if (!q.target) return null;
+    if (map.has(q.target)) return q.target;
+    const t = pending.find((o) => o.id === q.target);
+    return t?.op && map.has(t.op) ? t.op : null;
+  }
+
+  function me() {
+    const m = client.me || {};
+    return { id: Number(m.id) || 0, name: String(m.name || '') };
+  }
+
+  /** The stack drawn for a drop shown, on its own. */
+  function shownOwn(q, n) {
+    const by = me();
+    return { id: q.id, streetTsid: q.street, classTsid: q.c, count: n, x: q.sx, y: q.y, droppedAt: q.at, shared: true, pending: true, by, subtitle: `${DROP_TEXT.by(by.name || 'you')} · ${n} in this pile` };
+  }
+
+  /**
+   * The place's stacks as they are drawn now (as the server keeps them): the server's, with each drop
+   * shown on the stack it joins or on its own, and the floor move under way at its new spot.
+   */
+  function view(p = here()) {
+    const out = new Map(stacks);
+    if (!p || street !== p.street) return out;
+    for (const q of pending) {
+      if (q.done || q.street !== p.street) continue;
+      const tid = targetIn(q, out);
+      let rest = q.restN;
+      if (tid && q.joinN > 0) out.set(tid, stackLeft(out.get(tid), out.get(tid).count + q.joinN));
+      else rest += q.joinN;
+      if (rest > 0) out.set(q.id, shownOwn(q, rest));
+    }
+    const s = moving && out.get(moving.id);
+    if (s) {
+      const t = moving.into ? out.get(moving.into) : null;
+      const k = t ? moving.k : 0;
+      if (t && k > 0 && !moving.joinSeen) out.set(t.id, stackLeft(t, t.count + k));
+      if (s.count - k > 0) out.set(s.id, { ...stackLeft(s, s.count - k), x: moving.sx, y: moving.y });
+      else out.delete(s.id);
+    }
+    return out;
   }
 
   /**
@@ -218,7 +317,7 @@ function createSession(engine, client) {
    * One settled op: true when it was applied now (`copy`: the tool chosen for a drop; `claim`: where
    * Decoration Mode sets a stack taken whole, R50; when it can't go there it comes to the pack).
    */
-  function apply(op, side, item, at = null, copy = null, claim = null) {
+  function apply(op, side, item, at = null, copy = null, claim = null, { sounded = false } = {}) {
     if (!op || engine.query?.('ledgerReceipt', op, engine) !== true) return false;
     if (side === 'took' && claim && setDownClaim(claim, item)) return true;
     const fx = dropEffect(side, item, itemLabel);
@@ -239,7 +338,8 @@ function createSession(engine, client) {
       const it = item.n === 1 ? itemLabel(item.c) : itemLabel(item.c, item.n);
       engine.floatText?.(at.x, at.y - 55, `${side === 'dropped' ? '−' : '+'}${item.n} ${it}`, side === 'dropped' ? 0xf2c879 : 0x7dcea0);
     }
-    engine.playSound?.(fx.sound, { volume: 0.6 });
+    // A drop shown at once made its sound then (showDrop).
+    if (!sounded) engine.playSound?.(fx.sound, { volume: 0.6 });
     engine.refreshPack?.();
     engine.save?.();
     tell(fx.line);
@@ -275,12 +375,21 @@ function createSession(engine, client) {
   client.on('msg:ground_added', (msg) => {
     const s = normalizeGroundStack(msg.stack, street);
     if (!s || !street || street !== client.street) return;
+    const was = stacks.get(s.id);
+    // The stack a drop or a move in flight joins grew: the join landed (the answer follows), so it is not drawn twice.
+    const q = dropping?.pend;
+    if (q && !q.done && q.joinN > 0 && was && s.count > was.count && targetIn(q, stacks) === s.id) q.joinN = 0;
+    if (moving && moving.into === s.id && was && s.count > was.count) moving.joinSeen = true;
+    // The moved stack where it went: the move is drawn from the server's word now.
+    if (moving?.settled && moving.id === s.id) moving = null;
     stacks.set(s.id, s);
     redraw();
   });
 
   client.on('msg:ground_gone', (msg) => {
-    if (stacks.delete(String(msg.id || ''))) redraw();
+    const id = String(msg.id || '');
+    if (moving?.settled && moving.id === id) moving = null;
+    if (stacks.delete(id)) redraw();
   });
 
   // Some of a stack was picked up (or its count corrected): the rest stays, with its new count.
@@ -313,32 +422,47 @@ function createSession(engine, client) {
   client.on('msg:ground_dropped', (msg) => {
     const d = dropping;
     dropping = null;
+    // The drop shown for it ends here: refused, it is back in the pack's view; settled, the real stack takes its place.
+    const q = d?.pend && (!msg.ref || d.ref === String(msg.ref)) ? d.pend : null;
     if (msg.status !== 'settled') {
+      endPending(q, { quiet: true });
       // The server would not share it: as in solo, the drop is the player's own.
       if (d && ['type', 'off', 'private'].includes(String(msg.why))) dropOwn(d);
       else tell(dropRefusalText(msg, client.street || street));
       // A full place stays full for the drops behind it: they stay in the pack.
-      if (String(msg.why) === 'full') queue.length = 0;
+      if (String(msg.why) === 'full') dropQueue();
+      pendingChanged();
       publish();
       pump();
       return;
     }
     const s = normalizeGroundStack(msg.stack, street);
+    if (s && street && street === client.street) stacks.set(s.id, s);
+    if (q) {
+      q.op = s ? s.id : String(msg.into || '');
+      endPending(q, { quiet: true });
+    }
     // A drop that joined a like stack on a house floor says what left the pack (`item`); the stack it
     // joined comes again as ground_added, with its new count (drops.go "Merging").
     const it = normalizeItem(msg.item);
     const joined = msg.into ? stacks.get(String(msg.into)) : null;
-    apply(String(msg.op || ''), 'dropped', it ? { c: it.c, n: it.n } : s ? { c: s.classTsid, n: s.count } : d ? { c: d.c, n: d.n } : null, shown(s || joined), d?.copy ?? null);
+    apply(String(msg.op || ''), 'dropped', it ? { c: it.c, n: it.n } : s ? { c: s.classTsid, n: s.count } : d ? { c: d.c, n: d.n } : null, shown(s || joined), d?.copy ?? null, null, { sounded: Boolean(q) });
+    pendingChanged();
     pump();
   });
 
   // The owner's floor move settled or was refused (drops.go moveFrame); where it went comes as ground_added.
+  // Refused, the stack is drawn where it was again; settled, at its new spot until the server's word on it comes.
   client.on('msg:ground_moved', (msg) => {
     const id = String(msg.id || '');
-    if (moving?.id === id) moving = null;
+    if (moving?.id === id) {
+      if (msg.status === 'settled') {
+        moving.settled = true;
+        moving.until = Date.now() + 2000;
+      } else moving = null;
+    }
     if (msg.status !== 'settled') tell(String(msg.text || DROP_TEXT.gone));
-    else engine.playSound?.('ITEM_DROP', { volume: 0.45 });
-    publish();
+    redraw();
   });
 
   client.on('msg:ground_taken', (msg) => {
@@ -364,8 +488,8 @@ function createSession(engine, client) {
       // The drops still waiting stay in the pack.
       dropping = null;
       picking = null;
-      moving = null;
-      queue.length = 0;
+      dropQueue();
+      endAllPending();
       if (stacks.size) {
         stacks.clear();
         street = '';
@@ -412,15 +536,54 @@ function createSession(engine, client) {
       return null;
     }
     if (reasonAt(p, c)) return null;
-    if (dropping && Date.now() - dropping.at >= WAIT_MS) dropping = null; // no answer came: let the next go
+    if (dropping && Date.now() - dropping.at >= WAIT_MS) giveUp(); // no answer came: let the next go
     if (countItem(engine.inv, c) < 1) return null;
     if (queue.length >= DROP_QUEUE_MAX) {
       engine.toast?.(DROP_TEXT.busy, 2400);
       return true;
     }
-    queue.push({ street: p.street, classTsid: c, count, x, y, copy, into: into ? String(into) : null, merge: merge !== false });
+    // What the pack shows: the drops shown already took theirs out of its view (none left: nothing more goes, as a
+    // queued drop with nothing left to send was skipped).
+    const visible = countItem(engine.inv, c) - (held()?.[c] || 0);
+    if (visible < 1) return true;
+    const n = Math.min(Math.max(1, Math.floor(Number(count) || 1)), visible);
+    const q = showDrop(p, { c, n, x, y, into: into ? String(into) : null, merge: merge !== false });
+    queue.push({ street: p.street, classTsid: c, count: n, x, y, copy, into: into ? String(into) : null, merge: merge !== false, pend: q });
+    pendingChanged();
     pump();
     return true;
+  }
+
+  /**
+   * A drop shown at once: on the like stack it will join (drops.go mergeTarget, as likeSharedStack reads
+   * it; up to the class's pile, the rest beside it) or on its own where it lands.
+   */
+  function showDrop(p, { c, n, x, y, into, merge }) {
+    const sx = Math.round(Number(x) || 0) - (p.ox || 0);
+    const sy = Math.round(Number(y) || 0);
+    const row = table?.items?.[c];
+    // A tool goes down with its wear, a class with words may carry them: drawn on its own (the answer may join it).
+    const words = Boolean(TOOL_CONDITION_CATALOG[c] || row?.tag);
+    const t = likeSharedStack([...view(p).values()], p.street, { c, x: sx, y: sy, by: me().id, into, merge, words }, row);
+    const joinN = t ? Math.max(0, Math.min(n, floorPileMax(row) - t.count)) : 0;
+    pendN += 1;
+    const q = { key: pendN, id: `pend-${pendN}`, street: p.street, c, n, sx, y: sy, target: t?.id || null, joinN, restN: n - joinN, op: null, at: Date.now(), done: false };
+    pending.push(q);
+    engine.playSound?.('ITEM_DROP', { volume: 0.6 });
+    return q;
+  }
+
+  /** The drops waiting their turn are given up (they stay in the pack, as before). */
+  function dropQueue() {
+    for (const w of queue) endPending(w.pend, { quiet: true });
+    queue.length = 0;
+  }
+
+  /** The drop in flight got no answer in time: it shows in the pack again, and the next may go (a late answer still applies once). */
+  function giveUp() {
+    endPending(dropping?.pend, { quiet: true });
+    dropping = null;
+    pendingChanged();
   }
 
   /** Sends the next waiting drop when none is being weighed and the rate allows; else waits for that. */
@@ -434,7 +597,8 @@ function createSession(engine, client) {
       const next = queue[0];
       // Left the place (or it stopped sharing): what waited stays in the pack.
       if (!p || p.street !== next.street) {
-        queue.length = 0;
+        dropQueue();
+        pendingChanged();
         break;
       }
       const go = bucketTake(rate, Date.now());
@@ -443,14 +607,23 @@ function createSession(engine, client) {
         break;
       }
       queue.shift();
-      if (!send(p, next)) rate.tokens = Math.min(rate.tokens + 1, 6); // nothing went: the token stays
+      if (!send(p, next)) {
+        rate.tokens = Math.min(rate.tokens + 1, 6); // nothing went: the token stays
+        endPending(next.pend);
+      }
     }
     publish();
   }
 
   /** One drop to the server, its count cut to what the pack has now (the drops before it went first). */
-  function send(p, { classTsid: c, count, x, y, copy, into = null, merge = true }) {
+  function send(p, { classTsid: c, count, x, y, copy, into = null, merge = true, pend = null }) {
     if (reasonAt(p, c)) return false;
+    // Set on a drop still shown when it was dropped: that one's real stack now (it was answered first), else beside it.
+    if (into && !DROP_OP.test(into)) {
+      const t = pending.find((o) => o.id === into);
+      into = t?.op && stacks.has(t.op) ? t.op : null;
+      if (!into) merge = false;
+    }
     const n = Math.min(Math.max(1, Math.floor(Number(count) || 1)), countItem(engine.inv, c));
     if (n < 1) return false;
     const item = { c, n };
@@ -468,7 +641,7 @@ function createSession(engine, client) {
       if (t) item.t = t;
     }
     const ref = `d${Date.now().toString(36)}${(refN += 1)}`;
-    dropping = { ref, c, n, r: item.r, t: item.t ?? null, copy: chosen, x: Number(x) || 0, y: Number(y) || 0, at: Date.now() };
+    dropping = { ref, c, n, r: item.r, t: item.t ?? null, copy: chosen, x: Number(x) || 0, y: Number(y) || 0, at: Date.now(), pend };
     // The ledger must have seen what the drop takes: write the save first.
     persist(engine).then(() => {
       if (dropping?.ref !== ref) return;
@@ -477,7 +650,9 @@ function createSession(engine, client) {
       if (!client.send('ground_drop', { ref, item, x: dropping.x, y: dropping.y, ...(p.ox ? { ox: p.ox } : {}), ...(into && DROP_OP.test(into) ? { into } : {}), ...(merge === false ? { merge: false } : {}) })) {
         const d = dropping;
         dropping = null;
+        endPending(d.pend, { quiet: true });
         dropOwn(d);
+        pendingChanged();
         pump();
       }
     });
@@ -490,6 +665,11 @@ function createSession(engine, client) {
    */
   function pickup(target, count = Infinity) {
     const id = String(target?.state?.id || target?.worldItemId || '');
+    // A drop still shown before its answer: it is not on the floor yet.
+    if (/^pend-\d+$/.test(id)) {
+      engine.toast?.(DROP_TEXT.busy, 2400);
+      return false;
+    }
     if (!DROP_OP.test(id)) return null;
     if (!stacks.has(id)) {
       engine.toast?.(DROP_TEXT.gone, 2400);
@@ -522,6 +702,7 @@ function createSession(engine, client) {
   function claim(id, to = {}) {
     const p = here();
     const sid = String(id || '');
+    if (/^pend-\d+$/.test(sid)) return { ok: false, reason: 'busy', msg: DROP_TEXT.busy };
     if (!DROP_OP.test(sid)) return null;
     if (!p?.ownHome || !homePlaceOf(p.street)) return { ok: false, reason: 'place', msg: DROP_TEXT.notHome };
     const s = stacks.get(sid);
@@ -551,6 +732,7 @@ function createSession(engine, client) {
   function move(id, to = {}) {
     const p = here();
     const sid = String(id || '');
+    if (/^pend-\d+$/.test(sid)) return { ok: false, reason: 'busy', msg: DROP_TEXT.busy };
     if (!DROP_OP.test(sid)) return null;
     const place = p ? homePlaceOf(p.street) : null;
     if (!p?.ownHome || !place || (place.room !== 'interior' && place.room !== 'tower')) return { ok: false, reason: 'place', msg: DROP_TEXT.notHome };
@@ -559,15 +741,22 @@ function createSession(engine, client) {
       return { ok: false, reason: 'gone', msg: DROP_TEXT.gone };
     }
     if (client.state !== 'online') return { ok: false, reason: 'offline', msg: DROP_TEXT.offline };
-    if (moving && Date.now() - moving.at < WAIT_MS) return { ok: false, reason: 'busy', msg: DROP_TEXT.moving };
+    if (moving && !moving.settled && Date.now() - moving.at < WAIT_MS) return { ok: false, reason: 'busy', msg: DROP_TEXT.moving };
     const x = Number(to.x);
     const y = Number(to.y);
     if (!Number.isFinite(x) || !Number.isFinite(y)) return { ok: false, reason: 'where' };
     if (!bucketTake(rate, Date.now()).ok) return { ok: false, reason: 'slow', msg: DROP_TEXT.slow };
     const into = to.into && DROP_OP.test(String(to.into)) && String(to.into) !== sid ? String(to.into) : null;
-    moving = { id: sid, at: Date.now() };
+    // Shown at once where it goes, on the like stack it joins (drops.go moveFrame, mergeTarget) up to its pile.
+    const s = stacks.get(sid);
+    const sx = Math.round(x) - (p.ox || 0);
+    const row = table?.items?.[s.classTsid];
+    const t = into ? likeSharedStack([...view(p).values()], p.street, { c: s.classTsid, by: s.by?.id, into, words: s.r != null || s.t != null }, row) : null;
+    const k = t ? Math.max(0, Math.min(s.count, floorPileMax(row) - t.count)) : 0;
+    moving = { id: sid, at: Date.now(), sx, y: Math.round(y), into: t ? into : null, k, joinSeen: false, settled: false, until: 0 };
     client.send('ground_move', { id: sid, x: Math.round(x), y: Math.round(y), ...(p.ox ? { ox: p.ox } : {}), ...(into ? { into } : {}) });
-    publish();
+    engine.playSound?.('ITEM_DROP', { volume: 0.45 });
+    redraw();
     return { ok: true };
   }
 
@@ -599,7 +788,8 @@ function createSession(engine, client) {
   function list(tsid) {
     const p = here();
     if (!p || tsid !== p.key || street !== p.street) return [];
-    return p.ox ? [...stacks.values()].map((s) => stackAt(s, p.ox)) : [...stacks.values()];
+    const all = [...view(p).values()];
+    return p.ox ? all.map((s) => stackAt(s, p.ox)) : all;
   }
 
   publish();
@@ -613,6 +803,8 @@ function createSession(engine, client) {
     get queued() { return queue.map((q) => ({ ...q })); },
     get picking() { return picking; },
     get moving() { return moving; },
+    get pending() { return pending.filter((q) => !q.done).map((q) => ({ ...q })); },
+    held,
     drop,
     pickup,
     claim,
@@ -629,11 +821,20 @@ function createSession(engine, client) {
         stacks.clear();
         redraw();
       }
+      // Drops shown for a place left: given up, back in the pack's view.
+      if (pending.some((q) => !q.done && q.street !== client.street)) {
+        for (const q of pending) if (q.street !== client.street) q.done = true;
+        pendingChanged();
+      }
       if (now - syncedAt > SYNC_EVERY_MS && client.state === 'online') sync();
-      // An answer that never came does not hold the drops behind it for good.
-      if (dropping && queue.length && now - dropping.at >= WAIT_MS) {
-        dropping = null;
+      // An answer that never came does not hold the drops behind it for good, nor stay shown.
+      if (dropping && now - dropping.at >= WAIT_MS) {
+        giveUp();
         pump();
+      }
+      if (moving && ((moving.settled && now >= moving.until) || (!moving.settled && now - moving.at >= WAIT_MS))) {
+        moving = null;
+        redraw();
       }
     },
   };
@@ -691,6 +892,12 @@ export const dropsMpFeature = {
   sharedDropPrompt(classTsid, engine) {
     if (!multiplayer || engine?.mode !== 'multiplayer') return null;
     return ensure(engine)?.wouldShare(classTsid) ? DROP_TEXT.prompt : null;
+  },
+
+  /** game.js renderPackBar: what the drops shown before their answer take out of the pack's view ({ class: n }), or null. */
+  packHeld(engine) {
+    if (!multiplayer || !session || engine?.mode !== 'multiplayer') return null;
+    return session.held();
   },
 
   /** game.js shareOwnStack: whether `count` of a class goes to the shared floor here as one stack. */

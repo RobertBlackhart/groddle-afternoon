@@ -100,13 +100,13 @@
  */
 
 import { countItem, ensureItem, ITEM_CATALOG, removeItem } from '../inventory.js?v=6414dbdc';
-import { likeStackAt, mergeDroppedStacks, pickupCountTitle } from '../world-items.js?v=f5f9e017';
+import { likeStackAt, mergeDroppedStacks, pickupCountTitle } from '../world-items.js?v=220d7a7a';
 import { groundKey, groundStacks, ownGroundRows, ownGroundState } from '../ground-stacks.js?v=22792362';
 import { keepsOwnStack } from '../tools.js?v=4156bba8';
 import { createCountChooser } from '../ui/count-chooser.js?v=c268eefe';
-import { isBagClass } from '../pack-slots.js?v=d9ab4a0b';
+import { isBagClass } from '../pack-slots.js?v=11aa0ad5';
 import { registerDropTarget } from '../drop-targets.js?v=59e6edb4';
-import { DRAG_TAKE_SOON_MS, draggedCount, draggedStack, markDragged, takeDragged } from '../drag-stack.js?v=c837d72e';
+import { DRAG_TAKE_SOON_MS, draggedCount, draggedStack, markDragged, takeDragged } from '../drag-stack.js?v=b4aa7198';
 import { createCombobox } from '../combobox.js?v=d43209e8';
 import {
   CULTIVATION_CLASSES,
@@ -153,7 +153,7 @@ import {
   textureConfig,
   unexpandInterior,
   UNEXPAND_TEXT,
-} from '../home-decor.js?v=a918562f';
+} from '../home-decor.js?v=4abc83ab';
 import { isTrophyDecor, placedTrophies } from '../home-trophies.js?v=649b111e';
 import { applyBonusUpgrade, applyUpgrade, bonusUpgradeLine, currantsText, hasUpgrades, pieceLabel, rollBonusUpgrade, upgradeRow, upgradeVerb, UPGRADE_TEXT } from '../furniture-upgrades.js?v=6cc0e2da';
 import { LONG_PRESS_MS, LONG_PRESS_SLOP, ECHO_MS, createContextMenu } from '../ui/context-menu.js?v=dee0ecde';
@@ -218,7 +218,7 @@ import { DISPATCHER_HALF, DISPATCHER_TEXT, MOVABLE_FIXTURES, MOVABLE_FIXTURE_IDS
 import { displayTopOf, itemstackOverlayPoint, overlayAlpha, overlayLifeMs, playPoofIn, trackOverlay } from '../overlay-art.js?v=95f23414';
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d1945384';
 import { fadeInNewNear } from '../poof-fade.js?v=83361da5';
-import { projectApi } from './street-jobs-feature.js?v=94e5ef34';
+import { projectApi } from './street-jobs-feature.js?v=d68d76cd';
 import { TOWER_CHASSIS, TOWER_CONFIG, TOWER_DOOR_DX, TOWER_GEO, TOWER_PROTO, normalizeTowerState } from '../home-tower.js?v=84d99af0';
 import { drawTowerBench, drawTowerElevator, drawTowerExit, towerApi, visitorTowerView } from './home-tower-feature.js?v=0880b24a';
 import { pieceUrl, roomPieces, surfaceAt, swatchPiece, wallTargetAt } from '../home-wallpaper.js?v=99228166';
@@ -294,7 +294,7 @@ import {
   quoteHouseExpansion,
   quoteHouseUnexpand,
   unexpandHouseFloors,
-} from '../home-floors.js?v=dba906e3';
+} from '../home-floors.js?v=0883cb1c';
 import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import { anchorBottomCentre, standOnFeet } from '../sprite-feet.js?v=16f962c0';
 import { autoplayLog } from '../autoplay-log.js?v=55bb4823';
@@ -6141,7 +6141,9 @@ function packDropOpts(engine, was, target) {
  */
 function sharedLikeAt(engine, row, target) {
   if (!row || !target || target.on != null || keepsOwnStack(row.classTsid)) return null;
-  const shared = roomStacks(engine).filter((s) => s.shared && /^drop-[0-9a-f]{16}$/.test(String(s.id))).map((s) => ({ ...s, shared: false }));
+  // A drop still shown before its answer counts too (pend-<n>, features/drops-mp-feature.js): the drop set
+  // on it joins its real stack once that is down.
+  const shared = roomStacks(engine).filter((s) => s.shared && /^(?:drop-[0-9a-f]{16}|pend-\d+)$/.test(String(s.id))).map((s) => ({ ...s, shared: false }));
   return likeStackAt(shared, { ...row, shared: false }, target.x + roomX0(), null)?.id || null;
 }
 

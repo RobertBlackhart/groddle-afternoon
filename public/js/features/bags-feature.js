@@ -126,7 +126,7 @@ import {
   unitOrder,
   unitPlaces,
   unitRankAt,
-} from '../pack-slots.js?v=d9ab4a0b';
+} from '../pack-slots.js?v=11aa0ad5';
 import { TOOL_CONDITION_CATALOG, moveToolCopy, pickToolCopies, placeToolCopies } from '../tools.js?v=4156bba8';
 import { createMinnAccount } from '../minn-account.js?v=ca9fb98e';
 import { BAG_NAME_MAX, BAG_RENAME_COPY, BAG_RENAME_HINT, bagLabel, canRenameBag, cleanBagName, renamedTo } from '../bag-names.js?v=bba085e1';
@@ -839,6 +839,12 @@ export const bagsFeature = {
     const ms = Math.max(0, Math.min(TAKE_WAIT_MS, Number(wait) || TAKE_SOON_MS));
     takes.push({ cls: at.cls, container: String(at.container), index: Math.floor(Number(at.index)), n: k, until: Date.now() + ms });
     return true;
+  },
+
+  /** The stacks marked to give the next of their class that leave ({ cls, container, index, n }), for game.js's pack view. */
+  packTakes() {
+    const now = Date.now();
+    return takes.filter((t) => t.until > now).map(({ cls, container, index, n }) => ({ cls, container, index, n }));
   },
 
   /**

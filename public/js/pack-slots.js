@@ -238,6 +238,36 @@ export function stackMaxOf(cls, catalog = null) {
   return Number.isFinite(meta) && meta >= 1 ? Math.floor(meta) : Infinity;
 }
 
+/**
+ * The pack as it is drawn while some of it is on its way out: a drop shown before the server's answer
+ * (features/drops-mp-feature.js packHeld, game.js renderPackBar). `held` ({ class: n }) comes off the
+ * marked stacks first (`marks`: [{ cls, container, index, n }], the stack the drop was made from, as
+ * features/bags-feature.js packTakeFrom marks it), then the class's first stacks in slot order, as the
+ * count going down will take them (layoutPack takeFirst). A slot left with none keeps its place, marked
+ * `held` (drawn as free). Pure: the layout is copied, never changed.
+ */
+export function layoutHeld(layout, held, marks = []) {
+  if (!layout?.pack || !held || !Object.keys(held).length) return layout;
+  const copy = (box) => ({ ...box, slots: box.slots.map((sl) => ({ ...sl })) });
+  const pack = copy(layout.pack);
+  const bags = Object.fromEntries(Object.entries(layout.bags || {}).map(([k, b]) => [k, copy(b)]));
+  const slotAt = (m) => (m?.container === 'pack' ? pack.slots : bags[m?.container]?.slots)?.[Math.floor(Number(m?.index))];
+  const order = [...pack.slots, ...Object.values(bags).flatMap((b) => b.slots)];
+  for (const [cls, total] of Object.entries(held)) {
+    let left = Math.max(0, Math.floor(Number(total) || 0));
+    const take = (sl, most = Infinity) => {
+      if (!sl || sl.kind !== 'stack' || sl.cls !== cls || sl.held || left < 1) return;
+      const k = Math.min(left, Math.max(0, Math.floor(Number(sl.count) || 0)), most);
+      sl.count -= k;
+      left -= k;
+      if (sl.count <= 0) sl.held = true;
+    };
+    for (const m of Array.isArray(marks) ? marks : []) if (m?.cls === cls) take(slotAt(m), Math.max(1, Math.floor(Number(m.n) || 1)));
+    for (const sl of order) take(sl);
+  }
+  return { ...layout, pack, bags };
+}
+
 /** Counts per stack: full stacks first, the remainder last. */
 export function splitStacks(count, max) {
   const n = Math.max(0, Math.floor(Number(count) || 0));

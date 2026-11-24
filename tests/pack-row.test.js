@@ -153,7 +153,7 @@ describe('pack row: game.js wiring', () => {
   it('updateHud draws the pack through renderPackBar: bags apart, items then tools, one ghost', () => {
     assert.match(game, /\n  renderPackBar\(\);\n  if \(packSelected\) renderPackPopover\(packSelected\);/);
     assert.match(bar, /if \(slot\.kind === 'bag'\) bagRow\.push\(entry\);\s+else \(entry\.isTool \? toolRow : itemRow\)\.push\(entry\);/);
-    assert.match(bar, /emptyCount: packLayout\.free, fillEmpty: true, ghost: true, container: 'pack'/);
+    assert.match(bar, /emptyCount: packLayout\.free \+ heldSlots, fillEmpty: true, ghost: true, container: 'pack'/);
   });
 
   it('search finds stacks inside every bag, marked with the bag', () => {

@@ -2,9 +2,9 @@
  * Groddle Afternoon — original street geometry + layered decos
  * PixiJS 8 · locations-xml streets · CoU PNG decos · quests/items
  */
-import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=f41be695';
+import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=c76a3f3f';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=86263fd9';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=f4a615ab';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE, playerClickBox } from './js/reach.js?v=456da8a8';
@@ -538,7 +538,7 @@ import {
 } from './js/inventory.js?v=6414dbdc';
 import { TROPHY_FIND_TEXT, trophyOfBadge } from './js/home-trophies.js?v=649b111e';
 import { HELD_AT_ONCE, HELD_AT_ONCE_TEXT } from './js/collection-trophies.js?v=e45565a7';
-import { PACK_COPY, isBagClass, isElementClass, ownBagLabel, unitRankAt } from './js/pack-slots.js?v=d9ab4a0b';
+import { PACK_COPY, isBagClass, isElementClass, layoutHeld, ownBagLabel, unitRankAt } from './js/pack-slots.js?v=11aa0ad5';
 import { beginDrag, installDropRegistry, packStackOf, registerDropTarget, touchLift } from './js/drop-targets.js?v=59e6edb4';
 import { FLOAT_TEXT_Z, SPEECH_BUBBLE_Z } from './js/fx-z.js?v=18dda7e3';
 import { hasPouch } from './js/elemental-pouch.js?v=42702eda';
@@ -558,8 +558,8 @@ import {
   placeDroppedBag,
   setDownStack,
   takeDroppedRecord,
-} from './js/world-items.js?v=f5f9e017';
-import { ownRowToSharedFloor, packToSharedFloor } from './js/home-floor-share.js?v=d6cfdacd';
+} from './js/world-items.js?v=220d7a7a';
+import { ownRowToSharedFloor, packToSharedFloor } from './js/home-floor-share.js?v=aacb6044';
 import {
   createPlayerSave,
   inspectPlayerSave,
@@ -1150,7 +1150,7 @@ import { HOME_SCREEN_TIP_CACHE, iosSafari, mountHomeScreenTip, runsStandalone } 
 import { EAT_PICK_TEXT, bestFoodIndex, eatChoices, eatTip } from './js/eat-pick.js?v=8fb763d0';
 import { heldDirection, installHeldKeyGuard, isMacPlatform } from './js/held-keys.js?v=a28eb293';
 import { isOneClickDoor, oneClickChoice, signpostArmRows, worldContextAction } from './js/world-context-menu.js?v=e4c99c05';
-import { blockedPlayerVerbs, listPlayerTarget, opensPlayerMenu, playerMenuRows } from './js/ui/player-menu.js?v=292634f0';
+import { blockedPlayerVerbs, listPlayerTarget, opensPlayerMenu, playerMenuRows } from './js/ui/player-menu.js?v=c2289b8b';
 import { forgetTexture, frameTexture, isFailed, isLoaded, onFailed, onLoaded, textureFromUrl, whenLoaded } from './js/textures.js?v=729b29ea';
 import { FALLBACK_MAX as WORLD_ART_FALLBACK_MAX, worldArtFor } from './js/world-art.js?v=a67514c8';
 import { HOME_PIP_PX, drawLockPip, homeMarkNote, homePipShown, homeStackMark } from './js/home-stack-marks.js?v=0ff4c29f';
@@ -6285,20 +6285,22 @@ function packLayoutEntry(slot, container, index, layout, openKey) {
 function renderOpenBagRow(layout, openKey) {
   const box = openKey ? layout?.bags?.[openKey] : null;
   const bagEl = box ? document.querySelector(`.pack-slot[data-pack-bag="${box.key}"]`) : null;
-  const free = box ? Math.max(0, box.capacity - box.slots.length) : 0;
-  const entries = box ? box.slots.map((slot, i) => packLayoutEntry(slot, box.key, i, layout, openKey)) : [];
-  const rowOpts = { emptyCount: box?.slots.length ? free : 0, fillEmpty: true, ghost: true, container: box?.key || '' };
+  const shown = box ? box.slots.filter((slot) => !slot.held).length : 0;
+  const free = box ? Math.max(0, box.capacity - shown) : 0;
+  // A stack out of the pack's view (layoutHeld: a drop shown before its answer) is drawn as free.
+  const entries = box ? box.slots.map((slot, i) => (slot.held ? null : packLayoutEntry(slot, box.key, i, layout, openKey))).filter(Boolean) : [];
+  const rowOpts = { emptyCount: shown ? free : 0, fillEmpty: true, ghost: true, container: box?.key || '' };
   const tray = packRow.drawTray(box && {
     key: box.key,
     label: box.label,
     icon: itemIconUrl(box.cls),
-    used: box.slots.length,
+    used: shown,
     capacity: box.capacity,
     // The same bag drawing the same stacks keeps its tray as it is (updateHud runs about once a second).
     // Its stacks' part is the row's own signature (packRowSignature): a tool's wear, a break or a repair,
     // a name, a bag inside it redraw it too (Austin 2026-11-01: a repair showed only after a close and open).
     sig: JSON.stringify([box.key, box.label, box.capacity, packRowSignature(entries, rowOpts)]),
-    cells: box.slots.length + (free && box.slots.length ? 1 : 0),
+    cells: shown + (free && shown ? 1 : 0),
     // PackSlot.as:310-313: the opener strip's Options, here a button in the tray's head.
     optionsLabel: PACK_COPY.options,
     onOptions: () => {
@@ -6528,7 +6530,9 @@ function renderPackBar() {
   const bagsBox = document.getElementById('pack-bags');
   const itemsBox = document.getElementById('pack-items');
   if (!itemsBox) return;
-  const packLayout = features.query('packLayout', engine);
+  // A drop shown before the server's answer is already out of the pack's view (features/drops-mp-feature.js
+  // packHeld): its stack shows the fewer, an emptied one is drawn as a free slot, keeping its place.
+  const packLayout = layoutHeld(features.query('packLayout', engine), features.query('packHeld', engine), features.query('packTakes', engine));
   const query = packRow.query();
   if (!packLayout) {
     const rows = listPackRows(inv);
@@ -6543,7 +6547,12 @@ function renderPackBar() {
   const bagRow = [];
   const itemRow = [];
   const toolRow = [];
+  let heldSlots = 0;
   packLayout.pack.slots.forEach((slot, i) => {
+    if (slot.held) {
+      heldSlots += 1;
+      return;
+    }
     const entry = packLayoutEntry(slot, 'pack', i, packLayout, openKey);
     if (slot.kind === 'bag') bagRow.push(entry);
     else (entry.isTool ? toolRow : itemRow).push(entry);
@@ -6553,7 +6562,7 @@ function renderPackBar() {
     const found = [...itemRow, ...toolRow];
     for (const box of Object.values(packLayout.bags)) {
       box.slots.forEach((slot, i) => {
-        if (slot.kind === 'bag') return;
+        if (slot.kind === 'bag' || slot.held) return;
         found.push({ ...packLayoutEntry(slot, box.key, i, packLayout, openKey), inBag: { cls: box.cls, label: box.label } });
       });
     }
@@ -6567,13 +6576,13 @@ function renderPackBar() {
     packRow.drawResults(packSearchResults([...bagRow, ...found], query, labelOf), query);
   } else {
     renderPackRow(itemsBox, [...itemRow, ...toolRow], {
-      emptyCount: packLayout.free, fillEmpty: true, ghost: true, container: 'pack',
+      emptyCount: packLayout.free + heldSlots, fillEmpty: true, ghost: true, container: 'pack',
       rock: packLayout.rockStacks ? packLayout.rock : null,
     });
   }
   const bagBoxes = Object.values(packLayout.bags);
   const count = packCountText({
-    used: packLayout.pack.slots.length,
+    used: packLayout.pack.slots.length - heldSlots,
     capacity: packLayout.pack.capacity || packLayout.pack.slots.length + packLayout.free,
     bags: bagBoxes.length,
     bagFree: bagBoxes.reduce((n, box) => n + Math.max(0, box.capacity - box.slots.length), 0),
@@ -14855,6 +14864,8 @@ const engine = {
     if (packToSharedFloor(features, engine, { classTsid, count: n, x, y, floor, into, merge })) {
       beforeShare?.(n);
       closePackPopover();
+      // Drawn at once from the dragged stack (it is marked now): the drop shows before the server's answer.
+      updateHud();
       return { ok: true, shared: true, count: n };
     }
     beforeRemove?.(n);
