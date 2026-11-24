@@ -2814,9 +2814,19 @@
   "deployed": "2026-11-23"
  },
  "git": {
-  "commits": 3303,
+  "commits": 3306,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-23",
+    "kind": "improve",
+    "text": "Achievement badges are sharp on phones and retina screens"
+   },
+   {
+    "date": "2026-11-23",
+    "kind": "fix",
+    "text": "Encyclopedia pictures are sharp: the Butterfly, item heroes and catalog cards no longer stretch small files"
+   },
    {
     "date": "2026-11-23",
     "kind": "fix",
@@ -2926,19 +2936,9 @@
     "date": "2026-11-23",
     "kind": "improve",
     "text": "Send report waits a moment before it can be pressed, so a report is never sent by a stray tap"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "new",
-    "text": "Change name in the Account panel, 1,000 currants once every 30 days"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "improve",
-    "text": "A full bag's backdrop in the pack row is a soft mid grey, not jet navy"
    }
   ]
  },
- "tests": 1316,
+ "tests": 1317,
  "generatedAt": "2026-11-23"
 }
