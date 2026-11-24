@@ -1141,6 +1141,9 @@
     "ours: The player's words use the Giant's name as ours spells": "ours-shrines",
     "remake-own: * #443 (Austin 2026-11-19): the remake's own line in the emblem confirm when the": "emblem-half-cap-line"
   },
+  "public/js/skills-panel.js": {
+    "ours: longer than its points say, in one plain line. Ours": "ours-study-time-hint"
+  },
   "public/js/slash-commands.js": {
     "no-source: /stuck's words (the remake's own, no source line).": "stuck-command",
     "ours: doChatCommand 1842-1934 has neither): both are ours.": "stuck-command",

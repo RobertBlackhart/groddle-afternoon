@@ -5804,6 +5804,27 @@
    "why": "G1190 made dropped things in a house, yard or Tower shared while what the owner sets in Decoration Mode stays theirs; the two look the same on the floor.",
    "ruling": "Austin 2026-11-23 (the day's calls): asked for a way for owners to tell decor from freebies; built as a proposal",
    "rows": []
+  },
+  {
+   "id": "ours-study-time-hint",
+   "title": "Skills sheet: one line under an open skill saying its study takes longer because more skills are known than the brain holds",
+   "kind": "UI",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/skills-panel.js",
+     "symbol": "brainLoadNote"
+    },
+    {
+     "file": "public/js/features/imagination-feature.js",
+     "symbol": "skillBrainLoad"
+    }
+   ],
+   "why": "A player asked why a skill took so long (#663, G1244). Glitch's slowdown is kept as it was (1.05 for each skill known or queued past brain capacity, skills_get_learning_time_modifier, inc_skills.js:1792); Glitch never said so on the skill. Ours: the line with the real numbers and the hint that Brain Capacity cards help.",
+   "ruling": "Austin 2026-11-24 (#663): add one plain line on the Skills sheet explaining that skills past brain capacity slow study and Brain Capacity cards help.",
+   "rows": [
+    "G1244"
+   ]
   }
  ]
 }

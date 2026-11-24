@@ -18,6 +18,7 @@ import {
 } from './skill-tree.js?v=df9b7332';
 import { formatStudyTime, listStudyQueue } from './skills.js?v=db7039d9';
 import { getSkillCatalog } from './content-catalogs.js?v=10b118dd';
+import { learningTimeModifier } from './imagination-effects.js?v=70169933';
 
 const ui = {
   query: '',
@@ -204,6 +205,23 @@ function studyBar(progress, kind) {
   if (kind === 'fast') fill.appendChild(el('span', 'skill-study-arrows'));
   bar.appendChild(fill);
   return bar;
+}
+
+/**
+ * #663 (G1244): why a study takes longer than its points say, in one plain line. Ours (Austin
+ * 2026-11-24): Glitch slowed every study by 1.05 for each skill known or queued past brain capacity
+ * (skills_get_learning_time_modifier, inc_skills.js:1792; imagination-effects.js learningTimeModifier)
+ * but never said so on the skill. `load` is { count, capacity } (known + queued, brain capacity);
+ * '' when the brain holds them all.
+ */
+export function brainLoadNote(load) {
+  const count = Math.max(0, Math.floor(Number(load?.count) || 0));
+  const capacity = Math.max(0, Math.floor(Number(load?.capacity) || 0));
+  const over = count - capacity;
+  if (!count || over <= 0) return '';
+  const factor = learningTimeModifier(count, capacity);
+  const longer = factor < 2 ? `${Math.max(1, Math.round((factor - 1) * 100))}% longer` : `${factor.toFixed(1).replace(/\.0$/, '')} times as long`;
+  return `Takes ${longer}: you know ${over} more skill${over === 1 ? '' : 's'} than your brain holds. Brain Capacity cards help.`;
 }
 
 function switchNoteNode(note) {
@@ -409,6 +427,9 @@ function skillRow(entry, ctx, actions, rerender, active = null) {
     .map(([id, g]) => `${ctx.giantName?.(id) || id}${g?.primary ? ' (primary)' : ''}`);
   if (giants.length) meta.push(giants.join(', '));
   body.appendChild(el('div', 'skill-meta', meta.join(' · ')));
+  // #663: a time still to be set (not learned, not running: a paused one resumes at today's rate).
+  const brain = entry.status === 'learned' || entry.status === 'studying' ? '' : brainLoadNote(ctx.brainLoad?.());
+  if (brain) body.appendChild(el('p', 'skill-brain-note', brain));
   // ENCYC: the skill's Encyclopedia page, when it has one (game.js ctx.encyclopediaLink, js/encyclopedia-links.js).
   const ency = ctx.encyclopediaLink?.(entry.classTsid);
   if (ency) body.appendChild(ency);

@@ -5414,6 +5414,8 @@ html[data-street-cards] .quest-dialogue { visibility: hidden; }
 }
 .skill-link:hover { color: var(--text-moss); }
 .skill-meta { color: var(--text-subtle); font-size: var(--fs-xs); margin-bottom: var(--sp-1); }
+/* #663: why the study takes longer (brain capacity), under the points line. */
+.skill-brain-note { margin: var(--sp-1) 0 var(--sp-2); color: var(--c-umber-45); font-size: var(--fs-xs); line-height: var(--lh-normal); }
 /* ENCYC (js/encyclopedia-links.js): "In the Encyclopedia" on the pack's item card and the Skills and Quests sheets. */
 .ency-link {
   display: inline-block;

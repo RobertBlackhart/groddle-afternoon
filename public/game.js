@@ -30039,6 +30039,8 @@ function renderSkillsPanel() {
       unlearning: features.query('skillUnlearning', engine),
       // G330: a multiplayer game shows the notes of skills that need other players as working.
       online: engine.mode === 'multiplayer',
+      // #663: known + queued against brain capacity, for "Takes longer" under a skill.
+      brainLoad: () => features.query('skillBrainLoad', engine),
     },
     actions: {
       start: (id) => runSkillStudyAction(id, 'start'),

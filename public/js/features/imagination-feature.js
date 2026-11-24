@@ -1083,6 +1083,13 @@ export const imaginationFeature = {
     return m;
   },
 
+  /** #663: what the brain holds and what it knows (known + queued, as skillTimeFactor counts), for the Skills sheet's note. */
+  skillBrainLoad(engine) {
+    const learned = engine?.learnedSkills || [];
+    const queued = Object.keys(engine?.skillQueue || {}).length;
+    return { count: learned.length + queued, capacity: state.brainCapacity };
+  },
+
   /** skills_points_to_seconds factor for one skill (brain capacity + category cards + Better Learning). */
   skillTimeFactor(def, engine) {
     const learned = engine?.learnedSkills || [];
