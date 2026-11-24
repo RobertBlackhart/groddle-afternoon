@@ -89,7 +89,7 @@ describe('the Customize window on a phone (G1178)', () => {
     assert.match(src, /:root\.touch-phone \.house-picker \.hp-styles\{display:flex;[^}]*overflow-x:auto/, 'the styles as one scrolling row');
     assert.match(src, /:has\(#house-picker:not\(\[hidden\]\)\) :is\(\.pack-bar,\.touch-controls\)\{visibility:hidden\}/);
     assert.match(src, /classList\.contains\('touch-phone'\)\) return null/, 'a computer never docks');
-    assert.match(read('public/style.css'), /\.vog-overlay, \.hp-card\) \{ max-width: calc\(100vw - 8px\); \}/, 'the sheet runs edge to edge');
+    assert.match(read('public/style.css'), /\.vog-overlay, \.hp-card[^)]*\) \{ max-width: calc\(100vw - 8px\); \}/, 'the sheet runs edge to edge');
     const homes = read('public/js/features/homes-feature.js');
     assert.match(homes, /onDock: \(dock\) => \{\n\s+houseDocked = Boolean\(dock\);\n\s+engine\.setStageDock\?\.\(dock\);/);
     const game = read('public/game.js');
