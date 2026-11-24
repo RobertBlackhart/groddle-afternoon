@@ -39,13 +39,13 @@ import {
   tendAct,
   tendCounters,
   tendedText,
-} from '../public/js/neighbours-mp.js?v=57993067';
+} from '../public/js/neighbours-mp.js?v=a336ee09';
 import { createButlerState, giveGiftTo, newestVisit, nextHandover, normalizeButlerState, packagesAndMessagesForOwner, recordVisitor, setGift, visitorsReport } from '../public/js/butler.js?v=6c66ebf5';
 import { GARDEN_SPEEDUP, SEED_CATALOG as GARDEN_SEEDS, createGarden, tickGarden } from '../public/js/garden.js?v=0cbb65f0';
-import { butlerApi } from '../public/js/features/butler-feature.js?v=cbdbbe83';
+import { butlerApi } from '../public/js/features/butler-feature.js?v=8d4463ca';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=10b118dd';
 import { acceptOffer, routeQuestEvent } from '../public/js/quest-offers.js?v=32d4127e';
-import { neighboursMpFeature } from '../public/js/features/neighbours-mp-feature.js?v=323d0a4e';
+import { neighboursMpFeature } from '../public/js/features/neighbours-mp-feature.js?v=f10e3f22';
 import { createMinnAccount } from '../public/js/minn-account.js?v=83127c18';
 import { HAS_SERVER, HAS_SITE, SITE_DIR, serverPath, sitePath } from '../tools/repos.mjs';
 
@@ -175,7 +175,7 @@ describe('key-holders tending the owner\'s gardens', () => {
     g = noteGift(g.gifted, 7);
     assert.equal(g.counted, false, 'one owner counts once');
     assert.deepEqual(hostedCounters({ three: true, seventeen: true }), ['hosted_party:three', 'hosted_party:seventeen']);
-    assert.deepEqual(normalizeNeighboursSlice({ tended: ['tend-0000000000000001', 'bad'], gifted: [7, 'x'], counts: { water_garden_for_others: 2, nope: 3 } }), { tended: ['tend-0000000000000001'], gifted: [7], counts: { water_garden_for_others: 2 } });
+    assert.deepEqual(normalizeNeighboursSlice({ tended: ['tend-0000000000000001', 'bad'], gifted: [7, 'x'], counts: { water_garden_for_others: 2, nope: 3 } }), { tended: ['tend-0000000000000001'], gifted: [7], counts: { water_garden_for_others: 2 }, visits: {} });
   });
 
   it('applies each waiting act exactly once, however many wait (200 acts past a 64-id list)', () => {

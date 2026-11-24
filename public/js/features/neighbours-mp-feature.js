@@ -116,8 +116,8 @@ import { cultivationDef, homeStreetLayout } from '../home-cultivation.js?v=9e6e2
 import { getPlot, tickGarden } from '../garden.js?v=0cbb65f0';
 import { BUTLER_RIG_SCALE, ButlerPainter, butlerRigNow, loadButlerRig } from '../butler-rig.js?v=3acda854';
 import { BUTLER, BUTLER_INFO, butlerInfoText, butlerPostRx, normalizeButlerParts } from '../butler.js?v=6c66ebf5';
-import { butlerApi } from './butler-feature.js?v=cbdbbe83';
-import { homesFeature, visitorHomeScene, visitorHomeState } from './homes-feature.js?v=8fbfe936';
+import { butlerApi } from './butler-feature.js?v=8d4463ca';
+import { homesFeature, visitorHomeScene, visitorHomeState } from './homes-feature.js?v=dd11b8d6';
 import { homeMusicFile } from '../homes.js?v=10f6604f';
 import { visitGardenPlots, visitSceneKey } from '../home-live.js?v=9c7abae7';
 import {
@@ -150,6 +150,8 @@ import {
   normalizeHomeView,
   normalizeKeys,
   normalizeNeighboursSlice,
+  homeVisitKey,
+  homeVisitSeen,
   normalizeParcels,
   normalizeButlerStock,
   normalizeGiftAnswer,
@@ -174,9 +176,9 @@ import {
   takeFreshTendActs,
   visitedTowerName,
   visitSceneTsid,
-} from '../neighbours-mp.js?v=57993067';
+} from '../neighbours-mp.js?v=a336ee09';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { butlerCarries, registerButlerDrop } from '../butler-drop.js?v=e2adc94f';
+import { butlerCarries, registerButlerDrop } from '../butler-drop.js?v=aa314c0a';
 import { takeDragged } from '../drag-stack.js?v=536cddfb';
 import { worldPoint } from './world-drop-feature.js?v=1cada149';
 import { clampToExpansion, elevatorStops, floorJobFor, TOWER_JOBS } from '../home-tower.js?v=84d99af0';
@@ -458,6 +460,9 @@ function createSession(engine, client) {
       keepWindows: quiet,
     };
     const from = { label: engine.street?.label || '', hub: engine.street?.hubName || '' };
+    // G1227 (#644): this home's own room remembers its last visit (a rebuild in place is no visit).
+    const seen = quiet ? null : homeVisitSeen(slice, homeVisitKey(visit.owner, room, built.floor));
+    if (seen) engine.save?.();
     const setup = () => {
       if (!visit) return;
       visit.room = room;
@@ -487,7 +492,7 @@ function createSession(engine, client) {
         fromHub: from.hub,
         toLabel: label,
         toHub: 'Homes',
-        pol: { type: room === 'street' ? 'exterior' : 'interior', ownerName: visit.name },
+        pol: { type: room === 'street' ? 'exterior' : 'interior', ownerName: visit.name, ...(seen ? { visit: seen } : {}) },
         onMid: setup,
       });
     }
@@ -1967,8 +1972,8 @@ export const neighboursMpFeature = {
   /** Slice 2: the acts of key-holders my save has applied, and the owners I have left a package with. */
   save() {
     const s = session?.slice || (savedSlice ? normalizeNeighboursSlice(savedSlice) : null);
-    if (!s || (!s.tended.length && !s.gifted.length && !Object.keys(s.counts).length)) return undefined;
-    return { tended: s.tended, gifted: s.gifted, counts: s.counts };
+    if (!s || (!s.tended.length && !s.gifted.length && !Object.keys(s.counts).length && !Object.keys(s.visits || {}).length)) return undefined;
+    return { tended: s.tended, gifted: s.gifted, counts: s.counts, visits: s.visits || {} };
   },
 
   restore(slice, engine) {

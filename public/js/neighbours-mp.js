@@ -889,6 +889,53 @@ export function takeFreshTendActs(acts, tended) {
   return { fresh, tended: ids };
 }
 
+/**
+ * G1227 (#644): the loading card's memory of each home visited, per owner and room, as the original
+ * kept it per location (location.js getLoadingInfo 3157-3159 pols_visited, players/inc_stats.js
+ * street_history: each home street, house and Tower its own location). Kept for the homes most
+ * lately visited.
+ */
+export const HOME_VISITS_KEEP = 120;
+
+/** A visit memory's key: '<owner>:street', '<owner>:interior' or '<owner>:tower:<floor>', or '' for none. */
+export function homeVisitKey(owner, room, floor = 0) {
+  const o = positiveId(owner);
+  if (!o) return '';
+  if (room === 'street' || room === 'interior') return `${o}:${room}`;
+  return room === 'tower' ? `${o}:tower:${towerFloorOf(floor)}` : '';
+}
+
+function normalizeHomeVisits(raw) {
+  const rows = [];
+  for (const [key, v] of Object.entries(raw && typeof raw === 'object' && !Array.isArray(raw) ? raw : {})) {
+    if (!/^[1-9][0-9]{0,17}:(?:street|interior|tower:[0-9])$/.test(key)) continue;
+    const visits = Math.min(1e6, Math.max(0, Math.floor(Number(v?.visits) || 0)));
+    const lastAt = Math.max(0, Math.floor(Number(v?.lastAt) || 0));
+    if (visits > 0) rows.push([key, { visits, lastAt }]);
+  }
+  rows.sort((a, b) => b[1].lastAt - a[1].lastAt);
+  return Object.fromEntries(rows.slice(0, HOME_VISITS_KEEP));
+}
+
+/**
+ * The loading card's visit line for one home room (js/exploration.js streetLoadingVisit's shape:
+ * firstVisit, visitCount so far, lastVisitMins), read before this entry, which it then counts in
+ * `slice.visits` (changed in place).
+ */
+export function homeVisitSeen(slice, key, now = Date.now()) {
+  if (!slice || !key) return null;
+  const visits = slice.visits && typeof slice.visits === 'object' ? slice.visits : (slice.visits = {});
+  const was = visits[key] || { visits: 0, lastAt: 0 };
+  const seen = {
+    firstVisit: was.visits === 0,
+    visitCount: was.visits,
+    lastVisitMins: was.lastAt ? Math.max(0, Math.round((now - was.lastAt) / 60000)) : 0,
+  };
+  visits[key] = { visits: was.visits + 1, lastAt: now };
+  slice.visits = normalizeHomeVisits(visits);
+  return seen;
+}
+
 export function normalizeNeighboursSlice(slice) {
   const s = slice && typeof slice === 'object' ? slice : {};
   const counts = {};
@@ -901,5 +948,7 @@ export function normalizeNeighboursSlice(slice) {
     gifted: (Array.isArray(s.gifted) ? s.gifted : []).map(Number).filter((n) => Number.isInteger(n) && n > 0).slice(-64),
     /** The neighbour quests' counters so far (the quests themselves are offered once multiplayer quests are). */
     counts,
+    /** G1227: each home room visited, for its loading card (homeVisitSeen). */
+    visits: normalizeHomeVisits(s.visits),
   };
 }

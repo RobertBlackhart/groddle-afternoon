@@ -87,7 +87,7 @@ import {
 } from '../teleportation.js?v=1bbe1ab3';
 import { energyMax, forceMetabolic, loseEnergy, topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import { HOME_STREET_TSID } from '../homes.js?v=10f6604f';
-import { readVisitScene } from '../neighbours-mp.js?v=57993067';
+import { readVisitScene } from '../neighbours-mp.js?v=a336ee09';
 
 export const TELEPORT_FEATURE_ID = 'teleportation';
 /** inc_teleportation.js 920-937: the cost is a share of your own energy tank (metabolics_get_max_energy). */

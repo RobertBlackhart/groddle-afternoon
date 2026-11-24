@@ -7,7 +7,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { sharedHomeStreet } from '../public/js/neighbours-mp.js?v=57993067';
+import { sharedHomeStreet } from '../public/js/neighbours-mp.js?v=a336ee09';
 
 const src = readFileSync(join(dirname(fileURLToPath(import.meta.url)), '../public/js/features/neighbours-mp-feature.js'), 'utf8');
 
