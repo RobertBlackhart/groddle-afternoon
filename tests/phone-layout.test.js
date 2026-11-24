@@ -24,8 +24,8 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
-  GAP, PILL_IDS, STICK, boxesOverlap, fullScreenWay, layoutProblems, menuRoomOf, phoneRegions, pillBadge,
-} from '../public/js/ui/phone-layout.js?v=540b665a';
+  GAP, PILL_IDS, STICK, TAP_H, boxesOverlap, fullScreenWay, layoutProblems, menuRoomOf, phoneRegions, pillBadge,
+} from '../public/js/ui/phone-layout.js?v=d29bc134';
 import { phonePins } from '../public/js/ui/quest-pin-button.js?v=ec4d53fa';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -58,7 +58,21 @@ describe('phone layout: the regions (pure)', () => {
     assert.equal(side.notices.top, side.strip.bottom + GAP);
     // Sideways with no room between the pills (topbar.js .is-under) it drops under them.
     const under = phoneRegions({ width: 667, height: 375, caption: { w: 200, h: 26 }, captionUnder: true });
-    assert.equal(under.notices.top, under.caption.bottom + GAP);
+    assert.equal(under.notices.top, Math.ceil((under.caption.top + under.caption.bottom) / 2 + TAP_H / 2) + GAP);
+  });
+
+  it('G1222: the notices start under the caption\'s taps (favor\'s 44 px hit area), not only under the caption', () => {
+    // A notice at the region's top cut favor's hit area to 41 px, and its 4 px slide in (notifyIn) reached further.
+    for (const [width, height] of [...SIZES, [360, 780], [390, 844], [667, 375]]) {
+      for (const sheet of ['', 'bag', 'half']) {
+        const r = phoneRegions({ width, height, sheet, bagTop: height - 216, caption: { w: 220, h: 26 }, captionUnder: height > width || width < 700 });
+        if (!r.caption) continue;
+        const taps = (r.caption.top + r.caption.bottom) / 2 + TAP_H / 2;
+        assert.ok(r.notices.top - 4 >= taps, `${width}x${height} ${sheet || 'street'}: notices at ${r.notices.top}, taps to ${taps}`);
+      }
+    }
+    assert.match(css, /#street-nameplate > #favor-stat::before \{ content: ""; position: absolute; top: 50%; left: 0; right: 0; height: 44px; margin-top: -22px; \}/, 'favor\'s hit area is TAP_H tall');
+    assert.equal(TAP_H, 44);
   });
 
   it('the pinned quest: over the stick upright, beside it sideways (clear of its ring), gone under a sheet', () => {
@@ -374,8 +388,24 @@ describe('phone layout: no overlaps on the real game (Chrome)', { skip: !chromiu
       const r = el.getBoundingClientRect();
       return { x: r.left + r.width / 2, y: r.top + r.height / 2, h: r.height };
     }, sel);
-    /** What is open now, and every menu card against the controls. */
-    const menus = () => tab.evaluate(() => {
+    /**
+     * G1222: a reading taken again every 150 ms (longer than the layout pass's 120 ms beat, phone-layout.js
+     * frame) until two in a row agree, up to 3 s: a menu the layout pass has not placed yet, or a notice
+     * still sliding in, is not measured; anything that stays where it is (a real overlap) still is.
+     * Two animation frames were not enough: the pass runs at most every 120 ms, and later on a busy machine.
+     */
+    const settled = async (read) => {
+      let prev = await read();
+      for (let i = 0; i < 20; i++) {
+        await tab.waitForTimeout(150);
+        const next = await read();
+        if (JSON.stringify(next) === JSON.stringify(prev)) return next;
+        prev = next;
+      }
+      return prev;
+    };
+    /** What is open now, and every menu card against the controls, once they stand still. */
+    const menus = () => settled(() => tab.evaluate(() => {
       const seen = (el) => el && !el.hidden && el.checkVisibility({ visibilityProperty: true }) && el.getBoundingClientRect().width > 0;
       const rect = (el) => {
         const r = el.getBoundingClientRect();
@@ -391,7 +421,7 @@ describe('phone layout: no overlaps on the real game (Chrome)', { skip: !chromiu
         if (seen(el)) boxes[k] = rect(el);
       }
       return { verb: seen(verb), chooser: seen(chooser), boxes };
-    });
+    }));
     const bad = [];
     const tapAct = async () => {
       const a = await centre('.touch-act');
@@ -403,17 +433,24 @@ describe('phone layout: no overlaps on the real game (Chrome)', { skip: !chromiu
       await tab.waitForTimeout(700);
       const where = `${w}x${h}`;
       // The caption's favor: a finger on it opens the Giants' panel; its hit area is a thumb tall.
-      const fav = await centre('#street-nameplate > #favor-stat');
+      // G1222: with a notice up (the worst case: one at its region's top cut favor's hit area to 41 px).
+      await tab.evaluate(() => window.groddleQA?.notify?.notice('A notice beside favor for the hit area check.', 6000));
+      const fav = await settled(() => centre('#street-nameplate > #favor-stat'));
       if (!fav) bad.push(`${where}: no favor on the caption`);
       else {
-        const hit = await tab.evaluate(({ x, y }) => {
+        const hit = await settled(() => tab.evaluate(({ x, y }) => {
           const el = document.getElementById('favor-stat');
           const r = el.getBoundingClientRect();
-          // The hit area, top to bottom: the element under each point.
-          const top = [...Array(60).keys()].map((i) => y - 30 + i).filter((py) => el.contains(document.elementFromPoint(x, py)));
-          return { tall: top.length ? top.at(-1) - top[0] + 1 : 0, w: r.width };
-        }, fav);
-        if (hit.tall < 44) bad.push(`${where}: favor's hit area is ${hit.tall} px tall`);
+          // The hit area, top to bottom: the element under each point, and what stands on its band instead.
+          const band = [...Array(60).keys()].map((i) => y - 30 + i);
+          const top = band.filter((py) => el.contains(document.elementFromPoint(x, py)));
+          const over = band.filter((py) => py > y - 22 && py < y + 22 && !el.contains(document.elementFromPoint(x, py))).map((py) => `${Math.round(py)}:${document.elementFromPoint(x, py)?.className || '?'}`);
+          // Every notice card stays off favor's band (centred, 44 px), across its whole width.
+          const cards = [...document.querySelectorAll('.notify-notices .notify-card')].map((c) => c.getBoundingClientRect()).filter((c) => c.width && c.left < r.right && c.right > r.left && c.top < y + 22 && c.bottom > y - 22).map((c) => `${Math.round(c.top)}-${Math.round(c.bottom)}`);
+          return { tall: top.length ? top.at(-1) - top[0] + 1 : 0, w: r.width, over: over.slice(0, 3), cards };
+        }, fav));
+        if (hit.tall < 44) bad.push(`${where}: favor's hit area is ${hit.tall} px tall (${hit.over.join(' ')})`);
+        if (hit.cards.length) bad.push(`${where}: a notice stands on favor's hit area (${hit.cards.join(' ')})`);
         await tab.touchscreen.tap(fav.x, fav.y);
         await tab.waitForTimeout(300);
         if (!(await tab.evaluate(() => !document.getElementById('favor-pop')?.hidden))) bad.push(`${where}: a tap on favor did not open the Giants' panel`);

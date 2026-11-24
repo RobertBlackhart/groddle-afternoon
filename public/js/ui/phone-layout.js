@@ -40,6 +40,11 @@
 /** Region sizes in CSS px: the strip's height (the HUD pills'), the caption's. */
 export const STRIP_H = 44;
 export const CAPTION_H = 26;
+/**
+ * A thumb-tall hit area: favor and the street map's button on the caption take taps 44 px tall,
+ * centred on it (style.css #favor-stat::before), taller than the caption itself (G1222).
+ */
+export const TAP_H = 44;
 /** The gap between regions, and the edge inset. */
 export const GAP = 6;
 export const EDGE = 8;
@@ -148,7 +153,10 @@ export function phoneRegions({ width, height, safe = {}, sheet = '', pack = null
   // The notices: under the caption, over whatever stands lowest above the street's floor. The Map
   // leaves them no room (they wait, js/notify-view.js, until it closes).
   const left = (!upright && kind === 'half' ? sheetBox.right : sl) + EDGE;
-  const top = under + GAP;
+  // G1222: under the caption's taps too (TAP_H, centred on it), which reach below the caption: a notice
+  // at the region's top cut favor's 44 px hit area to 41 px, and its 4 px slide in reached further.
+  const capTaps = captionBox ? Math.ceil((captionBox.top + captionBox.bottom) / 2 + TAP_H / 2) : 0;
+  const top = Math.max(under, capTaps) + GAP;
   let bottom = floor - GAP;
   if (kind === 'map') bottom = top;
   else if (kind === 'half' && upright) bottom = sheetBox.top - GAP;
