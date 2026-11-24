@@ -417,7 +417,7 @@ export function mountPhoneLayout({ doc = globalThis.document, root, sheets = {},
     const r = el.getBoundingClientRect();
     return { left: r.left, top: r.top, right: r.right, bottom: r.bottom };
   };
-  // #653: --safe-t upright is a calc() (the inset plus 14 px, or 40 px in the Home Screen app), and a
+  // #653: --safe-t upright is a calc() (the inset plus 14 px, or --ios-fog-clear in the Home Screen app), and a
   // custom property's computed value is that calc() unresolved: parseFloat read 0, so the notices sat
   // over the pills on a phone with a notch. A probe's padding resolves the four to px.
   let insetProbe = null;

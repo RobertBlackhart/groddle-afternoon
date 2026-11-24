@@ -261,12 +261,13 @@ export function stageFor({
   fitViewH,
   groundLine,
   groundFit,
+  topBand,
 } = {}) {
   const W = finite(width);
   const H = finite(height);
   const pack = finite(packReserve, MIN_PACK_HEIGHT);
   const pinned = finite(pinnedHeight);
-  if (phone && !(pinned > 0) && W > 0 && H > W) return phoneStage({ width: W, height: H, packReserve: pack, sceneWidth, sceneHeight, closeup, groundLine });
+  if (phone && !(pinned > 0) && W > 0 && H > W) return phoneStage({ width: W, height: H, packReserve: pack, sceneWidth, sceneHeight, closeup, groundLine, topBand });
   if (phone && !(pinned > 0) && W > 0 && H > 0) return landscapePhoneStage({ width: W, height: H, packReserve: pack, sceneWidth, sceneHeight, zoom, closeup, fitViewH });
   return computerStage({ width: W, height: H, packReserve: pack, sceneWidth, sceneHeight, pinnedHeight: pinned, zoom, borders: sceneBorders, fitViewH, groundFit });
 }
@@ -378,8 +379,18 @@ export function shortSceneBand(skyTop) {
  * The canvas runs the pack reserve (132 world px) past the view, which the phone's short pack row
  * leaves mostly open, so fitting the scene's bottom showed 130 px or more of the bare fill under
  * the street's ground (Briarset Croft); fitting the line magnifies about 1.1 times there.
+ *
+ * TOP BAND (#653 follow-up, Austin's iPhone 2026-11-24, the Home Screen app upright: "I think we cut
+ * off too much space up top"): `topBand` (CSS px) is the dark strip over the screen's top (style.css
+ * --stage-top: the status bar plus the fog's clearance, set only in the iOS Home Screen app). The
+ * app's screen is taller than a Safari tab's, so the width floor held nearly every street and left a
+ * band down to about 130 px on a 402 x 874 iPhone, the pills over the dark and no street above them.
+ * With a strip, the width floor eases by the strip's share of the screen (560 x (H - band) / H, about
+ * 505 px there) so a held scene magnifies until its canvas reaches up to the strip's bottom edge: the
+ * street runs up under the pills. A scene too short for that (a room, a home) still keeps a band, a
+ * shorter one. 0 (a Safari tab, Android, sideways, computers): nothing changes.
  */
-export function phoneStage({ width, height, packReserve = MIN_PACK_HEIGHT, sceneWidth, sceneHeight, closeup = 0, groundLine } = {}) {
+export function phoneStage({ width, height, packReserve = MIN_PACK_HEIGHT, sceneWidth, sceneHeight, closeup = 0, groundLine, topBand = 0 } = {}) {
   const W = finite(width);
   const H = finite(height);
   const pack = finite(packReserve, MIN_PACK_HEIGHT);
@@ -390,6 +401,9 @@ export function phoneStage({ width, height, packReserve = MIN_PACK_HEIGHT, scene
   const line = finite(groundLine);
   if (line > 0) fitH = Math.min(fitH, Math.max(VIEW_FLOOR_H, Math.floor(line) - pack));
   let scale = Math.min(H / (fitH + pack), W / PHONE_PORTRAIT_MIN_VIEW_W);
+  // TOP BAND (#653 follow-up): under a strip the held canvas reaches up to it, the width floor eased by the strip's share.
+  const band = Math.min(H / 2, Math.max(0, finite(topBand, 0)));
+  if (band > 0) scale = Math.max(scale, Math.min((H - band) / (fitH + pack), W / (PHONE_PORTRAIT_MIN_VIEW_W * (H - band) / H)));
   const sw = finite(sceneWidth);
   if (sw > 0) scale = Math.max(scale, W / sw);
   const top = H / (VIEW_FLOOR_H + pack);

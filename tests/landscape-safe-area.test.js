@@ -12,6 +12,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { phoneStage, stageFor } from '../public/js/location-view.js?v=5a7e0e75';
+import { STREET_GROUND_LINES } from '../public/js/street-ground-lines.js?v=31e7f393';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (rel) => readFileSync(join(root, rel), 'utf8');
@@ -58,7 +60,9 @@ function safeTop(css, c, inset) {
     if (!best || spec >= best.spec) best = { spec, value: m[2] };
   }
   assert.ok(best, 'a --safe-t applies');
+  const fog = /:root \{ --ios-fog-clear: ([^;]+); \}/.exec(css);
   const expr = best.value
+    .replace(/var\(--ios-fog-clear\)/g, fog ? fog[1] : 'NaN')
     .replace(/env\(safe-area-inset-top, 0px\)/g, `${inset}px`)
     .replace(/([\d.]+)rem/g, (_, n) => `${Number(n) * 16}px`)
     .replace(/px/g, '')
@@ -102,8 +106,10 @@ describe('edge to edge on a phone', () => {
   });
   // #632, #653, #595: since iOS 26.1 a Home Screen web app (black-translucent, viewport-fit=cover) gets the
   // system's Liquid Glass edge over its top, about 40 px past the status bar, above the web view. Austin
-  // 2026-11-24 chose clearance: in the iOS Home Screen app held upright, the top is the inset plus 40 px.
-  it('#653: upright in the iOS Home Screen app the top clears the fade: the inset plus 40 px, still 0 at inset 0', () => {
+  // 2026-11-24 chose clearance: in the iOS Home Screen app held upright, the top is the inset plus the fog's
+  // clearance. v0.65.0 took 40 px; Austin's iPhone after it ("I think we cut off too much space up top. Can we
+  // trim that some?"): 24 px now, one property (--ios-fog-clear) to tune from a device report.
+  it('#653: upright in the iOS Home Screen app the top clears the fade: the inset plus 24 px (--ios-fog-clear), still 0 at inset 0', () => {
     const cases = {
       tab: { portrait: true, standalone: false, ios: true, homeClass: false },
       home: { portrait: true, standalone: true, ios: true, homeClass: false },
@@ -113,7 +119,7 @@ describe('edge to edge on a phone', () => {
       computer: { portrait: false, standalone: false, ios: false, homeClass: false, touch: false },
     };
     const want = {
-      tab: [62 + 14, 0], home: [62 + 40, 0], homeByClass: [62 + 40, 0],
+      tab: [62 + 14, 0], home: [62 + 24, 0], homeByClass: [62 + 24, 0],
       homeSideways: [62, 0], androidApp: [62 + 14, 0], computer: [62, 0],
     };
     for (const [name, c] of Object.entries(cases)) {
@@ -124,7 +130,42 @@ describe('edge to edge on a phone', () => {
     const i = block.indexOf('@media (orientation: portrait) and (display-mode: standalone) {');
     assert.ok(i > block.indexOf('min(14px'), 'after the 14 px rule, so it wins in the app');
     const note = block.slice(block.lastIndexOf('/*', i), i).replace(/\s+/g, ' ');
-    for (const w of ['iOS 26.1', 'Liquid Glass', 'cannot turn it off', 'Austin', '2026-11-24', 'Not checked on an iPhone']) assert.ok(note.includes(w), w);
+    for (const w of ['iOS 26.1', 'Liquid Glass', 'cannot turn it off', 'Austin', '2026-11-24', 'Not checked on an iPhone', 'cut off too much space up top']) assert.ok(note.includes(w), w);
+    // One value to tune: set once, read by both Home Screen hooks and nowhere else.
+    assert.equal((css.match(/--ios-fog-clear:/g) || []).length, 1, 'declared once');
+    assert.match(block, /:root \{ --ios-fog-clear: 24px; \}/);
+    assert.equal((block.match(/min\(var\(--ios-fog-clear\), env\(safe-area-inset-top, 0px\) \* 1000\)/g) || []).length, 2, 'both hooks read it');
+    assert.doesNotMatch(block, /min\(2\.5rem/, 'no 40 px clearance left');
+  });
+  // The same report: the street started at about 130 px on a 402 x 874 iPhone, under the pills. The app's
+  // screen is taller than a Safari tab's, so phoneStage's width floor (560) held the street with a dark band
+  // over it. In the app the strip's bottom is --stage-top, and a held street reaches up to it.
+  it('#653: in the Home Screen app a held street reaches up to the dark strip, not down past the pills', () => {
+    // --stage-top only beside the two Home Screen hooks' --safe-t (so a Safari tab, sideways and computers keep 0).
+    const tops = [...css.matchAll(/--stage-top:\s*([^;]+);/g)].map((m) => m[1]);
+    assert.deepEqual(tops, ['var(--safe-t)', 'var(--safe-t)']);
+    for (const m of block.matchAll(/\{ --safe-t: calc\(env\(safe-area-inset-top, 0px\) \+ min\(var\(--ios-fog-clear\)[^}]*\}/g)) assert.match(m[0], /--stage-top: var\(--safe-t\);/);
+    const game = read('public/game.js');
+    assert.match(game, /topBand: dock \? 0 : phoneTopBand\(\),/);
+    assert.match(game, /height:var\(--stage-top,0px\)/);
+    // Awasa Wash at 402 x 874 (Austin's screenshot): the canvas started at 132 px, the strip ended at 102.
+    const W = 402;
+    const H = 874;
+    const strip = 62 + 24;
+    const awasa = { width: W, height: H, sceneHeight: 980, groundLine: STREET_GROUND_LINES.GHFET4I773D2OUU, phone: true };
+    const tab = stageFor(awasa);
+    assert.equal(Math.round(H - tab.cssHeight), 132, 'a Safari tab keeps its band (unchanged)');
+    const app = stageFor({ ...awasa, topBand: strip });
+    assert.ok(Math.abs(H - app.cssHeight - strip) < 1, `the street starts at the strip's bottom (${(H - app.cssHeight).toFixed(1)} px)`);
+    assert.ok(app.viewW >= Math.floor(560 * (H - strip) / H), `the view narrows by the strip's share at most (${app.viewW})`);
+    // A tall street already fills the screen: the strip changes nothing.
+    assert.deepEqual(stageFor({ ...awasa, sceneHeight: 1000, groundLine: undefined, height: 700, topBand: strip }), stageFor({ ...awasa, sceneHeight: 1000, groundLine: undefined, height: 700 }));
+    // A short room keeps a band (shorter), never a keyhole view.
+    const room = phoneStage({ width: W, height: H, sceneHeight: 408, topBand: strip });
+    assert.ok(H - room.cssHeight > strip, 'a short room still has a band');
+    assert.ok(room.viewW >= Math.floor(560 * (H - strip) / H), `the room's view stays wide (${room.viewW})`);
+    // Sideways the strip is 0 and the stage is the landscape rule anyway.
+    assert.deepEqual(stageFor({ ...awasa, width: H, height: W, topBand: strip }), stageFor({ ...awasa, width: H, height: W }));
   });
   it('#653: navigator.standalone (iOS only) sets the class hook; layout C reads --safe-t resolved to px', () => {
     const tc = read('public/js/touch-controls.js');

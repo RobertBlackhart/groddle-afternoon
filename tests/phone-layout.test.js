@@ -25,7 +25,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
   GAP, PILL_IDS, STICK, TAP_H, boxesOverlap, fullScreenWay, layoutProblems, menuRoomOf, phoneRegions, pillBadge, socialPillCount, stickRegionOf, streetFloorOf,
-} from '../public/js/ui/phone-layout.js?v=518a389b';
+} from '../public/js/ui/phone-layout.js?v=0367690c';
 import { phonePins } from '../public/js/ui/quest-pin-button.js?v=ec4d53fa';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -683,11 +683,22 @@ describe('phone layout: no overlaps on the real game (Chrome)', { skip: !chromiu
 // Austin's iPhone 2026-11-24 (upright, Xhola Mades): a buff chip lay over the left end of the stats pill
 // and the start of the street's name. Its top never took the top inset (style.css #buff-strip under
 // 760 px: 2 x hud-h + 16 px), and layout C gave it no region. Now it has its own slot under the caption.
+// The Home Screen app's top (#653 follow-up, Austin's iPhone after v0.65.0: "I think we cut off too much
+// space up top"): a 62 px inset plus style.css --ios-fog-clear, 24 px (40 in v0.65.0).
+const FOG_CLEAR = Number((/:root \{ --ios-fog-clear: (\d+)px; \}/.exec(css) || [])[1]);
+const HOME_T = 62 + FOG_CLEAR;
 describe('the buff strip has its own slot (Austin 2026-11-24)', () => {
   const chip = 60;
+  it('the Home Screen app\'s top is the inset plus 24 px: the pills at 90, the caption at 136 (106 and 152 in v0.65.0)', () => {
+    assert.equal(HOME_T, 86);
+    const r = phoneRegions({ width: 402, height: 874, safe: { t: HOME_T, b: 34 }, caption: { w: 220, h: 26 } });
+    assert.equal(r.strip.top, 90);
+    assert.equal(r.caption.top, 136);
+  });
   const cases = [
     ['Safari tab upright', { width: 402, height: 812, safe: { t: 76, b: 34 } }],
-    ['Home Screen app upright', { width: 402, height: 812, safe: { t: 102, b: 34 } }],
+    ['Home Screen app upright', { width: 402, height: 812, safe: { t: HOME_T, b: 34 } }],
+    ['Home Screen app upright, 874 tall', { width: 402, height: 874, safe: { t: HOME_T, b: 34 } }],
     ['sideways', { width: 812, height: 402, safe: { l: 62, r: 62, b: 21 }, captionUnder: false }],
   ];
   for (const [name, at] of cases) {

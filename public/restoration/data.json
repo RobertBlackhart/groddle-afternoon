@@ -2814,9 +2814,14 @@
   "deployed": "2026-11-24"
  },
  "git": {
-  "commits": 3380,
+  "commits": 3381,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-24",
+    "kind": "improve",
+    "text": "In the iPhone Home Screen app the street runs up under the top bar again"
+   },
    {
     "date": "2026-11-24",
     "kind": "improve",
@@ -2931,11 +2936,6 @@
     "date": "2026-11-23",
     "kind": "fix",
     "text": "Pot's Cornucopia is the size of Glitch's Cornucopia of Crops, not a cabinet"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "Max Luck always finds a gem while mining, as in Glitch"
    }
   ]
  },
