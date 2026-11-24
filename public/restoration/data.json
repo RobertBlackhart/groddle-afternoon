@@ -2356,8 +2356,8 @@
   "musicTracks": 200
  },
  "recipes": {
-  "imported": 327,
-  "skipped": 19
+  "imported": 328,
+  "skipped": 18
  },
  "icons": {
   "items": 1090,
@@ -2814,9 +2814,19 @@
   "deployed": "2026-11-24"
  },
  "git": {
-  "commits": 3403,
+  "commits": 3406,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-24",
+    "kind": "new",
+    "text": "Machines and the Crafty Bot work on every floor of the house"
+   },
+   {
+    "date": "2026-11-24",
+    "kind": "new",
+    "text": "The Bookcase can be made again on the Construction Tool"
+   },
    {
     "date": "2026-11-24",
     "kind": "fix",
@@ -2926,19 +2936,9 @@
     "date": "2026-11-24",
     "kind": "new",
     "text": "Snaps are full size, open in a full-screen viewer, and can be made public on your profile"
-   },
-   {
-    "date": "2026-11-24",
-    "kind": "fix",
-    "text": "Signposts on the phone street map are sharp, not blurry"
-   },
-   {
-    "date": "2026-11-24",
-    "kind": "fix",
-    "text": "The Encyclopedia shows one page per thing, and entries that only share a name say which one they are"
    }
   ]
  },
- "tests": 1344,
+ "tests": 1346,
  "generatedAt": "2026-11-24"
 }
