@@ -55,6 +55,7 @@ import { neverReleased, neverReleasedNote, neverReleasedTag } from '../encyclope
 import { UNSHIPPED_QUESTS, questStatusOf } from '../encyclopedia/unshipped-quests.mjs';
 import { loadCosts } from './costs.mjs';
 import { loadHero } from './hero.mjs';
+import { pageArt, srcsetAttrs } from '../page-art/index.mjs';
 import { loadUses } from './uses.mjs';
 import { loadHandouts } from './handouts.mjs';
 
@@ -318,7 +319,8 @@ function iconOf(id, files) {
   if (!files.has(`${id}.webp`)) return null;
   const one = pngSize(join(ICONS, `${id}.webp`));
   const hi = files.has(`${id}@3x.webp`) ? pngSize(join(ICONS, `${id}@3x.webp`)) : null;
-  return one ? { w: one.w, h: one.h, hi: hi ? { w: hi.w, h: hi.h } : null } : null;
+  const page = pageArt(pub).get(`assets/sprites/icons/${id}.webp`);
+  return one ? { w: one.w, h: one.h, hi: hi ? { w: hi.w, h: hi.h } : null, ...(page ? { page } : {}) } : null;
 }
 
 /* -- The remake ---------------------------------------- */
@@ -707,6 +709,9 @@ export async function buildCatalog({ inventory = readInventory(), evidence = rea
       name: e.it.name,
       category: e.category,
       icon: e.icon ? (e.icon.hi ? 3 : 1) : 0,
+      // Its 1x width and the k of its page art (tools/page-art), for catalog.js's srcset.
+      ...(e.icon ? { iw: e.icon.w } : {}),
+      ...(e.icon?.page ? { pk: e.icon.page.k } : {}),
       status: e.status,
       price: e.it.baseCost,
       get: e.get,
@@ -1063,7 +1068,7 @@ function itemPage(e, ctx) {
   const musicHref = `${p}musicblocks/${ctx.musicCards.has(it.id) ? `#${esc(it.id)}` : ''}`;
   // The largest CC0 art the build has for it (tools/catalog/hero.mjs); the heading beside it names it.
   const icon = e.hero
-    ? `<img class="cat-hero-icon cat-from-${e.hero.from}" src="${p}${esc(e.hero.src)}" alt="" width="${e.hero.w}" height="${e.hero.h}" fetchpriority="high" />`
+    ? `<img class="cat-hero-icon cat-from-${e.hero.from}" src="${p}${esc(e.hero.src)}"${srcsetAttrs(e.hero.pic, e.hero.w, p, esc)} alt="" width="${e.hero.w}" height="${e.hero.h}" fetchpriority="high" />`
     : '<span class="cat-hero-icon cat-ph" aria-hidden="true"></span>';
   const desc = gsjsHtml(it.desc, linkItem);
   const extras = it.extras.map((x) => gsjsHtml(x, linkItem).join(' ')).filter(Boolean);

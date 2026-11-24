@@ -13,13 +13,17 @@
  *
  * It is drawn at most HERO_BOX css px on its long side (the frame in
  * catalog.css), up to 1.4 times the art's own 3x size so a small icon grows a
- * little, never more. The standing art wins when it puts clearly more real
+ * little, never more, and never bigger than its sharpest file covers at two
+ * device px a css px: a pack icon's page art (tools/page-art, a render at up to
+ * nine times the 1x, for the pages only) covers the frame; the standing art,
+ * with only its 3x, is drawn at half its pixels. Every file goes in the srcset. The standing art wins when it puts clearly more real
  * pixels on the page (a 216 x 279 chair over a 111 x 144 icon); a picture
  * heavier than MAX_BYTES stays the icon.
  */
 import { readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { pageArt, sharpScale } from '../page-art/index.mjs';
 
 export const HERO_BOX = 208;
 export const MAX_UPSCALE = 1.4;
@@ -46,37 +50,49 @@ export function fitHero(w, h, upscale = MAX_UPSCALE) {
   return { w: Math.max(1, Math.round(w * scale)), h: Math.max(1, Math.round(h * scale)) };
 }
 
-/** Loads the build's sprite list and returns heroFor(id, icon) -> { src, w, h, from } or null. */
+/** Loads the build's sprite list and returns heroFor(id, icon) -> { src, w, h, from, pic, natural } or null. */
 export async function loadHero(root) {
   const pub = join(root, 'public');
   const { HIRES_SPRITES } = await import(pathToFileURL(join(pub, 'js', 'sprite-hires.js')).href);
   const standing = new Map();
   for (const [one, three] of HIRES_SPRITES) {
     const m = /^assets\/sprites\/(.+)\/([a-z0-9_]+)\.(?:png|webp)$/.exec(one);
-    if (m && STANDING_ART.includes(m[1])) standing.set(m[2], three);
+    if (m && STANDING_ART.includes(m[1])) standing.set(m[2], { one, three });
   }
+  const pages = pageArt(pub);
   /**
-   * icon: build.mjs iconOf ({ w, h, hi } of the pack icon, or null).
+   * icon: build.mjs iconOf ({ w, h, hi, page? } of the pack icon, or null).
+   * `pic` is every file of the chosen art (tools/page-art/index.mjs sources), for the srcset.
    */
   return function heroFor(id, icon) {
     const options = [];
     if (icon) {
+      const one = `assets/sprites/icons/${id}.webp`;
+      const pic = { src: one, w: icon.w, h: icon.h, ...(icon.hi ? { hi: `assets/sprites/icons/${id}@3x.webp`, hiW: icon.hi.w } : {}), ...(icon.page ? { page: icon.page } : {}) };
       options.push(icon.hi
-        ? { src: `assets/sprites/icons/${id}@3x.webp`, w: icon.hi.w, h: icon.hi.h, from: 'icon' }
-        : { src: `assets/sprites/icons/${id}.webp`, w: icon.w * 3, h: icon.h * 3, from: 'icon1x' });
+        ? { src: pic.hi, w: icon.hi.w, h: icon.hi.h, from: 'icon', pic }
+        : { src: one, w: icon.w * 3, h: icon.h * 3, from: 'icon1x', pic });
     }
     const art = standing.get(id);
-    if (art && statSync(join(pub, art)).size <= MAX_BYTES) {
-      const size = imageSize(join(pub, art));
-      if (size) options.push({ src: art, ...size, from: 'standing' });
+    if (art && statSync(join(pub, art.three)).size <= MAX_BYTES) {
+      const size = imageSize(join(pub, art.three));
+      const small = imageSize(join(pub, art.one));
+      const page = pages.get(art.one);
+      if (size && small) options.push({ src: art.three, ...size, from: 'standing', pic: { src: art.one, w: small.w, h: small.h, hi: art.three, hiW: size.w, ...(page ? { page } : {}) } });
     }
     if (!options.length) return null;
     // A 1x icon is already drawn at three times its size: it grows no further.
     const fit = (o) => fitHero(o.w, o.h, o.from === 'icon1x' ? 1 : MAX_UPSCALE);
-    // Sharp pixels on the page: the drawn area, counting only what the art really has (an upscale adds none).
+    // Sharp pixels on the page: the drawn area, counting only what the game's own art has (an upscale adds none).
     const sharp = (o) => { const f = fit(o); return Math.min(f.w * f.h, o.from === 'icon1x' ? (o.w * o.h) / 9 : o.w * o.h); };
     // The icon unless the standing art is clearly sharper there (a fifth more).
     const best = options.reduce((a, b) => (sharp(b) > sharp(a) * 1.2 ? b : a));
-    return { ...best, ...fit(best), natural: { w: best.w, h: best.h } };
+    // Drawn no bigger than its sharpest file covers at two device px a css px (its page art makes
+    // that the frame for a pack icon; tools/page-art), or at its own size when it has only a 1x.
+    const f = fit(best);
+    const cap = Math.min(1, (sharpScale(best.pic) * best.pic.w) / f.w);
+    const w = Math.max(1, Math.floor(f.w * cap));
+    const h = Math.max(1, Math.round((w * f.h) / f.w));
+    return { ...best, w, h, natural: { w: best.w, h: best.h } };
   };
 }

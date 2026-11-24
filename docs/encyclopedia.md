@@ -268,6 +268,17 @@ thumbnails, `ui/quest-book.webp`). A creature with no single picture of its own
 shows its Cubimal (Tiny Speck's toy likeness), labelled so. Images are lazy,
 with fixed sizes, so pages stay fast; everything is drawn at build time.
 
+Sharp pictures (Austin 2026-11-23, the blurry Butterfly): a picture's `width` and
+`height` are the size its class is really drawn at (`parts.mjs drawnScale`: tiles at
+their own size, chips and cards filling their box, heroes up to three times their 1x),
+and every file it has goes in a width-described `srcset` with `sizes`, so the browser
+takes the smallest file that covers it on that screen. Small pictures drawn big have
+**page art** (`tools/page-art/`): Tiny Speck's vector SWF rendered at k times the 1x,
+`assets/page-art/<path>@<k>x.webp`, for the pages only (the game keeps its 1x/3x files).
+A picture is never drawn bigger than its sharpest file covers at two device px a css px,
+or than its own size when it has only a 1x (the quest book, the Batterfly Bar).
+`tests/page-art-sharp.test.js` checks every built page.
+
 ## Tests
 
 `tests/encyclopedia.test.js`: every non-excluded inventory entry of each built

@@ -35,6 +35,7 @@ import { addStores, storesSection } from './stores.mjs';
 import { addWhereToFind, GSJS_GIVER_HOW } from './where-to-find.mjs';
 import { CREATURE_STILLS, STILLS_DIR } from './creature-stills.mjs';
 import { UNSHIPPED_QUESTS, questStatusOf } from './unshipped-quests.mjs';
+import { pageArt } from '../page-art/index.mjs';
 
 const root = join(import.meta.dirname, '..', '..');
 export const PUB = join(root, 'public');
@@ -97,7 +98,10 @@ export function picture(src, caption = '') {
   if (!size) return null;
   const hiSrc = src.replace(/\.(png|webp)$/, '@3x.$1');
   const hi = hiSrc !== src && existsSync(join(PUB, hiSrc)) ? hiSrc : null;
-  return { src, w: size.w, h: size.h, hi, caption };
+  if (hi && !sizeCache.has(hiSrc)) sizeCache.set(hiSrc, imageSize(join(PUB, hiSrc)));
+  // Its page art (tools/page-art): a render at k times the 1x for the pages only.
+  const page = pageArt(PUB).get(src) || null;
+  return { src, w: size.w, h: size.h, hi, ...(hi ? { hiW: sizeCache.get(hiSrc)?.w } : {}), ...(page ? { page } : {}), caption };
 }
 export const itemIcon = (id) => picture(`assets/sprites/icons/${id}.webp`);
 

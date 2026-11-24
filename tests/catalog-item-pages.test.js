@@ -175,7 +175,7 @@ describe('the picture and the header', () => {
   it('draws the largest art the build has, no larger than the frame', async () => {
     const heroFor = await loadHero(spike);
     for (const item of data.items) {
-      const m = /<div class="cat-hero-frame"><img class="cat-hero-icon cat-from-(icon|icon1x|standing)" src="\.\.\/\.\.\/\.\.\/([^"?]+)\?v=[0-9a-f]{8}" alt="" width="(\d+)" height="(\d+)"/.exec(page(item.id));
+      const m = /<div class="cat-hero-frame"><img class="cat-hero-icon cat-from-(icon|icon1x|standing)" src="\.\.\/\.\.\/\.\.\/([^"?]+)\?v=[0-9a-f]{8}"(?: srcset="[^"]+" sizes="\d+px")? alt="" width="(\d+)" height="(\d+)"/.exec(page(item.id));
       if (!item.icon && !m) continue;
       assert.ok(m, item.id);
       const file = join(pub, m[2]);

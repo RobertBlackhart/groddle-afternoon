@@ -9,6 +9,7 @@
 import { combobox } from './combobox.js?v=f2510e19';
 
 const ICONS = '../../assets/sprites/icons/';
+const PAGE_ART = '../../assets/page-art/sprites/icons/';
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 const fmt = (n) => n.toLocaleString('en-US');
@@ -39,9 +40,22 @@ function writeUrl() {
   history.replaceState(null, '', qs ? `?${qs}` : location.pathname);
 }
 
+/**
+ * Every file of an item's icon in a width-described srcset: its 1x, its @3x and its page art
+ * (tools/page-art, k times the 1x), so the 52 px box takes the smallest file that covers it at
+ * the screen's density (data.json: icon 3 when it has an @3x, iw its 1x width, pk its page art's k).
+ */
+function iconSrcset(item) {
+  if (!item.iw) return item.icon === 3 ? ` srcset="${ICONS}${item.id}.webp 1x, ${ICONS}${item.id}@3x.webp 3x"` : '';
+  const list = [`${ICONS}${item.id}.webp ${item.iw}w`];
+  if (item.icon === 3) list.push(`${ICONS}${item.id}@3x.webp ${item.iw * 3}w`);
+  if (item.pk) list.push(`${PAGE_ART}${item.id}@${item.pk}x.webp ${item.iw * item.pk}w`);
+  return list.length > 1 ? ` srcset="${list.join(', ')}" sizes="52px"` : '';
+}
+
 function card(item, statusLabel) {
   const icon = item.icon
-    ? `<img class="cat-ic" src="${ICONS}${item.id}.webp"${item.icon === 3 ? ` srcset="${ICONS}${item.id}.webp 1x, ${ICONS}${item.id}@3x.webp 3x"` : ''} alt="" width="52" height="52" loading="lazy" decoding="async" />`
+    ? `<img class="cat-ic" src="${ICONS}${item.id}.webp"${iconSrcset(item)} alt="" width="52" height="52" loading="lazy" decoding="async" />`
     : '<span class="cat-ic cat-ph" aria-hidden="true"></span>';
   // Never released in Glitch (tools/encyclopedia/never-released.mjs): a small tag over the picture.
   const tag = item.nr ? '<span class="ency-unreleased cat-card-tag">Never released<span class="ency-sep">,</span></span> ' : '';

@@ -5,6 +5,7 @@
  * page (tools/encyclopedia/build.mjs). Styles: public/encyclopedia/items/catalog.css
  * (".ency-*"), colours only from the site's tokens.
  */
+import { sharpScale, srcsetAttrs } from '../page-art/index.mjs';
 
 export const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 export const fmt = (n) => Number(n).toLocaleString('en-US');
@@ -56,6 +57,25 @@ export const entrySearch = (home) => `<form class="ency-jump" action="${esc(home
         <label class="history-search ency-jump-box"><span class="visually-hidden">Search the encyclopedia</span><input type="search" name="q" placeholder="Search the encyclopedia" autocomplete="off" spellcheck="false" enterkeyhint="search" /></label>
       </form>`;
 
+/**
+ * How big the stylesheets draw a picture of each class (items/catalog.css, sections.css), as a
+ * scale of its 1x file, so its width and height say the size it really is on the page:
+ *  - .ency-ic (tiles) is `width: auto` under a max box: its own size, never more than the box;
+ *  - .ency-chip-ic, .ency-card-ic, .ency-vendor-ic fill a fixed box (object-fit: contain);
+ *  - anything else (the heroes) takes the size given here: up to three times its 1x file (twice
+ *    with no @3x), and never more than its sharpest file covers at two device px per css px
+ *    (tools/page-art/index.mjs sharpScale), so a picture with only a 1x file is drawn at its size.
+ */
+export const NATURAL_CLASSES = ['ency-ic'];
+export const BOXED_CLASSES = ['ency-chip-ic', 'ency-card-ic', 'ency-vendor-ic'];
+export function drawnScale(pic, cls, size) {
+  const box = size / Math.max(pic.w, pic.h);
+  const first = String(cls).split(/\s+/)[0];
+  if (NATURAL_CLASSES.includes(first)) return Math.min(1, box);
+  if (BOXED_CLASSES.includes(first)) return box;
+  return Math.min(pic.hi ? 3 : 2, box, sharpScale(pic));
+}
+
 export const badge = (s) => `<span class="pill st-${esc(s)}">${esc(statusLabel(s))}</span>`;
 
 /** The site-root path of an entry key: item:<id> or <section>:<id>. */
@@ -72,13 +92,18 @@ export function pathOf(key) {
  */
 export function makeParts(p, info, nameOf = () => null) {
   const href = (key) => `${p}${pathOf(key)}`;
+  /**
+   * A picture drawn at the size the stylesheet gives its class (drawnScale), its width and height
+   * the size it is drawn at, with every file it has in a width-described srcset (tools/page-art).
+   */
   const img = (pic, cls = 'ency-ic', size = 48, alt = '') => {
     if (!pic) return `<span class="${cls} cat-ph" aria-hidden="true"></span>`;
-    const scale = Math.min(pic.hi ? 3 : 2, size / Math.max(pic.w, pic.h));
-    const w = Math.max(1, Math.round(pic.w * scale));
-    const h = Math.max(1, Math.round(pic.h * scale));
-    const srcset = pic.hi ? ` srcset="${p}${esc(pic.src)} 1x, ${p}${esc(pic.hi)} 3x"` : '';
-    return `<img class="${cls}" src="${p}${esc(pic.src)}"${srcset} alt="${esc(alt)}" width="${w}" height="${h}" loading="lazy" decoding="async" />`;
+    const scale = drawnScale(pic, cls, size);
+    // Rounded, but never up past what its sharpest file covers.
+    const most = Math.floor(pic.w * Math.max(scale, sharpScale(pic)) + 1e-6);
+    const w = Math.max(1, Math.min(Math.round(pic.w * scale), most));
+    const h = Math.max(1, Math.round(pic.h * (w < Math.round(pic.w * scale) ? w / pic.w : scale)));
+    return `<img class="${cls}" src="${p}${esc(pic.src)}"${srcsetAttrs(pic, w, p, esc)} alt="${esc(alt)}" width="${w}" height="${h}" loading="lazy" decoding="async" />`;
   };
   /**
    * A small picture card for one thing. opts: sub (a short line), n (a count), anchor (#id), title,

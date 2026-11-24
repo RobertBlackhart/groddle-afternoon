@@ -1,0 +1,3736 @@
+{
+ "assets/sprites/animals/piggy_feeder.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/piggy_feeder/piggy_feeder.swf",
+  "frame": 2
+ },
+ "assets/sprites/butterfly_rest_single.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/npc/npc_butterfly/npc_butterfly.swf",
+  "sprite": 8,
+  "frame": 1,
+  "flop": true
+ },
+ "assets/sprites/cubimals/npc_cubimal_factorydefect_chick_1.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/rare_items/npc_cubimal_factorydefect_chick/npc_cubimal_factorydefect_chick.swf",
+  "sprite": 31,
+  "frame": 1
+ },
+ "assets/sprites/encyclopedia/npc_blimp.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/npc/npc_blimp/npc_blimp.swf"
+ },
+ "assets/sprites/encyclopedia/npc_bureaucrat.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/inhabitants/bureaucrat/npc_bureaucrat.swf"
+ },
+ "assets/sprites/encyclopedia/npc_catch_me_ghost.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/inhabitants/ghost/npc_catch_me_ghost.swf"
+ },
+ "assets/sprites/encyclopedia/npc_chicken.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/inhabitants/chicken/npc_chicken.swf",
+  "sprite": 183,
+  "frame": 670
+ },
+ "assets/sprites/encyclopedia/npc_crab.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/inhabitants/crab/npc_crab.swf",
+  "sprite": 133,
+  "frame": 221
+ },
+ "assets/sprites/encyclopedia/npc_dustbunny.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/inhabitants/dustbunny/npc_dustbunny.swf",
+  "sprite": 39,
+  "frame": 75
+ },
+ "assets/sprites/encyclopedia/npc_firefly.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/npc/npc_firefly/npc_firefly.swf",
+  "sprite": 3,
+  "frame": 1
+ },
+ "assets/sprites/encyclopedia/npc_fox_ranger.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/inhabitants/fox_ranger/npc_fox_ranger.swf"
+ },
+ "assets/sprites/encyclopedia/npc_juju_grandma.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/inhabitants/juju_grandma/npc_juju_grandma.swf"
+ },
+ "assets/sprites/encyclopedia/npc_letterblock.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/quest_items/letterblock/npc_letterblock.swf"
+ },
+ "assets/sprites/encyclopedia/npc_mailbox.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/npc/npc_mailbox/npc_mailbox.swf"
+ },
+ "assets/sprites/encyclopedia/npc_maintenance_bot.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/inhabitants/maintenance_bot/npc_maintenance_bot.swf"
+ },
+ "assets/sprites/encyclopedia/npc_myopic_frog.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/inhabitants/myopic_frog/npc_myopic_frog.swf"
+ },
+ "assets/sprites/encyclopedia/npc_piggy.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/inhabitants/piggy/npc_piggy.swf",
+  "sprite": 79,
+  "frame": 78,
+  "flop": true
+ },
+ "assets/sprites/encyclopedia/npc_piggy_explorer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/inhabitants/ilmenskie_jones/npc_piggy_explorer.swf"
+ },
+ "assets/sprites/encyclopedia/npc_squid.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/inhabitants/squid/npc_squid.swf",
+  "sprite": 341,
+  "frame": 1
+ },
+ "assets/sprites/encyclopedia/npc_swoonerfly.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/inhabitants/swoonerfly/npc_swoonerfly.swf"
+ },
+ "assets/sprites/encyclopedia/npc_widget.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/inhabitants/widget_bot/npc_widget.swf"
+ },
+ "assets/sprites/encyclopedia/npc_yoga_frog.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/inhabitants/yoga_frog/npc_yoga_frog.swf"
+ },
+ "assets/sprites/furniture/bag_furniture_sdb.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/bag_furniture_sdb/bag_furniture_sdb.swf",
+  "max_diff": 0.15,
+  "pin": true
+ },
+ "assets/sprites/furniture/bag_furniture_wallcabinet.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/bag_furniture_cabinet_base/bag_furniture_wallcabinet/bag_furniture_wallcabinet.swf"
+ },
+ "assets/sprites/furniture/furniture_armchair.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_armchair/furniture_armchair.swf"
+ },
+ "assets/sprites/furniture/furniture_ceilingdeco.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_ceilingdeco/furniture_ceilingdeco.swf"
+ },
+ "assets/sprites/furniture/furniture_ceilinglamp.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_ceilinglamp/furniture_ceilinglamp.swf"
+ },
+ "assets/sprites/furniture/furniture_chair.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_chair/furniture_chair.swf"
+ },
+ "assets/sprites/furniture/furniture_sidetable.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_sidetable/furniture_sidetable.swf"
+ },
+ "assets/sprites/furniture/furniture_stool.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_stool/furniture_stool.swf"
+ },
+ "assets/sprites/furniture/furniture_tabledeco.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_tabledeco/furniture_tabledeco.swf"
+ },
+ "assets/sprites/furniture/furniture_tablelamp.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_tablelamp/furniture_tablelamp.swf"
+ },
+ "assets/sprites/furniture/furniture_walldeco.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_walldeco/furniture_walldeco.swf"
+ },
+ "assets/sprites/furniture/furniture_walllamp.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_walllamp/furniture_walllamp.swf"
+ },
+ "assets/sprites/giant-icons/icon_alph.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/icon_alph/icon_alph.swf",
+  "frame": 2
+ },
+ "assets/sprites/giant-icons/icon_cosma.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/icon_cosma/icon_cosma.swf",
+  "frame": 2
+ },
+ "assets/sprites/giant-icons/icon_friendly.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/icon_friendly/icon_friendly.swf",
+  "frame": 2
+ },
+ "assets/sprites/giant-icons/icon_grendaline.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/icon_grendaline/icon_grendaline.swf",
+  "frame": 2
+ },
+ "assets/sprites/giant-icons/icon_humbaba.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/icon_humbaba/icon_humbaba.swf",
+  "frame": 2
+ },
+ "assets/sprites/giant-icons/icon_lem.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/icon_lem/icon_lem.swf",
+  "frame": 2
+ },
+ "assets/sprites/giant-icons/icon_mab.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/icon_mab/icon_mab.swf",
+  "frame": 2
+ },
+ "assets/sprites/giant-icons/icon_pot.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/icon_pot/icon_pot.swf",
+  "frame": 2
+ },
+ "assets/sprites/giant-icons/icon_spriggan.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/icon_spriggan/icon_spriggan.swf",
+  "frame": 2
+ },
+ "assets/sprites/giant-icons/icon_tii.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/icon_tii/icon_tii.swf",
+  "frame": 2
+ },
+ "assets/sprites/giant-icons/icon_zille.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/icon_zille/icon_zille.swf",
+  "frame": 2
+ },
+ "assets/sprites/icons/abbasid_ribs.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/abbasid_ribs/abbasid_ribs.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/abbasidose.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/compounds/abbasidose/abbasidose.swf"
+ },
+ "assets/sprites/icons/ace_of_spades.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/shovel/ace_of_spades/ace_of_spades.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/ace_of_spades_broken.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/shovel/ace_of_spades/ace_of_spades.swf",
+  "frame": "broken_iconic"
+ },
+ "assets/sprites/icons/alchemical_tongs.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/alchemical_tongs/alchemical_tongs.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/alchemical_tongs_broken.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/alchemical_tongs/alchemical_tongs.swf",
+  "frame": "broken_iconic"
+ },
+ "assets/sprites/icons/all_spice.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/spice/all_spice/all_spice.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/alphose.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/compounds/alphose/alphose.swf"
+ },
+ "assets/sprites/icons/antique_spigot.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/rare_items/antique_spigot/antique_spigot.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/apple.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/apple/apple.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/applejack.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/applejack/applejack.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/artifact_bag_of_tent_pegs.webp": {
+  "copy": "assets/sprites/icons/petrified_rock_large.webp"
+ },
+ "assets/sprites/icons/artifact_ball_of_string.webp": {
+  "copy": "assets/sprites/icons/petrified_rock_large.webp"
+ },
+ "assets/sprites/icons/artifact_bee_key.webp": {
+  "copy": "assets/sprites/icons/petrified_rock_large.webp"
+ },
+ "assets/sprites/icons/artifact_bronze_ladle.webp": {
+  "copy": "assets/sprites/icons/petrified_rock_large.webp"
+ },
+ "assets/sprites/icons/artifact_butterfly_hair_clip.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_butterfly_hair_clip/artifact_butterfly_hair_clip.swf"
+ },
+ "assets/sprites/icons/artifact_butterfly_hair_clip_piece1.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_butterfly_hair_clip_piece1/artifact_butterlfy_hair_clip_piece1.swf"
+ },
+ "assets/sprites/icons/artifact_butterfly_hair_clip_piece2.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_butterfly_hair_clip_piece2/artifact_butterlfy_hair_clip_piece2.swf"
+ },
+ "assets/sprites/icons/artifact_butterfly_hair_clip_piece3.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_butterfly_hair_clip_piece3/artifact_butterlfy_hair_clip_piece3.swf"
+ },
+ "assets/sprites/icons/artifact_butterfly_hair_clip_piece4.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_butterfly_hair_clip_piece4/artifact_butterlfy_hair_clip_piece4.swf"
+ },
+ "assets/sprites/icons/artifact_butterfly_windchimes.webp": {
+  "copy": "assets/sprites/icons/petrified_rock_large.webp"
+ },
+ "assets/sprites/icons/artifact_button_bird.webp": {
+  "copy": "assets/sprites/icons/petrified_rock_large.webp"
+ },
+ "assets/sprites/icons/artifact_button_cloud.webp": {
+  "copy": "assets/sprites/icons/petrified_rock_large.webp"
+ },
+ "assets/sprites/icons/artifact_button_frog.webp": {
+  "copy": "assets/sprites/icons/petrified_rock_large.webp"
+ },
+ "assets/sprites/icons/artifact_button_wasp.webp": {
+  "copy": "assets/sprites/icons/petrified_rock_large.webp"
+ },
+ "assets/sprites/icons/artifact_carved_ear.webp": {
+  "copy": "assets/sprites/icons/petrified_rock_large.webp"
+ },
+ "assets/sprites/icons/artifact_caterpillar_trousers.webp": {
+  "copy": "assets/sprites/icons/petrified_rock_large.webp"
+ },
+ "assets/sprites/icons/artifact_chicken_brick.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_chicken_brick/artifact_chicken_brick.swf"
+ },
+ "assets/sprites/icons/artifact_chicken_brick_piece1.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_chicken_brick_piece1/artifact_chicken_brick_piece1.swf"
+ },
+ "assets/sprites/icons/artifact_chicken_brick_piece2.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_chicken_brick_piece2/artifact_chicken_brick_piece2.swf"
+ },
+ "assets/sprites/icons/artifact_chicken_brick_piece3.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_chicken_brick_piece3/artifact_chicken_brick_piece3.swf"
+ },
+ "assets/sprites/icons/artifact_chicken_brick_piece4.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_chicken_brick_piece4/artifact_chicken_brick_piece4.swf"
+ },
+ "assets/sprites/icons/artifact_chicken_brick_piece5.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_chicken_brick_piece5/artifact_chicken_brick_piece5.swf"
+ },
+ "assets/sprites/icons/artifact_daybag.webp": {
+  "copy": "assets/sprites/icons/petrified_rock_large.webp"
+ },
+ "assets/sprites/icons/artifact_disembodied_dentures.webp": {
+  "copy": "assets/sprites/icons/petrified_rock_large.webp"
+ },
+ "assets/sprites/icons/artifact_ear_trumpet.webp": {
+  "copy": "assets/sprites/icons/petrified_rock_large.webp"
+ },
+ "assets/sprites/icons/artifact_ebony_teaspoon.webp": {
+  "copy": "assets/sprites/icons/petrified_rock_large.webp"
+ },
+ "assets/sprites/icons/artifact_fan.webp": {
+  "copy": "assets/sprites/icons/petrified_rock_large.webp"
+ },
+ "assets/sprites/icons/artifact_glove_metal_finger.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_glove_metal_finger/artifact_glove_metal_finger.swf"
+ },
+ "assets/sprites/icons/artifact_glove_metal_finger_piece1.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_glove_metal_finger_piece1/artifact_glove_metal_finger_piece1.swf"
+ },
+ "assets/sprites/icons/artifact_glove_metal_finger_piece2.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_glove_metal_finger_piece2/artifact_glove_metal_finger_piece2.swf"
+ },
+ "assets/sprites/icons/artifact_glove_metal_finger_piece3.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_glove_metal_finger_piece3/artifact_glove_metal_finger_piece3.swf"
+ },
+ "assets/sprites/icons/artifact_goggles.webp": {
+  "copy": "assets/sprites/icons/petrified_rock_large.webp"
+ },
+ "assets/sprites/icons/artifact_gold_butter_knife.webp": {
+  "copy": "assets/sprites/icons/petrified_rock_large.webp"
+ },
+ "assets/sprites/icons/artifact_handbag_clasp.webp": {
+  "copy": "assets/sprites/icons/petrified_rock_large.webp"
+ },
+ "assets/sprites/icons/artifact_heart_shaped_lump.webp": {
+  "copy": "assets/sprites/icons/petrified_rock_large.webp"
+ },
+ "assets/sprites/icons/artifact_ivory_coffeestick.webp": {
+  "copy": "assets/sprites/icons/petrified_rock_large.webp"
+ },
+ "assets/sprites/icons/artifact_magical_pendant.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_magical_pendant/artifact_magical_pendant.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/artifact_magical_pendant_piece1.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_magical_pendant_piece1/artifact_magical_pendant_piece1.swf"
+ },
+ "assets/sprites/icons/artifact_magical_pendant_piece2.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_magical_pendant_piece2/artifact_magical_pendant_piece2.swf"
+ },
+ "assets/sprites/icons/artifact_magical_pendant_piece3.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_magical_pendant_piece3/artifact_magical_pendant_piece3.swf"
+ },
+ "assets/sprites/icons/artifact_metal_tap.webp": {
+  "copy": "assets/sprites/icons/petrified_rock_large.webp"
+ },
+ "assets/sprites/icons/artifact_mirror_with_scribbles.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_mirror_with_scribbles/artifact_mirror_with_scribbles.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/artifact_mirror_with_scribbles_piece1.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_mirror_with_scribbles_piece1/artifact_mirror_with_scribbles_piece1.swf"
+ },
+ "assets/sprites/icons/artifact_mirror_with_scribbles_piece2.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_mirror_with_scribbles_piece2/artifact_mirror_with_scribbles_piece2.swf"
+ },
+ "assets/sprites/icons/artifact_mirror_with_scribbles_piece3.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_mirror_with_scribbles_piece3/artifact_mirror_with_scribbles_piece3.swf"
+ },
+ "assets/sprites/icons/artifact_mirror_with_scribbles_piece4.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_mirror_with_scribbles_piece4/artifact_mirror_with_scribbles_piece4.swf"
+ },
+ "assets/sprites/icons/artifact_mirror_with_scribbles_piece5.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_mirror_with_scribbles_piece5/artifact_mirror_with_scribbles_piece5.swf"
+ },
+ "assets/sprites/icons/artifact_mysterious_cube.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_mysterious_cube/artifact_mysterious_cube.swf"
+ },
+ "assets/sprites/icons/artifact_mysterious_cube_piece1.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_mysterious_cube_piece1/artifact_mysterious_cube_piece1.swf"
+ },
+ "assets/sprites/icons/artifact_mysterious_cube_piece2.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_mysterious_cube_piece2/artifact_mysterious_cube_piece2.swf"
+ },
+ "assets/sprites/icons/artifact_mysterious_cube_piece3.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_mysterious_cube_piece3/artifact_mysterious_cube_piece3.swf"
+ },
+ "assets/sprites/icons/artifact_mysterious_cube_piece4.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_mysterious_cube_piece4/artifact_mysterious_cube_piece4.swf"
+ },
+ "assets/sprites/icons/artifact_mysterious_cube_piece5.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_mysterious_cube_piece5/artifact_mysterious_cube_piece5.swf"
+ },
+ "assets/sprites/icons/artifact_necklace_amazonite.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_necklace_amazonite/artifact_necklace_amazonite.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/artifact_necklace_amazonite_piece.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_necklace_amazonite_piece/artifact_necklace_amazonite_piece.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/artifact_necklace_imperial.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_necklace_imperial/artifact_necklace_imperial.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/artifact_necklace_imperial_piece.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_necklace_imperial_piece/artifact_necklace_imperial_piece.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/artifact_necklace_onyx.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_necklace_onyx/artifact_necklace_onyx.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/artifact_necklace_onyx_piece.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_necklace_onyx_piece/artifact_necklace_onyx_piece.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/artifact_necklace_redtigereye.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_necklace_redtigereye/artifact_necklace_redtigereye.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/artifact_necklace_redtigereye_piece.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_necklace_redtigereye_piece/artifact_necklace_redtigereye_piece.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/artifact_necklace_rhyolite.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_necklace_rhyolite/artifact_necklace_rhyolite.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/artifact_necklace_rhyolite_piece.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_necklace_rhyolite_piece/artifact_necklace_rhyolite_piece.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/artifact_nose_of_china.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_nose_of_china/artifact_nose_of_china.swf"
+ },
+ "assets/sprites/icons/artifact_nose_of_china_piece1.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_nose_of_china_piece1/artifact_nose_of_china_piece1.swf"
+ },
+ "assets/sprites/icons/artifact_nose_of_china_piece2.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_nose_of_china_piece2/artifact_nose_of_china_piece2.swf"
+ },
+ "assets/sprites/icons/artifact_nose_of_plaster.webp": {
+  "copy": "assets/sprites/icons/petrified_rock_large.webp"
+ },
+ "assets/sprites/icons/artifact_nose_of_wool.webp": {
+  "copy": "assets/sprites/icons/petrified_rock_large.webp"
+ },
+ "assets/sprites/icons/artifact_paper_bag.webp": {
+  "copy": "assets/sprites/icons/petrified_rock_large.webp"
+ },
+ "assets/sprites/icons/artifact_plastic_spoon.webp": {
+  "copy": "assets/sprites/icons/petrified_rock_large.webp"
+ },
+ "assets/sprites/icons/artifact_platinumium_spork.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_platinumium_spork/artifact_platinumium_spork.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/artifact_platinumium_spork_piece1.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_platinumium_spork_piece1/artifact_platinumium_spork_piece1.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/artifact_platinumium_spork_piece2.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_platinumium_spork_piece2/artifact_platinumium_spork_piece2.swf"
+ },
+ "assets/sprites/icons/artifact_roll_of_blueprints.webp": {
+  "copy": "assets/sprites/icons/petrified_rock_large.webp"
+ },
+ "assets/sprites/icons/artifact_scarf.webp": {
+  "copy": "assets/sprites/icons/petrified_rock_large.webp"
+ },
+ "assets/sprites/icons/artifact_see_through_bottle.webp": {
+  "copy": "assets/sprites/icons/petrified_rock_large.webp"
+ },
+ "assets/sprites/icons/artifact_seed_pouch.webp": {
+  "copy": "assets/sprites/icons/petrified_rock_large.webp"
+ },
+ "assets/sprites/icons/artifact_silver_spoon.webp": {
+  "copy": "assets/sprites/icons/petrified_rock_large.webp"
+ },
+ "assets/sprites/icons/artifact_small_water_glass.webp": {
+  "copy": "assets/sprites/icons/petrified_rock_large.webp"
+ },
+ "assets/sprites/icons/artifact_sock_garters.webp": {
+  "copy": "assets/sprites/icons/petrified_rock_large.webp"
+ },
+ "assets/sprites/icons/artifact_sock_hook.webp": {
+  "copy": "assets/sprites/icons/petrified_rock_large.webp"
+ },
+ "assets/sprites/icons/artifact_three_cornered_hat.webp": {
+  "copy": "assets/sprites/icons/petrified_rock_large.webp"
+ },
+ "assets/sprites/icons/artifact_toenail_clippers.webp": {
+  "copy": "assets/sprites/icons/petrified_rock_large.webp"
+ },
+ "assets/sprites/icons/artifact_top_hat.webp": {
+  "copy": "assets/sprites/icons/petrified_rock_large.webp"
+ },
+ "assets/sprites/icons/artifact_torn_manuscript.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_torn_manuscript/artifact_torn_manuscript.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/artifact_torn_manuscript_piece1.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_torn_manuscript_piece1/artifact_torn_manuscript_piece1.swf"
+ },
+ "assets/sprites/icons/artifact_torn_manuscript_piece2.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_torn_manuscript_piece2/artifact_torn_manuscript_piece2.swf"
+ },
+ "assets/sprites/icons/artifact_torn_manuscript_piece3.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_torn_manuscript_piece3/artifact_torn_manuscript_piece3.swf"
+ },
+ "assets/sprites/icons/artifact_torn_manuscript_piece4.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_torn_manuscript_piece4/artifact_torn_manuscript_piece4.swf"
+ },
+ "assets/sprites/icons/artifact_twenty_nine_cornered_hat.webp": {
+  "copy": "assets/sprites/icons/petrified_rock_large.webp"
+ },
+ "assets/sprites/icons/artifact_wooden_apple.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_wooden_apple/artifact_wooden_apple.swf"
+ },
+ "assets/sprites/icons/artifact_wooden_apple_piece1.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_wooden_apple_piece1/artifact_wooden_apple_piece1.swf"
+ },
+ "assets/sprites/icons/artifact_wooden_apple_piece2.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_wooden_apple_piece2/artifact_wooden_apple_piece2.swf"
+ },
+ "assets/sprites/icons/artifact_wooden_apple_piece3.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_wooden_apple_piece3/artifact_wooden_apple_piece3.swf"
+ },
+ "assets/sprites/icons/artifact_wooden_apple_piece4.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/artifacts/artifact_wooden_apple_piece4/artifact_wooden_apple_piece4.swf"
+ },
+ "assets/sprites/icons/avatar_embiggenifier.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/physics/avatar_embiggenifier/avatar_embiggenifier.swf"
+ },
+ "assets/sprites/icons/awesome_pot.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/awesome_pot/awesome_pot.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/awesome_pot_broken.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/awesome_pot/awesome_pot.swf",
+  "frame": "broken_iconic"
+ },
+ "assets/sprites/icons/awesome_stew.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/awesome_stew/awesome_stew.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/bacon.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/bacon/bacon.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/bag_alchemistry_kit.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/bag_generic/bag_alchemistry_kit/bag_alchemistry_kit.swf"
+ },
+ "assets/sprites/icons/bag_bigger.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/bag_bigger/bag_bigger.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/bag_bigger_blue.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/bag_bigger/bag_bigger_blue/bag_bigger_blue.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/bag_bigger_gray.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/bag_bigger/bag_bigger_gray/bag_bigger_gray.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/bag_bigger_green.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/bag_bigger/bag_bigger_green/bag_bigger_green.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/bag_bigger_pink.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/bag_bigger/bag_bigger_pink/bag_bigger_pink.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/bag_butler.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/npc_mailbox/bag_butler/bag_butler.swf"
+ },
+ "assets/sprites/icons/bag_cubimal_case.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/bag_generic/bag_cubimal_case/bag_cubimal_case.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/bag_elemental_pouch.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/bag_generic/bag_elemental_pouch/bag_elemental_pouch.swf"
+ },
+ "assets/sprites/icons/bag_furniture_cabinet.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/bag_furniture_cabinet_base/bag_furniture_cabinet/bag_furniture_cabinet.swf"
+ },
+ "assets/sprites/icons/bag_furniture_largecabinet.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/bag_furniture_cabinet_base/bag_furniture_largecabinet/furniture_largecabinet.swf"
+ },
+ "assets/sprites/icons/bag_furniture_sdb.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/bag_furniture_sdb/bag_furniture_sdb.swf",
+  "max_diff": 0.16,
+  "pin": true
+ },
+ "assets/sprites/icons/bag_furniture_smallcabinet.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/bag_furniture_cabinet_base/bag_furniture_smallcabinet/bag_furniture_smallcabinet.swf"
+ },
+ "assets/sprites/icons/bag_furniture_wallcabinet.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/bag_furniture_cabinet_base/bag_furniture_wallcabinet/bag_furniture_wallcabinet.swf"
+ },
+ "assets/sprites/icons/bag_generic.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/bag_generic/bag_generic.swf",
+  "frame": "iconic closed"
+ },
+ "assets/sprites/icons/bag_generic_blue.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/bag_generic/bag_generic_blue/bag_generic_blue.swf",
+  "frame": "iconic closed"
+ },
+ "assets/sprites/icons/bag_generic_gray.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/bag_generic/bag_generic_gray/bag_generic_gray.swf",
+  "frame": "iconic closed"
+ },
+ "assets/sprites/icons/bag_generic_green.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/bag_generic/bag_generic_green/bag_generic_green.swf",
+  "frame": "iconic closed"
+ },
+ "assets/sprites/icons/bag_generic_pink.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/bag_generic/bag_generic_pink/bag_generic_pink.swf",
+  "frame": "iconic closed"
+ },
+ "assets/sprites/icons/bag_gift_box.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/bag_generic/bag_gift_box/bag_gift_box.swf"
+ },
+ "assets/sprites/icons/bag_gift_box_wrapped.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/bag_gift_box/bag_gift_box_wrapped/bag_gift_box_wrapped.swf"
+ },
+ "assets/sprites/icons/bag_greeter_badge.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/bag_greeter_badge/bag_greeter_badge.swf"
+ },
+ "assets/sprites/icons/bag_moving_box.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/bag_moving_box/bag_moving_box.swf"
+ },
+ "assets/sprites/icons/bag_spicerack.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/bag_generic/bag_spicerack/bag_spicerack.swf"
+ },
+ "assets/sprites/icons/bag_toolbox_chrome.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/bag_toolbox_base/bag_toolbox_chrome/bag_toolbox_chrome.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/bag_toolbox_green.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/bag_toolbox_base/bag_toolbox_green/bag_toolbox_green.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/bag_toolbox_red.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/bag_toolbox_base/bag_toolbox_red/bag_toolbox_red.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/ball.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/ball/ball.swf"
+ },
+ "assets/sprites/icons/banana.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/banana/banana.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/banana_no_names.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/banana_no_names/banana_no_names.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/barnacle.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/barnacle/barnacle.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/barnacle_talc.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/barnacle_talc/barnacle_talc.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/basic_omelet.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/basic_omelet/basic_omelet.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/beachball.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/beachball/beachball.swf"
+ },
+ "assets/sprites/icons/beaker.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/beaker/beaker.swf",
+  "frame": "iconic",
+  "refused": "the SWF's beaker is empty; the icon's liquid is picked by code",
+  "pin": true
+ },
+ "assets/sprites/icons/beam.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/beam/beam.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/bean_bean.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/beans/bean_bean/bean_bean.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/bean_bubble.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/beans/bean_bubble/bean_bubble.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/bean_egg.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/beans/bean_egg/bean_egg.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/bean_fruit.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/beans/bean_fruit/bean_fruit.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/bean_gas.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/beans/bean_gas/bean_gas.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/bean_plain.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/bean_plain/bean_plain.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/bean_seasoner.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/bean_seasoner/bean_seasoner.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/bean_spice.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/beans/bean_spice/bean_spice.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/bean_wood.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/beans/bean_wood/bean_wood.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/beer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/drink/beer/beer.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/berry_bowl.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/berry_bowl/berry_bowl.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/beryl.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/beryl/beryl.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/best_bean_dip.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/best_bean_dip/best_bean_dip.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/big_salad.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/big_salad/big_salad.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/birch_candy.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/zilloween_candy/birch_candy/birch_candy.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/birch_syrup.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/birch_syrup/birch_syrup.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/black_pepper.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/spice/black_pepper/black_pepper.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/blender.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/blender/blender.swf"
+ },
+ "assets/sprites/icons/blender_broken.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/blender/blender.swf",
+  "frame": "broken_iconic"
+ },
+ "assets/sprites/icons/blockmaker.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/blockmaker/blockmaker.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/blockmaker_chassis.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/blockmaker_chassis/blockmaker_chassis.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/blockmaker_engine.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/blockmaker_engine/blockmaker_engine.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/blockmaker_plates.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/blockmaker_plates/blockmaker_plates.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/blue_bubble.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/blue_bubble/blue_bubble.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/board.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/board/board.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/boot.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/boot/boot.swf"
+ },
+ "assets/sprites/icons/broccoli.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/broccoli/broccoli.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/bubble_and_squeak.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/bubble_and_squeak/bubble_and_squeak.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/bubble_tea.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/drink/bubble_tea/bubble_tea.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/bubble_tuner.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/bubble_tuner/bubble_tuner.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/bulb.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/bulb/bulb.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/bun.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/bun/bun.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/bunch_of_grapes.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/bunch_of_grapes/bunch_of_grapes.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/bunch_of_grapes_hell.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/bunch_of_grapes_hell/bunch_of_grapes_hell.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/butler_box.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/butler_box/butler_box.swf"
+ },
+ "assets/sprites/icons/butterfly_butter.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/butterfly_butter/butterfly_butter.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/butterfly_egg.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/butterfly_egg/butterfly_egg.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/butterfly_lotion.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/butterfly_lotion/butterfly_lotion.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/butterfly_milker.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/butterfly_milker/butterfly_milker.swf"
+ },
+ "assets/sprites/icons/butterfly_net.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/butterfly_net/butterfly_net.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/cabbage.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/cabbage/cabbage.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/camera.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/camera/camera.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/camphor.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/spice/camphor/camphor.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/card_carrying_qualification.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/card_carrying_qualification/card_carrying_qualification.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/cardamom.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/spice/cardamom/cardamom.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/carobish_treats.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/zilloween_candy/carobish_treats/carobish_treats.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/carrot.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/carrot/carrot.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/carrot_margarita.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/drink/carrot_margarita/carrot_margarita.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/caterpillar.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/inhabitants/caterpillar/caterpillar.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/cauldron.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/cauldron/cauldron.swf",
+  "max_diff": 0.15,
+  "pin": true
+ },
+ "assets/sprites/icons/cauldron_broken.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/cauldron/cauldron.swf",
+  "frame": "broken_iconic"
+ },
+ "assets/sprites/icons/cedar_plank_salmon.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/cedar_plank_salmon/cedar_plank_salmon.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/cheese.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/cheese/cheese.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/cheese_plate.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/cheese_plate/cheese_plate.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/cheese_stinky.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/cheese_stinky/cheese_stinky.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/cheese_very_stinky.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/cheese_very_stinky/cheese_very_stinky.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/cheese_very_very_stinky.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/cheese_very_very_stinky/cheese_very_very_stinky.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/cheezy_sammich.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/cheezy_sammich/cheezy_sammich.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/cheezy_sauce.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/cheezy_sauce/cheezy_sauce.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/cherry.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/cherry/cherry.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/chick.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/inhabitants/chick/chick.swf"
+ },
+ "assets/sprites/icons/chicken_egg.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/chicken_egg/chicken_egg.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/chillybusting_chili.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/chillybusting_chili/chillybusting_chili.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/choice_crudites.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/choice_crudites/choice_crudites.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/cinnamon.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/spice/cinnamon/cinnamon.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/class_axe.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/hatchet/class_axe/class_axe.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/class_axe_broken.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/hatchet/class_axe/class_axe.swf",
+  "frame": "broken_iconic"
+ },
+ "assets/sprites/icons/cloud_11_smoothie.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/drink/cloud_11_smoothie/cloud_11_smoothie.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/cloudberry.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/cloudberry/cloudberry.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/cloudberry_daiquiri.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/drink/cloudberry_daiquiri/cloudberry_daiquiri.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/cloudberry_jam.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/cloudberry_jam/cloudberry_jam.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/cocktail_shaker.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/cocktail_shaker/cocktail_shaker.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/cocktail_shaker_broken.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/cocktail_shaker/cocktail_shaker.swf",
+  "frame": "broken_iconic"
+ },
+ "assets/sprites/icons/coffee.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/drink/coffee/coffee.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/cold_taco.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/cold_taco/cold_taco.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/collectors_edition_2010_glitchmas_yeti.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/doll/collectors_edition_2010_glitchmas_yeti/collectors_edition_2010_glitchmas_yeti.swf"
+ },
+ "assets/sprites/icons/common_crudites.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/common_crudites/common_crudites.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/conch.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/conch/conch.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/conch_decoy.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/quest_items/conch_decoy/conch_decoy.swf"
+ },
+ "assets/sprites/icons/construction_tool.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/construction_tool/construction_tool.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/construction_tool_broken.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/construction_tool/construction_tool.swf",
+  "frame": "broken_iconic"
+ },
+ "assets/sprites/icons/contraband.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/contraband/contraband.swf"
+ },
+ "assets/sprites/icons/copper.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/copper/copper.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/corn.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/corn/corn.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/corn_off_the_cob.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/corn_off_the_cob/corn_off_the_cob.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/corn_syrup_squares.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/zilloween_candy/corn_syrup_squares/corn_syrup_squares.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/cornucopia_crops.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/cornucopia_crops/cornucopia_crops.swf"
+ },
+ "assets/sprites/icons/cornucopia_herbs.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/cornucopia_herbs/cornucopia_herbs.swf"
+ },
+ "assets/sprites/icons/corny_fritter.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/corny_fritter/corny_fritter.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/cosmapolitan.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/drink/cosmapolitan/cosmapolitan.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/cosmox.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/compounds/cosmox/cosmox.swf"
+ },
+ "assets/sprites/icons/crabato_juice.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/drink/crabato_juice/crabato_juice.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/crabphones.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/crabphones/crabphones.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/creamy_catsup.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/creamy_catsup/creamy_catsup.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/creamy_martini.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/drink/creamy_martini/creamy_martini.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/crown_game_lock.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/crown_game_lock/crown_game_lock.swf"
+ },
+ "assets/sprites/icons/crusher.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/crusher/crusher.swf"
+ },
+ "assets/sprites/icons/crying_gas.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/crying_gas/crying_gas.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/crystallizer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/crystallizer/crystallizer.swf",
+  "frame": "iconic",
+  "max_diff": 0.16,
+  "pin": true
+ },
+ "assets/sprites/icons/crystallizer_broken.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/crystallizer/crystallizer.swf",
+  "frame": "broken_iconic"
+ },
+ "assets/sprites/icons/cubimal_package.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/cubimal_package/cubimal_package.swf"
+ },
+ "assets/sprites/icons/cubimal_package_2.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/cubimal_package_2/cubimal_package_2.swf"
+ },
+ "assets/sprites/icons/cucumber.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/cucumber/cucumber.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/cumin.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/spice/cumin/cumin.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/cup_of_water.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/cup_of_water/cup_of_water.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/curry.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/spice/curry/curry.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/dcpu16.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/dcpu16/dcpu16.swf"
+ },
+ "assets/sprites/icons/death_to_veg.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/death_to_veg/death_to_veg.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/deluxe_sammich.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/deluxe_sammich/deluxe_sammich.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/depression_button.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/depression_button/depression_button.swf"
+ },
+ "assets/sprites/icons/desssert_rub.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/desssert_rub/desssert_rub.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/diabolic_acid.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/compounds/diabolic_acid/diabolic_acid.swf"
+ },
+ "assets/sprites/icons/dice.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/dice/dice.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/dice_12sided.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/dice_12sided/dice_12sided.swf"
+ },
+ "assets/sprites/icons/divine_crepes.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/divine_crepes/divine_crepes.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/doll_nietzsche.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/doll/doll_nietzsche/doll_nietzsche.swf"
+ },
+ "assets/sprites/icons/doll_wittgenstein.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/doll/doll_wittgenstein/doll_wittgenstein.swf"
+ },
+ "assets/sprites/icons/door_key_1.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/keys/door_key_1/door_key_1.swf"
+ },
+ "assets/sprites/icons/door_key_10.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/keys/door_key_10/door_key_10.swf"
+ },
+ "assets/sprites/icons/door_key_11.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/keys/door_key_11/door_key_11.swf"
+ },
+ "assets/sprites/icons/door_key_12.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/keys/door_key_12/door_key_12.swf"
+ },
+ "assets/sprites/icons/door_key_2.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/keys/door_key_2/door_key_2.swf"
+ },
+ "assets/sprites/icons/door_key_3.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/keys/door_key_3/door_key_3.swf"
+ },
+ "assets/sprites/icons/door_key_4.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/keys/door_key_4/door_key_4.swf"
+ },
+ "assets/sprites/icons/door_key_5.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/keys/door_key_5/door_key_5.swf"
+ },
+ "assets/sprites/icons/door_key_6.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/keys/door_key_6/door_key_6.swf"
+ },
+ "assets/sprites/icons/door_key_7.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/keys/door_key_7/door_key_7.swf"
+ },
+ "assets/sprites/icons/door_key_8.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/keys/door_key_8/door_key_8.swf"
+ },
+ "assets/sprites/icons/door_key_9.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/keys/door_key_9/door_key_9.swf"
+ },
+ "assets/sprites/icons/drink_ticket.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/drink_ticket/drink_ticket.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/dullite.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/dullite/dullite.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/dust_trap.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/dust_trap/dust_trap.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/earth.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/earth/earth.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/earthshaker.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/drink/earthshaker/earthshaker.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/egg_plain.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/egg_plain/egg_plain.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/egg_seasoner.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/egg_seasoner/egg_seasoner.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/egghunt_egg_1.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/egghunt_egg_1/egghunt_egg_1.swf"
+ },
+ "assets/sprites/icons/egghunt_egg_2.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/egghunt_egg_2/egghunt_egg_2.swf"
+ },
+ "assets/sprites/icons/egghunt_egg_3.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/egghunt_egg_3/egghunt_egg_3.swf"
+ },
+ "assets/sprites/icons/egghunt_egg_4.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/egghunt_egg_4/egghunt_egg_4.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/egghunt_egg_5.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/egghunt_egg_5/egghunt_egg_5.swf"
+ },
+ "assets/sprites/icons/eggy_scramble.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/eggy_scramble/eggy_scramble.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/element_blue.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/compounds/element_blue/element_blue.swf"
+ },
+ "assets/sprites/icons/element_green.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/compounds/element_green/element_green.swf"
+ },
+ "assets/sprites/icons/element_red.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/compounds/element_red/element_red.swf"
+ },
+ "assets/sprites/icons/element_shiny.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/compounds/element_shiny/element_shiny.swf"
+ },
+ "assets/sprites/icons/emblem_alph.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/emblem_alph/emblem_alph.swf"
+ },
+ "assets/sprites/icons/emblem_cosma.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/emblem_cosma/emblem_cosma.swf"
+ },
+ "assets/sprites/icons/emblem_friendly.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/emblem_friendly/emblem_friendly.swf"
+ },
+ "assets/sprites/icons/emblem_grendaline.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/emblem_grendaline/emblem_grendaline.swf"
+ },
+ "assets/sprites/icons/emblem_humbaba.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/emblem_humbaba/emblem_humbaba.swf"
+ },
+ "assets/sprites/icons/emblem_lem.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/emblem_lem/emblem_lem.swf"
+ },
+ "assets/sprites/icons/emblem_mab.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/emblem_mab/emblem_mab.swf"
+ },
+ "assets/sprites/icons/emblem_pot.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/emblem_pot/emblem_pot.swf"
+ },
+ "assets/sprites/icons/emblem_spriggan.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/emblem_spriggan/emblem_spriggan.swf"
+ },
+ "assets/sprites/icons/emblem_ti.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/emblem_ti/emblem_ti.swf"
+ },
+ "assets/sprites/icons/emblem_zille.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/emblem_zille/emblem_zille.swf"
+ },
+ "assets/sprites/icons/emotional_bear.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/emotional_bear/emotional_bear.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/esquibeth_button.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/wall_switch/esquibeth_button/esquibeth_button.swf"
+ },
+ "assets/sprites/icons/esquibeth_note_1.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/quest_items/esquibeth_note_1/esquibeth_note_1.swf",
+  "sprite": 5,
+  "frame": "1",
+  "refused": "the SWF draws the note larger than the icon",
+  "pin": true
+ },
+ "assets/sprites/icons/esquibeth_note_2.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/quest_items/esquibeth_note_2/esquibeth_note_2.swf",
+  "refused": "the SWF draws the note larger than the icon",
+  "pin": true
+ },
+ "assets/sprites/icons/esquibeth_note_3.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/quest_items/esquibeth_note_3/esquibeth_note_3.swf",
+  "refused": "the SWF draws the note larger than the icon",
+  "pin": true
+ },
+ "assets/sprites/icons/esquibeth_note_4.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/quest_items/esquibeth_note_4/esquibeth_note_4.swf",
+  "refused": "the SWF draws the note larger than the icon",
+  "pin": true
+ },
+ "assets/sprites/icons/esquibeth_note_5.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/quest_items/esquibeth_note_5/esquibeth_note_5.swf",
+  "refused": "the SWF draws the note larger than the icon",
+  "pin": true
+ },
+ "assets/sprites/icons/essence_of_gandlevery.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/alchemy/essence_of_gandlevery/essence_of_gandlevery.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/essence_of_hairball.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/alchemy/essence_of_hairball/essence_of_hairball.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/essence_of_purple.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/alchemy/essence_of_purple/essence_of_purple.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/essence_of_rookswort.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/alchemy/essence_of_rookswort/essence_of_rookswort.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/essence_of_rubeweed.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/alchemy/essence_of_rubeweed/essence_of_rubeweed.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/essence_of_silvertongue.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/alchemy/essence_of_silvertongue/essence_of_silvertongue.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/essence_of_yellow_crumb.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/alchemy/essence_of_yellow_crumb/essence_of_yellow_crumb.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/exotic_fruit_salad.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/exotic_fruit_salad/exotic_fruit_salad.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/exotic_juice.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/drink/exotic_juice/exotic_juice.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/expensive_grilled_cheese.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/expensive_grilled_cheese/expensive_grilled_cheese.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/extremely_hallowed_shrine_powder.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/alchemy/extremely_hallowed_shrine_powder/extremely_hallowed_shrine_powder.swf"
+ },
+ "assets/sprites/icons/face_smelter.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/drink/face_smelter/face_smelter.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/faded_heart.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/quest_items/faded_heart/faded_heart.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/fairly_hallowed_shrine_powder.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/alchemy/fairly_hallowed_shrine_powder/fairly_hallowed_shrine_powder.swf"
+ },
+ "assets/sprites/icons/fancy_pick.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/pick/fancy_pick/fancy_pick.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/fancy_pick_broken.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/pick/fancy_pick/fancy_pick.swf",
+  "frame": "broken_iconic"
+ },
+ "assets/sprites/icons/fertilidust.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/alchemy/fertilidust/fertilidust.swf"
+ },
+ "assets/sprites/icons/fertilidust_lite.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/alchemy/fertilidust_lite/fertilidust_lite.swf"
+ },
+ "assets/sprites/icons/fiber.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/fiber/strips_of_fabric.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/firefly_jar.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/firefly_jar/firefly_jar.swf",
+  "swap": {
+   "10": 8
+  }
+ },
+ "assets/sprites/icons/firefly_jar_full.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/firefly_jar/firefly_jar.swf"
+ },
+ "assets/sprites/icons/firefly_whistle.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/quest_items/firefly_whistle/firefly_whistle.swf",
+  "refused": "the frame draws more than the whistle (aspect does not match)",
+  "pin": true
+ },
+ "assets/sprites/icons/flaming_humbaba.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/drink/flaming_humbaba/flaming_humbaba.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/flour.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/flour/flour.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/flummery.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/flummery/flummery.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/focusing_orb.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/focusing_orb/focusing_orb.swf",
+  "frame": "iconic",
+  "refused": "the SWF's swirl is another frame than the icon's",
+  "pin": true
+ },
+ "assets/sprites/icons/fortifying_gruel.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/fortifying_gruel/fortifying_gruel.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/fortune.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/fortune/fortune.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/fortune_cookie.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/fortune_cookie/fortune_cookie.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/fortune_cookie_withnote.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/fortune_cookie/fortune_cookie.swf",
+  "frame": "withnote_iconic"
+ },
+ "assets/sprites/icons/fox_bait.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/fox_bait/fox_bait.swf",
+  "sprite": 10,
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/fox_brush.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/fox_brush/fox_brush.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/fox_brush_broken.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/fox_brush/fox_brush.swf",
+  "frame": "broken_iconic"
+ },
+ "assets/sprites/icons/fox_permit.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/fox_permit/fox_permit.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/fried_egg.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/fried_egg/fried_egg.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/fried_noodles.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/fried_noodles/fried_noodles.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/fried_rice.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/fried_rice/fried_rice.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/friendly_acid.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/compounds/friendly_acid/friendly_acid.swf"
+ },
+ "assets/sprites/icons/frog_in_a_hole.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/frog_in_a_hole/frog_in_a_hole.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/fruit_changing_machine.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/fruit_changing_machine/fruit_changing_machine.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/fruit_salad.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/fruit_salad/fruit_salad.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/fruity_juice.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/drink/fruity_juice/fruity_juice.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/frying_pan.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/frying_pan/frying_pan.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/frying_pan_broken.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/frying_pan/frying_pan.swf",
+  "frame": "broken_iconic"
+ },
+ "assets/sprites/icons/fuel_cell.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/fuel_cell/fuel_cell.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/fuelmaker.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/fuelmaker/fuelmaker.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/fuelmaker_case.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/fuelmaker_case/fuelmaker_case.swf"
+ },
+ "assets/sprites/icons/fuelmaker_core.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/fuelmaker_core/fuelmaker_core.swf"
+ },
+ "assets/sprites/icons/furniture_armchair.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_armchair/furniture_armchair.swf"
+ },
+ "assets/sprites/icons/furniture_armchair_seashell_pink.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_armchair/furniture_armchair_armchair_pinkseashell.swf"
+ },
+ "assets/sprites/icons/furniture_bed.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_bed/furniture_bed.swf"
+ },
+ "assets/sprites/icons/furniture_bench.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_bench/furniture_bench.swf"
+ },
+ "assets/sprites/icons/furniture_bookcase.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_bookcase/furniture_bookcase.swf"
+ },
+ "assets/sprites/icons/furniture_cabinet.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_cabinet/furniture_cabinet.swf"
+ },
+ "assets/sprites/icons/furniture_ceilingdeco.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_ceilingdeco/furniture_ceilingdeco.swf"
+ },
+ "assets/sprites/icons/furniture_ceilinglamp.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_ceilinglamp/furniture_ceilinglamp.swf"
+ },
+ "assets/sprites/icons/furniture_chair.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_chair/furniture_chair.swf"
+ },
+ "assets/sprites/icons/furniture_coffeetable.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_coffeetable/furniture_coffeetable.swf"
+ },
+ "assets/sprites/icons/furniture_counter.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_counter/furniture_counter.swf"
+ },
+ "assets/sprites/icons/furniture_desk.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_desk/furniture_desk.swf"
+ },
+ "assets/sprites/icons/furniture_fireplace.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_fireplace/furniture_fireplace_base_fireplace.swf"
+ },
+ "assets/sprites/icons/furniture_floorlamp.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_floorlamp/furniture_floorlamp.swf"
+ },
+ "assets/sprites/icons/furniture_lamp.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_lamp/furniture_lamp.swf"
+ },
+ "assets/sprites/icons/furniture_largebackfloordeco.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_largebackfloordeco/furniture_largebackfloordeco.swf"
+ },
+ "assets/sprites/icons/furniture_largefrontfloordeco.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_largefrontfloordeco/furniture_largefrontfloordeco.swf"
+ },
+ "assets/sprites/icons/furniture_largetabledeco.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_largetabledeco/furniture_largetabledeco.swf"
+ },
+ "assets/sprites/icons/furniture_largewalldeco.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_largewalldeco/furniture_largewalldeco.swf"
+ },
+ "assets/sprites/icons/furniture_largewindow.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_largewindow/furniture_largewindow.swf"
+ },
+ "assets/sprites/icons/furniture_loveseat.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_loveseat/furniture_loveseat.swf"
+ },
+ "assets/sprites/icons/furniture_painting.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_painting/furniture_painting.swf"
+ },
+ "assets/sprites/icons/furniture_roomdeco.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_roomdeco/furniture_roomdeco.swf"
+ },
+ "assets/sprites/icons/furniture_rug.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_rug/furniture_rug.swf"
+ },
+ "assets/sprites/icons/furniture_shelf.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_shelf/furniture_shelf.swf"
+ },
+ "assets/sprites/icons/furniture_sidetable.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_sidetable/furniture_sidetable.swf"
+ },
+ "assets/sprites/icons/furniture_smallbackfloordeco.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_smallbackfloordeco/furniture_smallbackfloordeco.swf"
+ },
+ "assets/sprites/icons/furniture_smallfrontfloordeco.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_smallfrontfloordeco/furniture_smallfrontfloordeco.swf"
+ },
+ "assets/sprites/icons/furniture_smalltabledeco.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_smalltabledeco/furniture_smalltabledeco.swf",
+  "max_diff": 0.2,
+  "pin": true
+ },
+ "assets/sprites/icons/furniture_smallwalldeco.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_smallwalldeco/furniture_smallwalldeco.swf"
+ },
+ "assets/sprites/icons/furniture_smallwindow.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_smallwindow/furniture_smallwindow.swf"
+ },
+ "assets/sprites/icons/furniture_snap_frame.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_snap_frame/furniture_snap_frame.swf",
+  "refused": "the icon is a blank frame the SWF does not draw the same",
+  "pin": true
+ },
+ "assets/sprites/icons/furniture_sofa.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_sofa/furniture_sofa.swf"
+ },
+ "assets/sprites/icons/furniture_stool.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_stool/furniture_stool.swf"
+ },
+ "assets/sprites/icons/furniture_table.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_table/furniture_table.swf"
+ },
+ "assets/sprites/icons/furniture_tabledeco.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_tabledeco/furniture_tabledeco.swf"
+ },
+ "assets/sprites/icons/furniture_tablelamp.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_tablelamp/furniture_tablelamp.swf"
+ },
+ "assets/sprites/icons/furniture_walldeco.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_walldeco/furniture_walldeco.swf"
+ },
+ "assets/sprites/icons/furniture_walldecor.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_walldecor/furniture_walldecor.swf"
+ },
+ "assets/sprites/icons/furniture_walllamp.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/furniture/furniture_base/furniture_walllamp/furniture_walllamp.swf"
+ },
+ "assets/sprites/icons/game_box.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/game_box/game_box.swf"
+ },
+ "assets/sprites/icons/game_crown.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/game_crown/game_crown.swf",
+  "sprite": 9,
+  "frame": "locked"
+ },
+ "assets/sprites/icons/gameshow_ticket.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/gameshow_ticket/gameshow_ticket.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/gammas_pancakes.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/gammas_pancakes/gammas_pancakes.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/gandlevery.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/herbs/gandlevery/gandlevery.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/garlic.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/spice/garlic/garlic.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/gassifier.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/gassifier/gassifier.swf"
+ },
+ "assets/sprites/icons/gem_amber.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/gem_amber/gem_amber.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/gem_diamond.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/gem_diamond/gem_diamond.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/gem_moonstone.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/gem_moonstone/gem_moonstone.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/gem_ruby.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/gem_ruby/gem_ruby.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/gem_sapphire.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/gem_sapphire/gem_sapphire.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/general_building_permit.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/general_building_permit/general_building_permit.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/general_fabric.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/general_fabric/general_fabric.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/general_vapour.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/general_vapour/general_vapour.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/ginger.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/spice/ginger/ginger.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/girder.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/girder/girder.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/glitchepoix.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/glitchepoix/glitchepoix.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/glitchmas_card.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/note/glitchmas_card/glitchmas_card.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/glitchmas_cracker.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/glitchmas_cracker/glitchmas_cracker.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/glitchmas_cracker_factoid.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/glitchmas_cracker_joke/glitchmas_cracker_factoid/glitchmas_cracker_factoid.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/glitchmas_cracker_joke.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/note/glitchmas_cracker_joke/glitchmas_cracker_joke.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/glitchmas_present.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/glitchmas_present/glitchmas_present.swf"
+ },
+ "assets/sprites/icons/gol_sign.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/sign_stake/gol_sign/gol_sign.swf"
+ },
+ "assets/sprites/icons/golgi_apparatus.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/golgi_apparatus/golgi_apparatus.swf"
+ },
+ "assets/sprites/icons/grade_aa_earth_block.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/grade_aa_earth_block/grade_aa_earth_block.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/grain.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/grain/grain.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/grain_bushel.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/grain_bushel/grain_bushel.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/grand_ol_grinder.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/ore_grinder/grand_ol_grinder/grand_ol_grinder.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/grand_ol_grinder_broken.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/ore_grinder/grand_ol_grinder/grand_ol_grinder.swf",
+  "frame": "broken_iconic"
+ },
+ "assets/sprites/icons/graveside_marker.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/graveside_marker/graveside_marker.swf"
+ },
+ "assets/sprites/icons/greasy_frybread.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/greasy_frybread/greasy_frybread.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/green.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/green/green.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/green_eggs.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/green_eggs/green_eggs.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/greeter_twig.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/greeter_twig/greeter_twig.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/grendalinunin.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/compounds/grendalinunin/grendalinunin.swf"
+ },
+ "assets/sprites/icons/grilled_cheese.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/grilled_cheese/grilled_cheese.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/groddlene.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/compounds/groddlene/groddlene.swf"
+ },
+ "assets/sprites/icons/guano.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/guano/guano.swf"
+ },
+ "assets/sprites/icons/gurly_drink.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/drink/gurly_drink/gurly_drink.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/hairball_flower.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/herbs/hairball_flower/hairball_flower.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/hard_bubble.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/hard_bubble/hard_bubble.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/hash.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/hash/hash.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/hatchet.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/hatchet/hatchet.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/hatchet_broken.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/hatchet/hatchet.swf",
+  "frame": "broken_iconic"
+ },
+ "assets/sprites/icons/hearty_groddle_sammich.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/hearty_groddle_sammich/hearty_groddle_sammich.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/hearty_omelet.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/hearty_omelet/hearty_omelet.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/heavy_gas.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/heavy_gas/heavy_gas.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/helium.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/helium/helium.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/herb_seed_gandlevery.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/seeds/herb_seed_gandlevery/seed_gandlevery.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/herb_seed_hairball_flower.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/seeds/herb_seed_hairball_flower/seed_hairball_flower.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/herb_seed_purple_flower.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/seeds/herb_seed_purple_flower/seed_purple_flower.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/herb_seed_rookswort.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/seeds/herb_seed_rookswort/seed_rookswort.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/herb_seed_rubeweed.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/seeds/herb_seed_rubeweed/seed_rubeweed.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/herb_seed_silvertongue.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/seeds/herb_seed_silvertongue/seed_silvertongue.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/herb_seed_yellow_crumb_flower.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/seeds/herb_seed_yellow_crumb_flower/seed_yellow_crumb_flower.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/heston_mash.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/heston_mash/heston_mash.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/high_class_hoe.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/hoe/high_class_hoe/high_class_hoe.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/high_class_hoe_broken.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/hoe/high_class_hoe/high_class_hoe.swf",
+  "frame": "broken_iconic"
+ },
+ "assets/sprites/icons/hoe.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/hoe/hoe.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/hoe_broken.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/hoe/hoe.swf",
+  "frame": "broken_iconic"
+ },
+ "assets/sprites/icons/hogtied_piggy.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/hogtied_piggy/hogtied_piggy.swf"
+ },
+ "assets/sprites/icons/hogtied_piggy_explorer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/inhabitants/ilmenskie_jones/hogtied_piggy_explorer.swf"
+ },
+ "assets/sprites/icons/homestreet_ticket.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/homestreet_ticket/homestreet_ticket.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/homestreet_ticket_dispenser.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/homestreet_ticket_dispenser/homestreet_ticket_dispenser.swf"
+ },
+ "assets/sprites/icons/honey.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/honey/honey.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/hooch.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/drink/hooch/hooch.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/hot_n_fizzy_sauce.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/hot_n_fizzy_sauce/hot_n_fizzy_sauce.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/hot_pepper.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/spice/hot_pepper/hot_pepper.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/hot_potatoes.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/hot_potatoes/hot_potatoes.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/hototot_rub.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/hototot_rub/hototot_rub.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/humbabol.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/compounds/humbabol/humbabol.swf"
+ },
+ "assets/sprites/icons/hungry_nachos.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/hungry_nachos/hungry_nachos.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/ice.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/ice/ice.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/ice_knob.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/harvestable_resources/ice_knob/ice_knob.swf",
+  "sprite": 253,
+  "frame": "ready",
+  "max_diff": 0.14,
+  "pin": true
+ },
+ "assets/sprites/icons/icon_alph.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/icon_alph/icon_alph.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/icon_cosma.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/icon_cosma/icon_cosma.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/icon_friendly.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/icon_friendly/icon_friendly.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/icon_grendaline.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/icon_grendaline/icon_grendaline.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/icon_humbaba.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/icon_humbaba/icon_humbaba.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/icon_lem.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/icon_lem/icon_lem.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/icon_mab.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/icon_mab/icon_mab.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/icon_pot.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/icon_pot/icon_pot.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/icon_spriggan.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/icon_spriggan/icon_spriggan.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/icon_tii.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/icon_tii/icon_tii.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/icon_zille.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/giants/icon_zille/icon_zille.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/irrigator_9000.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/watering_can/irrigator_9000/irrigator_9000.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/irrigator_9000_broken.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/watering_can/irrigator_9000/irrigator_9000.swf",
+  "frame": "broken_iconic"
+ },
+ "assets/sprites/icons/ixite.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/compounds/ixite/ixite.swf"
+ },
+ "assets/sprites/icons/ixstyle_braised_meat.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/ixstyle_braised_meat/ixstyle_braised_meat.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/jellisac.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/harvestable_resources/jellisac/jellisac.swf",
+  "sprite": 304,
+  "frame": "ready"
+ },
+ "assets/sprites/icons/jellisac_clump.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/jellisac_clump/jellisac_clump.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/juicy_carpaccio.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/juicy_carpaccio/juicy_carpaccio.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/juju_paperweight.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/juju_paperweight/juju_paperweight.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/juju_trowel.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/juju_trowel/juju_trowel.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/junked_tool_part.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/junked_tool_part/junked_tool_part.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/kind_breakfurst_burrito.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/kind_breakfurst_burrito/kind_breakfurst_burrito.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/kings_of_condiments.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/kings_of_condiments/kings_of_condiments.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/knife_and_board.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/knife_and_board/knife_and_board.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/knife_and_board_broken.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/knife_and_board/knife_and_board.swf",
+  "frame": "broken_iconic"
+ },
+ "assets/sprites/icons/krazy_salts.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/alchemy/krazy_salts/krazy_salts.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/laughing_gas.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/laughing_gas/laughing_gas.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/lazy_salad.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/lazy_salad/lazy_salad.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/legitimate_post.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/legitimate_post/legitimate_post.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/legumes_parisienne.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/legumes_parisienne/legumes_parisienne.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/lemburger.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/lemburger/lemburger.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/lemene.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/compounds/lemene/lemene.swf"
+ },
+ "assets/sprites/icons/lemon.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/lemon/lemon.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/lemon_juice.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/drink/lemon_juice/lemon_juice.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/letter_block.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/quest_items/letter_block/letter_block.swf"
+ },
+ "assets/sprites/icons/licorice.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/spice/licorice/licorice.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/limited_edition_imitation_grichmas_yeti.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/rare_items/limited_edition_imitation_grichmas_yeti/limited_edition_imitation_grichmas_yeti.swf"
+ },
+ "assets/sprites/icons/lips.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/lips/lips.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/loam.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/loam/loam.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/loomer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/loomer/loomer.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/loomer_broken.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/loomer/loomer.swf",
+  "frame": "broken_iconic"
+ },
+ "assets/sprites/icons/lotsa_lox.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/lotsa_lox/lotsa_lox.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/luxury_tortellini.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/luxury_tortellini/luxury_tortellini.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/mabbish_coffee.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/drink/mabbish_coffee/mabbish_coffee.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/mabon.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/compounds/mabon/mabon.swf"
+ },
+ "assets/sprites/icons/maburger_royale.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/maburger_royale/maburger_royale.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/machine_stand.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/machine_stand/machine_stand.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/magic_butterfly_stick.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/magic_animal_stick/magic_butterfly_stick/magic_butterfly_stick.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/magic_chicken_stick.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/magic_animal_stick/magic_chicken_stick/magic_chicken_stick.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/magic_pig_stick.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/magic_animal_stick/magic_pig_stick/magic_pig_stick.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/magic_rock.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/inhabitants/magic_rock/magic_rock.swf",
+  "sprite": 52,
+  "frame": "idle0"
+ },
+ "assets/sprites/icons/mangosteen.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/mangosteen/mangosteen.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/meat.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/meat/meat.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/meat_collector.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/meat_collector/meat_collector.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/meat_gumbo.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/meat_gumbo/meat_gumbo.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/meat_tetrazzini.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/meat_tetrazzini/meat_tetrazzini.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/mega_healthy_veggie_juice.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/drink/mega_healthy_veggie_juice/mega_healthy_veggie_juice.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/mental_abstraction.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/mental_item_base/mental_abstraction/mental_abstraction.swf"
+ },
+ "assets/sprites/icons/mental_anxiety.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/mental_item_base/mental_anxiety/mental_anxiety.swf"
+ },
+ "assets/sprites/icons/mental_apprehension.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/mental_item_base/mental_apprehension/mental_apprehension.swf"
+ },
+ "assets/sprites/icons/mental_bummer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/mental_item_base/mental_bummer/mental_bummer.swf"
+ },
+ "assets/sprites/icons/mental_concept.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/mental_item_base/mental_concept/mental_concept.swf"
+ },
+ "assets/sprites/icons/mental_consideration.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/mental_item_base/mental_consideration/mental_consideration.swf"
+ },
+ "assets/sprites/icons/mental_contemplation.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/mental_item_base/mental_contemplation/mental_contemplation.swf"
+ },
+ "assets/sprites/icons/mental_desire.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/mental_item_base/mental_desire/mental_desire.swf"
+ },
+ "assets/sprites/icons/mental_ennui.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/mental_item_base/mental_ennui/mental_ennui.swf"
+ },
+ "assets/sprites/icons/mental_feeling.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/mental_item_base/mental_feeling/mental_feeling.swf"
+ },
+ "assets/sprites/icons/mental_figment.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/mental_item_base/mental_figment/mental_figment.swf"
+ },
+ "assets/sprites/icons/mental_hope.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/mental_item_base/mental_hope/mental_hope.swf"
+ },
+ "assets/sprites/icons/mental_ideal.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/mental_item_base/mental_ideal/mental_ideal.swf"
+ },
+ "assets/sprites/icons/mental_image.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/mental_item_base/mental_image/mental_image.swf"
+ },
+ "assets/sprites/icons/mental_inkling.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/mental_item_base/mental_inkling/mental_inkling.swf"
+ },
+ "assets/sprites/icons/mental_meditation.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/mental_item_base/mental_meditation/mental_meditation.swf"
+ },
+ "assets/sprites/icons/mental_memory.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/mental_item_base/mental_memory/mental_memory.swf"
+ },
+ "assets/sprites/icons/mental_mirage.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/mental_item_base/mental_mirage/mental_mirage.swf"
+ },
+ "assets/sprites/icons/mental_musing.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/mental_item_base/mental_musing/mental_musing.swf"
+ },
+ "assets/sprites/icons/mental_notion.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/mental_item_base/mental_notion/mental_notion.swf"
+ },
+ "assets/sprites/icons/mental_perception.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/mental_item_base/mental_perception/mental_perception.swf"
+ },
+ "assets/sprites/icons/mental_reverie.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/mental_item_base/mental_reverie/mental_reverie.swf"
+ },
+ "assets/sprites/icons/mental_rumination.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/mental_item_base/mental_rumination/mental_rumination.swf"
+ },
+ "assets/sprites/icons/mental_theory.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/mental_item_base/mental_theory/mental_theory.swf"
+ },
+ "assets/sprites/icons/mental_thought.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/mental_item_base/mental_thought/mental_thought.swf"
+ },
+ "assets/sprites/icons/mental_worry.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/mental_item_base/mental_worry/mental_worry.swf"
+ },
+ "assets/sprites/icons/messy_fry_up.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/messy_fry_up/messy_fry_up.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/metal_post.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/metal_post/metal_post.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/metal_rock.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/metal_rock/metal_rock.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/metal_rod.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/metal_rod/metal_rod.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/metalmaker_mechanism.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/metalmaker_mechanism/metalmaker_mechanism.swf"
+ },
+ "assets/sprites/icons/metalmaker_tooler.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/metalmaker_tooler/metalmaker_tooler.swf"
+ },
+ "assets/sprites/icons/mexicali_eggs.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/mexicali_eggs/mexicali_eggs.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/mike_tyson_grill.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/mike_tyson_grill/mike_tyson_grill.swf",
+  "frame": 151
+ },
+ "assets/sprites/icons/mike_tyson_grill_broken.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/mike_tyson_grill/mike_tyson_grill.swf",
+  "frame": "broken_iconic"
+ },
+ "assets/sprites/icons/mild_sauce.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/mild_sauce/mild_sauce.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/milk_butterfly.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/drink/milk_butterfly/milk_butterfly.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/molybdenum.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/molybdenum/molybdenum.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/moon.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/moon/moon.swf"
+ },
+ "assets/sprites/icons/mortar_barnacle.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/harvestable_resources/mortar_barnacle/mortar_barnacle.swf",
+  "sprite": 6,
+  "frame": "ready"
+ },
+ "assets/sprites/icons/mountain_lantern.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/mountain_lantern/mountain_lantern.swf"
+ },
+ "assets/sprites/icons/mountaineering_permit.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/party_packs/party_pack/mountaineering_permit/mountaineering_permit.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/moving_quoin.webp": {
+  "by": "tools/quoin-art/page.mjs",
+  "pin": true
+ },
+ "assets/sprites/icons/mushroom.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/mushroom/mushroom.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/musicblock_b_brown_01.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/musicblocks/musicblock_b_brown_01/musicblock_b_brown_01.swf"
+ },
+ "assets/sprites/icons/musicblock_b_brown_02.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/musicblocks/musicblock_b_brown_02/musicblock_b_brown_02.swf"
+ },
+ "assets/sprites/icons/musicblock_b_brown_03.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/musicblocks/musicblock_b_brown_03/musicblock_b_brown_03.swf"
+ },
+ "assets/sprites/icons/musicblock_b_brown_04.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/musicblocks/musicblock_b_brown_04/musicblock_b_brown_04.swf"
+ },
+ "assets/sprites/icons/musicblock_b_brown_05.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/musicblocks/musicblock_b_brown_05/musicblock_b_brown_05.swf"
+ },
+ "assets/sprites/icons/musicblock_d_blue_01.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/musicblocks/musicblock_d_blue_01/musicblock_d_blue_01.swf"
+ },
+ "assets/sprites/icons/musicblock_d_blue_02.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/musicblocks/musicblock_d_blue_02/musicblock_d_blue_02.swf"
+ },
+ "assets/sprites/icons/musicblock_d_blue_03.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/musicblocks/musicblock_d_blue_03/musicblock_d_blue_03.swf"
+ },
+ "assets/sprites/icons/musicblock_d_blue_04.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/musicblocks/musicblock_d_blue_04/musicblock_d_blue_04.swf"
+ },
+ "assets/sprites/icons/musicblock_d_blue_05.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/musicblocks/musicblock_d_blue_05/musicblock_d_blue_05.swf"
+ },
+ "assets/sprites/icons/musicblock_d_green_01.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/musicblocks/musicblock_d_green_01/musicblock_d_green_01.swf"
+ },
+ "assets/sprites/icons/musicblock_d_green_02.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/musicblocks/musicblock_d_green_02/musicblock_d_green_02.swf"
+ },
+ "assets/sprites/icons/musicblock_d_green_03.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/musicblocks/musicblock_d_green_03/musicblock_d_green_03.swf"
+ },
+ "assets/sprites/icons/musicblock_d_green_04.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/musicblocks/musicblock_d_green_04/musicblock_d_green_04.swf"
+ },
+ "assets/sprites/icons/musicblock_d_green_05.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/musicblocks/musicblock_d_green_05/musicblock_d_green_05.swf"
+ },
+ "assets/sprites/icons/musicblock_d_red_01.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/musicblocks/musicblock_d_red_01/musicblock_d_red_01.swf"
+ },
+ "assets/sprites/icons/musicblock_d_red_02.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/musicblocks/musicblock_d_red_02/musicblock_d_red_02.swf"
+ },
+ "assets/sprites/icons/musicblock_d_red_03.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/musicblocks/musicblock_d_red_03/musicblock_d_red_03.swf"
+ },
+ "assets/sprites/icons/musicblock_d_red_04.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/musicblocks/musicblock_d_red_04/musicblock_d_red_04.swf"
+ },
+ "assets/sprites/icons/musicblock_d_red_05.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/musicblocks/musicblock_d_red_05/musicblock_d_red_05.swf"
+ },
+ "assets/sprites/icons/musicblock_goodnight_groddle.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/musicblocks/musicblock_goodnight_groddle/musicblock_goodnight_groddle.swf"
+ },
+ "assets/sprites/icons/musicblock_sb_secret_01.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/musicblocks/musicblock_sb_secret_01/musicblock_sb_secret_01.swf"
+ },
+ "assets/sprites/icons/musicblock_trumpets.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/musicblocks/musicblock_trumpets/musicblock_trumpets.swf"
+ },
+ "assets/sprites/icons/musicblock_x_shiny_01.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/musicblocks/musicblock_x_shiny_01/musicblock_x_shiny_01.swf"
+ },
+ "assets/sprites/icons/musicblock_x_shiny_02.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/musicblocks/musicblock_x_shiny_02/musicblock_x_shiny_02.swf"
+ },
+ "assets/sprites/icons/musicblock_x_shiny_03.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/musicblocks/musicblock_x_shiny_03/musicblock_x_shiny_03.swf"
+ },
+ "assets/sprites/icons/musicblock_x_shiny_04.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/musicblocks/musicblock_x_shiny_04/musicblock_x_shiny_04.swf"
+ },
+ "assets/sprites/icons/musicblock_x_shiny_05.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/musicblocks/musicblock_x_shiny_05/musicblock_x_shiny_05.swf"
+ },
+ "assets/sprites/icons/mustard.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/spice/mustard/mustard.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/naraka_flame_rub.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/naraka_flame_rub/naraka_flame_rub.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/no_no_powder.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/alchemy/no_no_powder/no_no_powder.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/note.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/note/note.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/note_hint.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/note/note_hint/note_hint.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/note_manor_mystery.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/note/note_manor_mystery/note_manor_mystery.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/npc_batterfly.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/inhabitants/batterfly/npc_batterfly.swf"
+ },
+ "assets/sprites/icons/npc_cactus.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/inhabitants/cactus/npc_cactus.swf",
+  "sprite": 52,
+  "frame": "idle"
+ },
+ "assets/sprites/icons/npc_crafty_bot.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/inhabitants/craftybot/npc_crafty_bot.swf"
+ },
+ "assets/sprites/icons/npc_cubimal_batterfly.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/npc_cubimal_batterfly/npc_cubimal_batterfly.swf"
+ },
+ "assets/sprites/icons/npc_cubimal_bureaucrat.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/npc_cubimal_bureaucrat/npc_cubimal_bureaucrat.swf"
+ },
+ "assets/sprites/icons/npc_cubimal_butler.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/npc_cubimal_butler/npc_cubimal_butler.swf"
+ },
+ "assets/sprites/icons/npc_cubimal_butterfly.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/npc_cubimal_butterfly/npc_cubimal_butterfly.swf"
+ },
+ "assets/sprites/icons/npc_cubimal_cactus.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/npc_cubimal_cactus/npc_cubimal_cactus.swf"
+ },
+ "assets/sprites/icons/npc_cubimal_chick.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/npc_cubimal_chick/npc_cubimal_chick.swf"
+ },
+ "assets/sprites/icons/npc_cubimal_crab.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/npc_cubimal_crab/npc_cubimal_crab.swf"
+ },
+ "assets/sprites/icons/npc_cubimal_craftybot.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/npc_cubimal_craftybot/npc_cubimal_craftybot.swf"
+ },
+ "assets/sprites/icons/npc_cubimal_deimaginator.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/npc_cubimal_deimaginator/npc_cubimal_deimaginator.swf"
+ },
+ "assets/sprites/icons/npc_cubimal_dustbunny.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/npc_cubimal_dustbunny/npc_cubimal_dustbunny.swf"
+ },
+ "assets/sprites/icons/npc_cubimal_emobear.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/npc_cubimal_emobear/npc_cubimal_emobear.swf"
+ },
+ "assets/sprites/icons/npc_cubimal_firebogstreetspirit.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/npc_cubimal_firebogstreetspirit/npc_cubimal_firebogstreetspirit.swf"
+ },
+ "assets/sprites/icons/npc_cubimal_firefly.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/npc_cubimal_firefly/npc_cubimal_firefly.swf"
+ },
+ "assets/sprites/icons/npc_cubimal_fox.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/npc_cubimal_fox/npc_cubimal_fox.swf"
+ },
+ "assets/sprites/icons/npc_cubimal_foxranger.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/npc_cubimal_foxranger/npc_cubimal_foxranger.swf"
+ },
+ "assets/sprites/icons/npc_cubimal_frog.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/npc_cubimal_frog/npc_cubimal_frog.swf"
+ },
+ "assets/sprites/icons/npc_cubimal_gardeningtoolsvendor.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/npc_cubimal_gardeningtoolsvendor/npc_cubimal_gardeningtoolsvendor.swf"
+ },
+ "assets/sprites/icons/npc_cubimal_gnome.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/npc_cubimal_gnome/npc_cubimal_gnome.swf"
+ },
+ "assets/sprites/icons/npc_cubimal_greeterbot.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/npc_cubimal_greeterbot/npc_cubimal_greeterbot.swf"
+ },
+ "assets/sprites/icons/npc_cubimal_groddlestreetspirit.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/npc_cubimal_groddlestreetspirit/npc_cubimal_groddlestreetspirit.swf"
+ },
+ "assets/sprites/icons/npc_cubimal_gwendolyn.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/npc_cubimal_gwendolyn/npc_cubimal_gwendolyn.swf"
+ },
+ "assets/sprites/icons/npc_cubimal_helga.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/npc_cubimal_helga/npc_cubimal_helga.swf"
+ },
+ "assets/sprites/icons/npc_cubimal_hellbartender.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/npc_cubimal_hellbartender/npc_cubimal_hellbartender.swf"
+ },
+ "assets/sprites/icons/npc_cubimal_ilmenskiejones.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/npc_cubimal_ilmenskiejones/npc_cubimal_ilmenskiejones.swf"
+ },
+ "assets/sprites/icons/npc_cubimal_juju.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/npc_cubimal_juju/npc_cubimal_juju.swf"
+ },
+ "assets/sprites/icons/npc_cubimal_magicrock.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/npc_cubimal_magicrock/npc_cubimal_magicrock.swf"
+ },
+ "assets/sprites/icons/npc_cubimal_maintenancebot.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/npc_cubimal_maintenancebot/npc_cubimal_maintenancebot.swf"
+ },
+ "assets/sprites/icons/npc_cubimal_mealvendor.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/npc_cubimal_mealvendor/npc_cubimal_mealvendor.swf"
+ },
+ "assets/sprites/icons/npc_cubimal_phantom.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/npc_cubimal_phantom/npc_cubimal_phantom.swf"
+ },
+ "assets/sprites/icons/npc_cubimal_piggy.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/npc_cubimal_piggy/npc_cubimal_piggy.swf"
+ },
+ "assets/sprites/icons/npc_cubimal_rook.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/npc_cubimal_rook/npc_cubimal_rook.swf"
+ },
+ "assets/sprites/icons/npc_cubimal_rube.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/npc_cubimal_rube/npc_cubimal_rube.swf"
+ },
+ "assets/sprites/icons/npc_cubimal_scionofpurple.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/npc_cubimal_scionofpurple/npc_cubimal_scionofpurple.swf"
+ },
+ "assets/sprites/icons/npc_cubimal_senorfunpickle.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/npc_cubimal_senorfunpickle/npc_cubimal_senorfunpickle.swf"
+ },
+ "assets/sprites/icons/npc_cubimal_sloth.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/npc_cubimal_sloth/npc_cubimal_sloth.swf"
+ },
+ "assets/sprites/icons/npc_cubimal_smuggler.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/npc_cubimal_smuggler/npc_cubimal_smuggler.swf"
+ },
+ "assets/sprites/icons/npc_cubimal_snoconevendor.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/npc_cubimal_snoconevendor/npc_cubimal_snoconevendor.swf"
+ },
+ "assets/sprites/icons/npc_cubimal_squid.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/npc_cubimal_squid/npc_cubimal_squid.swf"
+ },
+ "assets/sprites/icons/npc_cubimal_toolvendor.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/npc_cubimal_toolvendor/npc_cubimal_toolvendor.swf"
+ },
+ "assets/sprites/icons/npc_cubimal_trisor.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/npc_cubimal_trisor/npc_cubimal_trisor.swf"
+ },
+ "assets/sprites/icons/npc_cubimal_unclefriendly.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/npc_cubimal_unclefriendly/npc_cubimal_unclefriendly.swf"
+ },
+ "assets/sprites/icons/npc_cubimal_uraliastreetspirit.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/npc_cubimal_uraliastreetspirit/npc_cubimal_uraliastreetspirit.swf"
+ },
+ "assets/sprites/icons/npc_cubimal_yeti.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/cubimals/npc_cubimal_yeti/npc_cubimal_yeti.swf"
+ },
+ "assets/sprites/icons/npc_deimaginator.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/inhabitants/deimaginator/npc_deimaginator.swf"
+ },
+ "assets/sprites/icons/npc_fox.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/inhabitants/fox/npc_fox.swf",
+  "sprite": 151,
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/npc_kitty_chicken.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/inhabitants/heli_kitty/npc_kitty_chicken.swf",
+  "sprite": 114,
+  "frame": "3iconic",
+  "flop": true
+ },
+ "assets/sprites/icons/npc_rube.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/inhabitants/rube/npc_rube.swf"
+ },
+ "assets/sprites/icons/npc_smuggler.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/inhabitants/smuggler/npc_smuggler.swf",
+  "sprite": 82,
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/nutmeg.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/spice/nutmeg/nutmeg.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/oats.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/oats/oats.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/oaty_cake.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/oaty_cake/oaty_cake.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/obvious_panini.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/obvious_panini/obvious_panini.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/oily_dressing.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/oily_dressing/oily_dressing.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/older_spice.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/spice/older_spice/older_spice.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/olive_oil.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/olive_oil/olive_oil.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/onion.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/onion/onion.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/onion_rings.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/onion_rings/onion_rings.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/onion_sauce.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/onion_sauce/onion_sauce.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/orange.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/orange/orange.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/orange_juice.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/drink/orange_juice/orange_juice.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/ore_grinder.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/ore_grinder/ore_grinder.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/ore_grinder_broken.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/ore_grinder/ore_grinder.swf",
+  "frame": "broken_iconic"
+ },
+ "assets/sprites/icons/pad_tii.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/pad_tii/pad_tii.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/paper.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/paper/paper.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/papl_upside_down_pizza.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/papl_upside_down_pizza/papl_upside_down_pizza.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/paradise_ticket_abysmal_thrill.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/paradise_ticket/paradise_ticket_abysmal_thrill/paradise_ticket_abysmal_thrill.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/paradise_ticket_aerial_boost.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/paradise_ticket/paradise_ticket_aerial_boost/paradise_ticket_aerial_boost.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/paradise_ticket_arbor_hollow.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/paradise_ticket/paradise_ticket_arbor_hollow/paradise_ticket_arbor_hollow.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/paradise_ticket_beam_me_down.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/paradise_ticket/paradise_ticket_beam_me_down/paradise_ticket_beam_me_down.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/paradise_ticket_bippity_bop.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/paradise_ticket/paradise_ticket_bippity_bop/paradise_ticket_bippity_bop.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/paradise_ticket_cloud_flight.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/paradise_ticket/paradise_ticket_cloud_flight/paradise_ticket_cloud_flight.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/paradise_ticket_cloud_rings.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/paradise_ticket/paradise_ticket_cloud_rings/paradise_ticket_cloud_rings.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/paradise_ticket_drafty_uplift.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/paradise_ticket/paradise_ticket_drafty_uplift/paradise_ticket_drafty_uplift.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/paradise_ticket_mountain_scaling.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/paradise_ticket/paradise_ticket_mountain_scaling/paradise_ticket_mountain_scaling.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/paradise_ticket_radial_heights.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/paradise_ticket/paradise_ticket_radial_heights/paradise_ticket_radial_heights.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/paradise_ticket_sky_plunge.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/paradise_ticket/paradise_ticket_sky_plunge/paradise_ticket_sky_plunge.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/paradise_ticket_slip_n_slide.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/paradise_ticket/paradise_ticket_slip_n_slide/paradise_ticket_slip_n_slide.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/paradise_ticket_starlit_night.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/paradise_ticket/paradise_ticket_starlit_night/paradise_ticket_starlit_night.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/paradise_ticket_updraft.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/paradise_ticket/paradise_ticket_updraft/paradise_ticket_updraft.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/pareidolic_cosma_toast.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/rare_items/pareidolic_cosma_toast/pareidolic_cosma_toast.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/parsnip.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/parsnip/parsnip.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/party_atm.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/npc/party_atm/party_atm.swf"
+ },
+ "assets/sprites/icons/party_pack_aquarius.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/party_packs/party_pack/party_pack_aquarius/party_pack_aquarius.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/party_pack_double_rainbow.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/party_packs/party_pack/party_pack_double_rainbow/party_pack_double_rainbow.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/party_pack_mazzala_gala.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/party_packs/party_pack/party_pack_mazzala_gala/party_pack_mazzala_gala.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/party_pack_monster_bash.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/party_packs/party_pack/party_pack_monster_bash/party_pack_monster_bash.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/party_pack_nylon_phool.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/party_packs/party_pack/party_pack_nylon_phool/party_pack_nylon_phool.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/party_pack_pitchen_lilliputt.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/party_packs/party_pack/party_pack_pitchen_lilliputt/party_pack_pitchen_lilliputt.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/party_pack_taster_aquarius.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/party_packs/party_pack_aquarius/party_pack_taster_aquarius/party_pack_taster_aquarius.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/party_pack_taster_double_rainbow.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/party_packs/party_pack_double_rainbow/party_pack_taster_double_rainbow/party_pack_taster_double_rainbow.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/party_pack_taster_mazzala_gala.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/party_packs/party_pack_mazzala_gala/party_pack_taster_mazzala_gala/party_pack_taster_mazzala_gala.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/party_pack_taster_nylon_phool.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/party_packs/party_pack_nylon_phool/party_pack_taster_nylon_phool/party_pack_taster_nylon_phool.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/party_pack_taster_pitchen_lilliputt.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/party_packs/party_pack_pitchen_lilliputt/party_pack_taster_pitchen_lilliputt/party_pack_taster_pitchen_lilliputt.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/party_pack_taster_toxic_moon.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/party_packs/party_pack_toxic_moon/party_pack_taster_toxic_moon/party_pack_taster_toxic_moon.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/party_pack_taster_val_holla.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/party_packs/party_pack_val_holla/party_pack_taster_val_holla/party_pack_taster_val_holla.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/party_pack_taster_winter_wingding.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/party_packs/party_pack/party_pack_taster_winter_wingding/party_pack_taster_winter_wingding.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/party_pack_toxic_moon.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/party_packs/party_pack/party_pack_toxic_moon/party_pack_toxic_moon.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/party_pack_val_holla.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/party_packs/party_pack/party_pack_val_holla/party_pack_val_holla.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/party_pack_winter_wingding.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/party_packs/party_pack/party_pack_winter_wingding/party_pack_winter_wingding.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/patch.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/harvestable_resources/patch/patch.swf"
+ },
+ "assets/sprites/icons/patch_dark.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/harvestable_resources/patch/patch_dark/patch_dark.swf"
+ },
+ "assets/sprites/icons/patch_seedling.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/harvestable_resources/patch_seedling/patch_seedling.swf"
+ },
+ "assets/sprites/icons/peat.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/peat/peat.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/pepitas.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/pepitas/pepitas.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/petrified_rock_large.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/petrified_rock_base/petrified_rock_large/petrified_rock_large.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/petrified_rock_medium.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/petrified_rock_base/petrified_rock_medium/petrified_rock_medium.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/petrified_rock_small.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/petrified_rock_base/petrified_rock_small/petrified_rock_small.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/phantom_glitch.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/quest_items/phantom_glitch/phantom_glitch.swf"
+ },
+ "assets/sprites/icons/pi.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/pi/pi.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/pick.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/pick/pick.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/pick_broken.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/pick/pick.swf",
+  "frame": "broken_iconic"
+ },
+ "assets/sprites/icons/pickle.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/pickle/pickle.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/pig_bait.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/pig_bait/pig_bait.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/piggy_egg.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/piggy_egg/piggy_egg.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/piggy_feeder.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/piggy_feeder/piggy_feeder.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/piglet.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/inhabitants/piglet/piglet.swf"
+ },
+ "assets/sprites/icons/pile_of_currants.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/pile_of_currants/pile_of_currants.swf"
+ },
+ "assets/sprites/icons/pinch_of_salt.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/spice/pinch_of_salt/pinch_of_salt.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/pineapple.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/pineapple/pineapple.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/plain_bubble.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/plain_bubble/plain_bubble.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/plain_crystal.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/plain_crystal/plain_crystal.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/plain_metal.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/plain_metal/plain_metal.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/plain_noodles.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/plain_noodles/plain_noodles.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/plank.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/plank/plank.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/plate_of_beans.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/plate_of_beans/plate_of_beans.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/play_cube.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/play_cube/play_cube.swf"
+ },
+ "assets/sprites/icons/plop.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/plop/plop.swf"
+ },
+ "assets/sprites/icons/plum.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/plum/plum.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/potato.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/potato/potato.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/potato_patty.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/potato_patty/potato_patty.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/potcorn.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/potcorn/potcorn.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/potians_feast.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/potians_feast/potians_feast.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/potion_amorous_philtre.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/alchemy/potion_amorous_philtre/potion_amorous_philtre.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/potion_ancestral_spirits.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/alchemy/potion_ancestral_spirits/potion_ancestral_spirits.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/potion_animal_youth.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/alchemy/potion_animal_youth/potion_animal_youth.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/potion_avatar_large.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/alchemy/potion_avatar_large/potion_avatar_large.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/potion_avatar_small.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/alchemy/potion_avatar_small/potion_avatar_small.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/potion_charades.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/alchemy/potion_charades/potion_charades.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/potion_chris.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/alchemy/potion_chris/potion_chris.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/potion_draught_of_giant_amicability.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/alchemy/potion_draught_of_giant_amicability/potion_draught_of_giant_amicability.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/potion_elixir_of_avarice.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/alchemy/potion_elixir_of_avarice/potion_elixir_of_avarice.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/potion_favor.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/alchemy/potion_favor/potion_favor.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/potion_garden_clear.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/alchemy/potion_garden_clear/potion_garden_clear.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/potion_garden_fertilize.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/alchemy/potion_garden_fertilize/potion_garden_fertilize.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/potion_garden_harvest.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/alchemy/potion_garden_harvest/potion_garden_harvest.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/potion_garden_plant.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/alchemy/potion_garden_plant/potion_garden_plant.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/potion_garden_water.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/alchemy/potion_garden_water/potion_garden_water.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/potion_keycutter_tonic.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/alchemy/potion_keycutter_tonic/potion_keycutter_tonic.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/potion_rainbow_juice.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/alchemy/potion_rainbow_juice/potion_rainbow_juice.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/potion_rook_balm.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/alchemy/potion_rook_balm/potion_rook_balm.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/potion_trantsformation_fluid.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/alchemy/potion_trantsformation_fluid/potion_trantsformation_fluid.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/potion_tree_poison.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/alchemy/potion_tree_poison/potion_tree_poison.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/potion_tree_poison_antidote.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/alchemy/potion_tree_poison_antidote/potion_tree_poison_antidote.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/potoxin.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/compounds/potoxin/potoxin.swf"
+ },
+ "assets/sprites/icons/pottine.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/pottine/pottine.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/powder_of_mild_fecundity.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/alchemy/powder_of_mild_fecundity/powder_of_mild_fecundity.swf"
+ },
+ "assets/sprites/icons/powder_of_startling_fecundity.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/alchemy/powder_of_startling_fecundity/powder_of_startling_fecundity.swf"
+ },
+ "assets/sprites/icons/precious_potato_salad.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/precious_potato_salad/precious_potato_salad.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/proper_rice.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/proper_rice/proper_rice.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/proto_dullite_rock.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/proto/proto_dullite_rock/proto_dullite_rock.swf"
+ },
+ "assets/sprites/icons/proto_patch.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/proto/proto_patch/proto_patch.swf"
+ },
+ "assets/sprites/icons/proto_sparkly_rock.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/proto/proto_sparkly_rock/proto_sparkly_rock.swf"
+ },
+ "assets/sprites/icons/pumpkin.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/pumpkin/pumpkin.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/pumpkin_ale.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/drink/pumpkin_ale/pumpkin_ale.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/pumpkin_carved_1.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/carved_pumpkins/pumpkin_carved_1/pumpkin_carved_1.swf"
+ },
+ "assets/sprites/icons/pumpkin_carved_2.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/carved_pumpkins/pumpkin_carved_2/pumpkin_carved_2.swf"
+ },
+ "assets/sprites/icons/pumpkin_carved_3.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/carved_pumpkins/pumpkin_carved_3/pumpkin_carved_3.swf"
+ },
+ "assets/sprites/icons/pumpkin_carved_4.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/carved_pumpkins/pumpkin_carved_4/pumpkin_carved_4.swf"
+ },
+ "assets/sprites/icons/pumpkin_carved_5.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/carved_pumpkins/pumpkin_carved_5/pumpkin_carved_5.swf"
+ },
+ "assets/sprites/icons/pumpkin_lit_1.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/carved_pumpkins/pumpkin_lit_1/pumpkin_lit_1.swf"
+ },
+ "assets/sprites/icons/pumpkin_lit_2.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/carved_pumpkins/pumpkin_lit_2/pumpkin_lit_2.swf"
+ },
+ "assets/sprites/icons/pumpkin_lit_3.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/carved_pumpkins/pumpkin_lit_3/pumpkin_lit_3.swf"
+ },
+ "assets/sprites/icons/pumpkin_lit_4.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/carved_pumpkins/pumpkin_lit_4/pumpkin_lit_4.swf"
+ },
+ "assets/sprites/icons/pumpkin_lit_5.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/carved_pumpkins/pumpkin_lit_5/pumpkin_lit_5.swf"
+ },
+ "assets/sprites/icons/pumpkin_pie.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/pumpkin_pie/pumpkin_pie.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/pungent_sunrise.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/drink/pungent_sunrise/pungent_sunrise.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/purple_flower.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/herbs/purple_flower/purple_flower.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/quill.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/quill/quill.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/quoin.webp": {
+  "by": "tools/quoin-art/page.mjs",
+  "pin": true
+ },
+ "assets/sprites/icons/race_ticket.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/race_ticket/race_ticket.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/race_ticket_amazing_race.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/race_ticket/race_ticket_amazing_race.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/race_ticket_canyon_run.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/race_ticket/race_ticket_canyon_run.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/race_ticket_cloudhopolis.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/race_ticket/race_ticket_cloudhopolis.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/race_ticket_crystal_climb.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/race_ticket/race_ticket_crystal_climb.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/race_ticket_dispenser.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/race_ticket_dispenser/race_ticket_dispenser.swf"
+ },
+ "assets/sprites/icons/race_ticket_grab_em_good.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/race_ticket/race_ticket_grab_em_good.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/race_ticket_hogtie_piggy.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/race_ticket/race_ticket_hogtie_piggy.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/race_ticket_it_game.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/race_ticket/race_ticket_it_game.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/race_ticket_lava_leap.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/race_ticket/race_ticket_lava_leap.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/race_ticket_space_race.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/race_ticket/race_ticket_space_race.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/race_ticket_star_sprint.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/race_ticket/race_ticket_star_sprint.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/race_ticket_time_warp.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/race_ticket/race_ticket_time_warp.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/random_kindness.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/random_kindness/random_kindness.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/red.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/red/red.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/rice.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/rice/rice.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/rich_tagine.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/rich_tagine/rich_tagine.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/rock_beryl_1.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/harvestable_resources/rock_beryl/rock_beryl_1/rock_beryl_1.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/rock_beryl_2.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/harvestable_resources/rock_beryl/rock_beryl_2/rock_beryl_2.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/rock_dullite_1.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/harvestable_resources/rock_dullite/rock_dullite_1/rock_dullite_1.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/rock_dullite_2.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/harvestable_resources/rock_dullite/rock_dullite_2/rock_dullite_2.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/rock_metal_1.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/harvestable_resources/rock_metal/rock_metal_1/rock_metal_1.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/rock_sparkly_1.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/harvestable_resources/rock_sparkly/rock_sparkly_1/rock_sparkly_1.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/rook_hall_speaker.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/quest_items/rook_hall_speaker/rook_hall_speaker.swf"
+ },
+ "assets/sprites/icons/rookswort.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/herbs/rookswort/rookswort.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/roux.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/roux/roux.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/rube_potato.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/rare_items/rube_potato/rube_potato.swf"
+ },
+ "assets/sprites/icons/rubemycin.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/compounds/rubemycin/rubemycin.swf"
+ },
+ "assets/sprites/icons/rubeweed.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/herbs/rubeweed/rubeweed.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/saffron.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/spice/saffron/saffron.swf",
+  "frame": "iconic",
+  "max_diff": 0.16,
+  "pin": true
+ },
+ "assets/sprites/icons/salmon.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/salmon/salmon.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/salmon_jaella.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/salmon_jaella/salmon_jaella.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/sammich.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/sammich/sammich.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/saucepan.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/saucepan/saucepan.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/saucepan_broken.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/saucepan/saucepan.swf",
+  "frame": "broken_iconic"
+ },
+ "assets/sprites/icons/savory_smoothie.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/drink/savory_smoothie/savory_smoothie.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/scraper.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/scraper/scraper.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/scraper_broken.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/scraper/scraper.swf",
+  "frame": "broken_iconic"
+ },
+ "assets/sprites/icons/scrumptious_frittata.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/scrumptious_frittata/scrumptious_frittata.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/secret_sauce.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/secret_sauce/secret_sauce.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/seed_broccoli.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/seeds/seed_broccoli/seed_broccoli.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/seed_cabbage.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/seeds/seed_cabbage/seed_cabbage.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/seed_carrot.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/seeds/seed_carrot/seed_carrot.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/seed_corn.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/seeds/seed_corn/seed_corn.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/seed_cucumber.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/seeds/seed_cucumber/seed_cucumber.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/seed_onion.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/seeds/seed_onion/seed_onion.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/seed_parsnip.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/seeds/seed_parsnip/seed_parsnip.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/seed_potato.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/seeds/seed_potato/seed_potato.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/seed_pumpkin.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/seeds/seed_pumpkin/seed_pumpkin.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/seed_rice.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/seeds/seed_rice/seed_rice.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/seed_spinach.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/seeds/seed_spinach/seed_spinach.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/seed_strawberry.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/seeds/seed_strawberry/seed_strawberry.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/seed_tomato.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/seeds/seed_tomato/seed_tomato.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/seed_zucchini.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/seeds/seed_zucchini/seed_zucchini.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/sesame_oil.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/sesame_oil/sesame_oil.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/shovel.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/shovel/shovel.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/shovel_broken.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/shovel/shovel.swf",
+  "frame": "broken_iconic"
+ },
+ "assets/sprites/icons/signpost_base.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/signpost_base/signpost_base.swf"
+ },
+ "assets/sprites/icons/signpost_permit.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/signpost_permit/signpost_permit.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/silvertongue.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/herbs/silvertongue/silvertongue.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/simple_bbq.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/simple_bbq/simple_bbq.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/simple_slaw.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/simple_slaw/simple_slaw.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/slow_gin_fizz.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/drink/slow_gin_fizz/slow_gin_fizz.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/small_worthless.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/small_worthless/small_worthless.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/smelter.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/smelter/smelter.swf"
+ },
+ "assets/sprites/icons/smelter_broken.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/smelter/smelter.swf",
+  "frame": "broken_iconic"
+ },
+ "assets/sprites/icons/snack_pack.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/snack_pack/snack_pack.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/snail.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/snail/snail.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/sneezing_powder.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/alchemy/sneezing_powder/sneezing_powder.swf"
+ },
+ "assets/sprites/icons/sno_cone_blue.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/sno_cone_blue/sno_cone_blue.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/sno_cone_green.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/sno_cone_green/sno_cone_green.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/sno_cone_orange.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/sno_cone_orange/sno_cone_orange.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/sno_cone_purple.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/sno_cone_purple/sno_cone_purple.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/sno_cone_rainbow.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/sno_cone_rainbow/sno_cone_rainbow.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/sno_cone_red.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/sno_cone_red/sno_cone_red.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/sparkle_powder.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/alchemy/sparkle_powder/sparkle_powder.swf"
+ },
+ "assets/sprites/icons/sparkly.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/sparkly/sparkly.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/special_item_that_only_beta_testers_get.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/special_item_that_only_beta_testers_get/special_item_that_only_beta_testers_get.swf",
+  "sprite": 4,
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/spice_mill.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/spice_mill/spice_mill.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/spicy_grog.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/drink/spicy_grog/spicy_grog.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/spicy_quesadilla.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/spicy_quesadilla/spicy_quesadilla.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/spinach.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/spinach/spinach.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/spinach_salad.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/spinach_salad/spinach_salad.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/spindle.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/spindle/spindle.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/spindle_broken.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/spindle/spindle.swf",
+  "frame": "broken_iconic"
+ },
+ "assets/sprites/icons/splendid_spindle.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/spindle/splendid_spindle/splendid_spindle.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/splendid_spindle_broken.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/spindle/splendid_spindle/splendid_spindle.swf",
+  "frame": "broken_iconic"
+ },
+ "assets/sprites/icons/spriggase.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/compounds/spriggase/spriggase.swf"
+ },
+ "assets/sprites/icons/stock_sauce.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/stock_sauce/stock_sauce.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/stoot_barfield_pullstring_doll.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/rare_items/stoot_barfield_pullstring_doll/stoot_barfield_pullstring_doll.swf"
+ },
+ "assets/sprites/icons/strawberry.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/strawberry/strawberry.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/street_spirit_zutto.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/inhabitants/street_spirit_zutto/street_spirit_zutto.swf"
+ },
+ "assets/sprites/icons/string.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/string/string.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/subway_gate.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/subway_gate/subway_gate.swf"
+ },
+ "assets/sprites/icons/super_scraper.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/scraper/super_scraper/super_scraper.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/super_scraper_broken.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/scraper/super_scraper/super_scraper.swf",
+  "frame": "broken_iconic"
+ },
+ "assets/sprites/icons/super_veggie_kebabs.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/super_veggie_kebabs/super_veggie_kebabs.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/swank_zucchini_loaf.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/swank_zucchini_loaf/swank_zucchini_loaf.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/sweet_n_sour_sauce.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/sweet_n_sour_sauce/sweet_n_sour_sauce.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/swf_1.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/swf_1/swf_1.swf"
+ },
+ "assets/sprites/icons/swf_2.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/swf_2/swf_2.swf"
+ },
+ "assets/sprites/icons/swf_3.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/swf_3/swf_3.swf"
+ },
+ "assets/sprites/icons/swing_batter.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/swing_batter/swing_batter.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/tangy_noodles.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/tangy_noodles/tangy_noodles.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/tangy_sauce.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/tangy_sauce/tangy_sauce.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/tasty_pasta.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/tasty_pasta/tasty_pasta.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/teleportation_script.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/note/teleportation_script/teleportation_script.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/teleportation_script_imbued.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/teleportation_script/teleportation_script_imbued/teleportation_script_imbued.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/test_tube.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/test_tube/test_tube.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/thread.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/thread/thread.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/tiite.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/compounds/tiite/tiite.swf"
+ },
+ "assets/sprites/icons/tin.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/tin/tin.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/tincturing_kit.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/tincturing_kit/tincturing_kit.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/tincturing_kit_broken.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/tincturing_kit/tincturing_kit.swf",
+  "frame": "broken_iconic"
+ },
+ "assets/sprites/icons/tinkertool.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/tinkertool/tinkertool.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/tinkertool_broken.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/tinkertool/tinkertool.swf",
+  "frame": "broken_iconic"
+ },
+ "assets/sprites/icons/tiny_bubble.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/tiny_bubble/tiny_bubble.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/tomato.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/tomato/tomato.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/tooberry_shake.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/drink/tooberry_shake/tooberry_shake.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/tortilla.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/tortilla/tortilla.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/tower_expander.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/tower_expander/tower_expander.swf"
+ },
+ "assets/sprites/icons/toy_star_1.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/toy_star_1/toy_star_1.swf"
+ },
+ "assets/sprites/icons/toy_star_2.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/toy_star_2/toy_star_2.swf"
+ },
+ "assets/sprites/icons/trant_gas_dead.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/harvestable_resources/trant_gas_dead/trant_gas_dead.swf"
+ },
+ "assets/sprites/icons/trant_spice_dead.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/harvestable_resources/trant_spice_dead/trant_spice_dead.swf"
+ },
+ "assets/sprites/icons/treasure_map_1.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/treasure_map_1/treasure_map_1.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/trophy_bubble.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/trophies/trophy_bubble/trophy_bubble.swf"
+ },
+ "assets/sprites/icons/trophy_cubimal.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/trophies/trophy_cubimal/trophy_cubimal.swf"
+ },
+ "assets/sprites/icons/trophy_cubimal_2.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/trophies/trophy_cubimal_2/trophy_cubimal_2.swf"
+ },
+ "assets/sprites/icons/trophy_egghunt.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/trophies/trophy_egghunt/trophy_egghunt.swf"
+ },
+ "assets/sprites/icons/trophy_emblems.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/trophies/trophy_emblems/trophy_emblems.swf"
+ },
+ "assets/sprites/icons/trophy_fruit.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/trophies/trophy_fruit/trophy_fruit.swf"
+ },
+ "assets/sprites/icons/trophy_gas.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/trophies/trophy_gas/trophy_gas.swf"
+ },
+ "assets/sprites/icons/trophy_gem.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/trophies/trophy_gem/trophy_gem.swf"
+ },
+ "assets/sprites/icons/trophy_music_b_brown.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/trophies/trophy_music_b_brown/trophy_music_b_brown.swf"
+ },
+ "assets/sprites/icons/trophy_music_d_blue.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/trophies/trophy_music_d_blue/trophy_music_d_blue.swf"
+ },
+ "assets/sprites/icons/trophy_music_d_green.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/trophies/trophy_music_d_green/trophy_music_d_green.swf"
+ },
+ "assets/sprites/icons/trophy_music_d_red.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/trophies/trophy_music_d_red/trophy_music_d_red.swf"
+ },
+ "assets/sprites/icons/trophy_music_x_shiny.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/trophies/trophy_music_x_shiny/trophy_music_x_shiny.swf"
+ },
+ "assets/sprites/icons/trophy_spice.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/trophies/trophy_spice/trophy_spice.swf"
+ },
+ "assets/sprites/icons/trophy_street_creator_dirt.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/trophies/trophy_street_creator_dirt/trophy_street_creator_dirt.swf"
+ },
+ "assets/sprites/icons/trophy_street_creator_dirt_piece1.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/trophies/trophy_street_creator_dirt_piece1/trophy_street_creator_dirt_piece1.swf"
+ },
+ "assets/sprites/icons/trophy_street_creator_dirt_piece2.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/trophies/trophy_street_creator_dirt_piece2/trophy_street_creator_dirt_piece2.swf"
+ },
+ "assets/sprites/icons/trophy_street_creator_dirt_piece3.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/trophies/trophy_street_creator_dirt_piece3/trophy_street_creator_dirt_piece3.swf"
+ },
+ "assets/sprites/icons/trophy_street_creator_dirt_piece4.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/trophies/trophy_street_creator_dirt_piece4/trophy_street_creator_dirt_piece4.swf"
+ },
+ "assets/sprites/icons/trophy_street_creator_dirt_piece5.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/trophies/trophy_street_creator_dirt_piece5/trophy_street_creator_dirt_piece5.swf"
+ },
+ "assets/sprites/icons/trophy_street_creator_earth.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/trophies/trophy_street_creator_earth/trophy_street_creator_earth.swf"
+ },
+ "assets/sprites/icons/trophy_street_creator_earth_piece1.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/trophies/trophy_street_creator_earth_piece1/trophy_street_creator_earth_piece1.swf"
+ },
+ "assets/sprites/icons/trophy_street_creator_earth_piece2.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/trophies/trophy_street_creator_earth_piece2/trophy_street_creator_earth_piece2.swf"
+ },
+ "assets/sprites/icons/trophy_street_creator_earth_piece3.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/trophies/trophy_street_creator_earth_piece3/trophy_street_creator_earth_piece3.swf"
+ },
+ "assets/sprites/icons/trophy_street_creator_earth_piece4.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/trophies/trophy_street_creator_earth_piece4/trophy_street_creator_earth_piece4.swf"
+ },
+ "assets/sprites/icons/trophy_street_creator_earth_piece5.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/trophies/trophy_street_creator_earth_piece5/trophy_street_creator_earth_piece5.swf"
+ },
+ "assets/sprites/icons/trophy_street_creator_rock.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/trophies/trophy_street_creator_rock/trophy_street_creator_rock.swf"
+ },
+ "assets/sprites/icons/trophy_street_creator_rock_piece1.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/trophies/trophy_street_creator_rock_piece1/trophy_street_creator_rock_piece1.swf"
+ },
+ "assets/sprites/icons/trophy_street_creator_rock_piece2.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/trophies/trophy_street_creator_rock_piece2/trophy_street_creator_rock_piece2.swf"
+ },
+ "assets/sprites/icons/trophy_street_creator_rock_piece3.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/trophies/trophy_street_creator_rock_piece3/trophy_street_creator_rock_piece3.swf"
+ },
+ "assets/sprites/icons/trophy_street_creator_rock_piece4.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/trophies/trophy_street_creator_rock_piece4/trophy_street_creator_rock_piece4.swf"
+ },
+ "assets/sprites/icons/trophy_street_creator_rock_piece5.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/trophies/trophy_street_creator_rock_piece5/trophy_street_creator_rock_piece5.swf"
+ },
+ "assets/sprites/icons/trophy_street_creator_wood.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/trophies/trophy_street_creator_wood/trophy_street_creator_wood.swf"
+ },
+ "assets/sprites/icons/trophy_street_creator_wood_piece1.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/trophies/trophy_street_creator_wood_piece1/trophy_street_creator_wood_piece1.swf"
+ },
+ "assets/sprites/icons/trophy_street_creator_wood_piece2.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/trophies/trophy_street_creator_wood_piece2/trophy_street_creator_wood_piece2.swf"
+ },
+ "assets/sprites/icons/trophy_street_creator_wood_piece3.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/trophies/trophy_street_creator_wood_piece3/trophy_street_creator_wood_piece3.swf"
+ },
+ "assets/sprites/icons/trophy_street_creator_wood_piece4.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/trophies/trophy_street_creator_wood_piece4/trophy_street_creator_wood_piece4.swf"
+ },
+ "assets/sprites/icons/trophy_street_creator_wood_piece5.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/trophies/trophy_street_creator_wood_piece5/trophy_street_creator_wood_piece5.swf"
+ },
+ "assets/sprites/icons/trump_rub.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/trump_rub/trump_rub.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/turmeric.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/spice/turmeric/turmeric.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/upgrade_card_craftybot_lesson.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/upgrade_card_craftybot_lesson/upgrade_card_craftybot_lesson.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/upgrade_card_instant_resurrection.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/upgrade_card_instant_resurrection/upgrade_card_instant_resurrection.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/upgrade_card_reshuffle.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/upgrade_card_reshuffle/upgrade_card_reshuffle.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/urfu.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/urfu/urfu.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/vegmageddon.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/vegmageddon/vegmageddon.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/waffles.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/waffles/waffles.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/wall_button.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/wall_switch/wall_button/wall_button.swf"
+ },
+ "assets/sprites/icons/wall_segment.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/wall_segment/wall_segment.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/wall_switch.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/wall_switch/wall_switch.swf",
+  "sprite": 13,
+  "frame": "lockUp"
+ },
+ "assets/sprites/icons/watering_can.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/watering_can/watering_can.swf"
+ },
+ "assets/sprites/icons/watering_can_broken.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/tool_base/watering_can/watering_can.swf",
+  "frame": "broken_iconic"
+ },
+ "assets/sprites/icons/wavy_gravy.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/wavy_gravy/wavy_gravy.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/white_gas.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/white_gas/white_gas.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/whortleberry.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/whortleberry/whortleberry.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/whortleberry_jelly.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/whortleberry_jelly/whortleberry_jelly.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/wicked_bolognese_sauce.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/wicked_bolognese_sauce/wicked_bolognese_sauce.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/wine_of_the_dead.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/wine_of_the_dead/wine_of_the_dead.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/wood_post.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/wood_post/wood_post.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/wood_tree.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/harvestable_resources/wood_tree/wood_tree.swf"
+ },
+ "assets/sprites/icons/wood_tree_enchanted.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/harvestable_resources/wood_tree/wood_tree_enchanted/wood_tree_enchanted.swf"
+ },
+ "assets/sprites/icons/woodworker.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/woodworker/woodworker.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/woodworker_chassis.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/woodworker_chassis/woodworker_chassis.swf"
+ },
+ "assets/sprites/icons/woodworker_fuser.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/tools/woodworker_fuser/woodworker_fuser.swf"
+ },
+ "assets/sprites/icons/yellow_crumb_flower.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/herbs/yellow_crumb_flower/yellow_crumb_flower.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/your_papers.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/misc/your_papers/your_papers.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/yummy_gruel.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/yummy_gruel/yummy_gruel.swf",
+  "frame": "iconic"
+ },
+ "assets/sprites/icons/zillene.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/compounds/zillene/zillene.swf"
+ },
+ "assets/sprites/icons/zucchini.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/food/zucchini/zucchini.swf",
+  "frame": "iconic"
+ }
+}
