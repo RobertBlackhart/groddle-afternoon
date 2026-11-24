@@ -1,4 +1,2644 @@
 {
+ "assets/badges/1star_cuisinartist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/1star_cuisinartist.swf",
+  "k": 2
+ },
+ "assets/badges/2nd_rate_piggy_piggy_hash_slinger.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/2nd_rate_piggy_piggy_hash_slinger.swf",
+  "k": 2
+ },
+ "assets/badges/2star_cuisinartist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/2star_cuisinartist.swf",
+  "k": 2
+ },
+ "assets/badges/3rd_rate_piggy_hash_slinger.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/3rd_rate_piggy_hash_slinger.swf",
+  "k": 2
+ },
+ "assets/badges/3star_cuisinartist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/3star_cuisinartist.swf",
+  "k": 2
+ },
+ "assets/badges/4star_cuisinartist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/4star_cuisinartist.swf",
+  "k": 2
+ },
+ "assets/badges/5star_cuisinartist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/5star_cuisinartist.swf",
+  "k": 2
+ },
+ "assets/badges/a1_comrade.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/a1_comrade.swf",
+  "k": 2
+ },
+ "assets/badges/a1_saucier.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/a1_saucier.swf",
+  "k": 2
+ },
+ "assets/badges/able_chopper.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/able_chopper.swf",
+  "k": 2
+ },
+ "assets/badges/about_average_irrigationist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/about_average_irrigationist.swf",
+  "k": 2
+ },
+ "assets/badges/ace_of_om.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/ace_of_om.swf",
+  "k": 2
+ },
+ "assets/badges/ace_propagationist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/ace_propagationist.swf",
+  "k": 2
+ },
+ "assets/badges/advanced_larva_lover.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/advanced_larva_lover.swf",
+  "k": 2
+ },
+ "assets/badges/advanced_spice_collector.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/advanced_spice_collector.swf",
+  "k": 2
+ },
+ "assets/badges/affable_anthony.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/affable_anthony.swf",
+  "k": 2
+ },
+ "assets/badges/aftershock_award.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/aftershock_award.swf",
+  "k": 2
+ },
+ "assets/badges/aggressive_agrarian.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/aggressive_agrarian.swf",
+  "k": 2
+ },
+ "assets/badges/alakol_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/alakol_completist.swf",
+  "k": 2
+ },
+ "assets/badges/all_giant_emblems.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/all_giant_emblems.swf",
+  "k": 2
+ },
+ "assets/badges/all_right_hatcher.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/all_right_hatcher.swf",
+  "k": 2
+ },
+ "assets/badges/amateur_agronomist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/amateur_agronomist.swf",
+  "k": 2
+ },
+ "assets/badges/amateur_bean_tree_fondler.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/amateur_bean_tree_fondler.swf",
+  "k": 2
+ },
+ "assets/badges/amateur_decrustifier.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/amateur_decrustifier.swf",
+  "k": 2
+ },
+ "assets/badges/amorphous_crystallizer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/amorphous_crystallizer.swf",
+  "k": 2
+ },
+ "assets/badges/andra_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/andra_completist.swf",
+  "k": 2
+ },
+ "assets/badges/antisocial_hi_skipper.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/antisocial_hi_skipper.swf",
+  "k": 2
+ },
+ "assets/badges/apprentice_lepidopteral_manipulator.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/apprentice_lepidopteral_manipulator.swf",
+  "k": 2
+ },
+ "assets/badges/aranna_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/aranna_completist.swf",
+  "k": 2
+ },
+ "assets/badges/ascended.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/ascended.swf",
+  "k": 2
+ },
+ "assets/badges/ascended_level101.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/ascended_level101.swf",
+  "k": 2
+ },
+ "assets/badges/ascended_level11.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/ascended_level11.swf",
+  "k": 2
+ },
+ "assets/badges/ascended_level23.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/ascended_level23.swf",
+  "k": 2
+ },
+ "assets/badges/ascended_level31.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/ascended_level31.swf",
+  "k": 2
+ },
+ "assets/badges/ascended_level41.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/ascended_level41.swf",
+  "k": 2
+ },
+ "assets/badges/ascended_level61.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/ascended_level61.swf",
+  "k": 2
+ },
+ "assets/badges/ascended_level83.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/ascended_level83.swf",
+  "k": 2
+ },
+ "assets/badges/aspirational_home_improver.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/aspirational_home_improver.swf",
+  "k": 2
+ },
+ "assets/badges/assistant_spice_manager.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/assistant_spice_manager.swf",
+  "k": 2
+ },
+ "assets/badges/assistant_to_the_mending_manager_kitchen_division.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/assistant_to_the_mending_manager_kitchen_division.swf",
+  "k": 2
+ },
+ "assets/badges/awesome_apothecary.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/awesome_apothecary.swf",
+  "k": 2
+ },
+ "assets/badges/bacon_biter.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/bacon_biter.swf",
+  "k": 2
+ },
+ "assets/badges/balzare_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/balzare_completist.swf",
+  "k": 2
+ },
+ "assets/badges/baqala_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/baqala_completist.swf",
+  "k": 2
+ },
+ "assets/badges/bar_fly.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/bar_fly.swf",
+  "k": 2
+ },
+ "assets/badges/barman_of_death.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/barman_of_death.swf",
+  "k": 2
+ },
+ "assets/badges/basic_beangrower.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/basic_beangrower.swf",
+  "k": 2
+ },
+ "assets/badges/basic_larva_lover.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/basic_larva_lover.swf",
+  "k": 2
+ },
+ "assets/badges/bathed_in_sloth_slobber.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/bathed_in_sloth_slobber.swf",
+  "k": 2
+ },
+ "assets/badges/bead_threader.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/bead_threader.swf",
+  "k": 2
+ },
+ "assets/badges/bean_counter.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/bean_counter.swf",
+  "k": 2
+ },
+ "assets/badges/bean_counter_pro.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/bean_counter_pro.swf",
+  "k": 2
+ },
+ "assets/badges/beanorator_1st_class.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/beanorator_1st_class.swf",
+  "k": 2
+ },
+ "assets/badges/beanorator_2nd_class.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/beanorator_2nd_class.swf",
+  "k": 2
+ },
+ "assets/badges/beginner_decoctifier.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/beginner_decoctifier.swf",
+  "k": 2
+ },
+ "assets/badges/beginner_drizzler.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/beginner_drizzler.swf",
+  "k": 2
+ },
+ "assets/badges/besara_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/besara_completist.swf",
+  "k": 2
+ },
+ "assets/badges/best_nester.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/best_nester.swf",
+  "k": 2
+ },
+ "assets/badges/best_pal.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/best_pal.swf",
+  "k": 2
+ },
+ "assets/badges/better_bubble_farmer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/better_bubble_farmer.swf",
+  "k": 2
+ },
+ "assets/badges/better_homes_and_gardens.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/better_homes_and_gardens.swf",
+  "k": 2
+ },
+ "assets/badges/betterthanaverage_mulcher.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/betterthanaverage_mulcher.swf",
+  "k": 2
+ },
+ "assets/badges/betterthanlousy_douser.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/betterthanlousy_douser.swf",
+  "k": 2
+ },
+ "assets/badges/betterthanmediocre_fruit_tree_pettifier.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/betterthanmediocre_fruit_tree_pettifier.swf",
+  "k": 2
+ },
+ "assets/badges/big_league_decrustifier.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/big_league_decrustifier.swf",
+  "k": 2
+ },
+ "assets/badges/big_spender.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/big_spender.swf",
+  "k": 2
+ },
+ "assets/badges/big_splasher.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/big_splasher.swf",
+  "k": 2
+ },
+ "assets/badges/bigger_league_decrustifier.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/bigger_league_decrustifier.swf",
+  "k": 2
+ },
+ "assets/badges/blendmaster.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/blendmaster.swf",
+  "k": 2
+ },
+ "assets/badges/bonafide_gas_wrangler.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/bonafide_gas_wrangler.swf",
+  "k": 2
+ },
+ "assets/badges/bonbon_vivant.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/bonbon_vivant.swf",
+  "k": 2
+ },
+ "assets/badges/bootleg_facilitator.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/bootleg_facilitator.swf",
+  "k": 2
+ },
+ "assets/badges/bortola_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/bortola_completist.swf",
+  "k": 2
+ },
+ "assets/badges/bounder_tenured.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/bounder_tenured.swf",
+  "k": 2
+ },
+ "assets/badges/bounder_untenured.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/bounder_untenured.swf",
+  "k": 2
+ },
+ "assets/badges/bowser.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/bowser.swf",
+  "k": 2
+ },
+ "assets/badges/brazier_apprentice.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/brazier_apprentice.swf",
+  "k": 2
+ },
+ "assets/badges/brillah_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/brillah_completist.swf",
+  "k": 2
+ },
+ "assets/badges/broil_king.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/broil_king.swf",
+  "k": 2
+ },
+ "assets/badges/bubble_coaxer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/bubble_coaxer.swf",
+  "k": 2
+ },
+ "assets/badges/bubble_tea_aficionado.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/bubble_tea_aficionado.swf",
+  "k": 2
+ },
+ "assets/badges/bubble_transubstantiator.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/bubble_transubstantiator.swf",
+  "k": 2
+ },
+ "assets/badges/bush_whacker.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/bush_whacker.swf",
+  "k": 2
+ },
+ "assets/badges/butterfly_whisperer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/butterfly_whisperer.swf",
+  "k": 2
+ },
+ "assets/badges/callopee_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/callopee_completist.swf",
+  "k": 2
+ },
+ "assets/badges/candy_caner.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/candy_caner.swf",
+  "k": 2
+ },
+ "assets/badges/candy_muncher.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/candy_muncher.swf",
+  "k": 2
+ },
+ "assets/badges/candy_nommer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/candy_nommer.swf",
+  "k": 2
+ },
+ "assets/badges/candy_snaffler.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/candy_snaffler.swf",
+  "k": 2
+ },
+ "assets/badges/candy_stripper.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/candy_stripper.swf",
+  "k": 2
+ },
+ "assets/badges/capon_caterer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/capon_caterer.swf",
+  "k": 2
+ },
+ "assets/badges/captain_of_the_anti_temperance_league.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/captain_of_the_anti_temperance_league.swf",
+  "k": 2
+ },
+ "assets/badges/captain_tchotchke.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/captain_tchotchke.swf",
+  "k": 2
+ },
+ "assets/badges/card_carrying_qualification.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/card_carrying_qualification.swf",
+  "k": 2
+ },
+ "assets/badges/cauda_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/cauda_completist.swf",
+  "k": 2
+ },
+ "assets/badges/certified_boozehound.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/certified_boozehound.swf",
+  "k": 2
+ },
+ "assets/badges/chairman_of_the_board.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/chairman_of_the_board.swf",
+  "k": 2
+ },
+ "assets/badges/chakra_phool_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/chakra_phool_completist.swf",
+  "k": 2
+ },
+ "assets/badges/chatterbox.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/chatterbox.swf",
+  "k": 2
+ },
+ "assets/badges/cheesemongerer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/cheesemongerer.swf",
+  "k": 2
+ },
+ "assets/badges/chicken_tender.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/chicken_tender.swf",
+  "k": 2
+ },
+ "assets/badges/chief_bubble_tree_cuddler.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/chief_bubble_tree_cuddler.swf",
+  "k": 2
+ },
+ "assets/badges/chief_inspector_coppersmith.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/chief_inspector_coppersmith.swf",
+  "k": 2
+ },
+ "assets/badges/chief_of_tinkering_operations.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/chief_of_tinkering_operations.swf",
+  "k": 2
+ },
+ "assets/badges/chore_buff.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/chore_buff.swf",
+  "k": 2
+ },
+ "assets/badges/choru_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/choru_completist.swf",
+  "k": 2
+ },
+ "assets/badges/chowhound.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/chowhound.swf",
+  "k": 2
+ },
+ "assets/badges/chute_jockey.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/chute_jockey.swf",
+  "k": 2
+ },
+ "assets/badges/circle_crunch.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/circle_crunch.swf",
+  "k": 2
+ },
+ "assets/badges/clumsy1.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/clumsy1.swf",
+  "k": 2
+ },
+ "assets/badges/coat_of_open_arms.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/coat_of_open_arms.swf",
+  "k": 2
+ },
+ "assets/badges/cold_as_ice.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/cold_as_ice.swf",
+  "k": 2
+ },
+ "assets/badges/collection_all_emblems.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/collection_all_emblems.swf",
+  "k": 2
+ },
+ "assets/badges/collection_bubbles.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/collection_bubbles.swf",
+  "k": 2
+ },
+ "assets/badges/collection_cubimals.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/collection_cubimals.swf",
+  "k": 2
+ },
+ "assets/badges/collection_cubimals_2.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/collection_cubimals_2.swf",
+  "k": 2
+ },
+ "assets/badges/collection_egg_hunter.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/collection_egg_hunter.swf",
+  "k": 2
+ },
+ "assets/badges/collection_fruits.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/collection_fruits.swf",
+  "k": 2
+ },
+ "assets/badges/collection_gasses.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/collection_gasses.swf",
+  "k": 2
+ },
+ "assets/badges/collection_gems.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/collection_gems.swf",
+  "k": 2
+ },
+ "assets/badges/collection_musicblocks_bb.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/collection_musicblocks_bb.swf",
+  "k": 2
+ },
+ "assets/badges/collection_musicblocks_db.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/collection_musicblocks_db.swf",
+  "k": 2
+ },
+ "assets/badges/collection_musicblocks_dg.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/collection_musicblocks_dg.swf",
+  "k": 2
+ },
+ "assets/badges/collection_musicblocks_dr.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/collection_musicblocks_dr.swf",
+  "k": 2
+ },
+ "assets/badges/collection_musicblocks_xs.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/collection_musicblocks_xs.swf",
+  "k": 2
+ },
+ "assets/badges/collection_spices.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/collection_spices.swf",
+  "k": 2
+ },
+ "assets/badges/collection_street_creator_dirt.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/collection_street_creator_dirt.swf",
+  "k": 2
+ },
+ "assets/badges/collection_street_creator_earth.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/collection_street_creator_earth.swf",
+  "k": 2
+ },
+ "assets/badges/collection_street_creator_rock.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/collection_street_creator_rock.swf",
+  "k": 2
+ },
+ "assets/badges/collection_street_creator_wood.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/collection_street_creator_wood.swf",
+  "k": 2
+ },
+ "assets/badges/common_snail_collector.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/common_snail_collector.swf",
+  "k": 2
+ },
+ "assets/badges/commuter_mug.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/commuter_mug.swf",
+  "k": 2
+ },
+ "assets/badges/competent_windbag.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/competent_windbag.swf",
+  "k": 2
+ },
+ "assets/badges/compulsive_moisturizer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/compulsive_moisturizer.swf",
+  "k": 2
+ },
+ "assets/badges/compulsive_re_peater.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/compulsive_re_peater.swf",
+  "k": 2
+ },
+ "assets/badges/confident_petter.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/confident_petter.swf",
+  "k": 2
+ },
+ "assets/badges/confounder_of_logic.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/confounder_of_logic.swf",
+  "k": 2
+ },
+ "assets/badges/constable_coppersmith.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/constable_coppersmith.swf",
+  "k": 2
+ },
+ "assets/badges/corporate_cabinetmaker.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/corporate_cabinetmaker.swf",
+  "k": 2
+ },
+ "assets/badges/court_hoarder.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/court_hoarder.swf",
+  "k": 2
+ },
+ "assets/badges/covered_in_epic_win.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/covered_in_epic_win.swf",
+  "k": 2
+ },
+ "assets/badges/crackpot_infuser.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/crackpot_infuser.swf",
+  "k": 2
+ },
+ "assets/badges/creditable_delver.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/creditable_delver.swf",
+  "k": 2
+ },
+ "assets/badges/crest_connoisseur.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/crest_connoisseur.swf",
+  "k": 2
+ },
+ "assets/badges/critter_catalyzer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/critter_catalyzer.swf",
+  "k": 2
+ },
+ "assets/badges/crowded_house.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/crowded_house.swf",
+  "k": 2
+ },
+ "assets/badges/crucible_jockey.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/crucible_jockey.swf",
+  "k": 2
+ },
+ "assets/badges/cubimal_emancipationist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/cubimal_emancipationist.swf",
+  "k": 2
+ },
+ "assets/badges/culinarian_supreme.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/culinarian_supreme.swf",
+  "k": 2
+ },
+ "assets/badges/cultivation_nurturer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/cultivation_nurturer.swf",
+  "k": 2
+ },
+ "assets/badges/cunning_like_a_foxbrusher.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/cunning_like_a_foxbrusher.swf",
+  "k": 2
+ },
+ "assets/badges/curious_george.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/curious_george.swf",
+  "k": 2
+ },
+ "assets/badges/daily_hi_skipper.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/daily_hi_skipper.swf",
+  "k": 2
+ },
+ "assets/badges/dandy_tincturer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/dandy_tincturer.swf",
+  "k": 2
+ },
+ "assets/badges/darwin_award_winner.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/darwin_award_winner.swf",
+  "k": 2
+ },
+ "assets/badges/death_metallurgist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/death_metallurgist.swf",
+  "k": 2
+ },
+ "assets/badges/decent_citizen.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/decent_citizen.swf",
+  "k": 2
+ },
+ "assets/badges/decent_tree_hugger.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/decent_tree_hugger.swf",
+  "k": 2
+ },
+ "assets/badges/decrustifying_enthusiast.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/decrustifying_enthusiast.swf",
+  "k": 2
+ },
+ "assets/badges/dedicated_gas_fancier.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/dedicated_gas_fancier.swf",
+  "k": 2
+ },
+ "assets/badges/dedicated_meataterian.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/dedicated_meataterian.swf",
+  "k": 2
+ },
+ "assets/badges/dedicated_restorationizer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/dedicated_restorationizer.swf",
+  "k": 2
+ },
+ "assets/badges/dedicated_snail_getter.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/dedicated_snail_getter.swf",
+  "k": 2
+ },
+ "assets/badges/deeply_concerned_citizen.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/deeply_concerned_citizen.swf",
+  "k": 2
+ },
+ "assets/badges/definitelymuchbetter_tree_hugger.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/definitelymuchbetter_tree_hugger.swf",
+  "k": 2
+ },
+ "assets/badges/delirious_foxbrusher.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/delirious_foxbrusher.swf",
+  "k": 2
+ },
+ "assets/badges/dirt_diggler.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/dirt_diggler.swf",
+  "k": 2
+ },
+ "assets/badges/dirt_monkey.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/dirt_monkey.swf",
+  "k": 2
+ },
+ "assets/badges/dirtomancer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/dirtomancer.swf",
+  "k": 2
+ },
+ "assets/badges/domestic_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/domestic_completist.swf",
+  "k": 2
+ },
+ "assets/badges/down_to_the_wire.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/down_to_the_wire.swf",
+  "k": 2
+ },
+ "assets/badges/dracula.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/dracula.swf",
+  "k": 2
+ },
+ "assets/badges/dragon_chaser.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/dragon_chaser.swf",
+  "k": 2
+ },
+ "assets/badges/drifa_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/drifa_completist.swf",
+  "k": 2
+ },
+ "assets/badges/dust_busting_trigger_trappist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/dust_busting_trigger_trappist.swf",
+  "k": 2
+ },
+ "assets/badges/effervescence_consultant.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/effervescence_consultant.swf",
+  "k": 2
+ },
+ "assets/badges/egg_aficianado.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/egg_aficianado.swf",
+  "k": 2
+ },
+ "assets/badges/egg_enthusiast.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/egg_enthusiast.swf",
+  "k": 2
+ },
+ "assets/badges/egg_freak.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/egg_freak.swf",
+  "k": 2
+ },
+ "assets/badges/egg_plant_coddler.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/egg_plant_coddler.swf",
+  "k": 2
+ },
+ "assets/badges/egg_poacher.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/egg_poacher.swf",
+  "k": 2
+ },
+ "assets/badges/egg_transmutator_apprentice.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/egg_transmutator_apprentice.swf",
+  "k": 2
+ },
+ "assets/badges/egg_transmutator_maxipro.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/egg_transmutator_maxipro.swf",
+  "k": 2
+ },
+ "assets/badges/egg_transmutator_pro.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/egg_transmutator_pro.swf",
+  "k": 2
+ },
+ "assets/badges/eggy_wegger.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/eggy_wegger.swf",
+  "k": 2
+ },
+ "assets/badges/el_big_spenderino.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/el_big_spenderino.swf",
+  "k": 2
+ },
+ "assets/badges/elbow_grease_monkey.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/elbow_grease_monkey.swf",
+  "k": 2
+ },
+ "assets/badges/elementary_penguin.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/elementary_penguin.swf",
+  "k": 2
+ },
+ "assets/badges/eleven_secret_locations.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/eleven_secret_locations.swf",
+  "k": 2
+ },
+ "assets/badges/elixir_enthusiast.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/elixir_enthusiast.swf",
+  "k": 2
+ },
+ "assets/badges/emblem_skill_unlock_alph_1.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/emblem_skill_unlock_alph_1.swf",
+  "k": 2
+ },
+ "assets/badges/emblem_skill_unlock_cosma_1.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/emblem_skill_unlock_cosma_1.swf",
+  "k": 2
+ },
+ "assets/badges/emblem_skill_unlock_friendly_1.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/emblem_skill_unlock_friendly_1.swf",
+  "k": 2
+ },
+ "assets/badges/emblem_skill_unlock_grendaline_1.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/emblem_skill_unlock_grendaline_1.swf",
+  "k": 2
+ },
+ "assets/badges/emblem_skill_unlock_humbaba_1.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/emblem_skill_unlock_humbaba_1.swf",
+  "k": 2
+ },
+ "assets/badges/emblem_skill_unlock_lem_1.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/emblem_skill_unlock_lem_1.swf",
+  "k": 2
+ },
+ "assets/badges/emblem_skill_unlock_mab_1.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/emblem_skill_unlock_mab_1.swf",
+  "k": 2
+ },
+ "assets/badges/emblem_skill_unlock_pot_1.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/emblem_skill_unlock_pot_1.swf",
+  "k": 2
+ },
+ "assets/badges/emblem_skill_unlock_spriggan_1.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/emblem_skill_unlock_spriggan_1.swf",
+  "k": 2
+ },
+ "assets/badges/emblem_skill_unlock_ti_1.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/emblem_skill_unlock_ti_1.swf",
+  "k": 2
+ },
+ "assets/badges/emblem_skill_unlock_zille_1.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/emblem_skill_unlock_zille_1.swf",
+  "k": 2
+ },
+ "assets/badges/enchanting_extractorator.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/enchanting_extractorator.swf",
+  "k": 2
+ },
+ "assets/badges/endurance_hi_skipper.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/endurance_hi_skipper.swf",
+  "k": 2
+ },
+ "assets/badges/entrylevel_admixificator.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/entrylevel_admixificator.swf",
+  "k": 2
+ },
+ "assets/badges/entrylevel_fruit_tree_harvester.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/entrylevel_fruit_tree_harvester.swf",
+  "k": 2
+ },
+ "assets/badges/epic_blowout.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/epic_blowout.swf",
+  "k": 2
+ },
+ "assets/badges/epic_hero.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/epic_hero.swf",
+  "k": 2
+ },
+ "assets/badges/epic_poet.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/epic_poet.swf",
+  "k": 2
+ },
+ "assets/badges/epic_urian.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/epic_urian.swf",
+  "k": 2
+ },
+ "assets/badges/exceptionally_fine_refiner_blue_class.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/exceptionally_fine_refiner_blue_class.swf",
+  "k": 2
+ },
+ "assets/badges/exceptionally_fine_refiner_green_class.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/exceptionally_fine_refiner_green_class.swf",
+  "k": 2
+ },
+ "assets/badges/exceptionally_fine_refiner_red_class.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/exceptionally_fine_refiner_red_class.swf",
+  "k": 2
+ },
+ "assets/badges/exceptionally_fine_refiner_shiny_class.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/exceptionally_fine_refiner_shiny_class.swf",
+  "k": 2
+ },
+ "assets/badges/executive_flunky_tinkering_ops.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/executive_flunky_tinkering_ops.swf",
+  "k": 2
+ },
+ "assets/badges/executive_in_charge_of_spice_reformatation.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/executive_in_charge_of_spice_reformatation.swf",
+  "k": 2
+ },
+ "assets/badges/extremely_promising_tree_hugger.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/extremely_promising_tree_hugger.swf",
+  "k": 2
+ },
+ "assets/badges/famous_featologist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/famous_featologist.swf",
+  "k": 2
+ },
+ "assets/badges/fancy_medal_fancier.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/fancy_medal_fancier.swf",
+  "k": 2
+ },
+ "assets/badges/feat_first.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/feat_first.swf",
+  "k": 2
+ },
+ "assets/badges/feat_of_peat_excellence.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/feat_of_peat_excellence.swf",
+  "k": 2
+ },
+ "assets/badges/feater_of_glory.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/feater_of_glory.swf",
+  "k": 2
+ },
+ "assets/badges/featist_of_renown.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/featist_of_renown.swf",
+  "k": 2
+ },
+ "assets/badges/fecundationist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/fecundationist.swf",
+  "k": 2
+ },
+ "assets/badges/fenneq_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/fenneq_completist.swf",
+  "k": 2
+ },
+ "assets/badges/fertilivert.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/fertilivert.swf",
+  "k": 2
+ },
+ "assets/badges/finallyprettygood_tree_hugger.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/finallyprettygood_tree_hugger.swf",
+  "k": 2
+ },
+ "assets/badges/fine_friend.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/fine_friend.swf",
+  "k": 2
+ },
+ "assets/badges/fine_mincer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/fine_mincer.swf",
+  "k": 2
+ },
+ "assets/badges/fine_refiner_blue_class.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/fine_refiner_blue_class.swf",
+  "k": 2
+ },
+ "assets/badges/fine_refiner_green_class.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/fine_refiner_green_class.swf",
+  "k": 2
+ },
+ "assets/badges/fine_refiner_red_class.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/fine_refiner_red_class.swf",
+  "k": 2
+ },
+ "assets/badges/fine_refiner_shiny_class.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/fine_refiner_shiny_class.swf",
+  "k": 2
+ },
+ "assets/badges/firefly_whistling.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/firefly_whistling.swf",
+  "k": 2
+ },
+ "assets/badges/firetongue_award.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/firetongue_award.swf",
+  "k": 2
+ },
+ "assets/badges/firozi_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/firozi_completist.swf",
+  "k": 2
+ },
+ "assets/badges/first_alph_emblem.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/first_alph_emblem.swf",
+  "k": 2
+ },
+ "assets/badges/first_cosma_emblem.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/first_cosma_emblem.swf",
+  "k": 2
+ },
+ "assets/badges/first_eleven_skills.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/first_eleven_skills.swf",
+  "k": 2
+ },
+ "assets/badges/first_friendly_emblem.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/first_friendly_emblem.swf",
+  "k": 2
+ },
+ "assets/badges/first_grendaline_emblem.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/first_grendaline_emblem.swf",
+  "k": 2
+ },
+ "assets/badges/first_humbaba_emblem.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/first_humbaba_emblem.swf",
+  "k": 2
+ },
+ "assets/badges/first_lem_emblem.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/first_lem_emblem.swf",
+  "k": 2
+ },
+ "assets/badges/first_mab_emblem.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/first_mab_emblem.swf",
+  "k": 2
+ },
+ "assets/badges/first_pot_emblem.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/first_pot_emblem.swf",
+  "k": 2
+ },
+ "assets/badges/first_series_releaser.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/first_series_releaser.swf",
+  "k": 2
+ },
+ "assets/badges/first_spriggan_emblem.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/first_spriggan_emblem.swf",
+  "k": 2
+ },
+ "assets/badges/first_ti_emblem.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/first_ti_emblem.swf",
+  "k": 2
+ },
+ "assets/badges/first_zille_emblem.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/first_zille_emblem.swf",
+  "k": 2
+ },
+ "assets/badges/firstbest_bubble_farmer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/firstbest_bubble_farmer.swf",
+  "k": 2
+ },
+ "assets/badges/firstrate_rainmaker.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/firstrate_rainmaker.swf",
+  "k": 2
+ },
+ "assets/badges/five_feat_under.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/five_feat_under.swf",
+  "k": 2
+ },
+ "assets/badges/fledgling_crest_collector.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/fledgling_crest_collector.swf",
+  "k": 2
+ },
+ "assets/badges/fleet_foxer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/fleet_foxer.swf",
+  "k": 2
+ },
+ "assets/badges/folivoria_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/folivoria_completist.swf",
+  "k": 2
+ },
+ "assets/badges/forgey_laforge.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/forgey_laforge.swf",
+  "k": 2
+ },
+ "assets/badges/fox_brushing_license.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/fox_brushing_license.swf",
+  "k": 2
+ },
+ "assets/badges/fox_flurrier.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/fox_flurrier.swf",
+  "k": 2
+ },
+ "assets/badges/fox_tourist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/fox_tourist.swf",
+  "k": 2
+ },
+ "assets/badges/framer_ranger.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/framer_ranger.swf",
+  "k": 2
+ },
+ "assets/badges/friend_of_cubimals.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/friend_of_cubimals.swf",
+  "k": 2
+ },
+ "assets/badges/friend_of_the_urth.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/friend_of_the_urth.swf",
+  "k": 2
+ },
+ "assets/badges/fruit_metamorphosizin_tycoon.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/fruit_metamorphosizin_tycoon.swf",
+  "k": 2
+ },
+ "assets/badges/full_time_swami.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/full_time_swami.swf",
+  "k": 2
+ },
+ "assets/badges/garrulous_prolixificator.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/garrulous_prolixificator.swf",
+  "k": 2
+ },
+ "assets/badges/gas_dabbler.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/gas_dabbler.swf",
+  "k": 2
+ },
+ "assets/badges/gas_guzzler.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/gas_guzzler.swf",
+  "k": 2
+ },
+ "assets/badges/gastro_gnome.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/gastro_gnome.swf",
+  "k": 2
+ },
+ "assets/badges/gastronaut.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/gastronaut.swf",
+  "k": 2
+ },
+ "assets/badges/generalissimo_beanorator.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/generalissimo_beanorator.swf",
+  "k": 2
+ },
+ "assets/badges/gettingthere_tree_hugger.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/gettingthere_tree_hugger.swf",
+  "k": 2
+ },
+ "assets/badges/giant_lover.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/giant_lover.swf",
+  "k": 2
+ },
+ "assets/badges/giant_snail_lander.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/giant_snail_lander.swf",
+  "k": 2
+ },
+ "assets/badges/girder_herder.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/girder_herder.swf",
+  "k": 2
+ },
+ "assets/badges/glitch_train.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/glitch_train.swf",
+  "k": 2
+ },
+ "assets/badges/globetrotter_extraordinaire.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/globetrotter_extraordinaire.swf",
+  "k": 2
+ },
+ "assets/badges/gloopmeister.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/gloopmeister.swf",
+  "k": 2
+ },
+ "assets/badges/glop_grappler.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/glop_grappler.swf",
+  "k": 2
+ },
+ "assets/badges/glutton_for_nourishment.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/glutton_for_nourishment.swf",
+  "k": 2
+ },
+ "assets/badges/golden_hock_award.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/golden_hock_award.swf",
+  "k": 2
+ },
+ "assets/badges/golden_ladle_award.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/golden_ladle_award.swf",
+  "k": 2
+ },
+ "assets/badges/golden_ovum_award.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/golden_ovum_award.swf",
+  "k": 2
+ },
+ "assets/badges/golden_shower_award.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/golden_shower_award.swf",
+  "k": 2
+ },
+ "assets/badges/goo_getter.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/goo_getter.swf",
+  "k": 2
+ },
+ "assets/badges/good_bubble_farmer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/good_bubble_farmer.swf",
+  "k": 2
+ },
+ "assets/badges/good_buddy.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/good_buddy.swf",
+  "k": 2
+ },
+ "assets/badges/good_neighbour.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/good_neighbour.swf",
+  "k": 2
+ },
+ "assets/badges/gourmand_supreme.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/gourmand_supreme.swf",
+  "k": 2
+ },
+ "assets/badges/grand_poobah_tinkering_ops.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/grand_poobah_tinkering_ops.swf",
+  "k": 2
+ },
+ "assets/badges/gravy_maven.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/gravy_maven.swf",
+  "k": 2
+ },
+ "assets/badges/grease_monkey.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/grease_monkey.swf",
+  "k": 2
+ },
+ "assets/badges/gregarious_gunther.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/gregarious_gunther.swf",
+  "k": 2
+ },
+ "assets/badges/grill_jockey.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/grill_jockey.swf",
+  "k": 2
+ },
+ "assets/badges/groddle_forest_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/groddle_forest_completist.swf",
+  "k": 2
+ },
+ "assets/badges/groddle_heights_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/groddle_heights_completist.swf",
+  "k": 2
+ },
+ "assets/badges/groddle_meadows_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/groddle_meadows_completist.swf",
+  "k": 2
+ },
+ "assets/badges/ground_hogger.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/ground_hogger.swf",
+  "k": 2
+ },
+ "assets/badges/gumflapper.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/gumflapper.swf",
+  "k": 2
+ },
+ "assets/badges/h2oh_award.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/h2oh_award.swf",
+  "k": 2
+ },
+ "assets/badges/hairball_gonzales.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/hairball_gonzales.swf",
+  "k": 2
+ },
+ "assets/badges/hallowed_be_shrine_name.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/hallowed_be_shrine_name.swf",
+  "k": 2
+ },
+ "assets/badges/ham_hocker.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/ham_hocker.swf",
+  "k": 2
+ },
+ "assets/badges/hand_of_the_king.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/hand_of_the_king.swf",
+  "k": 2
+ },
+ "assets/badges/hanky_splanky.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/hanky_splanky.swf",
+  "k": 2
+ },
+ "assets/badges/haoma_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/haoma_completist.swf",
+  "k": 2
+ },
+ "assets/badges/happy_foxbrusher.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/happy_foxbrusher.swf",
+  "k": 2
+ },
+ "assets/badges/haraiva_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/haraiva_completist.swf",
+  "k": 2
+ },
+ "assets/badges/hardcore_carnivore.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/hardcore_carnivore.swf",
+  "k": 2
+ },
+ "assets/badges/harmony_hound.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/harmony_hound.swf",
+  "k": 2
+ },
+ "assets/badges/haughty_culturist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/haughty_culturist.swf",
+  "k": 2
+ },
+ "assets/badges/head_honcho.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/head_honcho.swf",
+  "k": 2
+ },
+ "assets/badges/healthy_img_turnover.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/healthy_img_turnover.swf",
+  "k": 2
+ },
+ "assets/badges/heavy_metallurgist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/heavy_metallurgist.swf",
+  "k": 2
+ },
+ "assets/badges/heavy_petter.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/heavy_petter.swf",
+  "k": 2
+ },
+ "assets/badges/hen_hugger.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/hen_hugger.swf",
+  "k": 2
+ },
+ "assets/badges/hen_hugger_deluxe.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/hen_hugger_deluxe.swf",
+  "k": 2
+ },
+ "assets/badges/hen_hugger_supremalicious.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/hen_hugger_supremalicious.swf",
+  "k": 2
+ },
+ "assets/badges/hephaestite.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/hephaestite.swf",
+  "k": 2
+ },
+ "assets/badges/hero_of_the_cubimals.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/hero_of_the_cubimals.swf",
+  "k": 2
+ },
+ "assets/badges/hi_and_mighty.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/hi_and_mighty.swf",
+  "k": 2
+ },
+ "assets/badges/hi_as_a_kite.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/hi_as_a_kite.swf",
+  "k": 2
+ },
+ "assets/badges/hi_baller.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/hi_baller.swf",
+  "k": 2
+ },
+ "assets/badges/hi_flyer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/hi_flyer.swf",
+  "k": 2
+ },
+ "assets/badges/hi_priest.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/hi_priest.swf",
+  "k": 2
+ },
+ "assets/badges/hi_speed_chase.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/hi_speed_chase.swf",
+  "k": 2
+ },
+ "assets/badges/hi_velocity.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/hi_velocity.swf",
+  "k": 2
+ },
+ "assets/badges/high_speed_commingler.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/high_speed_commingler.swf",
+  "k": 2
+ },
+ "assets/badges/highranking_supplicant.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/highranking_supplicant.swf",
+  "k": 2
+ },
+ "assets/badges/hill_of_beams.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/hill_of_beams.swf",
+  "k": 2
+ },
+ "assets/badges/hobbyist_gas_fancier.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/hobbyist_gas_fancier.swf",
+  "k": 2
+ },
+ "assets/badges/hollow_leg_award.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/hollow_leg_award.swf",
+  "k": 2
+ },
+ "assets/badges/homesteader.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/homesteader.swf",
+  "k": 2
+ },
+ "assets/badges/honourable_chairperson.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/honourable_chairperson.swf",
+  "k": 2
+ },
+ "assets/badges/hoochhawker.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/hoochhawker.swf",
+  "k": 2
+ },
+ "assets/badges/hoochmeister.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/hoochmeister.swf",
+  "k": 2
+ },
+ "assets/badges/hot_rodmaker.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/hot_rodmaker.swf",
+  "k": 2
+ },
+ "assets/badges/house_party.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/house_party.swf",
+  "k": 2
+ },
+ "assets/badges/humble_bragger.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/humble_bragger.swf",
+  "k": 2
+ },
+ "assets/badges/ice_baby.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/ice_baby.swf",
+  "k": 2
+ },
+ "assets/badges/ice_cruncher.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/ice_cruncher.swf",
+  "k": 2
+ },
+ "assets/badges/ice_ice_baby.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/ice_ice_baby.swf",
+  "k": 2
+ },
+ "assets/badges/icebreaker.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/icebreaker.swf",
+  "k": 2
+ },
+ "assets/badges/ilmenskie_caverns_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/ilmenskie_caverns_completist.swf",
+  "k": 2
+ },
+ "assets/badges/ilmenskie_deeps_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/ilmenskie_deeps_completist.swf",
+  "k": 2
+ },
+ "assets/badges/incubator_par_eggcellence.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/incubator_par_eggcellence.swf",
+  "k": 2
+ },
+ "assets/badges/inspirational_home_improver.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/inspirational_home_improver.swf",
+  "k": 2
+ },
+ "assets/badges/interested_party.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/interested_party.swf",
+  "k": 2
+ },
+ "assets/badges/intermediate_fruit_metamorphosizer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/intermediate_fruit_metamorphosizer.swf",
+  "k": 2
+ },
+ "assets/badges/intermediate_larva_lover.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/intermediate_larva_lover.swf",
+  "k": 2
+ },
+ "assets/badges/intermediate_spice_collector.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/intermediate_spice_collector.swf",
+  "k": 2
+ },
+ "assets/badges/into_the_light.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/into_the_light.swf",
+  "k": 2
+ },
+ "assets/badges/ix_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/ix_completist.swf",
+  "k": 2
+ },
+ "assets/badges/jal_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/jal_completist.swf",
+  "k": 2
+ },
+ "assets/badges/jammy_dodger.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/jammy_dodger.swf",
+  "k": 2
+ },
+ "assets/badges/jethimadh_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/jethimadh_completist.swf",
+  "k": 2
+ },
+ "assets/badges/jiggers_ribbon.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/jiggers_ribbon.swf",
+  "k": 2
+ },
+ "assets/badges/johnny_anyseed.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/johnny_anyseed.swf",
+  "k": 2
+ },
+ "assets/badges/jolly_good_chap.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/jolly_good_chap.swf",
+  "k": 2
+ },
+ "assets/badges/junior_dough_puncher.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/junior_dough_puncher.swf",
+  "k": 2
+ },
+ "assets/badges/junior_irrigationist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/junior_irrigationist.swf",
+  "k": 2
+ },
+ "assets/badges/junior_ok_explorer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/junior_ok_explorer.swf",
+  "k": 2
+ },
+ "assets/badges/kajuu_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/kajuu_completist.swf",
+  "k": 2
+ },
+ "assets/badges/kalavana_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/kalavana_completist.swf",
+  "k": 2
+ },
+ "assets/badges/karnata_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/karnata_completist.swf",
+  "k": 2
+ },
+ "assets/badges/killer_griller.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/killer_griller.swf",
+  "k": 2
+ },
+ "assets/badges/kingslayer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/kingslayer.swf",
+  "k": 2
+ },
+ "assets/badges/kloro_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/kloro_completist.swf",
+  "k": 2
+ },
+ "assets/badges/knight_of_the_kingsguard.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/knight_of_the_kingsguard.swf",
+  "k": 2
+ },
+ "assets/badges/landgrabber.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/landgrabber.swf",
+  "k": 2
+ },
+ "assets/badges/lanternerer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/lanternerer.swf",
+  "k": 2
+ },
+ "assets/badges/leapist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/leapist.swf",
+  "k": 2
+ },
+ "assets/badges/libation_lover.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/libation_lover.swf",
+  "k": 2
+ },
+ "assets/badges/libatious_borage_award.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/libatious_borage_award.swf",
+  "k": 2
+ },
+ "assets/badges/licenced_teleporter_pfft_class.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/licenced_teleporter_pfft_class.swf",
+  "k": 2
+ },
+ "assets/badges/licenced_teleporter_whoa_class.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/licenced_teleporter_whoa_class.swf",
+  "k": 2
+ },
+ "assets/badges/licensed_super_gragarious_glitch_beamer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/licensed_super_gragarious_glitch_beamer.swf",
+  "k": 2
+ },
+ "assets/badges/licensed_teleporter_gee_class.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/licensed_teleporter_gee_class.swf",
+  "k": 2
+ },
+ "assets/badges/lida_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/lida_completist.swf",
+  "k": 2
+ },
+ "assets/badges/little_squirt.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/little_squirt.swf",
+  "k": 2
+ },
+ "assets/badges/loamist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/loamist.swf",
+  "k": 2
+ },
+ "assets/badges/local_yolkel.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/local_yolkel.swf",
+  "k": 2
+ },
+ "assets/badges/loggerator.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/loggerator.swf",
+  "k": 2
+ },
+ "assets/badges/loneliness_of_the_long_distance_cubimal.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/loneliness_of_the_long_distance_cubimal.swf",
+  "k": 2
+ },
+ "assets/badges/long_distance_hi_skipper.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/long_distance_hi_skipper.swf",
+  "k": 2
+ },
+ "assets/badges/lovable_skinflint.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/lovable_skinflint.swf",
+  "k": 2
+ },
+ "assets/badges/loyal_alloyer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/loyal_alloyer.swf",
+  "k": 2
+ },
+ "assets/badges/loyal_tender.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/loyal_tender.swf",
+  "k": 2
+ },
+ "assets/badges/lumber_lover.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/lumber_lover.swf",
+  "k": 2
+ },
+ "assets/badges/mad_gasser.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/mad_gasser.swf",
+  "k": 2
+ },
+ "assets/badges/major_player.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/major_player.swf",
+  "k": 2
+ },
+ "assets/badges/major_tricksy_treater.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/major_tricksy_treater.swf",
+  "k": 2
+ },
+ "assets/badges/make_a_crab_happy.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/make_a_crab_happy.swf",
+  "k": 2
+ },
+ "assets/badges/make_do_and_mender.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/make_do_and_mender.swf",
+  "k": 2
+ },
+ "assets/badges/maniacal_foxbrusher.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/maniacal_foxbrusher.swf",
+  "k": 2
+ },
+ "assets/badges/massadoe_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/massadoe_completist.swf",
+  "k": 2
+ },
+ "assets/badges/master_bean_counter.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/master_bean_counter.swf",
+  "k": 2
+ },
+ "assets/badges/master_blaster.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/master_blaster.swf",
+  "k": 2
+ },
+ "assets/badges/master_carbonifier.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/master_carbonifier.swf",
+  "k": 2
+ },
+ "assets/badges/master_furniturererer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/master_furniturererer.swf",
+  "k": 2
+ },
+ "assets/badges/master_lepidopteral_manipulator.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/master_lepidopteral_manipulator.swf",
+  "k": 2
+ },
+ "assets/badges/master_of_internal_emptiness.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/master_of_internal_emptiness.swf",
+  "k": 2
+ },
+ "assets/badges/master_of_the_hi_coup.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/master_of_the_hi_coup.swf",
+  "k": 2
+ },
+ "assets/badges/master_overlord_of_the_spice_dominion.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/master_overlord_of_the_spice_dominion.swf",
+  "k": 2
+ },
+ "assets/badges/master_whacker.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/master_whacker.swf",
+  "k": 2
+ },
+ "assets/badges/masterful_fruit_tree_pettifier.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/masterful_fruit_tree_pettifier.swf",
+  "k": 2
+ },
+ "assets/badges/mayor_of_sprayerville.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/mayor_of_sprayerville.swf",
+  "k": 2
+ },
+ "assets/badges/mediocre_mixologist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/mediocre_mixologist.swf",
+  "k": 2
+ },
+ "assets/badges/member_of_hi_society.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/member_of_hi_society.swf",
+  "k": 2
+ },
+ "assets/badges/metal_masseuse.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/metal_masseuse.swf",
+  "k": 2
+ },
+ "assets/badges/metalhead.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/metalhead.swf",
+  "k": 2
+ },
+ "assets/badges/middling_mixologist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/middling_mixologist.swf",
+  "k": 2
+ },
+ "assets/badges/middling_tinsmitherer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/middling_tinsmitherer.swf",
+  "k": 2
+ },
+ "assets/badges/midlevel_admixificator.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/midlevel_admixificator.swf",
+  "k": 2
+ },
+ "assets/badges/midlevel_bubble_tree_cuddler.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/midlevel_bubble_tree_cuddler.swf",
+  "k": 2
+ },
+ "assets/badges/midmanagement_fruit_tree_harvester.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/midmanagement_fruit_tree_harvester.swf",
+  "k": 2
+ },
+ "assets/badges/mighty_fine_mulcher.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/mighty_fine_mulcher.swf",
+  "k": 2
+ },
+ "assets/badges/mini_tricksy_treater.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/mini_tricksy_treater.swf",
+  "k": 2
+ },
+ "assets/badges/minor_refiner_blue_class.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/minor_refiner_blue_class.swf",
+  "k": 2
+ },
+ "assets/badges/minor_refiner_green_class.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/minor_refiner_green_class.swf",
+  "k": 2
+ },
+ "assets/badges/minor_refiner_red_class.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/minor_refiner_red_class.swf",
+  "k": 2
+ },
+ "assets/badges/minor_refiner_shiny_class.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/minor_refiner_shiny_class.swf",
+  "k": 2
+ },
+ "assets/badges/minor_tricksy_treater.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/minor_tricksy_treater.swf",
+  "k": 2
+ },
+ "assets/badges/mixed_herbalist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/mixed_herbalist.swf",
+  "k": 2
+ },
+ "assets/badges/monarch_of_the_seven_kingdoms.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/monarch_of_the_seven_kingdoms.swf",
+  "k": 2
+ },
+ "assets/badges/moneybags.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/moneybags.swf",
+  "k": 2
+ },
+ "assets/badges/moneybags_magoo.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/moneybags_magoo.swf",
+  "k": 2
+ },
+ "assets/badges/moonshiner.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/moonshiner.swf",
+  "k": 2
+ },
+ "assets/badges/moste_potente_potioning_medal.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/moste_potente_potioning_medal.swf",
+  "k": 2
+ },
+ "assets/badges/mulcher.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/mulcher.swf",
+  "k": 2
+ },
+ "assets/badges/multi_cultivator.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/multi_cultivator.swf",
+  "k": 2
+ },
+ "assets/badges/muufo_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/muufo_completist.swf",
+  "k": 2
+ },
+ "assets/badges/naraka_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/naraka_completist.swf",
+  "k": 2
+ },
+ "assets/badges/necromonger.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/necromonger.swf",
+  "k": 2
+ },
+ "assets/badges/nervous_belch_award.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/nervous_belch_award.swf",
+  "k": 2
+ },
+ "assets/badges/newbie_fruit_tree_pettifier.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/newbie_fruit_tree_pettifier.swf",
+  "k": 2
+ },
+ "assets/badges/nice_dicer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/nice_dicer.swf",
+  "k": 2
+ },
+ "assets/badges/nighmystical_lepidopteral_manipulator.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/nighmystical_lepidopteral_manipulator.swf",
+  "k": 2
+ },
+ "assets/badges/noble_philanthropizer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/noble_philanthropizer.swf",
+  "k": 2
+ },
+ "assets/badges/noisebringer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/noisebringer.swf",
+  "k": 2
+ },
+ "assets/badges/noted_epicure.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/noted_epicure.swf",
+  "k": 2
+ },
+ "assets/badges/notquitepro_bean_tree_fondler.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/notquitepro_bean_tree_fondler.swf",
+  "k": 2
+ },
+ "assets/badges/notsogrim_reaper.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/notsogrim_reaper.swf",
+  "k": 2
+ },
+ "assets/badges/nottis_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/nottis_completist.swf",
+  "k": 2
+ },
+ "assets/badges/nouveau_whack_job.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/nouveau_whack_job.swf",
+  "k": 2
+ },
+ "assets/badges/novice_fruit_metamorphosizer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/novice_fruit_metamorphosizer.swf",
+  "k": 2
+ },
+ "assets/badges/novice_furniturer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/novice_furniturer.swf",
+  "k": 2
+ },
+ "assets/badges/novice_novitiate.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/novice_novitiate.swf",
+  "k": 2
+ },
+ "assets/badges/novice_precipitator.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/novice_precipitator.swf",
+  "k": 2
+ },
+ "assets/badges/novice_spice_collector.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/novice_spice_collector.swf",
+  "k": 2
+ },
+ "assets/badges/numismatizer_dragon_class.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/numismatizer_dragon_class.swf",
+  "k": 2
+ },
+ "assets/badges/numismatizer_gryphon_class.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/numismatizer_gryphon_class.swf",
+  "k": 2
+ },
+ "assets/badges/numismatizer_leprechaun_class.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/numismatizer_leprechaun_class.swf",
+  "k": 2
+ },
+ "assets/badges/obsessive_compulsive_re_peater.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/obsessive_compulsive_re_peater.swf",
+  "k": 2
+ },
+ "assets/badges/obsessive_gas_fancier.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/obsessive_gas_fancier.swf",
+  "k": 2
+ },
+ "assets/badges/occasional_gas_fancier.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/occasional_gas_fancier.swf",
+  "k": 2
+ },
+ "assets/badges/odd_jobber.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/odd_jobber.swf",
+  "k": 2
+ },
+ "assets/badges/ok_hewer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/ok_hewer.swf",
+  "k": 2
+ },
+ "assets/badges/ok_soaker.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/ok_soaker.swf",
+  "k": 2
+ },
+ "assets/badges/okbutneedsimprovement_tree_hugger.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/okbutneedsimprovement_tree_hugger.swf",
+  "k": 2
+ },
+ "assets/badges/on_thin_ice.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/on_thin_ice.swf",
+  "k": 2
+ },
+ "assets/badges/order_of_the_butterfly_passant.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/order_of_the_butterfly_passant.swf",
+  "k": 2
+ },
+ "assets/badges/order_of_the_chicken_dormant.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/order_of_the_chicken_dormant.swf",
+  "k": 2
+ },
+ "assets/badges/order_of_the_dragon_sejant.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/order_of_the_dragon_sejant.swf",
+  "k": 2
+ },
+ "assets/badges/order_of_the_hoarder.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/order_of_the_hoarder.swf",
+  "k": 2
+ },
+ "assets/badges/order_of_the_manatee_rampant.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/order_of_the_manatee_rampant.swf",
+  "k": 2
+ },
+ "assets/badges/order_of_the_rearing_piggy.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/order_of_the_rearing_piggy.swf",
+  "k": 2
+ },
+ "assets/badges/order_of_the_seventh_seal.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/order_of_the_seventh_seal.swf",
+  "k": 2
+ },
+ "assets/badges/order_of_the_third_otter.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/order_of_the_third_otter.swf",
+  "k": 2
+ },
+ "assets/badges/order_of_the_unicorn_salient.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/order_of_the_unicorn_salient.swf",
+  "k": 2
+ },
+ "assets/badges/ormonos_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/ormonos_completist.swf",
+  "k": 2
+ },
+ "assets/badges/outstanding_coddler.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/outstanding_coddler.swf",
+  "k": 2
+ },
+ "assets/badges/overpaid_executive_fruit_tree_harvester.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/overpaid_executive_fruit_tree_harvester.swf",
+  "k": 2
+ },
+ "assets/badges/pad_pincher.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/pad_pincher.swf",
+  "k": 2
+ },
+ "assets/badges/paper_plucker.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/paper_plucker.swf",
+  "k": 2
+ },
+ "assets/badges/parchment_purloiner.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/parchment_purloiner.swf",
+  "k": 2
+ },
+ "assets/badges/participant.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/participant.swf",
+  "k": 2
+ },
+ "assets/badges/participant_award__bean_division.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/participant_award__bean_division.swf",
+  "k": 2
+ },
+ "assets/badges/paul_bunions.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/paul_bunions.swf",
+  "k": 2
+ },
+ "assets/badges/pennypincher.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/pennypincher.swf",
+  "k": 2
+ },
+ "assets/badges/perseverating_dipsomaniac.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/perseverating_dipsomaniac.swf",
+  "k": 2
+ },
+ "assets/badges/philanthropic_member_of_the_social_construct.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/philanthropic_member_of_the_social_construct.swf",
+  "k": 2
+ },
+ "assets/badges/philter_fiend.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/philter_fiend.swf",
+  "k": 2
+ },
+ "assets/badges/piggy_hash_slinger_1st_class.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/piggy_hash_slinger_1st_class.swf",
+  "k": 2
+ },
+ "assets/badges/piggy_nibbler.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/piggy_nibbler.swf",
+  "k": 2
+ },
+ "assets/badges/plain_crystallizer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/plain_crystallizer.swf",
+  "k": 2
+ },
+ "assets/badges/pollokoo_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/pollokoo_completist.swf",
+  "k": 2
+ },
+ "assets/badges/polymorphous_crystallizer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/polymorphous_crystallizer.swf",
+  "k": 2
+ },
+ "assets/badges/pop_star.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/pop_star.swf",
+  "k": 2
+ },
+ "assets/badges/pork_fondler.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/pork_fondler.swf",
+  "k": 2
+ },
+ "assets/badges/pork_petter_extraordinaire.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/pork_petter_extraordinaire.swf",
+  "k": 2
+ },
+ "assets/badges/post_master.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/post_master.swf",
+  "k": 2
+ },
+ "assets/badges/potion_patron.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/potion_patron.swf",
+  "k": 2
+ },
+ "assets/badges/potionographer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/potionographer.swf",
+  "k": 2
+ },
+ "assets/badges/practical_lepidopteral_manipulator.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/practical_lepidopteral_manipulator.swf",
+  "k": 2
+ },
+ "assets/badges/president_and_ceo_of_fruit_tree_harvesting_inc.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/president_and_ceo_of_fruit_tree_harvesting_inc.swf",
+  "k": 2
+ },
+ "assets/badges/pretty_fine_mulcher.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/pretty_fine_mulcher.swf",
+  "k": 2
+ },
+ "assets/badges/pretty_fine_refiner_blue_class.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/pretty_fine_refiner_blue_class.swf",
+  "k": 2
+ },
+ "assets/badges/pretty_fine_refiner_green_class.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/pretty_fine_refiner_green_class.swf",
+  "k": 2
+ },
+ "assets/badges/pretty_fine_refiner_red_class.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/pretty_fine_refiner_red_class.swf",
+  "k": 2
+ },
+ "assets/badges/pretty_fine_refiner_shiny_class.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/pretty_fine_refiner_shiny_class.swf",
+  "k": 2
+ },
+ "assets/badges/pretty_fly_flycatcher.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/pretty_fly_flycatcher.swf",
+  "k": 2
+ },
+ "assets/badges/pretty_good_griddler.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/pretty_good_griddler.swf",
+  "k": 2
+ },
+ "assets/badges/pretty_good_samaritan.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/pretty_good_samaritan.swf",
+  "k": 2
+ },
+ "assets/badges/professional_bean_tree_fondler.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/professional_bean_tree_fondler.swf",
+  "k": 2
+ },
+ "assets/badges/professional_furniturerer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/professional_furniturerer.swf",
+  "k": 2
+ },
+ "assets/badges/project_enthusiast.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/project_enthusiast.swf",
+  "k": 2
+ },
+ "assets/badges/promising_lush.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/promising_lush.swf",
+  "k": 2
+ },
+ "assets/badges/protein_time.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/protein_time.swf",
+  "k": 2
+ },
+ "assets/badges/pullet_provenderizer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/pullet_provenderizer.swf",
+  "k": 2
+ },
+ "assets/badges/pulse_frappe_mix_blend.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/pulse_frappe_mix_blend.swf",
+  "k": 2
+ },
+ "assets/badges/pumpkin_carver.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/pumpkin_carver.swf",
+  "k": 2
+ },
+ "assets/badges/qualified_artifactologist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/qualified_artifactologist.swf",
+  "k": 2
+ },
+ "assets/badges/qualified_botanical_health_professional.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/qualified_botanical_health_professional.swf",
+  "k": 2
+ },
+ "assets/badges/quick_on_your_feat.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/quick_on_your_feat.swf",
+  "k": 2
+ },
+ "assets/badges/quiet_tragedy.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/quiet_tragedy.swf",
+  "k": 2
+ },
+ "assets/badges/rainbow_brite.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/rainbow_brite.swf",
+  "k": 2
+ },
+ "assets/badges/rainbow_connection.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/rainbow_connection.swf",
+  "k": 2
+ },
+ "assets/badges/rainbow_taster.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/rainbow_taster.swf",
+  "k": 2
+ },
+ "assets/badges/rainmaking_noob.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/rainmaking_noob.swf",
+  "k": 2
+ },
+ "assets/badges/raking_in_the_img.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/raking_in_the_img.swf",
+  "k": 2
+ },
+ "assets/badges/rambler_first_class.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/rambler_first_class.swf",
+  "k": 2
+ },
+ "assets/badges/rambler_second_class.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/rambler_second_class.swf",
+  "k": 2
+ },
+ "assets/badges/rambler_third_class.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/rambler_third_class.swf",
+  "k": 2
+ },
+ "assets/badges/ranger_of_the_nights_watch.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/ranger_of_the_nights_watch.swf",
+  "k": 2
+ },
+ "assets/badges/rasana_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/rasana_completist.swf",
+  "k": 2
+ },
+ "assets/badges/re_peater.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/re_peater.swf",
+  "k": 2
+ },
+ "assets/badges/really_unconfounded_compounder.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/really_unconfounded_compounder.swf",
+  "k": 2
+ },
+ "assets/badges/regular_whack_job.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/regular_whack_job.swf",
+  "k": 2
+ },
+ "assets/badges/respected_tree_doctor.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/respected_tree_doctor.swf",
+  "k": 2
+ },
+ "assets/badges/restorer_of_stuff.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/restorer_of_stuff.swf",
+  "k": 2
+ },
+ "assets/badges/right_honorable_robber_ducker.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/right_honorable_robber_ducker.swf",
+  "k": 2
+ },
+ "assets/badges/rolling_boiler.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/rolling_boiler.swf",
+  "k": 2
+ },
+ "assets/badges/roobrik_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/roobrik_completist.swf",
+  "k": 2
+ },
+ "assets/badges/rook_ranger.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/rook_ranger.swf",
+  "k": 2
+ },
+ "assets/badges/rookie_bubble_tree_cuddler.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/rookie_bubble_tree_cuddler.swf",
+  "k": 2
+ },
+ "assets/badges/roux_guru.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/roux_guru.swf",
+  "k": 2
+ },
+ "assets/badges/rumrunner.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/rumrunner.swf",
+  "k": 2
+ },
+ "assets/badges/sac_bagger.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/sac_bagger.swf",
+  "k": 2
+ },
+ "assets/badges/saint_peater.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/saint_peater.swf",
+  "k": 2
+ },
+ "assets/badges/salatu_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/salatu_completist.swf",
+  "k": 2
+ },
+ "assets/badges/samudra_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/samudra_completist.swf",
+  "k": 2
+ },
+ "assets/badges/saute_savant.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/saute_savant.swf",
+  "k": 2
+ },
+ "assets/badges/seamster.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/seamster.swf",
+  "k": 2
+ },
+ "assets/badges/seasoned_scullery_sleuth.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/seasoned_scullery_sleuth.swf",
+  "k": 2
+ },
+ "assets/badges/second_series_liberator.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/second_series_liberator.swf",
+  "k": 2
+ },
+ "assets/badges/secondbest_bubble_farmer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/secondbest_bubble_farmer.swf",
+  "k": 2
+ },
+ "assets/badges/secondrate_rainmaker.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/secondrate_rainmaker.swf",
+  "k": 2
+ },
+ "assets/badges/self_sufficientiser.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/self_sufficientiser.swf",
+  "k": 2
+ },
+ "assets/badges/semi_pro_decrustifier.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/semi_pro_decrustifier.swf",
+  "k": 2
+ },
+ "assets/badges/senior_admixificator.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/senior_admixificator.swf",
+  "k": 2
+ },
+ "assets/badges/senior_dough_puncher.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/senior_dough_puncher.swf",
+  "k": 2
+ },
+ "assets/badges/senior_mending_manager_kitchen_division.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/senior_mending_manager_kitchen_division.swf",
+  "k": 2
+ },
+ "assets/badges/senior_ok_explorer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/senior_ok_explorer.swf",
+  "k": 2
+ },
+ "assets/badges/senor_sprinkles.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/senor_sprinkles.swf",
+  "k": 2
+ },
+ "assets/badges/sergeant_coppersmith.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/sergeant_coppersmith.swf",
+  "k": 2
+ },
+ "assets/badges/serious_scrabbler.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/serious_scrabbler.swf",
+  "k": 2
+ },
+ "assets/badges/severus_sash.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/severus_sash.swf",
+  "k": 2
+ },
+ "assets/badges/sheet_snatcher.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/sheet_snatcher.swf",
+  "k": 2
+ },
+ "assets/badges/shimla_mirch_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/shimla_mirch_completist.swf",
+  "k": 2
+ },
+ "assets/badges/shiny_nugget_award.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/shiny_nugget_award.swf",
+  "k": 2
+ },
+ "assets/badges/shovel_jockey.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/shovel_jockey.swf",
+  "k": 2
+ },
+ "assets/badges/showered_with_sloth_dribble.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/showered_with_sloth_dribble.swf",
+  "k": 2
+ },
+ "assets/badges/shriner_fortyniner.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/shriner_fortyniner.swf",
+  "k": 2
+ },
+ "assets/badges/shrub_snuggler.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/shrub_snuggler.swf",
+  "k": 2
+ },
+ "assets/badges/significant_insignia_collector.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/significant_insignia_collector.swf",
+  "k": 2
+ },
+ "assets/badges/silver_cleaver_award.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/silver_cleaver_award.swf",
+  "k": 2
+ },
+ "assets/badges/silver_gristle_award.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/silver_gristle_award.swf",
+  "k": 2
+ },
+ "assets/badges/sizzler_supreme.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/sizzler_supreme.swf",
+  "k": 2
+ },
+ "assets/badges/slime_harvester.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/slime_harvester.swf",
+  "k": 2
+ },
+ "assets/badges/slippery_customer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/slippery_customer.swf",
+  "k": 2
+ },
+ "assets/badges/sloth_stuffer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/sloth_stuffer.swf",
+  "k": 2
+ },
+ "assets/badges/slughorn_medallion.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/slughorn_medallion.swf",
+  "k": 2
+ },
+ "assets/badges/sneezeorama.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/sneezeorama.swf",
+  "k": 2
+ },
+ "assets/badges/sociable_susan.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/sociable_susan.swf",
+  "k": 2
+ },
+ "assets/badges/social_butterfly.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/social_butterfly.swf",
+  "k": 2
+ },
+ "assets/badges/social_hi_skipper.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/social_hi_skipper.swf",
+  "k": 2
+ },
+ "assets/badges/somewhat_fly_flycatcher.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/somewhat_fly_flycatcher.swf",
+  "k": 2
+ },
+ "assets/badges/soso_sower.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/soso_sower.swf",
+  "k": 2
+ },
+ "assets/badges/soso_supplicator.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/soso_supplicator.swf",
+  "k": 2
+ },
+ "assets/badges/sparkle_buddy.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/sparkle_buddy.swf",
+  "k": 2
+ },
+ "assets/badges/special_agent_tinkering_ops.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/special_agent_tinkering_ops.swf",
+  "k": 2
+ },
+ "assets/badges/spice_examiner.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/spice_examiner.swf",
+  "k": 2
+ },
+ "assets/badges/spice_intern.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/spice_intern.swf",
+  "k": 2
+ },
+ "assets/badges/spin_doctor.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/spin_doctor.swf",
+  "k": 2
+ },
+ "assets/badges/sprout_stroker.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/sprout_stroker.swf",
+  "k": 2
+ },
+ "assets/badges/stalker_noncreepy_designation.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/stalker_noncreepy_designation.swf",
+  "k": 2
+ },
+ "assets/badges/starter_for_tinsmithery.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/starter_for_tinsmithery.swf",
+  "k": 2
+ },
+ "assets/badges/string_practicioner.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/string_practicioner.swf",
+  "k": 2
+ },
+ "assets/badges/student_of_artifactology.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/student_of_artifactology.swf",
+  "k": 2
+ },
+ "assets/badges/subwayfarer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/subwayfarer.swf",
+  "k": 2
+ },
+ "assets/badges/supafly_flycatcher.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/supafly_flycatcher.swf",
+  "k": 2
+ },
+ "assets/badges/super_awesome_intern_hburger.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/super_awesome_intern_hburger.swf",
+  "k": 2
+ },
+ "assets/badges/super_duper_soaker.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/super_duper_soaker.swf",
+  "k": 2
+ },
+ "assets/badges/super_featy.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/super_featy.swf",
+  "k": 2
+ },
+ "assets/badges/super_saucier.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/super_saucier.swf",
+  "k": 2
+ },
+ "assets/badges/super_soaker.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/super_soaker.swf",
+  "k": 2
+ },
+ "assets/badges/super_supreme_egg_plant_coddler.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/super_supreme_egg_plant_coddler.swf",
+  "k": 2
+ },
+ "assets/badges/super_tricksy_treater.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/super_tricksy_treater.swf",
+  "k": 2
+ },
+ "assets/badges/superior_irrigationist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/superior_irrigationist.swf",
+  "k": 2
+ },
+ "assets/badges/superior_mixologist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/superior_mixologist.swf",
+  "k": 2
+ },
+ "assets/badges/supreme_egg_plant_coddler.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/supreme_egg_plant_coddler.swf",
+  "k": 2
+ },
+ "assets/badges/sura_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/sura_completist.swf",
+  "k": 2
+ },
+ "assets/badges/swine_snuggler.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/swine_snuggler.swf",
+  "k": 2
+ },
+ "assets/badges/tahli_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/tahli_completist.swf",
+  "k": 2
+ },
+ "assets/badges/tamila_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/tamila_completist.swf",
+  "k": 2
+ },
+ "assets/badges/team_player.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/team_player.swf",
+  "k": 2
+ },
+ "assets/badges/tentative_petter.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/tentative_petter.swf",
+  "k": 2
+ },
+ "assets/badges/the_candyglitch.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/the_candyglitch.swf",
+  "k": 2
+ },
+ "assets/badges/the_cigar.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/the_cigar.swf",
+  "k": 2
+ },
+ "assets/badges/the_dampinator.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/the_dampinator.swf",
+  "k": 2
+ },
+ "assets/badges/the_hugginator.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/the_hugginator.swf",
+  "k": 2
+ },
+ "assets/badges/the_hydrophile.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/the_hydrophile.swf",
+  "k": 2
+ },
+ "assets/badges/the_imp.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/the_imp.swf",
+  "k": 2
+ },
+ "assets/badges/the_kindness_of_strangers.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/the_kindness_of_strangers.swf",
+  "k": 2
+ },
+ "assets/badges/the_saturator.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/the_saturator.swf",
+  "k": 2
+ },
+ "assets/badges/the_swarm.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/the_swarm.swf",
+  "k": 2
+ },
+ "assets/badges/thrash_metallurgist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/thrash_metallurgist.swf",
+  "k": 2
+ },
+ "assets/badges/threader_of_renown.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/threader_of_renown.swf",
+  "k": 2
+ },
+ "assets/badges/timber_jack.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/timber_jack.swf",
+  "k": 2
+ },
+ "assets/badges/timber_nut.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/timber_nut.swf",
+  "k": 2
+ },
+ "assets/badges/tinker_trainee_kitchen_division.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/tinker_trainee_kitchen_division.swf",
+  "k": 2
+ },
+ "assets/badges/tool_artiste.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/tool_artiste.swf",
+  "k": 2
+ },
+ "assets/badges/toolie_apprentice.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/toolie_apprentice.swf",
+  "k": 2
+ },
+ "assets/badges/toolsmith.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/toolsmith.swf",
+  "k": 2
+ },
+ "assets/badges/toolwright.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/toolwright.swf",
+  "k": 2
+ },
+ "assets/badges/top_tinsmith.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/top_tinsmith.swf",
+  "k": 2
+ },
+ "assets/badges/total_tool.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/total_tool.swf",
+  "k": 2
+ },
+ "assets/badges/tower_secret_areas.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/tower_secret_areas.swf",
+  "k": 2
+ },
+ "assets/badges/trader_carl.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/trader_carl.swf",
+  "k": 2
+ },
+ "assets/badges/trader_joe.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/trader_joe.swf",
+  "k": 2
+ },
+ "assets/badges/trader_vic.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/trader_vic.swf",
+  "k": 2
+ },
+ "assets/badges/trainee_tree_medic.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/trainee_tree_medic.swf",
+  "k": 2
+ },
+ "assets/badges/transrational_meat_aficionado.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/transrational_meat_aficionado.swf",
+  "k": 2
+ },
+ "assets/badges/trigger_happy_trap_duster.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/trigger_happy_trap_duster.swf",
+  "k": 2
+ },
+ "assets/badges/twinkle_toed_trap_triggerer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/twinkle_toed_trap_triggerer.swf",
+  "k": 2
+ },
+ "assets/badges/uberculturalist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/uberculturalist.swf",
+  "k": 2
+ },
+ "assets/badges/unconfounded_compounder.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/unconfounded_compounder.swf",
+  "k": 2
+ },
+ "assets/badges/unlicenced_teleporter_f_class.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/unlicenced_teleporter_f_class.swf",
+  "k": 2
+ },
+ "assets/badges/unlicensed_teleporter_g_class.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/unlicensed_teleporter_g_class.swf",
+  "k": 2
+ },
+ "assets/badges/unlicensed_teleporter_n_class.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/unlicensed_teleporter_n_class.swf",
+  "k": 2
+ },
+ "assets/badges/unlicensed_teleporter_z_class.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/unlicensed_teleporter_z_class.swf",
+  "k": 2
+ },
+ "assets/badges/up_n_comer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/up_n_comer.swf",
+  "k": 2
+ },
+ "assets/badges/uralia_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/uralia_completist.swf",
+  "k": 2
+ },
+ "assets/badges/vantalu_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/vantalu_completist.swf",
+  "k": 2
+ },
+ "assets/badges/walking_frozed.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/walking_frozed.swf",
+  "k": 2
+ },
+ "assets/badges/wanderer.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/wanderer.swf",
+  "k": 2
+ },
+ "assets/badges/wannabe_fly_flycatcher.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/wannabe_fly_flycatcher.swf",
+  "k": 2
+ },
+ "assets/badges/water_wings.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/water_wings.swf",
+  "k": 2
+ },
+ "assets/badges/wet_william.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/wet_william.swf",
+  "k": 2
+ },
+ "assets/badges/whack_job_deluxe.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/whack_job_deluxe.swf",
+  "k": 2
+ },
+ "assets/badges/whack_job_extraordinaire.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/whack_job_extraordinaire.swf",
+  "k": 2
+ },
+ "assets/badges/whizbang_plantifier.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/whizbang_plantifier.swf",
+  "k": 2
+ },
+ "assets/badges/wood_abettor.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/wood_abettor.swf",
+  "k": 2
+ },
+ "assets/badges/wood_wacker.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/wood_wacker.swf",
+  "k": 2
+ },
+ "assets/badges/workaholist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/workaholist.swf",
+  "k": 2
+ },
+ "assets/badges/world_class_traveler.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/world_class_traveler.swf",
+  "k": 2
+ },
+ "assets/badges/world_class_tree_surgeon.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/world_class_tree_surgeon.swf",
+  "k": 2
+ },
+ "assets/badges/xalanga_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/xalanga_completist.swf",
+  "k": 2
+ },
+ "assets/badges/you_have_papers.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/you_have_papers.swf",
+  "k": 2
+ },
+ "assets/badges/zhambu_completist.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/zhambu_completist.swf",
+  "k": 2
+ },
+ "assets/badges/zombie.webp": {
+  "swf": "~/Documents/glitch-audit/glitch-items/achievements/zombie.swf",
+  "k": 2
+ },
  "assets/sprites/animals/piggy_feeder.webp": {
   "swf": "~/Documents/glitch-audit/glitch-items/misc/piggy_feeder/piggy_feeder.swf",
   "frame": 2
