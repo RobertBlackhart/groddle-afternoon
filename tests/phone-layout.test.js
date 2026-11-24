@@ -732,3 +732,142 @@ describe('the buff strip has its own slot (Austin 2026-11-24)', () => {
     assert.match(pl, /buffs: shown\(buffEl\) \? \{ w: buffEl\.offsetWidth, h: buffEl\.offsetHeight \} : null,/);
   });
 });
+
+// Austin's iPhone 2026-11-24 (the Home Screen app upright, "Your House", a yard with a Crop Garden):
+// Decorate, Cultivate and Change Style stood over the stats and the icon pill (about 108 to 138 pt),
+// hiding the counts and icons. #homes-modes kept a fixed top from before layout C (homes-feature 92 px,
+// style.css PHONE6 2 x hud-h + 20 px), never taking the top inset, and layout C gave it no region. Now
+// the home's buttons (and Decoration Mode's banner) have their own row under the caption, the buff
+// strip and the notices under it.
+describe('the home\'s buttons have their own row (Austin 2026-11-24)', () => {
+  const ROW = { w: 274, h: 26 }; // Decorate, Cultivate, Change Style
+  const cases = [
+    ['Safari tab, 402x874', { width: 402, height: 874, safe: { t: 76, b: 34 } }],
+    ['Home Screen app, 402x874', { width: 402, height: 874, safe: { t: HOME_T, b: 34 } }],
+    ['375x667', { width: 375, height: 667, safe: { t: 14 } }],
+    ['sideways', { width: 874, height: 402, safe: { l: 62, r: 62, b: 21 }, captionUnder: false }],
+  ];
+  for (const [name, at] of cases) {
+    for (const buffs of [null, { w: 60, h: 38 }]) {
+      it(`${name}${buffs ? ', with a buff' : ''}: clear of the pills, the caption and its taps, the buffs, the notices, the pinned quest and the controls`, () => {
+        const r = phoneRegions({ ...at, caption: { w: 220, h: 26 }, pin: { w: 200, h: 56 }, buffs, homes: ROW });
+        assert.ok(r.homes, 'a row for the home\'s buttons');
+        assert.equal(r.homes.bottom - r.homes.top, ROW.h);
+        assert.equal(r.homes.left, (at.safe.l || 0) + 8, 'at the left, inside the safe area');
+        const capTaps = Math.ceil((r.caption.top + r.caption.bottom) / 2 + TAP_H / 2);
+        assert.ok(r.homes.top >= Math.max(r.strip.bottom, at.captionUnder === false ? 0 : Math.max(r.caption.bottom, capTaps)), 'under the pills, the caption and its taps');
+        if (buffs) assert.ok(r.buffs.top >= r.homes.bottom + GAP, 'the buff strip under it');
+        assert.ok(r.notices.top >= r.homes.bottom + GAP, 'the notices under it');
+        assert.deepEqual(layoutProblems(r, { width: at.width, height: at.height, allow: at.captionUnder === false ? [['strip', 'caption']] : [] }), []);
+      });
+    }
+  }
+  it('wraps on a narrow phone rather than run off it, and none shows: no row, the buffs where they were', () => {
+    const narrow = phoneRegions({ width: 320, height: 568, caption: { w: 200, h: 26 }, homes: { w: 400, h: 60 } });
+    assert.ok(narrow.homes.right <= 320 - 8);
+    const none = phoneRegions({ width: 402, height: 874, safe: { t: 76 }, caption: { w: 220, h: 26 } });
+    const homes = phoneRegions({ width: 402, height: 874, safe: { t: 76 }, caption: { w: 220, h: 26 }, homes: ROW });
+    assert.equal(none.homes, null);
+    assert.equal(homes.homes.top, none.buffs.top, 'the row takes the slot the buffs had');
+  });
+  it('beside a sideways half sheet it stands right of the column; under the Map it waits', () => {
+    const half = phoneRegions({ width: 874, height: 402, safe: { l: 62, r: 62 }, sheet: 'half', captionUnder: false, caption: { w: 220, h: 26 }, homes: ROW, buffs: { w: 60, h: 38 } });
+    assert.ok(half.homes.left >= half.sheet.right && !boxesOverlap(half.homes, half.buffs) && !boxesOverlap(half.homes, half.notices));
+    assert.equal(phoneRegions({ width: 402, height: 874, sheet: 'map', homes: ROW }).homes, null);
+  });
+  it('the layout pass measures the row (or the banner) and style.css seats both in it, over the old fixed tops', () => {
+    const pl = read('public/js/ui/phone-layout.js');
+    assert.match(pl, /const homesEl = doc\.getElementById\('homes-modes'\);/);
+    assert.match(pl, /set\('--pr-homes-t', homesAt\.top\);/);
+    assert.match(css, /:root\.phone-layout\[data-ui="modern"\] #game-root #homes-modes \{\n  top: var\(--pr-homes-t,/);
+    assert.match(css, /:root\.phone-layout\[data-ui="modern"\] #game-root \.hb-builder \.hb-banner \{\n  top: var\(--pr-homes-t,/);
+    assert.match(css, /:root\.phone-layout\[data-ui="modern"\] #game-root #homes-sign \{ top: var\(--pr-notice-t,/);
+  });
+});
+
+describe('the home\'s buttons on the real game (Chrome, Austin 2026-11-24)', { skip: !chromium && 'no playwright' }, () => {
+  const LOCK_WAIT_MS = 30 * 60_000;
+  const UA = 'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.0 Mobile/15E148 Safari/604.1';
+  let server = null;
+  let chrome = null;
+  before(async () => {
+    const { openBrowser } = await import('../tools/qa/browser.mjs');
+    const { startServer } = await import('../tools/qa/serve.mjs');
+    chrome = await openBrowser({ label: 'phone-layout home buttons test', waitMs: LOCK_WAIT_MS });
+    server = await startServer({ root: join(root, 'public') });
+  }, { timeout: LOCK_WAIT_MS + 60_000 });
+  after(async () => {
+    await chrome?.close();
+    await server?.stop();
+  });
+
+  // The Home Screen app: the class hook and a 62 px inset (Chrome has no env() inset, so --safe-t is set
+  // as style.css resolves it there: 62 + --ios-fog-clear); a Safari tab: 62 + 14.
+  const SIZES_HOME = [
+    ['Safari tab 402x874', 402, 874, 62 + 14, 0, false],
+    ['Home Screen app 402x874', 402, 874, HOME_T, 0, true],
+    ['375x667', 375, 667, 14, 0, false],
+    ['sideways 874x402', 874, 402, 0, 62, false],
+  ];
+  for (const [place, q] of [['in the house', 'homedemo=interior'], ['Decoration Mode', 'homedemo=decorate']]) {
+    it(`${place}: the row keeps off the pills, the caption, the notices, the controls and the pack row`, { timeout: 180_000 }, async () => {
+      const base = `http://127.0.0.1:${server.address().port}`;
+      const ctx = await chrome.browser.newContext({ viewport: { width: 402, height: 874 }, isMobile: true, hasTouch: true, deviceScaleFactor: 1, userAgent: UA });
+      await ctx.addInitScript(() => { try { localStorage.setItem('groddle-play-device', 'qa-game'); } catch { /* none */ } });
+      const tab = await ctx.newPage();
+      const errors = [];
+      tab.on('pageerror', (e) => errors.push(e.message));
+      await tab.goto(`${base}/play/?autostart=1&questoffer=off&hstip=0&fresh=1&resetgame=1&${q}`);
+      await tab.waitForFunction(() => !document.body.classList.contains('is-booting') && document.getElementById('overlay')?.classList.contains('hidden') && document.documentElement.classList.contains('phone-layout'), null, { timeout: 60_000 });
+      await tab.waitForTimeout(2000);
+      const bad = [];
+      for (const [name, w, h, st, sx, app] of SIZES_HOME) {
+        await tab.setViewportSize({ width: w, height: h });
+        await tab.evaluate(([st, sx, app]) => {
+          const html = document.documentElement;
+          html.classList.toggle('ios-home-app', app);
+          html.style.setProperty('--safe-t', `${st}px`);
+          html.style.setProperty('--safe-l', `${sx}px`);
+          html.style.setProperty('--safe-r', `${sx}px`);
+          dispatchEvent(new Event('resize'));
+          window.groddleQA?.notify?.notice('A notice for the layout check, long enough for two lines on a phone.', 6000);
+        }, [st, sx, app]);
+        await tab.waitForTimeout(900);
+        const boxes = await tab.evaluate(() => {
+          const seen = (el) => el && el.checkVisibility({ visibilityProperty: true, opacityProperty: true }) && el.getBoundingClientRect().width > 0;
+          const rect = (el) => {
+            const r = el.getBoundingClientRect();
+            return { left: r.left, top: r.top, right: r.right, bottom: r.bottom };
+          };
+          const pieces = {
+            stats: document.getElementById('hud-stats'),
+            pill: document.querySelector('.top-bar .top-actions'),
+            caption: document.getElementById('street-nameplate'),
+            homes: document.getElementById('homes-modes'),
+            banner: document.querySelector('#game-root .hb-builder:not([hidden]) .hb-banner'),
+            buffs: document.getElementById('buff-strip'),
+            notices: document.querySelector('.notify-notices:not(.is-waiting)'),
+            stick: document.querySelector('.touch-stick'),
+            act: document.querySelector('.touch-act'),
+            jump: document.querySelector('.touch-jump'),
+            pack: document.getElementById('pack-row'),
+          };
+          const out = {};
+          for (const [k, el] of Object.entries(pieces)) if (seen(el) && (k !== 'notices' || el.children.length)) out[k] = rect(el);
+          return out;
+        });
+        const row = boxes.homes || boxes.banner;
+        if (!row) bad.push(`${name}: no home row`);
+        else {
+          // The builder's own tray and controls are its business (Decoration Mode's tray takes the pack's place).
+          for (const k of ['stats', 'pill', 'caption', 'buffs', 'notices', 'stick', 'act', 'jump', 'pack']) {
+            if (boxes[k] && boxesOverlap(row, boxes[k])) bad.push(`${name}: the home row ${JSON.stringify(row)} overlaps ${k} ${JSON.stringify(boxes[k])}`);
+          }
+        }
+      }
+      await ctx.close();
+      assert.deepEqual(bad, []);
+      assert.deepEqual(errors, []);
+    });
+  }
+});

@@ -15625,6 +15625,32 @@ body.is-booting .touch-controls { display: none; }
 :root.phone-layout[data-ui="modern"] #game-root:not([data-sheet]) .route-gps {
   top: max(calc(2 * var(--hud-h) + var(--space-4) + var(--safe-t, 0px) + max(var(--minimap-h, 0px), var(--pins-room, 0px))), calc(var(--pr-buffs-b, 0px) + var(--space-2)));
 }
+/* The home's buttons (Austin's iPhone 2026-11-24, upright in "Your House": Decorate, Cultivate and Change
+   Style stood over the stats and the icon pill, at a fixed top from before layout C that never took the
+   top inset): their own row from js/ui/phone-layout.js, under the caption at the left (under the pills
+   sideways, beside a sideways half sheet), the buttons wrapping in it; the buff strip and the notices
+   stand under it. Decoration Mode's banner takes the same row while it is open. Under the Map they wait. */
+:root.phone-layout[data-ui="modern"] #game-root #homes-modes {
+  top: var(--pr-homes-t, calc(2 * var(--hud-h) + var(--space-4) + var(--safe-t)));
+  left: var(--pr-homes-l, calc(var(--hud-inset) + var(--safe-l)));
+  transform: none;
+  max-width: calc(100% - var(--pr-homes-l, 8px) - 8px - var(--safe-r));
+  flex-wrap: wrap;
+}
+:root.phone-layout[data-ui="modern"] #game-root .hb-builder .hb-banner {
+  top: var(--pr-homes-t, calc(2 * var(--hud-h) + var(--space-4) + var(--safe-t)));
+  left: var(--pr-homes-l, calc(var(--hud-inset) + var(--safe-l)));
+  right: auto;
+  transform: none;
+  max-width: calc(100% - var(--pr-homes-l, 8px) - 8px - var(--safe-r));
+}
+:root.phone-layout[data-ui="modern"][data-phone-sheet="map"] #game-root :is(#homes-modes, .hb-banner) { visibility: hidden; }
+/* Beside an open sheet the buff strip keeps the sheet's left (#125) but stands in its slot too, under the
+   home's row: its older top there never took the top inset either. */
+:root.phone-layout[data-ui="modern"] #game-root[data-sheet] :is(#buff-strip, #quest-pins ~ #buff-strip) { top: var(--pr-buffs-t, calc(2 * var(--hud-h) + var(--space-4) + var(--safe-t))); }
+/* The street sign's and the Magic Rock's dialog (HouseSignDialog.as) stood at a fixed 132 px, over the
+   caption and favor on a phone: it opens under them, at the notices' top. */
+:root.phone-layout[data-ui="modern"] #game-root #homes-sign { top: var(--pr-notice-t, calc(2 * var(--hud-h) + var(--space-4) + var(--safe-t))); }
 /* No room for the pinned quest clear of the controls (js/ui/phone-layout.js): it waits. */
 :root.phone-layout[data-ui="modern"][data-phone-pin="off"] #game-root #quest-pins { visibility: hidden; }
 /* A sheet or an open bag covers the street's floor: the controls and the pinned quest wait. */

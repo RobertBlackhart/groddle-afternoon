@@ -13,6 +13,9 @@
  * - caption: the street's name as a plain caption under the stats (between the pills sideways),
  *   with the street map's button on it, instead of a second row of pill, and favor with the
  *   street's Giant at its end, so the stats keep room for whole counts (#595);
+ * - homes: at home (the street, the house, its yard, a Tower floor) the home's buttons (Decorate,
+ *   Cultivate, Change Style), or Decoration Mode's banner while it is open: a row under the caption at
+ *   the left, the buttons wrapping in it, the buff strip under it (Austin's iPhone 2026-11-24);
  * - notices: the top-centre stack under the caption, down to the controls, the pinned quest or the
  *   open sheet; notices, tips and toasts go here and never land on the strip (js/notify-view.js
  *   `region`);
@@ -76,12 +79,15 @@ const num = (v, d = 0) => (Number.isFinite(Number(v)) ? Number(v) : d);
  * (pin null when nothing is pinned; null in the result when it has no room clear of the controls);
  * `controls` the measured { stick, act, jump } boxes where the page has them; `captionUnder` whether the caption sits under the strip (upright,
  * and sideways when the pills leave it no room: topbar.js .is-under); `buffs` the buff strip's measured
- * { w, h } (null when no buff shows). Returns { upright, strip, caption, buffs, notices, pin, stick, act,
+ * { w, h } (null when no buff shows). Returns { upright, strip, caption, homes, buffs, notices, pin, stick, act,
  * jump, pack, sheet, dock } (boxes { left, top, right, bottom }, null where a piece has no room or
  * is covered; dock is what engine.setStageDock takes). `buffs` is the buff strip's slot: under the
- * caption at the left, as tall as the strip (0 tall with no buff), the notices under it.
+ * caption at the left, as tall as the strip (0 tall with no buff), the notices under it. `homes` the
+ * measured { w, h } of the home's buttons row (Decorate, Cultivate, Change Style; or Decoration Mode's
+ * banner), null when none shows: its slot `homes` is under the caption at the left, the buff strip
+ * under it (null in the result when none shows).
  */
-export function phoneRegions({ width, height, safe = {}, sheet = '', pack = null, packShown = true, bagTop = NaN, caption = null, captionUnder = null, pin = null, controls = null, buffs = null } = {}) {
+export function phoneRegions({ width, height, safe = {}, sheet = '', pack = null, packShown = true, bagTop = NaN, caption = null, captionUnder = null, pin = null, controls = null, buffs = null, homes = null } = {}) {
   const W = Math.max(0, num(width));
   const H = Math.max(0, num(height));
   const st = Math.max(0, num(safe.t));
@@ -121,8 +127,16 @@ export function phoneRegions({ width, height, safe = {}, sheet = '', pack = null
   // its own slot under the caption (under the strip sideways) at the left, clear of the caption's taps
   // (G1222); the notices start under it. Its width is the row's; the chips wrap in it.
   const capTapsAt = Math.ceil((captionBox.top + captionBox.bottom) / 2 + TAP_H / 2);
-  const buffTop = Math.max(under, capTapsAt) + GAP;
+  const rowTop = Math.max(under, capTapsAt) + GAP;
   const buffLeft = sl + EDGE;
+  // The home's buttons (Austin's iPhone 2026-11-24, "Your House": Decorate, Cultivate and Change Style
+  // stood over the stats and the icon pill, at a fixed top from before layout C): their own row first
+  // under the caption at the left (under the strip sideways), the buttons wrapping in it; the buff
+  // strip under them. Decoration Mode's banner takes the same row while it is open.
+  const homesH = Math.max(0, num(homes?.h));
+  const homesW = Math.max(0, Math.min(num(homes?.w), W - sr - EDGE - buffLeft));
+  let homesBox = homesH > 0 && homesW > 0 ? box(buffLeft, rowTop, buffLeft + homesW, rowTop + homesH) : null;
+  const buffTop = homesBox ? homesBox.bottom + GAP : rowTop;
   const buffH = Math.max(0, num(buffs?.h));
   const buffW = Math.max(0, Math.min(num(buffs?.w), W - sr - EDGE - buffLeft));
   let buffBox = box(buffLeft, buffTop, buffLeft + (buffH ? buffW : W - sr - EDGE - buffLeft), buffTop + buffH);
@@ -138,7 +152,7 @@ export function phoneRegions({ width, height, safe = {}, sheet = '', pack = null
       ? box(stick.left, stick.top - GAP - ph, stick.left + pw, stick.top - GAP)
       : box(stick.right + GAP, base - ph, stick.right + GAP + pw, base);
     // No room clear of the controls, the caption or the pack row: it waits (hidden) rather than cover one.
-    const keep = [stick, act, jump, packBox, captionBox, strip, buffShown ? buffBox : null].filter(Boolean);
+    const keep = [stick, act, jump, packBox, captionBox, strip, buffShown ? buffBox : null, homesBox].filter(Boolean);
     if (pinBox.top < Math.max(capUnder ? captionBox.bottom : strip.bottom, buffFloor) + GAP || keep.some((b) => boxesOverlap(pinBox, b))) pinBox = null;
   }
 
@@ -173,8 +187,13 @@ export function phoneRegions({ width, height, safe = {}, sheet = '', pack = null
   const capTaps = captionBox ? Math.ceil((captionBox.top + captionBox.bottom) / 2 + TAP_H / 2) : 0;
   // A sideways half sheet's column takes the left: the buff strip stands beside it, as it did before.
   if (!upright && kind === 'half') buffBox = box(sheetBox.right + EDGE, buffBox.top, sheetBox.right + EDGE + (buffBox.right - buffBox.left), buffBox.bottom);
-  if (kind === 'map') buffBox = null;
-  const top = Math.max(under, capTaps, buffShown && buffBox ? buffBox.bottom : 0) + GAP;
+  // The home's row too, kept inside the room beside the column (it wraps there).
+  if (!upright && kind === 'half' && homesBox) homesBox = box(sheetBox.right + EDGE, homesBox.top, Math.min(W - sr - EDGE, sheetBox.right + EDGE + (homesBox.right - homesBox.left)), homesBox.bottom);
+  if (kind === 'map') {
+    buffBox = null;
+    homesBox = null;
+  }
+  const top = Math.max(under, capTaps, buffShown && buffBox ? buffBox.bottom : 0, homesBox ? homesBox.bottom : 0) + GAP;
   let bottom = floor - GAP;
   if (kind === 'map') bottom = top;
   else if (kind === 'half' && upright) bottom = sheetBox.top - GAP;
@@ -191,7 +210,7 @@ export function phoneRegions({ width, height, safe = {}, sheet = '', pack = null
       ? { side: 'bottom', css: H - sheetBox.top, zoom: true }
       : { side: 'left', css: sheetBox.right, zoom: true };
   }
-  return { upright, strip: stripBox, caption: captionBox, buffs: buffBox, notices, pin: pinBox, stick, act, jump, pack: packBox, sheet: sheetBox, dock };
+  return { upright, strip: stripBox, caption: captionBox, homes: homesBox, buffs: buffBox, notices, pin: pinBox, stick, act, jump, pack: packBox, sheet: sheetBox, dock };
 }
 
 /**
@@ -245,7 +264,7 @@ export function boxesOverlap(a, b) {
 }
 
 /** The pieces the layout keeps apart. */
-export const REGION_NAMES = Object.freeze(['strip', 'caption', 'buffs', 'notices', 'pin', 'stick', 'act', 'jump', 'pack', 'sheet']);
+export const REGION_NAMES = Object.freeze(['strip', 'caption', 'homes', 'buffs', 'notices', 'pin', 'stick', 'act', 'jump', 'pack', 'sheet']);
 
 /**
  * PURE: what is wrong with a layout: every pair of named boxes that overlap and any box off the
@@ -510,6 +529,17 @@ export function mountPhoneLayout({ doc = globalThis.document, root, sheets = {},
     const plate = doc.getElementById('street-nameplate');
     const pins = doc.getElementById('quest-pins');
     const buffEl = doc.getElementById('buff-strip');
+    // The home's buttons, or Decoration Mode's banner (its note under it too) while it is open.
+    const homesEl = doc.getElementById('homes-modes');
+    const banner = doc.querySelector('#game-root .hb-builder:not([hidden]) .hb-banner');
+    let homes = null;
+    if (shown(homesEl)) homes = { w: homesEl.offsetWidth, h: homesEl.offsetHeight };
+    else if (shown(banner)) {
+      const b = rectOf(banner);
+      const note = banner.querySelector('.hb-banner-note');
+      const foot = shown(note) ? Math.max(b.bottom, rectOf(note).bottom) : b.bottom;
+      homes = { w: b.right - b.left, h: foot - b.top };
+    }
     const regions = phoneRegions({
       width: rr.width,
       height: rr.height,
@@ -522,6 +552,7 @@ export function mountPhoneLayout({ doc = globalThis.document, root, sheets = {},
       captionUnder: rr.height > rr.width || Boolean(plate?.classList.contains('is-under')),
       pin: pins && !pins.hidden && pins.getClientRects().length ? { w: pins.offsetWidth, h: pins.offsetHeight } : null,
       buffs: shown(buffEl) ? { w: buffEl.offsetWidth, h: buffEl.offsetHeight } : null,
+      homes,
       controls: Object.fromEntries(['stick', 'act', 'jump'].map((k) => {
         const el = doc.querySelector(`#game-root .touch-${k}`);
         const r = el?.getClientRects().length ? shift(rectOf(el)) : null;
@@ -547,7 +578,14 @@ export function mountPhoneLayout({ doc = globalThis.document, root, sheets = {},
     if (regions.buffs) {
       set('--pr-buffs-t', regions.buffs.top);
       set('--pr-buffs-l', regions.buffs.left);
-      set('--pr-buffs-b', regions.buffs.bottom > regions.buffs.top ? regions.buffs.bottom : 0);
+      set('--pr-buffs-b', Math.max(regions.buffs.bottom > regions.buffs.top ? regions.buffs.bottom : 0, regions.homes ? regions.homes.bottom : 0));
+    }
+    // The home's buttons' row (style.css PHONE LAYOUT): its top and left; with nothing shown yet it
+    // still has a place (the caption's foot) so the row first measures where it will stand.
+    const homesAt = regions.homes || regions.buffs;
+    if (homesAt) {
+      set('--pr-homes-t', homesAt.top);
+      set('--pr-homes-l', homesAt.left);
     }
     set('--pr-notice-t', regions.notices.top);
     set('--pr-sheet-t', sh ? sh.top : 0);
