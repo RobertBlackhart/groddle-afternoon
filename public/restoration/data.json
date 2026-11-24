@@ -2814,9 +2814,14 @@
   "deployed": "2026-11-24"
  },
  "git": {
-  "commits": 3383,
+  "commits": 3385,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-24",
+    "kind": "fix",
+    "text": "On a phone the home's buttons have their own row under your home's name"
+   },
    {
     "date": "2026-11-24",
     "kind": "improve",
@@ -2931,11 +2936,6 @@
     "date": "2026-11-23",
     "kind": "new",
     "text": "The phone page has an Account tab: email, password, Change name and your profile"
-   },
-   {
-    "date": "2026-11-23",
-    "kind": "fix",
-    "text": "Pot's Cornucopia is the size of Glitch's Cornucopia of Crops, not a cabinet"
    }
   ]
  },
