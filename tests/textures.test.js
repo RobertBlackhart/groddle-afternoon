@@ -312,3 +312,36 @@ describe('#662: a street deco whose image failed once comes back on the next ask
     assert.equal(T.imageFailureLine(), '');
   });
 });
+
+// #662 follow-up: the scene tests' fake Pixi (tests/fake-scene.js) hands back one proxy for every
+// `new ImageSource()` and answers every symbol key with itself. startLoad read the load state back off
+// the source, got the proxy, and the load's promise went without its catch: an unhandled rejection
+// whenever an image failed (Node's Image is missing there). The state is now passed in.
+describe('#662: a failed load leaves no unhandled rejection, whatever the source object is', () => {
+  it('a source that answers every symbol with itself still gets its load promise caught', async () => {
+    const chain = new Proxy(function chainFn() {}, {
+      get: (t, k) => (k === Symbol.toPrimitive ? () => 0 : k === 'then' ? undefined : chain),
+      apply: () => chain,
+      construct: () => chain,
+    });
+    const keepPixi = globalThis.PIXI;
+    const keepImage = globalThis.Image;
+    const seen = [];
+    const onUnhandled = (reason) => seen.push(String(reason));
+    process.on('unhandledRejection', onUnhandled);
+    try {
+      globalThis.PIXI = new Proxy({}, { get: () => chain });
+      globalThis.Image = undefined; // as in those tests: every load fails
+      const url = 'assets/decos/stand-in-source-missing.png';
+      T.textureFromUrl(url);
+      T.textureFromUrl(url); // asked again: no retry on a state this module did not make
+      await new Promise((r) => setTimeout(r, 20));
+      await new Promise((r) => setImmediate(r));
+    } finally {
+      globalThis.PIXI = keepPixi;
+      globalThis.Image = keepImage;
+      process.off('unhandledRejection', onUnhandled);
+    }
+    assert.deepEqual(seen, []);
+  });
+});

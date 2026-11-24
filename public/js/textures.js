@@ -266,13 +266,16 @@ function createSource(url, opts) {
   // attempts, failedAt: #662's retry (startLoad, retryIfDue).
   const state = { url, opts, resolution, loaded: false, failed: false, promise: null, holds: 0, shared: false, own: false, attempts: 0, failedAt: 0 };
   source[LOAD] = state;
-  startLoad(source);
+  startLoad(source, state);
   return source;
 }
 
-/** Load (or, #662, load again) a source's image and fill it in place. */
-function startLoad(source) {
-  const state = source[LOAD];
+/**
+ * Load (or, #662, load again) a source's image and fill it in place. `state` is passed in, never read
+ * back off the source: a stand-in source (the tests' fake Pixi) may answer every symbol key with
+ * itself, and the load's own promise would then go without its catch (an unhandled rejection).
+ */
+function startLoad(source, state) {
   const { url, opts, resolution } = state;
   state.attempts += 1;
   state.failed = false;
@@ -305,10 +308,11 @@ function startLoad(source) {
 /** #662: a failed source is loaded again when asked for, after its wait, while attempts are left. */
 function retryIfDue(source, now = Date.now()) {
   const state = source?.[LOAD];
-  if (!state?.failed || source.destroyed || state.attempts >= LOAD_ATTEMPTS) return false;
+  // Only a state this module made (a plain object with a number of attempts), failed for sure.
+  if (!state || state.failed !== true || typeof state.attempts !== 'number' || source.destroyed === true || state.attempts >= LOAD_ATTEMPTS) return false;
   const wait = RETRY_WAIT_MS[Math.min(state.attempts, RETRY_WAIT_MS.length) - 1] ?? 0;
   if (now - state.failedAt < wait) return false;
-  startLoad(source);
+  startLoad(source, state);
   return true;
 }
 
