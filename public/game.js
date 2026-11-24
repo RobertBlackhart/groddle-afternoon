@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=7ef2b106';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=fd99d385';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=e79d403d';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE, playerClickBox } from './js/reach.js?v=456da8a8';
@@ -738,7 +738,7 @@ import {
   ensureStreetIndex,
   resolveIndexTsid,
 } from './js/street-loader.js?v=10376267';
-import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=e69d434a';
+import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=43e15d5a';
 import {
   ladderTopDeck,
   groundBeneath,
@@ -770,7 +770,7 @@ import {
   setSignpostHover,
   setSignpostKeys,
   signpostBoardAt,
-} from './js/street-render.js?v=a3aa6336';
+} from './js/street-render.js?v=680cca90';
 import {
   GAME_DAY_MS,
   shouldFireNewDay,
@@ -869,7 +869,7 @@ import { MODERN, onUiModeChange, readUiCache, uiState, writeUiCache } from './js
 // ZOOM: the world zoom (a device preference) and Classic's frame scale under it; both load before main().
 import { worldZoom, setWorldZoom, stepWorldZoom, onZoomChange, zoomKeyAction, zoomKeyToast, zoomFixed, setZoomFixed, onZoomFixedChange, phoneZoom } from './js/world-zoom.js?v=38816228';
 import { nightTint, nightTintOn, onNightTintChange, worldTintOpacity } from './js/night-tint.js?v=1dfc9c89';
-import { streetMapSetting, toggleStreetMap } from './js/ui/street-minimap.js?v=cf66d461';
+import { streetMapSetting, toggleStreetMap } from './js/ui/street-minimap.js?v=bb94ac3e';
 import './js/classic/classic-zoom.js?v=c8611f87';
 import { mountImaginationHub } from './js/ui/imagination-hub.js?v=6928c5b7';
 import { newDayBubble, shuffleNewDayMessages, waitForScreenGates } from './js/screen-queue.js?v=cf0132c0';
@@ -1117,7 +1117,7 @@ import { installHiresDecos, maxTextureSizeOf } from './js/deco-hires.js?v=34f36d
 import { loadAudioLevels, loadMutedPreference, loadOtherMusic, saveAudioLevel, saveMutedPreference, saveOtherMusic } from './js/audio-pref.js?v=80d433c3';
 import { createAudioBuses, fadeGain } from './js/audio-buses.js?v=af167b54';
 import { applyAudioSession, streetMusicWanted } from './js/other-music.js?v=f58af5e6';
-import { drawHudCount, installTopBar, renderTopBar } from './js/ui/topbar.js?v=2199bd60';
+import { drawHudCount, installTopBar, renderTopBar } from './js/ui/topbar.js?v=413e2845';
 import { focusBack, installFocusReturn, lastInput } from './js/ui/focus-return.js?v=da190597';
 import { installContextGuard } from './js/ui/context-guard.js?v=0f71ac17';
 import { QUOIN_FRAME_BOB, advanceQuoinClock, quoinBobBetweenFrames } from './js/quoin-motion.js?v=ea0bd408';
@@ -1158,7 +1158,7 @@ import { attachAnim, sceneAnim, syncAnim } from './js/deco-anim.js?v=de95df20';
 import { revealStartCard, whenSceneDrawn } from './js/start-backdrop.js?v=8510d51e';
 import { cancelAllOverlays, displayTopOf, itemstackOverlayPoint, playPoofIn, setOverlayResolution } from './js/overlay-art.js?v=e50bacca';
 import * as textureUrls from './js/textures.js?v=b8e38103';
-import { configureReadback, probeRenderTexture, readbackCanvas, readbackExtract, renderProbeLine } from './js/render-probe.js?v=ac5e3810';
+import { configureReadback, probeRenderTexture, readbackCanvas, readbackExtract, readScreenRow, renderProbeLine } from './js/render-probe.js?v=519c86ef';
 import { guardDestroyedSources, guardTickerRender, installPixiFixes, redrawCachedTextures } from './js/pixi-fixes.js?v=0f42b75e';
 import { hidesChatBubble } from './js/hi-signs.js?v=7f3cab9c';
 // Multiplayer phase 1: the mode flag and the save interface every save read/write goes through.
@@ -1179,7 +1179,7 @@ import { filterText } from './js/word-filter.js?v=9a7a7ebb'; // the remake's own
 import { mountStartStreet } from './js/start-street.js?v=7d8ce49c'; // #349: the start card names the save's street
 import { arrangeMapCards, fitMapExtras } from './js/map-extras.js?v=16e261b1'; // the Map's Shortcuts
 // The interface skin (js/classic/ui-mode.js) sets <html data-ui> as it loads: before main(), so before the boot cover lifts.
-import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=cc210a3d';
+import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=61be70a2';
 import { standOnFeet, anchorBottomCentre } from './js/sprite-feet.js?v=11303931';
 import { markLeaving, packPicks, takeCopies } from './js/copy-picks.js?v=b368fd49';
 import { holdKeepsBusy } from './js/instance-holds.js?v=ff3a63a3';
@@ -2419,16 +2419,10 @@ function sampleStageSkyEdge() {
     syncStageSky();
     return;
   }
-  const gl = app?.renderer?.gl;
-  if (!gl || gl.isContextLost?.() || gl.getParameter(gl.FRAMEBUFFER_BINDING) !== null) return stageSkySampler.record(null, now);
-  const w = gl.drawingBufferWidth;
-  const h = gl.drawingBufferHeight;
-  if (!(w > 0) || !(h > 2)) return stageSkySampler.record(null, now);
-  const row = new Uint8Array(w * 4);
-  // A CSS px or two under the edge: the canvas's own top row, clear of any half-pixel seam.
-  const t0 = performance.now();
-  gl.readPixels(0, h - 1 - Math.min(h - 1, Math.round(2 * (app.renderer.resolution || 1))), w, 1, gl.RGBA, gl.UNSIGNED_BYTE, row);
-  const ms = performance.now() - t0;
+  // A CSS px or two under the edge: the canvas's own top row, clear of any half-pixel seam (R29: js/render-probe.js reads it).
+  const read = readScreenRow(app?.renderer?.gl, { fromTop: 2, resolution: app?.renderer?.resolution || 1 });
+  if (!read) return stageSkySampler.record(null, now);
+  const { row, width: w, ms } = read;
   stageSkyReads.count += 1;
   stageSkyReads.lastMs = ms;
   stageSkyReads.maxMs = Math.max(stageSkyReads.maxMs, ms);

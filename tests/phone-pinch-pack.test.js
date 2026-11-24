@@ -14,8 +14,8 @@ import { fileURLToPath } from 'node:url';
 import { MIN_PACK_HEIGHT, PHONE_CLOSEST_SHARE, VIEW_FLOOR_H, VIEW_HOLD_H, phoneStage, phoneZoomSpan, stageFor } from '../public/js/location-view.js?v=febc0a91';
 import { PHONE_ZOOM_DEFAULT, PHONE_ZOOM_STORAGE_KEY, ZOOM_DEFAULT, ZOOM_STORAGE_KEY, createWorldZoom, phoneZoomLabel } from '../public/js/world-zoom.js?v=38816228';
 import { TAP_SLOP_PX, isWorldTap, pinchLevel } from '../public/js/touch-pinch.js?v=5bdb5971';
-import { signpostBoardAt } from '../public/js/street-render.js?v=a3aa6336';
-import { MENU_ROWS } from '../public/js/ui/topbar.js?v=2199bd60';
+import { signpostBoardAt } from '../public/js/street-render.js?v=680cca90';
+import { MENU_ROWS } from '../public/js/ui/topbar.js?v=413e2845';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (rel) => readFileSync(join(root, rel), 'utf8');

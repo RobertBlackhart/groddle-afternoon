@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { mountReportsSheet, PICTURE_WAIT_MS } from '../public/js/ui/reports-sheet.js?v=32d2617d';
-import { blankPicture, leftOut } from '../public/js/features/bug-report-feature.js?v=1a56158f';
+import { blankPicture, leftOut } from '../public/js/features/bug-report-feature.js?v=e782867e';
 
 const root = join(import.meta.dirname, '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

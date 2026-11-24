@@ -351,3 +351,20 @@ export function readbackExtract(renderer, opts, doc = globalThis.document) {
     return null;
   }
 }
+
+/**
+ * One row of the screen as drawn, `fromTop` CSS px under the drawing buffer's top edge, read straight from
+ * the default framebuffer (the phone band's colour, game.js sampleStageSkyEdge). R29: the one place a
+ * player's game reads pixels; a GPU sync, so callers read only when something changed. Returns
+ * { row, width, ms } or null (no WebGL, a lost context, a framebuffer bound, nothing drawn).
+ */
+export function readScreenRow(gl, { fromTop = 2, resolution = 1 } = {}) {
+  if (!gl || gl.isContextLost?.() || gl.getParameter(gl.FRAMEBUFFER_BINDING) !== null) return null;
+  const width = gl.drawingBufferWidth;
+  const h = gl.drawingBufferHeight;
+  if (!(width > 0) || !(h > 2)) return null;
+  const row = new Uint8Array(width * 4);
+  const t0 = globalThis.performance?.now?.() ?? Date.now();
+  gl.readPixels(0, h - 1 - Math.min(h - 1, Math.round(fromTop * (resolution || 1))), width, 1, gl.RGBA, gl.UNSIGNED_BYTE, row);
+  return { row, width, ms: (globalThis.performance?.now?.() ?? Date.now()) - t0 };
+}

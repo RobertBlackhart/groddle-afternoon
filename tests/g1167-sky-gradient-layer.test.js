@@ -23,7 +23,7 @@ import {
   skyGradientPlacement,
   groundBelowSpan,
   skirtFadeColour,
-} from '../public/js/street-render.js?v=a3aa6336';
+} from '../public/js/street-render.js?v=680cca90';
 import { PHONE_HOME_MIN_VIEW_W, PHONE_PORTRAIT_MIN_VIEW_W, SHORT_SCENE_BAND, STAGE_EDGE_GAP_MS, STAGE_EDGE_MOVE, STAGE_EDGE_SETTLE_MS, STAGE_SKY_FADE, phoneStage, shortSceneBand, stageBandColour, stageEdgeColour, stageEdgeSampler, stageFor } from '../public/js/location-view.js?v=febc0a91';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -379,8 +379,8 @@ describe('SKY FILL: a short scene on an upright phone leaves no flat dark band',
     assert.match(game, /app\.ticker\.add\(\(\) => run\('sky fill', sampleStageSkyEdge\), null, PIXI\.UPDATE_PRIORITY\?\.UTILITY \?\? -50\);/);
     assert.match(game, /const due = stageSkySampler\.next\(\{ scene: bgLayer, camX: -world\.x, camY: -world\.y, scale: STAGE_SCALE, viewW: VIEW_W, now \}\);\n  if \(!due\) return;/);
     const sample = game.slice(game.indexOf('function sampleStageSkyEdge() {'), game.indexOf('function sampleStageSkyEdge() {') + 2500);
-    assert.equal((sample.match(/gl\.readPixels\(/g) || []).length, 1, 'one read-back, after the sampler said so');
-    assert.ok(sample.indexOf('if (!due) return;') < sample.indexOf('gl.readPixels('));
+    assert.equal((sample.match(/readScreenRow\(/g) || []).length, 1, 'one read-back (R29: through js/render-probe.js readScreenRow), after the sampler said so');
+    assert.ok(sample.indexOf('if (!due) return;') < sample.indexOf('readScreenRow('));
     assert.match(game, /stageSkyEdge = stageEdgeColour\(row, w\);/);
     assert.match(game, /band = stageSkyEdge \|\| clear;/);
     assert.match(game, /return Number\.isFinite\(layer\?\.viewSkyTop\) \? layer\.viewSkyTop : layer\?\.skyTop;/);

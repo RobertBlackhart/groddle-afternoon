@@ -96,7 +96,7 @@
  */
 
 import { bindContextTrigger } from './context-menu.js?v=dee0ecde';
-import { canvasTransparent, readbackCanvas } from '../render-probe.js?v=ac5e3810';
+import { canvasTransparent, readbackCanvas } from '../render-probe.js?v=519c86ef';
 
 export const MAP_WIDTH = 160;
 export const MAX_CONTRACTED_H = 70;
