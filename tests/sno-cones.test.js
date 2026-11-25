@@ -24,9 +24,9 @@ import {
   applyAchievementProgress,
   createAchievementState,
   seedAchievementNearCompletion,
-} from '../public/js/achievements.js?v=47bd719d';
+} from '../public/js/achievements.js?v=4add7f73';
 import { getGameDayKey } from '../public/js/game-day.js?v=a532775d';
-import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=5ef6adb5';
+import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=2b7048b9';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const GSJS = join(root, '../glitch-GameServerJS/items');

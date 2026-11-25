@@ -33,7 +33,7 @@ import {
   quoteYardExpansion,
   restoreJobId,
   yardSegments,
-} from '../public/js/home-cultivation.js?v=dcf357ef';
+} from '../public/js/home-cultivation.js?v=2f71ba70';
 import { HOME_LIMITS } from '../public/js/homes-catalog.js?v=0367f90f';
 import {
   INTERIOR_STYLES,
@@ -49,13 +49,13 @@ import {
 } from '../public/js/home-styles.js?v=ec5d2f69';
 import { WALLPAPER_MAPS, WALLPAPER_PIECES } from '../public/js/home-wallpaper-art.js?v=129c514f';
 import { roomPieces } from '../public/js/home-wallpaper.js?v=99228166';
-import { BACK_YARD_GROUND_Y, clampRowsX, homesFeature, shiftHusbandryRows, shiftInteriorRows, towerDropTsid } from '../public/js/features/homes-feature.js?v=5c76232a';
+import { BACK_YARD_GROUND_Y, clampRowsX, homesFeature, shiftHusbandryRows, shiftInteriorRows, towerDropTsid } from '../public/js/features/homes-feature.js?v=2037e237';
 import { getGameDayKey } from '../public/js/game-day.js?v=a532775d';
-import { towerApi } from '../public/js/features/home-tower-feature.js?v=4663a659';
-import { shiftBotX } from '../public/js/features/craftybot-feature.js?v=6d86d71c';
+import { towerApi } from '../public/js/features/home-tower-feature.js?v=c6166c0d';
+import { shiftBotX } from '../public/js/features/craftybot-feature.js?v=c1064d92';
 import { normalizeDroppedItemState } from '../public/js/world-items.js?v=a5deb102';
-import { applyAchievementProgress, createAchievementState } from '../public/js/achievements.js?v=47bd719d';
-import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=5ef6adb5';
+import { applyAchievementProgress, createAchievementState } from '../public/js/achievements.js?v=4add7f73';
+import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=2b7048b9';
 
 const spike = join(import.meta.dirname, '..');
 const pub = join(spike, 'public');

@@ -22,11 +22,11 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=5ef6adb5';
-import { createQuestState } from '../public/js/quests.js?v=d0443973';
-import { markOffered, waitingOffers } from '../public/js/quest-offers.js?v=6eccdc80';
-import { questOffersFeature, EMERGENCY_SNOOZE_MS } from '../public/js/features/quest-offers-feature.js?v=cc54329c';
-import { hellTicketsFeature } from '../public/js/features/hell-tickets-feature.js?v=df795268';
+import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=2b7048b9';
+import { createQuestState } from '../public/js/quests.js?v=c8d59839';
+import { markOffered, waitingOffers } from '../public/js/quest-offers.js?v=ea6fde02';
+import { questOffersFeature, EMERGENCY_SNOOZE_MS } from '../public/js/features/quest-offers-feature.js?v=f77bb003';
+import { hellTicketsFeature } from '../public/js/features/hell-tickets-feature.js?v=87ce731b';
 import { hellFeature } from '../public/js/features/hell-feature.js?v=74604dfc';
 import { HELL_LOCATION, createHellState, croak } from '../public/js/hell.js?v=d77f15ef';
 

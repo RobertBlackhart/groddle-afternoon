@@ -30,9 +30,9 @@ import {
   scionWords,
 } from '../public/js/purple-journey.js?v=5e078ed8';
 import { VOYAGE_FLOOR, VOYAGE_OFFSET } from '../public/js/purple-journey-scene.js?v=fa3f67a0';
-import { purpleJourneyFeature } from '../public/js/features/purple-journey-feature.js?v=cf4c8467';
-import { createAchievementState, applyAchievementProgress } from '../public/js/achievements.js?v=47bd719d';
-import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=5ef6adb5';
+import { purpleJourneyFeature } from '../public/js/features/purple-journey-feature.js?v=516f87fa';
+import { createAchievementState, applyAchievementProgress } from '../public/js/achievements.js?v=4add7f73';
+import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=2b7048b9';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const GSJS = join(here, '../../glitch-GameServerJS');

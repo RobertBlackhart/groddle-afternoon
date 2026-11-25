@@ -51,10 +51,10 @@ import {
   teleportersOn,
 } from '../public/js/hidden-floors.js?v=18714dfa';
 import { hiddenFloorsFeature } from '../public/js/features/hidden-floors-feature.js?v=f5824d9a';
-import { FEATURES } from '../public/js/features/index.js?v=d0e8a40a';
+import { FEATURES } from '../public/js/features/index.js?v=e5290f03';
 import { rawTripleJumpMultiplier, scaledTripleJumpMultiplier } from '../public/js/movement.js?v=f4be1a05';
 import { GRAVITY, JUMP_SPEED, WALK_MAX } from '../public/js/avatar-step.js?v=39d7b1af';
-import { buffPhysics } from '../public/js/buffs.js?v=14eee338';
+import { buffPhysics } from '../public/js/buffs.js?v=607f96df';
 
 /** Spinach's High Jumper buff, running (buffs.js buffPhysics). */
 const SPINACH_ON = { active: { high_jumper: { classTsid: 'high_jumper', appliedAt: 0, expiresAt: 7000 } } };

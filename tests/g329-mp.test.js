@@ -9,15 +9,15 @@ import assert from 'node:assert/strict';
 import { before, describe, it } from 'node:test';
 import { join } from 'node:path';
 
-import { loadContentCatalogsFromDir, getQuestCatalog } from '../public/js/content-catalogs.js?v=5ef6adb5';
-import { createQuestState } from '../public/js/quests.js?v=d0443973';
+import { loadContentCatalogsFromDir, getQuestCatalog } from '../public/js/content-catalogs.js?v=2b7048b9';
+import { createQuestState } from '../public/js/quests.js?v=c8d59839';
 import {
   acceptOffer,
   classifyQuests,
   ensureQuestOfferState,
   pendingQuestOffers,
   routeQuestEvent,
-} from '../public/js/quest-offers.js?v=6eccdc80';
+} from '../public/js/quest-offers.js?v=ea6fde02';
 import {
   MP_FACTS,
   MP_RACE_QUESTS,
@@ -30,8 +30,8 @@ import {
   offerableMultiplayerQuest,
   tradeHoochCount,
 } from '../public/js/quests-mp.js?v=e697cec3';
-import { questOffersFeature } from '../public/js/features/quest-offers-feature.js?v=cc54329c';
-import { questsMpFeature } from '../public/js/features/quests-mp-feature.js?v=e1b8a98f';
+import { questOffersFeature } from '../public/js/features/quest-offers-feature.js?v=f77bb003';
+import { questsMpFeature } from '../public/js/features/quests-mp-feature.js?v=8e97cd08';
 import { economyCredits } from '../tools/build-economy.mjs';
 import { tradeTable } from '../tools/build-realtime-trade.mjs';
 

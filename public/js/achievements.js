@@ -2,8 +2,8 @@
  * Achievement (badge) runner over mined GSJS catalog.
  */
 
-import { getAchievementCatalog } from './content-catalogs.js?v=5ef6adb5';
-import { applyRewards } from './quests.js?v=d0443973';
+import { getAchievementCatalog } from './content-catalogs.js?v=2b7048b9';
+import { applyRewards } from './quests.js?v=c8d59839';
 import { achievementRewardModifier, scaleRewards } from './imagination-effects.js?v=70169933';
 
 export function createAchievementState() {

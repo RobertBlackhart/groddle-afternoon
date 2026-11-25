@@ -7,10 +7,10 @@ import { describe, it, before } from 'node:test';
 import assert from 'node:assert/strict';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { loadContentCatalogsFromDir, resetContentCatalogs, getQuestCatalog } from '../public/js/content-catalogs.js?v=5ef6adb5';
-import { createQuestState, listQuestLog, listQuestTracker } from '../public/js/quests.js?v=d0443973';
-import { acceptOffer, routeQuestEvent, makingUnitQuestEvents, COUNTER_ROUTES } from '../public/js/quest-offers.js?v=6eccdc80';
-import { normalizeQuestSnapshot } from '../public/js/player-save.js?v=300727ae';
+import { loadContentCatalogsFromDir, resetContentCatalogs, getQuestCatalog } from '../public/js/content-catalogs.js?v=2b7048b9';
+import { createQuestState, listQuestLog, listQuestTracker } from '../public/js/quests.js?v=c8d59839';
+import { acceptOffer, routeQuestEvent, makingUnitQuestEvents, COUNTER_ROUTES } from '../public/js/quest-offers.js?v=ea6fde02';
+import { normalizeQuestSnapshot } from '../public/js/player-save.js?v=cf0ebffd';
 import { questRequirementText } from '../public/js/quest-text.js?v=d0d07996';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');

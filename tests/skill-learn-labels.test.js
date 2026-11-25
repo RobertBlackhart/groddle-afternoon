@@ -8,8 +8,8 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { loadContentCatalogsFromDir, resetContentCatalogs } from '../public/js/content-catalogs.js?v=5ef6adb5';
-import { learnButtonText, studyBarKind } from '../public/js/skills-panel.js?v=3a38da6c';
+import { loadContentCatalogsFromDir, resetContentCatalogs } from '../public/js/content-catalogs.js?v=2b7048b9';
+import { learnButtonText, studyBarKind } from '../public/js/skills-panel.js?v=4b306f47';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const pub = join(here, '../public');
