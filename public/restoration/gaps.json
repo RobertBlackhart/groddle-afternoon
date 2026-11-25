@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.69.0",
+  "release": "v0.70.0",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -42,7 +42,7 @@
     "fixing": 3,
     "known": 15,
     "unreleased": 0,
-    "fixed": 544,
+    "fixed": 561,
     "lost": 5,
     "purpose": 17,
     "idea": 10
@@ -708,6 +708,18 @@
           "text": "The Bureaucratic Hall was missing its office furniture, and its ceiling light drew over the TV.",
           "state": "fixed",
           "version": "v0.63.0"
+        },
+        {
+          "id": "G1236",
+          "text": "A Metal Rock sat on the Shrine to Mab on Hechey Track, and other things stood on shrines, vendors and boards.",
+          "state": "fixed",
+          "version": "v0.70.0"
+        },
+        {
+          "id": "G1276",
+          "text": "Online, Peat Bogs and rocks could stand on a mailbox or Visiting Stone.",
+          "state": "fixed",
+          "version": "v0.70.0"
         }
       ]
     },
@@ -1323,6 +1335,24 @@
           "text": "A house could have at most 60 pieces on sale, and only the first 100 currant piles could be collected.",
           "state": "fixed",
           "version": "v0.69.0"
+        },
+        {
+          "id": "G1270",
+          "text": "A restyled cabinet's window showed the plain cabinet.",
+          "state": "fixed",
+          "version": "v0.70.0"
+        },
+        {
+          "id": "G1271",
+          "text": "Visitors saw a default house, not the owner's style.",
+          "state": "fixed",
+          "version": "v0.70.0"
+        },
+        {
+          "id": "G1274",
+          "text": "Expanding the house gave no sign you were ready; Glitch's expansion dialog is back.",
+          "state": "fixed",
+          "version": "v0.70.0"
         },
         {
           "id": "G48",
@@ -2028,6 +2058,12 @@
           "text": "A party could not be started from Storyland, Paradise, Winter Walk and the other hand-built quest places.",
           "state": "fixed",
           "version": "v0.57.0"
+        },
+        {
+          "id": "G1280",
+          "text": "A dead connection took 50 seconds to notice.",
+          "state": "fixed",
+          "version": "v0.70.0"
         }
       ]
     },
@@ -2481,6 +2517,36 @@
           "text": "On a phone, the hi sign hint said to type hi instead of pointing at the Hi button.",
           "state": "fixed",
           "version": "v0.68.0"
+        },
+        {
+          "id": "G1237",
+          "text": "On the phone street map, door buttons sat over the entrance art.",
+          "state": "fixed",
+          "version": "v0.70.0"
+        },
+        {
+          "id": "G1272",
+          "text": "Decoration Mode's note ran off the left of a phone screen.",
+          "state": "fixed",
+          "version": "v0.70.0"
+        },
+        {
+          "id": "G1273",
+          "text": "The Buddies window and others ran under the iPhone status bar.",
+          "state": "fixed",
+          "version": "v0.70.0"
+        },
+        {
+          "id": "G1278",
+          "text": "Upright on a phone, a short room's top sat under the band.",
+          "state": "fixed",
+          "version": "v0.70.0"
+        },
+        {
+          "id": "G1281",
+          "text": "The phone's stick could stay held after a loading card.",
+          "state": "fixed",
+          "version": "v0.70.0"
         }
       ]
     },
@@ -2781,6 +2847,12 @@
           "text": "Firebog street spirits' flames and vines stood still.",
           "state": "fixed",
           "version": "v0.69.0"
+        },
+        {
+          "id": "G1264",
+          "text": "The lonely Firebog spirit's porthole face stood still.",
+          "state": "fixed",
+          "version": "v0.70.0"
         }
       ]
     },
@@ -2974,6 +3046,12 @@
           "text": "Feat progress could be lost when a report to the server failed.",
           "state": "fixed",
           "version": "v0.48.0"
+        },
+        {
+          "id": "G1279",
+          "text": "A Feat place went stale.",
+          "state": "fixed",
+          "version": "v0.70.0"
         }
       ]
     },
@@ -3394,6 +3472,12 @@
           "text": "The Make menu did not say on a recipe's tile when you lacked the skill for its tool.",
           "state": "fixed",
           "version": "v0.51.1"
+        },
+        {
+          "id": "G1275",
+          "text": "A machine's Make panel didn't show the fuel a job burns.",
+          "state": "fixed",
+          "version": "v0.70.0"
         }
       ]
     },
@@ -3462,6 +3546,12 @@
           "text": "The Test Tube had no page in the Item Catalog.",
           "state": "fixed",
           "version": "v0.69.0"
+        },
+        {
+          "id": "G1277",
+          "text": "Street pages showed only the starting tree counts; they now show what stands now.",
+          "state": "fixed",
+          "version": "v0.70.0"
         }
       ]
     },
@@ -3967,6 +4057,23 @@
           "text": "Music and sounds kept playing while you were in another app or tab.",
           "state": "fixed",
           "version": "v0.69.0"
+        },
+        {
+          "id": "G1269",
+          "text": "A Subway ticket played no teleport chime and stations played stand-in music.",
+          "state": "fixed",
+          "version": "v0.70.0"
+        }
+      ]
+    },
+    {
+      "name": "Mining",
+      "items": [
+        {
+          "id": "G1268",
+          "text": "A gem found while mining never reached the activity log.",
+          "state": "fixed",
+          "version": "v0.70.0"
         }
       ]
     }

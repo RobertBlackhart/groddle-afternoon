@@ -5469,6 +5469,165 @@
       "commits": [
         "game:86925b9257c"
       ]
+    },
+    {
+      "id": "G1236",
+      "area": "Streets",
+      "text": "A Metal Rock sat on the Shrine to Mab on Hechey Track, and other things stood on shrines, vendors and boards.",
+      "show": "fixing",
+      "commits": [
+        "game:98a9d064c25",
+        "server:01191d5"
+      ]
+    },
+    {
+      "id": "G1237",
+      "area": "Phones",
+      "text": "On the phone street map, door buttons sat over the entrance art.",
+      "show": "fixing",
+      "commits": [
+        "game:912c2e30be0"
+      ]
+    },
+    {
+      "id": "G1268",
+      "area": "Mining",
+      "text": "A gem found while mining never reached the activity log.",
+      "show": "fixing",
+      "commits": [
+        "game:c495a6647e6"
+      ]
+    },
+    {
+      "id": "G1269",
+      "area": "Sound",
+      "text": "A Subway ticket played no teleport chime and stations played stand-in music.",
+      "show": "fixing",
+      "commits": [
+        "game:b6acd456987",
+        "game:3ea3a240516"
+      ]
+    },
+    {
+      "id": "G1270",
+      "area": "Homes",
+      "text": "A restyled cabinet's window showed the plain cabinet.",
+      "show": "fixing",
+      "commits": [
+        "game:3daef2edc48"
+      ]
+    },
+    {
+      "id": "G1271",
+      "area": "Homes",
+      "text": "Visitors saw a default house, not the owner's style.",
+      "show": "fixing",
+      "commits": [
+        "game:0823c82b6af"
+      ]
+    },
+    {
+      "id": "G1272",
+      "area": "Phones",
+      "text": "Decoration Mode's note ran off the left of a phone screen.",
+      "show": "fixing",
+      "commits": [
+        "game:8c4df9e994b"
+      ]
+    },
+    {
+      "id": "G1273",
+      "area": "Phones",
+      "text": "The Buddies window and others ran under the iPhone status bar.",
+      "show": "fixing",
+      "commits": [
+        "game:bc3ee4bacda"
+      ]
+    },
+    {
+      "id": "G1274",
+      "area": "Homes",
+      "text": "Expanding the house gave no sign you were ready; Glitch's expansion dialog is back.",
+      "show": "fixing",
+      "commits": [
+        "game:bee1e5d9dcc"
+      ]
+    },
+    {
+      "id": "G1275",
+      "area": "Making",
+      "text": "A machine's Make panel didn't show the fuel a job burns.",
+      "show": "fixing",
+      "commits": [
+        "game:220715af84b"
+      ]
+    },
+    {
+      "id": "G1276",
+      "area": "Streets",
+      "text": "Online, Peat Bogs and rocks could stand on a mailbox or Visiting Stone.",
+      "show": "fixing",
+      "commits": [
+        "game:b9622d13d73",
+        "server:c86f13a"
+      ]
+    },
+    {
+      "id": "G1277",
+      "area": "Encyclopedia",
+      "text": "Street pages showed only the starting tree counts; they now show what stands now.",
+      "show": "fixing",
+      "commits": [
+        "game:caa6b89a51e",
+        "server:9c3ee6a",
+        "site:b16f875"
+      ]
+    },
+    {
+      "id": "G1278",
+      "area": "Phones",
+      "text": "Upright on a phone, a short room's top sat under the band.",
+      "show": "fixing",
+      "commits": [
+        "game:39583747e7f"
+      ]
+    },
+    {
+      "id": "G1279",
+      "area": "Feats",
+      "text": "A Feat place went stale.",
+      "show": "fixing",
+      "commits": [
+        "game:07413d1be7c",
+        "server:a4cd794"
+      ]
+    },
+    {
+      "id": "G1280",
+      "area": "Multiplayer",
+      "text": "A dead connection took 50 seconds to notice.",
+      "show": "fixing",
+      "commits": [
+        "game:26c61690ea1"
+      ]
+    },
+    {
+      "id": "G1281",
+      "area": "Phones",
+      "text": "The phone's stick could stay held after a loading card.",
+      "show": "fixing",
+      "commits": [
+        "game:40d0f8564c5"
+      ]
+    },
+    {
+      "id": "G1264",
+      "area": "Vendors",
+      "text": "The lonely Firebog spirit's porthole face stood still.",
+      "show": "fixing",
+      "commits": [
+        "game:868cd5ad74c"
+      ]
     }
   ]
 }
