@@ -684,8 +684,7 @@
     "ours: (building), 'up', 'down', or null (not one of ours).": "not-an-invention",
     "ours: // Ours (houses_extend": "ours-home-floors",
     "ours: // Ours (the client's ghost simply would not drop": "ours-home-floors",
-    "ours: cannot be added while building) are short and ours.": "ours-home-floors",
-    "ours: up your floor project first!\" (:584). `made` is ours: the": "ours-home-floors"
+    "ours: cannot be added while building) are short and ours.": "ours-home-floors"
   },
   "public/js/home-house.js": {
     "invented: * (inventions:": "house-save-migration",
