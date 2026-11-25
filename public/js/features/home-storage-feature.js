@@ -462,7 +462,8 @@ function openCabinet(engine, uid, { owner = 0 } = {}) {
   const handle = openCabinetWindow({
     title: cabinetTitle(row),
     sub: owner ? `${possessive(visit?.name || 'Someone')} house` : T.slots(d.capacity),
-    art: furnitureDef(row.classTsid)?.art?.path || '',
+    // The styled frame, as the title names it (CabinetDialog.as 276 draws the cabinet's own swf_url).
+    art: pieceArt(row.classTsid, row.upgradeId)?.path || '',
     cols: d.cols,
     rowsDisplay: d.rowsDisplay,
     slots,
