@@ -53,7 +53,7 @@ describe('G978: flyers fly on (npc_butterfly.js flyAround)', () => {
   it('a yard Butterfly never stops in the air and flies level at its own height; street flyers too', async () => {
     dropped('flyer-hover-bob');
     const { YARD_WANDER, yardPlan, yardWanderAt } = await import('../public/js/yard-wander.js?v=f5fcac8b');
-    const { CREATURE_PATHS, flyerAt } = await import('../public/js/street-creatures.js?v=2d47da2d');
+    const { CREATURE_PATHS, flierAt, flierPlan } = await import('../public/js/street-creatures.js?v=2d47da2d');
     assert.equal('pauses' in YARD_WANDER.npc_butterfly, false);
     assert.equal('bob' in YARD_WANDER.npc_butterfly, false);
     const plan = yardPlan({ id: 'a5', classId: 'npc_butterfly', left: 300, right: 800 });
@@ -62,9 +62,14 @@ describe('G978: flyers fly on (npc_butterfly.js flyAround)', () => {
     const lifts = new Set();
     for (let t = 0; t < 60_000; t += 500) lifts.add(yardWanderAt(animal, t).lift);
     assert.equal(lifts.size, 1, 'one height, no bob');
-    assert.deepEqual(Object.keys(CREATURE_PATHS.fly).sort(), ['margin', 'speed']);
-    const home = { x0: 100, baseY: 400, worldW: 2000 };
-    assert.equal(flyerAt(home, 0).y, flyerAt(home, 3_333).y);
+    // A street flyer: no bob either. Between two places it climbs or sinks straight (lane flyk:
+    // apiStartFlyingInTheArea's random heights), never a wave.
+    assert.equal('fly' in CREATURE_PATHS, false);
+    const home = { seed: 7, worldW: 2000, groundY: 400 };
+    const { legs, offset } = flierPlan(home);
+    const leg = legs[2];
+    const at = (u) => flierAt(home, leg.at + leg.ms * u - offset);
+    for (const u of [0.2, 0.4, 0.6]) assert.ok(Math.abs(at(u).y + at(u + 0.2).y - 2 * at(u + 0.1).y) < 1e-6, 'no bob');
     assert.doesNotMatch(game, /b\.phase/);
   });
 });

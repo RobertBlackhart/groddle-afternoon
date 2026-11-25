@@ -14,7 +14,6 @@ import { join } from 'node:path';
 import {
   SNAP_PX,
   applyCreatureState,
-  batterflyAt,
   batterflyPerks,
   batterflyResponseFor,
   CHICKEN_PAUSE,
@@ -26,7 +25,10 @@ import {
   clockOffset,
   creatureOf,
   easeToward,
-  flyerAt,
+  FLY_WANDER,
+  flierAt,
+  flierPlan,
+  flierSeed,
   followPath,
   PATH_STEP,
   pathFrom,
@@ -63,17 +65,50 @@ describe('street animals: the shared paths', () => {
     }
   });
 
-  it('a flyer crosses the street and comes back in from the far side; a resting one bobs', () => {
-    const home = { x0: 100, baseY: 500, worldW: 1000, phase0: 0 };
-    assert.equal(flyerAt(home, 0).x, 100);
-    assert.equal(flyerAt(home, 10000).x, 490);
-    assert.ok(Math.abs(flyerAt(home, (1080 / 39) * 1000).x - 100) < 1e-6, 'one lap of the street and its margins');
-    for (let t = 0; t < 60000; t += 1111) {
-      const p = flyerAt(home, t);
-      assert.ok(p.x >= -40 && p.x <= 1040 && Math.abs(p.y - 500) <= 14);
-      assert.ok(Math.abs(restAt({ groundY: 800, phase0: 1 }, t).y - 802) <= 2);
-      const b = batterflyAt({ baseX: 700, baseY: 300, phase0: 2 }, t);
-      assert.ok(Math.abs(b.x - 700) <= 170 && Math.abs(b.y - 300) <= 60);
+  it('a flyer wanders the whole street and turns back inside it, never wrapping round; a resting one bobs', () => {
+    // Lane flyk (2026-11-24): a street Butterfly flew one way and was put back in at the far end
+    // (it popped in at the street's edge every lap), a Batterfly swung off the street near an end.
+    // Glitch flew each at random over the whole street (npc_butterfly.js flyAround 886-969,
+    // npc_batterfly.js 1039-1052: apiStartFlyingInTheArea over g.l..g.r in its band over the floor).
+    for (const kind of ['butterfly', 'batterfly']) {
+      const spec = FLY_WANDER[kind];
+      const home = { kind, seed: flierSeed(kind, 2, 640), worldW: 1000, floor: null, groundY: 900 };
+      const plan = flierPlan(home);
+      assert.ok(plan.speed * 1000 >= spec.speed[0] && plan.speed * 1000 <= spec.speed[1]);
+      let prev = null;
+      const dirs = new Set();
+      for (let t = 0; t < 1_800_000; t += 250) {
+        const p = flierAt(home, t);
+        dirs.add(p.dir);
+        assert.ok(p.x >= spec.edge - 1e-9 && p.x <= 1000 - spec.edge + 1e-9, `${kind} ${t}: x ${p.x}`);
+        assert.ok(p.h >= spec.low - 1e-9 && p.h <= spec.high + 1e-9 && Math.abs(900 - p.h - p.y) < 1e-9, `${kind} ${t}: h ${p.h}`);
+        if (prev) assert.ok(Math.hypot(p.x - prev.x, p.y - prev.y) <= plan.speed * 250 + 1e-6, `${kind} ${t}: a jump`);
+        prev = p;
+      }
+      assert.deepEqual([...dirs].sort(), [-1, 1], `${kind} flies both ways`);
+      // It is somewhere new each round, not on its spot: the left and the right of the street.
+      const xs = Array.from({ length: 400 }, (_, k) => flierAt(home, k * 4500).x);
+      assert.ok(Math.min(...xs) < 300 && Math.max(...xs) > 700, `${kind} covers the street: ${Math.min(...xs)}..${Math.max(...xs)}`);
+    }
+    // Two fliers on one street do not share a path; the same flier is the same on every page.
+    const a = { kind: 'butterfly', seed: flierSeed('butterfly', 0, 300), worldW: 2000, groundY: 800 };
+    const b = { ...a, seed: flierSeed('butterfly', 1, 900) };
+    assert.notDeepEqual(flierAt(a, 5000), flierAt(b, 5000));
+    assert.deepEqual(flierAt({ ...a }, 123_456), flierAt(a, 123_456));
+    assert.notEqual(flierSeed('butterfly', 0, 300), flierSeed('batterfly', 0, 300));
+    for (let t = 0; t < 60000; t += 1111) assert.ok(Math.abs(restAt({ groundY: 800, phase0: 1 }, t).y - 802) <= 2);
+  });
+
+  it('two players on the street draw a flier at the same place at the same moment', () => {
+    const home = { kind: 'batterfly', seed: flierSeed('batterfly', 1, 2210), worldW: 3600, groundY: 700 };
+    const server = 2_000_000_000_000;
+    for (const shared of [{ lag: 0, holdEnd: 0 }, { lag: 4200, holdEnd: 0 }, pathFrom({ lag: 4200, hold: 900 }, server - 7000, 7000)]) {
+      for (let dt = 0; dt < 20_000; dt += 2500) {
+        // Two clocks 10 s apart, each with its own offset to the server.
+        const ta = pathTime(shared, server + dt - 7000, 7000);
+        const tb = pathTime(shared, server + dt + 3000, -3000);
+        assert.deepEqual(flierAt(home, ta), flierAt(home, tb));
+      }
     }
   });
 
@@ -367,7 +402,7 @@ function rig({ mode = 'multiplayer' } = {}) {
   const chicken = { classId: 'npc_chicken', label: 'Chicken', classIndex: 1, state: {}, sprite: sprite(500, 800) };
   const flyer = { classId: 'npc_butterfly', label: 'Butterfly', classIndex: 2, airborne: true, state: {}, sprite: { ...sprite(300, 600), _ambient: true } };
   const resting = { classId: 'npc_butterfly', label: 'Butterfly', classIndex: 0, state: {}, sprite: { ...sprite(900, 800), _groundY: 798, _ambient: false } };
-  const bat = { classId: 'npc_batterfly', featureId: 'animal-husbandry', husbandryKey: 'batterfly:0', state: {}, sprite: { ...sprite(700, 400), _home: { baseX: 700, baseY: 400, phase0: 1 } } };
+  const bat = { classId: 'npc_batterfly', featureId: 'animal-husbandry', husbandryKey: 'batterfly:0', state: {}, sprite: { ...sprite(700, 400), _home: { kind: 'batterfly', seed: 1, worldW: 2000, groundY: 550 } } };
   const calls = [];
   const engine = {
     mode,
@@ -485,11 +520,13 @@ describe('street animals: the feature', () => {
     at = r.chicken;
     streetObjectsFeature.onTick(16, 0, r.engine);
     assert.equal(waits().at(-1).at, stopped + 4600);
-    // A Batterfly flies on (no wait), and only a street animal the server named is held.
+    // A Batterfly waits too, now that it flies the whole street (lane flyk; npc_batterfly.js
+    // onWaitStart 1074-1081), when it is on its shared path.
     at = r.bat;
     t.mock.timers.tick(800);
     streetObjectsFeature.onTick(16, 0, r.engine);
-    assert.equal(waits().length, 4);
+    assert.equal(waits().length, 5);
+    assert.equal(waits().at(-1).id, 'batterfly:0');
   });
 
   it('a squeeze asks the server with the rank, and runs on its roll', () => {

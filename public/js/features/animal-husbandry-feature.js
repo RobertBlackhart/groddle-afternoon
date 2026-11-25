@@ -61,7 +61,7 @@ import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d787e3c3';
 import { nearestSurfaceY } from '../walk-surface.js?v=3c919d5b';
 import { displayTopOf, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=e50bacca';
 import { SET_FREE, applySetFree, canSetFree, setFreeGoneLine, setFreePrompt } from '../animal-set-free.js?v=6fcd8355';
-import { getGameDayKey } from '../game-day.js?v=a532775d';
+import { GAME_EPOCH_MS, getGameDayKey } from '../game-day.js?v=a532775d';
 import { createAnimalState, resetAnimalDay, animalStatusLabel, listAnimalFeedOptions } from '../animals.js?v=56071914';
 import { standOnFeet } from '../sprite-feet.js?v=c775bc5d';
 import {
@@ -112,7 +112,7 @@ import {
   stepHogtie,
   stickPlaceState,
 } from '../animal-husbandry.js?v=83779ca2';
-import { batterflyBaseY, batterflyResponseFor, flightFloorFor } from '../street-creatures.js?v=2d47da2d';
+import { batterflyResponseFor, flierAt, flierSeed, flightFloorFor, followPath, PATH_STEP } from '../street-creatures.js?v=2d47da2d';
 import { loseEnergy, shiftMetabolic, topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import { textureFromUrl } from '../textures.js?v=b8e38103';
 import { PIGGY_DEATH_DROPS, PIGGY_DEATH_PUFF, SAD_BABY, forcedRoll, isSadIn } from '../animal-mood.js?v=a49495fc';
@@ -287,6 +287,19 @@ function batterflyTargetLabel(state) {
   return state?.userName ? namedAnimalLabel(BATTERFLY_ID, state) : BATTERFLY.label;
 }
 
+/** A Batterfly's flight (js/street-creatures.js flierAt) from its key and spot, solo or online alike. */
+function batterflyFlight(engine, key, x, groundY) {
+  const m = /^batterfly:(\d+)$/.exec(String(key));
+  const worldW = Number(engine?.worldW) || 2000;
+  return {
+    kind: 'batterfly',
+    seed: flierSeed('batterfly', m ? Number(m[1]) : 0, x),
+    worldW,
+    floor: flightFloorFor(engine?.platforms, worldW),
+    groundY,
+  };
+}
+
 function buildBatterfly(engine, key, x, y, state) {
   const { PIXI } = engine;
   const frames = loader.frames(BATTERFLY_SHEETS.profile);
@@ -300,20 +313,26 @@ function buildBatterfly(engine, key, x, y, state) {
   spr.play();
   engine.entityLayer.addChild(spr);
   const ground = surfaceAt(engine, x, y);
+  // Its flight (js/street-creatures.js flierAt): at random over the whole street in the 400 px over
+  // the floor (npc_batterfly.js flyAround 1039-1052). Solo on its own clock, which stands still while
+  // it chews or waits, so it flies on from where it stopped; online on the street's (its home there
+  // comes from the server's spot: batterflyHome).
+  const home = batterflyFlight(engine, key, x, ground);
   const entity = {
     key,
     sprite: spr,
     state,
     baseX: x,
     baseY: ground - 150,
-    phase: (key.length * 1.7) % 6,
+    home,
+    clock: Date.now() - GAME_EPOCH_MS,
     chewUntil: 0,
     target: null,
   };
-  spr.x = x;
-  spr.y = entity.baseY;
-  // Its home for the shared path in multiplayer (street-objects-feature, js/street-creatures.js batterflyAt).
-  spr._home = { baseX: x, baseY: entity.baseY, phase0: entity.phase };
+  const start = flierAt(home, entity.clock);
+  spr.x = start.x;
+  spr.y = start.y;
+  spr._home = home;
   entity.target = engine.register({
     classId: BATTERFLY_ID,
     featureId: HUSBANDRY_FEATURE_ID,
@@ -384,16 +403,12 @@ function stepBatterfly(engine, entity, dtMs) {
   if (spr._path?.(dtMs / (1000 / 60))) return;
   // The flight path pauses while it chews, so it resumes where it stopped instead of jumping ahead.
   if (entity.chewUntil) return;
-  entity.phase += dtMs / 1000;
-  // flyAround: lazy loops in the lower part of the street.
-  const dx = Math.sin(entity.phase * 0.35) * 170;
-  const dy = Math.sin(entity.phase * 0.9) * 26 + Math.cos(entity.phase * 0.21) * 34;
-  const nx = entity.baseX + dx;
-  const facing = Math.cos(entity.phase * 0.35) >= 0 ? 1 : -1;
-  spr.x = nx;
-  // Never lower over the floor under it than over its spot (js/street-creatures.js batterflyBaseY).
-  spr.y = batterflyBaseY(entity.baseY, flightFloorFor(engine?.platforms, engine?.worldW), nx) + dy;
-  spr.scale.x = 0.82 * facing; // the art faces right
+  entity.clock += dtMs;
+  const p = entity.hover ? { ...entity.hover, dir: spr.scale.x < 0 ? -1 : 1 } : flierAt(entity.home, entity.clock);
+  const dt = dtMs / (1000 / 60);
+  spr.x = followPath(spr.x, p.x, dt, PATH_STEP.fly);
+  spr.y = followPath(spr.y, p.y, dt, PATH_STEP.fly);
+  spr.scale.x = 0.82 * p.dir; // the art faces right
 }
 
 function chewBatterfly(entity) {
@@ -1541,6 +1556,8 @@ function setupDemo(engine) {
     }
     entity.baseX = Math.min(engine.worldW - 160, (p?.x || 300) + 150);
     entity.baseY = surfaceAt(engine, entity.baseX) - 110;
+    // The demo keeps it hovering beside the player instead of flying off across the street.
+    entity.hover = { x: entity.baseX, y: entity.baseY };
     if (!auto) return;
     later(2200, () => {
       engine.openPicker(entity.target, { id: 'feed' });
@@ -2287,7 +2304,7 @@ export const animalHusbandryFeature = {
   batterflyHome(target, x, y, engine) {
     const entity = batterflies.find((b) => b.target === target);
     if (!entity || !Number.isFinite(x) || !Number.isFinite(y)) return null;
-    return { baseX: x, baseY: surfaceAt(engine, x, y) - 150, phase0: (entity.key.length * 1.7) % 6 };
+    return batterflyFlight(engine, entity.key, x, surfaceAt(engine, x, y));
   },
 
   /** Multiplayer: someone else fed this Batterfly (street-objects-feature): it chews here too. */

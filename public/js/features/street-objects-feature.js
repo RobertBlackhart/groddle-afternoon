@@ -167,7 +167,6 @@ import { animalPatrolRange, ANIMAL_BODY, TREE_FOOTPRINT } from '../street-ecolog
 import { INCUBATION, PIGGY_FEED, itemBaseCost, namedAnimalLabel, resetIncubation } from '../animal-husbandry.js?v=83779ca2';
 import {
   applyCreatureState,
-  batterflyAt,
   batterflyPerks,
   CREATURE_PATHS,
   chickenSeed,
@@ -177,8 +176,8 @@ import {
   creatureOf,
   easeToward,
   flightFloorFor,
-  flyerAt,
-  flyerLift,
+  flierAt,
+  flierSeed,
   followPath,
   PATH_STEP,
   pathFrom,
@@ -475,22 +474,24 @@ function setPath(engine, obj) {
     const spot = engine.placement?.('flyingButterflies')?.[j];
     if (!spot || !Number.isFinite(spot.x)) return;
     const worldW = Number(engine.worldW) || 2000;
-    // Over the floor under it (js/street-creatures.js flightFloor): every player's street has the same lines.
+    // At random over the whole street, over the floor under it (js/street-creatures.js flierAt), as
+    // game.js spawnButterflies flies it solo: every player's street has the same lines and seed.
     const home = {
-      x0: spot.x,
-      baseY: (Number.isFinite(spot.y) ? spot.y : spr.y + 90) - flyerLift(j),
+      kind: 'butterfly',
+      seed: flierSeed('butterfly', obj.index, spot.x),
       worldW,
       floor: flightFloorFor(engine.platforms, worldW),
-      lift: flyerLift(j),
+      groundY: Number.isFinite(spot.y) ? spot.y : spr.y,
     };
-    pointAt = () => flyerAt(home, pathTime(t.sharedPath, Date.now(), copy.offset));
+    pointAt = () => flierAt(home, pathTime(t.sharedPath, Date.now(), copy.offset));
     step = (dt) => {
       if (!spr._ambient) return false;
       const p = pointAt();
       spr.x = followPath(spr.x, p.x, dt, PATH_STEP.fly);
       spr.y = followPath(spr.y, p.y, dt, PATH_STEP.fly);
+      spr.vx = Math.abs(spr.vx || 0.65) * p.dir;
       const bs = spr.baseScale ?? Math.abs(spr.scale.y);
-      spr.scale.x = Math.abs(bs);
+      spr.scale.x = Math.abs(bs) * p.dir;
       spr.scale.y = Math.abs(bs);
       return true;
     };
@@ -507,13 +508,14 @@ function setPath(engine, obj) {
     const spot = copy.spots?.[obj.id];
     const placed = (Array.isArray(spot) && engine.query?.('batterflyHome', t, Number(spot[0]), Number(spot[1]), engine)) || spr._home;
     if (!placed) return;
-    // Never lower over the floor under it than over its spot (js/street-creatures.js batterflyBaseY).
+    // At random over the whole street in the 400 px over the floor (js/street-creatures.js flierAt),
+    // as its solo flight (animal-husbandry-feature stepBatterfly): the same seed on every page.
     const home = { ...placed, floor: flightFloorFor(engine.platforms, Number(engine.worldW) || 2000) };
-    pointAt = () => batterflyAt(home, pathTime(t.sharedPath, Date.now(), copy.offset));
+    pointAt = () => flierAt(home, pathTime(t.sharedPath, Date.now(), copy.offset));
     step = (dt) => {
       const p = pointAt();
-      spr.x = easeToward(spr.x, p.x, dt);
-      spr.y = easeToward(spr.y, p.y, dt);
+      spr.x = followPath(spr.x, p.x, dt, PATH_STEP.fly);
+      spr.y = followPath(spr.y, p.y, dt, PATH_STEP.fly);
       spr.scale.x = Math.abs(spr.scale.y) * p.dir;
       return true;
     };
@@ -551,12 +553,14 @@ function setPath(engine, obj) {
 }
 
 /**
- * A player at a shared Chicken or Butterfly (its menu open, a verb on it): game.js stops it on this
+ * A player at a shared Chicken, Butterfly or Batterfly (its menu open, a verb on it): game.js stops it on this
  * screen, and the server holds its path for everyone (objects_creatures.go waitCreature: npc.js
  * onInteractionStarting 1981-1990, npc_chicken.js onWaitStart 1630-1639, npc_butterfly.js
  * onWaitStart 1513-1531), again every WAIT_EVERY_MS while the player stays, so nobody's copy runs
  * ahead and it does not jump when the menu closes (lane PIGSTUCK, Austin 2026-11-01: Chickens
- * "hop, like they're restarting their animation from the other side"). A Batterfly flies on.
+ * "hop, like they're restarting their animation from the other side"). A Batterfly too, now that it
+ * flies the whole street (npc_batterfly.js onWaitStart 1074-1081 apiStopMoving, one animal for
+ * everyone): its path waits where this screen stopped it, instead of flying on and jumping back.
  *
  * Each wait says where this screen stopped it ("at", the path's clock when the menu opened or the
  * verb began), so the hold starts there for everyone rather than a trip to the server later: the
@@ -578,7 +582,7 @@ function waitAtCreature(engine, c, wall) {
     // A street Piggy (G334): the same, when the server keeps its path.
     const pig = copy.pigPaths ? streetPigIndex(t, engine.streetTsid) : -1;
     const a = pig >= 0 ? { id: pigId(pig), kind: 'pig' } : creatureOf(t);
-    if (!a || a.kind === 'batterfly' || now.has(a.id) || (a.kind !== 'pig' && !copy.animals.has(a.id)) || !(t.sprite?._path || t.sprite?._walkerPath)) continue;
+    if (!a || now.has(a.id) || (a.kind !== 'pig' && !copy.animals.has(a.id)) || !(t.sprite?._path || t.sprite?._walkerPath)) continue;
     now.add(a.id);
     // The first frame at it: where its path stood when this screen stopped it.
     let w = waitSent.get(a.id);

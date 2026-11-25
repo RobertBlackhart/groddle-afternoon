@@ -5928,6 +5928,55 @@
    "rows": [
     "G1245"
    ]
+  },
+  {
+   "id": "street-flyer-wrap",
+   "title": "Street Butterflies fly one way and come back in from the far end; Batterflies swing 170 px about their spot on an 18 s sine, off the street near an end",
+   "kind": "behaviour",
+   "status": "dropped",
+   "where": [
+    {
+     "file": "public/js/street-creatures.js",
+     "symbol": "flyerAt",
+     "gone": true
+    },
+    {
+     "file": "public/js/street-creatures.js",
+     "symbol": "batterflyAt",
+     "gone": true
+    },
+    {
+     "file": "public/game.js",
+     "symbol": "b.x = -40",
+     "gone": true
+    },
+    {
+     "file": "public/js/features/animal-husbandry-feature.js",
+     "symbol": "stepBatterfly sine",
+     "gone": true
+    }
+   ],
+   "why": "Glitch flew each one at random over the whole street in its band over the floor, never out of it (npc_butterfly.js flyAround 886-969, npc_batterfly.js flyAround 1039-1052: apiStartFlyingInTheArea). The wrap made one pop in at the street's edge every lap (Austin 2026-11-24: 'seeming to loop spawn').",
+   "ruling": "Austin's standing ruling (fixes match Glitch where Glitch had the behaviour), lane flyk 2026-11-24, G1265",
+   "rows": [
+    "G1265"
+   ]
+  },
+  {
+   "id": "street-flyer-pace",
+   "title": "Street Butterflies fly 30-50 px/s and Batterflies 30-45 px/s",
+   "kind": "behaviour",
+   "status": "proposed",
+   "where": [
+    {
+     "file": "public/js/street-creatures.js",
+     "symbol": "FLY_WANDER"
+    }
+   ],
+   "why": "apiStartFlyingInTheArea's speed lived in the game server, which did not survive; the remake keeps its old 39 px/s drift and its yard Butterflies' 30-50 (Eleven's rebuild of the call uses 90 px/s).",
+   "rows": [
+    "G1265"
+   ]
   }
  ]
 }

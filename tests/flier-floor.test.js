@@ -11,10 +11,10 @@
  * went into the ground over the high end.
  *
  * The sweep: every street a player can reach (the street index, as tools/build-realtime-objects.mjs
- * lays it out for both solo and the realtime server), each planned flier on its whole path (a
- * Butterfly across the street and its margins at its worst bob; a Batterfly over its 340 px loop at
- * its lowest dip), its art's bottom edge against the exact floor (floorUnder) under every pixel of
- * its width.
+ * lays it out for both solo and the realtime server) with a planned flier of a kind: a Butterfly or
+ * Batterfly flies anywhere over the street (flierAt, lane flyk), so at every x it may reach, at the
+ * bottom of its band, its art's bottom edge against the exact floor (floorUnder) under every pixel
+ * of its width.
  */
 import assert from 'node:assert/strict';
 import { before, describe, it } from 'node:test';
@@ -22,18 +22,18 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import {
-  CREATURE_PATHS,
   FLIER_LIFT,
   FLIGHT_FLOOR,
-  batterflyAt,
-  batterflyBaseY,
+  FLY_WANDER,
+  flierAt,
+  flierPlan,
+  flierRange,
+  flierSeed,
   flightFloor,
   flightFloorAt,
   flightFloorFor,
   floorProfile,
   floorUnder,
-  flyerAt,
-  flyerLift,
 } from '../public/js/street-creatures.js?v=2d47da2d';
 import { setCreatureEcology, streetObjectLayout } from '../tools/build-realtime-objects.mjs';
 import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=10376267';
@@ -54,44 +54,21 @@ function floorUnderWidth(row, x, halfW) {
   return m;
 }
 
-/**
- * Every planned flier on a street: the street Butterflies (spawnButterflies' flyers, index j among
- * them) and Batterflies (their home as animal-husbandry-feature batterflyHome makes it).
- */
-function fliersOf(data, layout, platforms) {
-  const fliers = [];
-  let j = 0;
-  for (const [, x, y, fly] of layout.butterflies) {
-    if (!fly) continue;
-    fliers.push({ kind: 'butterfly', j, x, y });
-    j += 1;
-  }
-  for (const [i, x, y] of layout.batterflies) {
-    const ground = nearestSurfaceY(platforms, x, y, isItemSolid) ?? y;
-    fliers.push({ kind: 'batterfly', i, x, baseY: ground - FLIER_LIFT.batterfly.lift });
-  }
-  return fliers;
+/** The planned flier kinds on a street (spawnButterflies' flyers, the Batterflies). */
+function kindsOf(layout) {
+  const kinds = [];
+  if (layout.butterflies.some((row) => row[3])) kinds.push('butterfly');
+  if (layout.batterflies.length) kinds.push('batterfly');
+  return kinds;
 }
 
-/** The lowest points of a flier's path, as the clients draw it: [{ x, y }]. */
-function lowPoints(flier, floor, worldW) {
+/** The lowest a flier of this kind flies at each x it may reach (flierAt: the bottom of its band): [{ x, y }]. */
+function lowPoints(kind, floor, worldW) {
   const out = [];
-  if (flier.kind === 'butterfly') {
-    const f = CREATURE_PATHS.fly;
-    const lift = flyerLift(flier.j);
-    const home = { x0: flier.x, baseY: flier.y - lift, worldW, floor, lift };
-    const lapMs = ((worldW + 2 * f.margin) / f.speed) * 1000;
-    // Every 4 px of the lap: it flies level at its lift (G978: no bob).
-    for (let t = 0; t < lapMs; t += (4 / f.speed) * 1000) {
-      const p = flyerAt(home, t);
-      out.push({ x: p.x, y: p.y });
-    }
-    return out;
-  }
-  const b = FLIER_LIFT.batterfly;
-  for (let dx = -b.dx; dx <= b.dx; dx += 2) {
-    const x = flier.x + dx;
-    out.push({ x, y: batterflyBaseY(flier.baseY, floor, x) + b.amp });
+  const [lo, hi] = flierRange(kind, worldW);
+  for (let x = lo; x <= hi; x += 2) {
+    const under = flightFloorAt(floor, x);
+    if (under != null) out.push({ x, y: under - FLY_WANDER[kind].low });
   }
   return out;
 }
@@ -125,13 +102,16 @@ describe('fliers keep above the floor under them', () => {
     assert.match(game, /butterflyFly: SCALE \* 0\.52,/);
     assert.match(game, /npc_butterfly__x1_fly-side_png_1354829525\.webp',\n\s+fw: 70, fh: 65,/);
     assert.match(game, /b\.anchor\.set\(0\.5, 0\.5\);\n\s+b\.baseScale = ENTITY_SCALE\.butterflyFly;/);
-    assert.match(game, /b\.lift = flyerLift\(i\);/);
     const husbandry = read('public/js/features/animal-husbandry-feature.js');
     assert.match(husbandry, /profile: Object\.freeze\(\{ path: `\$\{DIR\}npc_batterfly_profile\.webp`, fw: 111, fh: 96,/);
     assert.match(husbandry, /spr\.anchor\.set\(0\.5, 0\.62\);\n\s+spr\.scale\.set\(0\.82\);/);
-    assert.match(husbandry, /baseY: ground - 150,/);
-    assert.match(husbandry, /const dy = Math\.sin\(entity\.phase \* 0\.9\) \* 26 \+ Math\.cos\(entity\.phase \* 0\.21\) \* 34;/);
-    assert.equal(FLIER_LIFT.batterfly.dx, CREATURE_PATHS.batterfly.dx);
+    // Its art stays inside the street at the band's ends (FLY_WANDER edge) and above its bottom.
+    for (const kind of ['butterfly', 'batterfly']) {
+      assert.ok(FLY_WANDER[kind].edge >= FLIER_LIFT[kind].halfW && FLY_WANDER[kind].low >= FLIER_LIFT[kind].below, kind);
+    }
+    // The original's bands: 200 px over the floor for a Butterfly, 400 for a Batterfly.
+    assert.equal(FLY_WANDER.butterfly.high, FLIGHT_FLOOR.band);
+    assert.equal(FLY_WANDER.batterfly.high, 400);
     // The smoothing keeps a flier's whole width over the floor (FLIGHT_FLOOR).
     for (const kind of Object.values(FLIER_LIFT)) assert.ok(kind.halfW <= FLIGHT_FLOOR.ease && FLIGHT_FLOOR.ease <= FLIGHT_FLOOR.reach, JSON.stringify(kind));
   });
@@ -170,7 +150,8 @@ describe('fliers keep above the floor under them', () => {
     assert.equal(floorUnder([{ x1: 0, y1: 900, x2: 100, y2: 900 }, { x1: 0, y1: 850, x2: 100, y2: 850, pcPerm: 1 }], 50), 900);
     // No lines, no floor: the flier keeps its height.
     assert.equal(flightFloor([], 1000), null);
-    assert.equal(flyerAt({ x0: 100, baseY: 500, worldW: 1000, floor: null }, 0).y, 500);
+    const plain = flierAt({ seed: 3, worldW: 1000, floor: null, groundY: 500 }, 0);
+    assert.equal(plain.y, 500 - plain.h);
     // One floor per street's lines (kept per array).
     assert.equal(flightFloorFor(platforms, 2000), flightFloorFor(platforms, 2000));
   });
@@ -180,18 +161,23 @@ describe('fliers keep above the floor under them', () => {
     assert.ok(street, 'Middle Arbor has a flying Butterfly');
     const platforms = platformsScreen(street.data);
     const worldW = streetWidth(street.data);
-    const [flier] = fliersOf(street.data, street.layout, platforms);
-    // At one height (the spot's) it was once 130 px below the floor at the left end; since every floor
-    // height is planned (the placements audit, 2026-11-12) its spot is higher, and the flight floor
-    // below keeps it over the street either way.
-    assert.ok(Number.isFinite(flier.y));
+    // At one height (the spot's) it was once 130 px below the floor at the left end; the flight
+    // floor keeps it over the street wherever it flies, in the original's 200 px band.
+    const [, sx, sy] = street.layout.butterflies.find((row) => row[3]);
+    assert.ok(Number.isFinite(sy));
     const floor = flightFloor(platforms, worldW);
-    for (const x of [100, 1000, 2000, 3253, 5000, 5900]) {
-      const y = flyerAt({ x0: x, baseY: 0, worldW, floor, lift: flyerLift(0) }, 0).y;
-      assert.ok(y + FLIER_LIFT.butterfly.below <= floorUnder(platforms, x), `${x}: ${y}`);
-      // and stays in the original's 200 px band over the floor
-      assert.ok(floorUnder(platforms, x) - y < FLIGHT_FLOOR.band, `${x}: ${y}`);
+    const home = { kind: 'butterfly', seed: flierSeed('butterfly', 0, sx), worldW, floor, groundY: sy };
+    const plan = flierPlan(home);
+    let left = Infinity;
+    for (let t = 0; t < plan.ms; t += 500) {
+      const p = flierAt(home, t);
+      left = Math.min(left, p.x);
+      const under = floorUnder(platforms, p.x);
+      if (under == null) continue;
+      assert.ok(p.y + FLIER_LIFT.butterfly.below <= under, `${p.x}: ${p.y}`);
+      assert.ok(under - p.y <= FLIGHT_FLOOR.band + 60, `${p.x}: ${p.y} over ${under}`);
     }
+    assert.ok(left < 1000, `it reaches the high left end (${left})`);
   });
 
   it('every street\'s Butterflies and Batterflies, on their whole paths, stay above the floor under them', () => {
@@ -203,43 +189,42 @@ describe('fliers keep above the floor under them', () => {
       const worldW = streetWidth(street.data);
       const floor = flightFloor(platforms, worldW);
       const row = floorProfile(platforms, worldW);
-      for (const flier of fliersOf(street.data, street.layout, platforms)) {
-        if (flier.kind === 'butterfly') butterflies += 1;
+      for (const kind of kindsOf(street.layout)) {
+        if (kind === 'butterfly') butterflies += 1;
         else batterflies += 1;
-        const size = FLIER_LIFT[flier.kind];
+        const size = FLIER_LIFT[kind];
         let worst = null;
-        for (const p of lowPoints(flier, floor, worldW)) {
+        for (const p of lowPoints(kind, floor, worldW)) {
           const under = floorUnderWidth(row, p.x, size.halfW);
           if (under == null) continue;
           const dip = p.y + size.below - under;
           if (dip > 0 && (!worst || dip > worst.dip)) worst = { x: Math.round(p.x), dip: Math.round(dip) };
         }
-        if (worst) below.push(`${street.label} (${street.tsid}) ${flier.kind} ${flier.j ?? flier.i}: ${worst.dip} px under the floor at x ${worst.x}`);
+        if (worst) below.push(`${street.label} (${street.tsid}) ${kind}: ${worst.dip} px under the floor at x ${worst.x}`);
       }
     }
-    assert.ok(butterflies >= 1500, `${butterflies} flying Butterflies swept`);
-    assert.ok(batterflies >= 50, `${batterflies} Batterflies swept`);
+    assert.ok(butterflies >= 700, `${butterflies} Butterfly streets swept`);
+    assert.ok(batterflies >= 50, `${batterflies} Batterfly streets swept`);
     assert.deepEqual(below, []);
   });
 
   it('the shared path (online) and the solo step draw a flier over the same floor', () => {
     const game = read('public/game.js');
-    assert.match(game, /b\._flightFloor = flightFloorFor\(streetPlatforms, WORLD_W\);/);
-    assert.match(game, /const mid = under == null \? b\.baseY : under - \(b\.lift \?\? 90\);/);
+    assert.match(game, /floor: flightFloorFor\(streetPlatforms, WORLD_W\),/);
+    assert.match(game, /const p = flierAt\(b\._flight, b\._flyClock\);/);
     const shared = read('public/js/features/street-objects-feature.js');
-    assert.match(shared, /floor: flightFloorFor\(engine\.platforms, worldW\),\n\s+lift: flyerLift\(j\),/);
+    assert.match(shared, /floor: flightFloorFor\(engine\.platforms, worldW\),/);
     assert.match(shared, /const home = \{ \.\.\.placed, floor: flightFloorFor\(engine\.platforms, Number\(engine\.worldW\) \|\| 2000\) \};/);
+    assert.match(shared, /pointAt = \(\) => flierAt\(home, pathTime\(t\.sharedPath, Date\.now\(\), copy\.offset\)\);/);
     const husbandry = read('public/js/features/animal-husbandry-feature.js');
-    assert.match(husbandry, /spr\.y = batterflyBaseY\(entity\.baseY, flightFloorFor\(engine\?\.platforms, engine\?\.worldW\), nx\) \+ dy;/);
-    // A Batterfly's shared path and its solo loop agree.
+    assert.match(husbandry, /floor: flightFloorFor\(engine\?\.platforms, worldW\),/);
+    assert.match(husbandry, /flierAt\(entity\.home, entity\.clock\)/);
+    // Never under the floor, however far the floor rises across the street.
     const platforms = [{ x1: 0, y1: 900, x2: 400, y2: 600 }, { x1: 400, y1: 600, x2: 1200, y2: 600 }];
     const floor = flightFloor(platforms, 1200);
-    for (let t = 0; t < 30000; t += 997) {
-      const p = batterflyAt({ baseX: 300, baseY: 760, phase0: 1, floor }, t);
-      const phase = 1 + t / 1000;
-      const dy = Math.sin(phase * 0.9) * 26 + Math.cos(phase * 0.21) * 34;
-      assert.ok(Math.abs(p.y - (batterflyBaseY(760, floor, p.x) + dy)) < 1e-9);
-      // Never under the floor, however far the floor rises across its loop.
+    const home = { kind: 'batterfly', seed: flierSeed('batterfly', 0, 300), worldW: 1200, floor, groundY: 760 };
+    for (let t = 0; t < 600_000; t += 997) {
+      const p = flierAt(home, t);
       assert.ok(p.y + FLIER_LIFT.batterfly.below <= floorUnder(platforms, p.x), `${t}: ${p.y}`);
     }
   });

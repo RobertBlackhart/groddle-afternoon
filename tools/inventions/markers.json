@@ -1229,6 +1229,9 @@
     "glitch-had-none: * Glitch never set anyone down on a street at a made-up spot: a": "ours-street-arrival",
     "made-up: * Glitch never set anyone down on a street at a made-up spot: a signpost or door landed you on": "ours-street-arrival"
   },
+  "public/js/street-creatures.js": {
+    "remake-own: * the remake's choice (its old 39 px/s drift, and its yard": "street-flyer-pace"
+  },
   "public/js/street-ecology.js": {
     "invented: // invented scenery, no kept apple or Musicblock spots, and": "guessed-street-animals",
     "invented: is never where the original had them, so an invented row of 13": "guessed-street-animals",

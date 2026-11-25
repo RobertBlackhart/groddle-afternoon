@@ -773,6 +773,7 @@ import {
 } from './js/street-render.js?v=5fbae515';
 import {
   GAME_DAY_MS,
+  GAME_EPOCH_MS,
   shouldFireNewDay,
   newDayPending,
   setLastNewDayTs,
@@ -1087,7 +1088,7 @@ import {
   gardenPlacementRequest,
   ROCK_SHAPE_WIDTHS,
 } from './js/street-ecology.js?v=ff90efe4';
-import { CHICKEN_PAUSE, chickenPauseRoll, easeToward, flightFloorAt, flightFloorFor, flyerLift } from './js/street-creatures.js?v=2d47da2d';
+import { CHICKEN_PAUSE, chickenPauseRoll, flierAt, flierSeed, flightFloorFor, followPath, PATH_STEP } from './js/street-creatures.js?v=2d47da2d';
 import { chickenPose, chickenIdleSheetsAsked } from './js/chicken-idle-art.js?v=e320e159';
 import { chickenWaitPose } from './js/chicken-idles.js?v=eef0279b';
 import { itemOverlayStats } from './js/item-overlay.js?v=6d940627';
@@ -15874,22 +15875,30 @@ function spawnButterflies(xs, flyingSpots) {
     b.anchor.set(0.5, 0.5);
     b.baseScale = ENTITY_SCALE.butterflyFly;
     b.scale.set(ENTITY_SCALE.butterflyFly);
-    b.x = Number.isFinite(spot.x) ? spot.x : 250 + i * 400;
-    b.y = Number.isFinite(spot.y) ? spot.y - 90 - (i % 3) * 22 : GROUND_Y - 90 - (i % 3) * 22;
+    const flyIndex = (xs !== undefined ? xs.length : 4) + i;
+    const spotX = Number.isFinite(spot.x) ? spot.x : 250 + i * 400;
+    // It flies at random over the whole street in the 200 px over the floor under it, never leaving
+    // it (js/street-creatures.js flierAt; npc_butterfly.js flyAround 886-969), on the path every
+    // page draws: online the street's shared clock (street-objects-feature), here its own clock,
+    // which stands still while it is held, so it flies on from where it stopped.
+    b._flight = {
+      kind: 'butterfly',
+      seed: flierSeed('butterfly', flyIndex, spotX),
+      worldW: WORLD_W,
+      floor: flightFloorFor(streetPlatforms, WORLD_W),
+      groundY: Number.isFinite(spot.y) ? spot.y : GROUND_Y,
+    };
+    b._flyClock = Date.now() - GAME_EPOCH_MS;
+    const start = flierAt(b._flight, b._flyClock);
+    b.x = start.x;
+    b.y = start.y;
     b.baseY = b.y;
-    // It flies its lift over the floor under it, not at one height across a street that slopes
-    // (js/street-creatures.js flightFloor; npc_butterfly.js flyAround 886-969: the 200 px above the floor).
-    b.lift = flyerLift(i);
-    b._flightFloor = flightFloorFor(streetPlatforms, WORLD_W);
-    const under = flightFloorAt(b._flightFloor, b.x);
-    if (under != null) b.y = under - b.lift;
-    b.vx = 0.65;
+    b.vx = 0.65 * start.dir;
     b.zIndex = itemZ('npc_butterfly', 5);
     b.play();
     b._ambient = true;
     entityLayer.addChild(b);
     list.push(b);
-    const flyIndex = (xs !== undefined ? xs.length : 4) + i;
     const animalState = animalStateFor('npc_butterfly', flyIndex);
     register({
       classId: 'npc_butterfly',
@@ -18040,12 +18049,13 @@ function physics(dt) {
     // something here grounded it (the Rook, a sulk).
     if (b._path?.(dt)) continue;
     if (b._ambient) {
-      b.x += b.vx * dt;
-      if (b.x > WORLD_W + 40) b.x = -40;
-      // Level over the floor under it (spawnButterflies; G978: no bob); back from a net, the Rook or a sulk, it eases in.
-      const under = flightFloorAt(b._flightFloor, b.x);
-      const mid = under == null ? b.baseY : under - (b.lift ?? 90);
-      b.y = easeToward(b.y, mid, dt);
+      // On its path (spawnButterflies; G978: no bob), its clock running only while it flies; back
+      // from a net, the Rook or a sulk, it flies up to its path.
+      b._flyClock = (b._flyClock || 0) + dt * (1000 / 60);
+      const p = flierAt(b._flight, b._flyClock);
+      b.x = followPath(b.x, p.x, dt, PATH_STEP.fly);
+      b.y = followPath(b.y, p.y, dt, PATH_STEP.fly);
+      b.vx = Math.abs(b.vx || 0.65) * p.dir;
       const bs = b.baseScale ?? ENTITY_SCALE.butterflyFly;
       b.scale.x = (b.vx >= 0 ? 1 : -1) * bs;
       b.scale.y = Math.abs(bs);
