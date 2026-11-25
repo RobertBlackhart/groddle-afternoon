@@ -28,7 +28,7 @@ import {
 import { GIANTS } from '../public/js/shrines.js?v=037613f7';
 import { VENDOR_PROFILES } from '../public/js/vendor.js?v=ccb42243';
 import { CLIENT_KEY_TABLE, clientKeyAction } from '../public/js/client-hotkeys.js?v=5c5a4301';
-import { MENU_ROWS } from '../public/js/ui/topbar.js?v=86765c23';
+import { MENU_ROWS } from '../public/js/ui/topbar.js?v=42e72cdd';
 import { questCardMenuRows } from '../public/js/ui/quest-sheet.js?v=3e7ac77b';
 import { ISLAND_CONFIRM, ISLAND_LINES } from '../public/js/newxp.js?v=5aa81665';
 

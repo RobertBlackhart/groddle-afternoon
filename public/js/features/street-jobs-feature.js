@@ -52,9 +52,9 @@
 import { pluralize } from '../words.js?v=274023af';
 import { ITEM_CATALOG, addItem, countItem, ensureItem, itemIcon, packStamp, removeItem } from '../inventory.js?v=6414dbdc';
 import { canUseTool, useToolCondition, workStepCost } from '../tools.js?v=4156bba8';
-import { ecologyForStreet } from '../street-ecology.js?v=ff90efe4';
+import { ecologyForStreet } from '../street-ecology.js?v=87c86d65';
 import { worldToScreen } from '../street-model.js?v=a9a05f9d';
-import { signArmWidth } from '../street-render.js?v=2f6413a4';
+import { signArmWidth } from '../street-render.js?v=cfb77c44';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 import { getSkillCatalog } from '../content-catalogs.js?v=5ef6adb5';
 import { listRecipesProducing } from '../making.js?v=1ec1075e';

@@ -13,7 +13,7 @@
  * placed size with that blur added, on a canvas padded for the spread. A placement drawn larger than
  * its stage keeps the file's blur (wider than Flash's, never sharper).
  */
-import { DECO_BLURS } from './deco-blur-data.js';
+import { DECO_BLURS } from './deco-blur-data.js?v=1024382d';
 
 /**
  * Which placements get their blur back: an axis drawn at under BLUR_FIX_SCALE of its stage (the file

@@ -20,7 +20,7 @@ import {
   aboutCounter, aboutLength, avatarKeyOf, base64Bytes, cleanAbout, homeKeyOf, homeSizes, imageBase64, pngBase64, profileSlug, shortHash, shouldUpload, stillTransform,
 } from '../public/js/profiles.js?v=054ca723';
 import { createMinnAccount } from '../public/js/minn-account.js?v=c6a70577';
-import { FEATURES } from '../public/js/features/index.js?v=aede53be';
+import { FEATURES } from '../public/js/features/index.js?v=2664e8c7';
 import { SITE_DIR, skipWithoutSite } from '../tools/repos.mjs';
 import { loadContentCatalogsFromDir, getSkillCatalog } from '../public/js/content-catalogs.js?v=5ef6adb5';
 import { skillTitle } from '../public/js/skill-tree.js?v=9cddd020';

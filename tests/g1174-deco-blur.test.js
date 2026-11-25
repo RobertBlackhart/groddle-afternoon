@@ -9,8 +9,8 @@
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 import { describe, it } from 'node:test';
-import { BLUR_FIX_SCALE, blurFix } from '../public/js/deco-blur.js';
-import { DECO_BLURS } from '../public/js/deco-blur-data.js';
+import { BLUR_FIX_SCALE, blurFix } from '../public/js/deco-blur.js?v=4f5d88ea';
+import { DECO_BLURS } from '../public/js/deco-blur-data.js?v=1024382d';
 
 const ROOT = new URL('../', import.meta.url);
 const read = (p) => readFileSync(new URL(p, ROOT), 'utf8');

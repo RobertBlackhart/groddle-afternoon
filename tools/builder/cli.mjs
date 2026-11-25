@@ -33,7 +33,7 @@ import { newStreet, newStreetOps, newHub, nextHubId, mapWithStreet, mapWithoutSt
 import { arriveFor, newConnect, POST_W, POST_H, LADDER_W } from '../../public/js/builder/geometry-handles.js?v=e5055943';
 import { arrivalOps, settlePostOps, followPostOps } from '../../public/js/builder/posts.js?v=f6480e47';
 import { platformsScreen, isStandable } from '../../public/js/street-model.js?v=a9a05f9d';
-import { DECO_TWINS } from '../../public/js/street-render.js?v=2f6413a4';
+import { DECO_TWINS } from '../../public/js/street-render.js?v=cfb77c44';
 import { groundOps, floatingLines, FLOAT_REACH } from '../../public/js/builder/ground.js?v=f4254e96';
 import { EFFECT_KINDS, EFFECT_DEFAULTS, EFFECT_LIMITS, RUMBLE_DEFAULTS, effectsCost, normaliseEmitter, rumbleShare } from '../../public/js/street-effects.js?v=18ee8a33';
 
@@ -1165,7 +1165,7 @@ export async function run(argv, { env = process.env, fetchImpl = globalThis.fetc
       let report;
       let rev;
       if (local()) {
-        const { validateZone } = await import('../../public/js/builder/validate.js?v=d390cd2d');
+        const { validateZone } = await import('../../public/js/builder/validate.js?v=5912ec3c');
         const { loadValidatorContext } = await import('./validator-context.mjs');
         const zone = readJson(resolve(flags.file));
         rev = zone.rev;
