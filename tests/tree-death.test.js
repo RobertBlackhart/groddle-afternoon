@@ -48,7 +48,7 @@ import {
   decorateTreeVerbs,
   streetTreeIndex,
   treeDeathFeature,
-} from '../public/js/features/tree-death-feature.js?v=5a14d85b';
+} from '../public/js/features/tree-death-feature.js?v=5f852b4b';
 import { skillRemakeNote } from '../public/js/skill-tree.js?v=9cddd020';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=5ef6adb5';
 

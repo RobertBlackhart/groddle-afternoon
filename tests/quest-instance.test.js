@@ -206,7 +206,7 @@ describe('The High Jumper (top_of_tree)', () => {
 
 describe('Color Unblocking (color_unblocking)', () => {
   it('opens a path with the four solution switches and keeps the orange bridge', async () => {
-    const mod = await import('../public/js/quest-rooms/color-unblocking.js?v=5270962e');
+    const mod = await import('../public/js/quest-rooms/color-unblocking.js?v=49827765');
     const layout = mod.colorLayout();
     const on = mod.colorsAfter(layout.solution);
     for (const color of ['red', 'blue', 'green', 'purple']) assert.ok(!on.has(color), `${color} cleared`);
@@ -223,7 +223,7 @@ describe('Color Unblocking (color_unblocking)', () => {
 
 describe('Vision Quest (vision_quest)', () => {
   it('uses the archived Institute street and the six source objects', async () => {
-    const mod = await import('../public/js/quest-rooms/vision-quest.js?v=4323e8c1');
+    const mod = await import('../public/js/quest-rooms/vision-quest.js?v=d81138a8');
     assert.equal(mod.STREET, 'GNV1T7PCUM53T25');
     assert.deepEqual(Object.keys(mod.OBJECTS).sort(), ['lemburger', 'npc_crab', 'npc_piggy', 'pumpkin', 'rock_sparkly_1', 'trant_fruit']);
     assert.equal(mod.WRONG_THINGS.length, 7);
@@ -231,7 +231,7 @@ describe('Vision Quest (vision_quest)', () => {
   });
 
   it('#329 (G749): the first Talk to plays only the introduction; the question waits for a later talk', async () => {
-    const mod = await import('../public/js/quest-rooms/vision-quest.js?v=4323e8c1');
+    const mod = await import('../public/js/quest-rooms/vision-quest.js?v=d81138a8');
     const said = [];
     const ctx = {
       data: { object: 'pumpkin', rng: () => 0 },
@@ -256,7 +256,7 @@ describe('Vision Quest (vision_quest)', () => {
 
 describe("Mr. Block's playroom (kids_room)", () => {
   it('has the 24 source words, the doneSpelling tiers and letter gifts', async () => {
-    const mod = await import('../public/js/quest-rooms/kids-room.js?v=5924a526');
+    const mod = await import('../public/js/quest-rooms/kids-room.js?v=857c449c');
     assert.equal(mod.WORD_UP_WORDS.length, 24);
     assert.equal(mod.SPELL_MS, 180_000);
     // The 5*60 exit delay is the "Are you stuck?" prompt; Word Up's 3:00 is the room's only clock.
@@ -278,7 +278,7 @@ describe("Mr. Block's playroom (kids_room)", () => {
 
 describe('The Wrizzards and The Rube (rube_yard)', () => {
   it('hides ten Wrizzards where the camera and room card leave them visible', async () => {
-    const mod = await import('../public/js/quest-rooms/rube-yard.js?v=264dcbf3');
+    const mod = await import('../public/js/quest-rooms/rube-yard.js?v=4e8d0584');
     assert.equal(mod.WRIZZARDS_NEEDED, 10);
     assert.equal(mod.HIDING_SPOTS.length, 10);
     assert.equal(new Set(mod.HIDING_SPOTS.map((s) => s.id)).size, 10);
@@ -307,7 +307,7 @@ describe('Le Misérable (le_miserable)', () => {
   const STEP_BY_TINT = { 16777024: 1, 16750144: 2, 10436052: 3, 3394764: 4 };
 
   async function setup() {
-    const mod = await import('../public/js/quest-rooms/le-miserable.js?v=29492d55');
+    const mod = await import('../public/js/quest-rooms/le-miserable.js?v=fb376244');
     const ev = await import('../public/js/location-events.js?v=44ee645e');
     const { readFileSync } = await import('node:fs');
     const street = JSON.parse(readFileSync(streetFile, 'utf8'));

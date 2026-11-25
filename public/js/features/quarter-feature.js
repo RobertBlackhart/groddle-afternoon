@@ -19,7 +19,7 @@
  * that lot for you first).
  */
 
-import { anchorBottomCentre } from '../sprite-feet.js?v=11303931';
+import { anchorBottomCentre } from '../sprite-feet.js?v=581d3644';
 import { doorSaleArt } from '../door-sign-art.js?v=69daffff';
 import { textureFromUrl, isLoaded, onLoaded } from '../textures.js?v=b8e38103';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';

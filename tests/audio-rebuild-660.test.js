@@ -11,7 +11,7 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { audioResumePlan, createAudioResumer } from '../public/js/audio-resume.js?v=7e1b9661';
+import { audioResumePlan, createAudioResumer } from '../public/js/audio-resume.js?v=70b19cdc';
 
 const root = join(import.meta.dirname, '..');
 const tick = () => new Promise((r) => setTimeout(r, 0));

@@ -25,7 +25,7 @@ import {
   spiritVariantForHub,
   zuttoNear,
   zuttoNextClip,
-} from '../public/js/street-spirits.js?v=f9e88445';
+} from '../public/js/street-spirits.js?v=9f5a77c1';
 import { dialoguePool, nextDialogue } from '../public/js/dialogue.js?v=fcfed1af';
 import {
   CONVO_BUBBLE_CHOICES,

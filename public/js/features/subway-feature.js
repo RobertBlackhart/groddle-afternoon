@@ -97,7 +97,7 @@ import {
   ticketOffer,
 } from '../subway.js?v=ea6921ff';
 import { BOARD_ANSWER_MS, SUBWAY_MP_TEXT, applyTrain, riderChanges, trainOf } from '../subway-mp.js?v=ffd57d82';
-import { anchorBottomCentre } from '../sprite-feet.js?v=11303931';
+import { anchorBottomCentre } from '../sprite-feet.js?v=581d3644';
 
 export const SUBWAY_FEATURE_ID = 'subway';
 const STYLE_ID = 'subway-feature-style';

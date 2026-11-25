@@ -91,7 +91,7 @@ import {
   openStoreDialog,
   storageWindowKind,
 } from '../ui/storage-windows.js?v=6e34133f';
-import { anchorBottomCentre } from '../sprite-feet.js?v=11303931';
+import { anchorBottomCentre } from '../sprite-feet.js?v=581d3644';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 
 export const HOME_STORAGE_ID = 'home-storage';

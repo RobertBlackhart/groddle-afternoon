@@ -95,7 +95,7 @@ import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { displayTopOf, itemstackOverlayPoint, playSheetOverlay } from '../overlay-art.js?v=e50bacca';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { countFromField, typedCount } from '../ui/count-chooser.js?v=75f69512';
-import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=11303931';
+import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=581d3644';
 import { ownGroundRows, ownGroundState, pruneOwnGround } from '../ground-stacks.js?v=22792362';
 
 export const CRAFTYBOT_FEATURE_ID = 'craftybot';

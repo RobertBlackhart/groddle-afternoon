@@ -108,7 +108,7 @@ import {
   signpostArms,
   signpostCandidates,
 } from '../home-street-mp.js?v=8b7fa493';
-import { standOnFeet } from '../sprite-feet.js?v=11303931';
+import { standOnFeet } from '../sprite-feet.js?v=581d3644';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 
 export { HOME_STREET_MP_ID };

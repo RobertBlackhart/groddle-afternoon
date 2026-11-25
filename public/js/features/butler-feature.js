@@ -152,7 +152,7 @@ import { createItemPicker } from '../ui/item-picker.js?v=548fd590';
 import { registerOwnButlerDrop } from '../butler-drop.js?v=24ed5859';
 import { takeDragged } from '../drag-stack.js?v=4c7d198d';
 import { worldPoint } from './world-drop-feature.js?v=ff109b67';
-import { standOnFeet } from '../sprite-feet.js?v=11303931';
+import { standOnFeet } from '../sprite-feet.js?v=581d3644';
 import { autoplayLog } from '../autoplay-log.js?v=55bb4823';
 import { leavingWire, markLeaving, packPicks, pickKey, receiveWire, takeCopies } from '../copy-picks.js?v=b368fd49';
 

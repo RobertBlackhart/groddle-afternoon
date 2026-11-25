@@ -9,7 +9,7 @@ import assert from 'node:assert/strict';
 import { createFeatureHost } from '../public/js/feature-host.js?v=b87e2cbc';
 import { createInventory, countItem } from '../public/js/inventory.js?v=6414dbdc';
 import { bindToolInventory, createToolConditionState } from '../public/js/tools.js?v=4156bba8';
-import { levitateHint, meditationFeature } from '../public/js/features/meditation-feature.js?v=cfc4f8f0';
+import { levitateHint, meditationFeature } from '../public/js/features/meditation-feature.js?v=55038d61';
 import { TOUCH_JUMP_EVENT } from '../public/js/touch-controls.js?v=6ed23498';
 import { teleportationFeature } from '../public/js/features/teleportation-feature.js?v=cd05f3d1';
 

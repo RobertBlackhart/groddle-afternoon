@@ -250,7 +250,7 @@ describe('street animals: a Chicken\'s walk, turns and pauses (lane CHICKWALK)',
   });
 
   it('the art turns on the spot: the sprite is anchored under the bird (Chicken sheets are cut 27 px off centre)', async () => {
-    const { footOf } = await import('../public/js/sprite-feet.js?v=11303931');
+    const { footOf } = await import('../public/js/sprite-feet.js?v=581d3644');
     const cell = { width: 148, height: 110 };
     const walk = footOf('assets/sprites/npc_chicken__x1_walk_png_1354830385.webp', cell);
     // The bird's middle across the walk (G515 measured 101 of the 148 px cell; R12's builder 101.5).

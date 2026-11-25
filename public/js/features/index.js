@@ -5,15 +5,15 @@
  */
 
 import { questFlagsFeature } from './quest-flags-feature.js?v=17c6ef48';
-import { hellFeature } from './hell-feature.js?v=4fc52fd2';
-import { resourceNodesFeature } from './resource-nodes-feature.js?v=3723061e';
+import { hellFeature } from './hell-feature.js?v=c369c634';
+import { resourceNodesFeature } from './resource-nodes-feature.js?v=0a5547e6';
 import { questOffersFeature } from './quest-offers-feature.js?v=f5c2e1e8';
-import { meditationFeature } from './meditation-feature.js?v=cfc4f8f0';
+import { meditationFeature } from './meditation-feature.js?v=55038d61';
 import { teleportationFeature } from './teleportation-feature.js?v=cd05f3d1';
-import { racesFeature } from './races-feature.js?v=87eb2616';
-import { mayhemFeature } from './mayhem-feature.js?v=6409227d';
-import { crownsFeature } from './crowns-feature.js?v=41b7989d';
-import { patchesFeature } from './patches-feature.js?v=fb7eeee3';
+import { racesFeature } from './races-feature.js?v=da265531';
+import { mayhemFeature } from './mayhem-feature.js?v=6f47a233';
+import { crownsFeature } from './crowns-feature.js?v=2fd73afd';
+import { patchesFeature } from './patches-feature.js?v=07614ac4';
 import { foxesFeature } from './foxes-feature.js?v=e4388fd8';
 import { heliKittiesFeature } from './heli-kitties-feature.js?v=2c00f20b';
 import { homesFeature } from './homes-feature.js?v=b8f7eea6';
@@ -162,7 +162,7 @@ import { auctionsFeature } from './auctions-feature.js?v=0cba5176'; FEATURES.pus
 import { playerMailFeature } from './player-mail-feature.js?v=060bc06a'; FEATURES.push(playerMailFeature);
 import { followMpFeature } from './follow-mp-feature.js?v=7ca5d0c4'; FEATURES.push(followMpFeature);
 import { summonMpFeature } from './summon-mp-feature.js?v=6f4aa38d'; FEATURES.push(summonMpFeature);
-import { hogHaulMpFeature } from './hog-haul-mp-feature.js?v=d26ed6db'; FEATURES.push(hogHaulMpFeature);
+import { hogHaulMpFeature } from './hog-haul-mp-feature.js?v=739a3436'; FEATURES.push(hogHaulMpFeature);
 import { dropsMpFeature } from './drops-mp-feature.js?v=88ce728e'; FEATURES.push(dropsMpFeature);
 import { gravesMpFeature } from './graves-mp-feature.js?v=2397c602'; FEATURES.push(gravesMpFeature);
 import { doorKeysFeature } from './door-keys-feature.js?v=7875c813'; FEATURES.push(doorKeysFeature);
@@ -178,7 +178,7 @@ import { homeMachinesFeature } from './home-machines-feature.js?v=dde1472c'; FEA
 import { homeStorageFeature } from './home-storage-feature.js?v=f5c88f50'; FEATURES.push(homeStorageFeature);
 import { homeLiveFeature } from './home-live-feature.js?v=84b01b4b'; FEATURES.push(homeLiveFeature);
 import { questVerbsFeature } from './quest-verbs-feature.js?v=bcd229ef'; FEATURES.push(questVerbsFeature);
-import { itemVerbsMoreFeature } from './item-verbs-more-feature.js?v=086abf59'; FEATURES.push(itemVerbsMoreFeature);
+import { itemVerbsMoreFeature } from './item-verbs-more-feature.js?v=f14cb863'; FEATURES.push(itemVerbsMoreFeature);
 import { yourLooksFeature } from './your-looks-feature.js?v=7e1f2688'; FEATURES.push(yourLooksFeature);
 import { questPinsFeature } from './quest-pins-feature.js?v=0e07d9a1'; FEATURES.push(questPinsFeature);
 import { zoneEffectsFeature } from './zone-effects-feature.js?v=75786bbd'; FEATURES.push(zoneEffectsFeature);
@@ -197,27 +197,27 @@ import { collectionTrophiesFeature } from './collection-trophies-feature.js?v=b0
 import { recipeMemoryFeature } from './recipe-memory-feature.js?v=baea8d15'; FEATURES.push(recipeMemoryFeature);
 import { compoundDiscoveryFeature } from './compound-discovery-feature.js?v=fb490c50'; FEATURES.push(compoundDiscoveryFeature);
 import { sharedGardensFeature } from './shared-gardens-feature.js?v=6a4f9e22'; FEATURES.push(sharedGardensFeature);
-import { sharedPatchesFeature } from './shared-patches-feature.js?v=0827f586'; FEATURES.push(sharedPatchesFeature);
-import { cubimalBattleFeature } from './cubimal-battle-feature.js?v=8ef68a52'; FEATURES.push(cubimalBattleFeature);
+import { sharedPatchesFeature } from './shared-patches-feature.js?v=024c7db5'; FEATURES.push(sharedPatchesFeature);
+import { cubimalBattleFeature } from './cubimal-battle-feature.js?v=ed80f63e'; FEATURES.push(cubimalBattleFeature);
 import { chatPurgeFeature } from './chat-purge-feature.js?v=cb6c250d'; FEATURES.push(chatPurgeFeature);
 import { streetFixesFeature } from './street-fixes-feature.js?v=06e9f5a2'; FEATURES.push(streetFixesFeature);
-import { skillBubblesFeature } from './skill-bubbles-feature.js?v=b8a598aa'; FEATURES.push(skillBubblesFeature);
+import { skillBubblesFeature } from './skill-bubbles-feature.js?v=f6cd91d4'; FEATURES.push(skillBubblesFeature);
 // G947 (M3): crews on a home street (help mine, help dig); answers help-mine-feature's queries there.
 import { homeCrewMpFeature } from './home-crew-mp-feature.js?v=f049b63a'; FEATURES.push(homeCrewMpFeature);
 // TODAYCARD: the start card's Today panel and nudge for a returning player (asks solo-feats for startCardFeat).
 import { startTodayFeature } from './start-today-feature.js?v=061705a3'; FEATURES.push(startTodayFeature);
-import { chickenScareFeature } from './chicken-scare-feature.js?v=b68ee76a'; FEATURES.push(chickenScareFeature);
-import { gameTeleporterFeature } from './game-teleporter-feature.js?v=569b3719'; FEATURES.push(gameTeleporterFeature);
+import { chickenScareFeature } from './chicken-scare-feature.js?v=d055c761'; FEATURES.push(chickenScareFeature);
+import { gameTeleporterFeature } from './game-teleporter-feature.js?v=8e473c7a'; FEATURES.push(gameTeleporterFeature);
 import { levelUpMpFeature } from './level-up-mp-feature.js?v=22659e6d'; FEATURES.push(levelUpMpFeature);
 // G982 Pot Luck Day, part A: the chicken costumes (after seasons-feature, whose seasonOn it asks).
 import { potLuckFeature } from './pot-luck-feature.js?v=24662363'; FEATURES.push(potLuckFeature);
 import { potLuckFeastFeature } from './pot-luck-feast-feature.js?v=95f6f6af'; FEATURES.push(potLuckFeastFeature);
 // G1009 Thanksgiving Day's feast: eat-in-place piles of the week's table food (asks pot-luck-feast for its counts).
-import { feastDayFeature } from './feast-day-feature.js?v=fc0b54bb'; FEATURES.push(feastDayFeature);
+import { feastDayFeature } from './feast-day-feature.js?v=6b805ca5'; FEATURES.push(feastDayFeature);
 import { calendarFeature } from './calendar-feature.js?v=911e7478'; FEATURES.push(calendarFeature);
 // G1195 Happy New Ur: the countdown at the Groddle midnights of December 31, the show and the party street.
 import { newUrFeature } from './new-ur-feature.js?v=97492e93'; FEATURES.push(newUrFeature);
 import { newUrPartyFeature } from './new-ur-party-feature.js?v=62874ea6'; FEATURES.push(newUrPartyFeature);
 import { streetObjectsFeature } from './street-objects-feature.js?v=6b505af8'; FEATURES.push(streetObjectsFeature);
-import { realtimeFeature } from './realtime-feature.js?v=ed017c68'; FEATURES.push(realtimeFeature);
+import { realtimeFeature } from './realtime-feature.js?v=780dd49f'; FEATURES.push(realtimeFeature);
 import { accountBackupFeature } from './account-backup-feature.js?v=5ce4b0a4'; FEATURES.push(accountBackupFeature);

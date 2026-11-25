@@ -22,8 +22,8 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { PARTY_SPACES, startParty } from '../public/js/party-spaces.js?v=b026ad60';
-import { partySpacesFeature } from '../public/js/features/party-spaces-feature.js?v=4f3f50d2';
-import { racesFeature } from '../public/js/features/races-feature.js?v=87eb2616';
+import { partySpacesFeature } from '../public/js/features/party-spaces-feature.js?v=6a683502';
+import { racesFeature } from '../public/js/features/races-feature.js?v=da265531';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const GSJS = join(ROOT, '../glitch-GameServerJS');

@@ -113,7 +113,7 @@ import { STREET_GROUND_Y, homesFeature } from './homes-feature.js?v=b8f7eea6';
 import { payAltarBonus } from './machine-rooms-feature.js?v=08daddeb';
 import { worldToScreen } from '../street-model.js?v=a9a05f9d';
 import { nearestSurfaceY } from '../walk-surface.js?v=3c919d5b';
-import { standOnFeet } from '../sprite-feet.js?v=11303931';
+import { standOnFeet } from '../sprite-feet.js?v=581d3644';
 
 export { HOME_MACHINES_ID };
 

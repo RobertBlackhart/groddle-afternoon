@@ -19,7 +19,7 @@ import {
   ecologyForStreet, footOverAir, planStreetPlacements, populationForStreet, rockSpawnPlan,
   setStreetEcologyCatalog, streetReservedSpots, ROCK_SHAPE_WIDTHS, PLACEMENT_FOOTPRINTS, STEADY_FLOOR_GROUPS,
 } from '../public/js/street-ecology.js?v=ff90efe4';
-import { resourceSpawnPlan, RESOURCE_GROUP_PREFIX } from '../public/js/features/resource-nodes-feature.js?v=3723061e';
+import { resourceSpawnPlan, RESOURCE_GROUP_PREFIX } from '../public/js/features/resource-nodes-feature.js?v=0a5547e6';
 import { creatureRequests, placementRequests, setCreatureEcology } from './build-realtime-objects.mjs';
 import { isZoneTsid } from '../public/js/zone-streets.js?v=b40010d5';
 

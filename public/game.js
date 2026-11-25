@@ -431,7 +431,7 @@ import {
   buildParadiseCourseArt,
   paradiseCoursePreloadUrls,
   paradiseCourseRuntime,
-} from './js/paradise-course-runtime.js?v=2e132d87';
+} from './js/paradise-course-runtime.js?v=9960151a';
 import { installWorldText, loadWorldFont, NAMEPLATE_STYLE, WORLD_FONT_FAMILY, worldCanvasFont, worldLabelStyle } from './js/world-text.js?v=6b49f88c';
 import {
   createAchievementState,
@@ -895,7 +895,7 @@ import { hellBuffDesc, isInHell } from './js/hell.js?v=d77f15ef';
 import { climbBobY, ladderAnimState, ladderSwap } from './js/ladder-anim.js?v=a8b327a0';
 import { VECTOR_AVATAR } from './js/avatar-vector-sheets.js?v=ad801376';
 import { PLACEHOLDER_SHEETS, isPlaceholderPack, ownPackFor, washPlaceholderPixels, whenOwnLookReady } from './js/avatar-placeholder.js?v=ae5c39e4';
-import { createNpcGlitchKit } from './js/npc-glitch.js?v=a28512aa';
+import { createNpcGlitchKit } from './js/npc-glitch.js?v=7a18bbb2';
 import { bakeIdleSheet, bakeLook, bakeSheet, loadCatalog as loadAvatarCatalog, paintPreview as paintVectorPreview, prepareIdle, prepareLook } from './js/avatar-compositor.js?v=dfe4b032';
 import { LATE_SHEETS, anchorSheetFrames, createRetireQueue, ensureAnimSheets, ensureLateSheet, fillPackAnims, packComplete, redrawFrame, showsStandIn } from './js/avatar-pack.js?v=65324246';
 import { catalogItem, colourwaySwatches, lookKey, randomVectorFields, resolveLook, swatchBackground } from './js/avatar-looks.js?v=5a28384d';
@@ -987,7 +987,7 @@ import {
   learnFasterOpen,
   learnFasterSummary,
 } from './js/shrines.js?v=037613f7';
-import { shrineSheet, shrineVariantFor } from './js/shrine-variants.js?v=7f11c97d';
+import { shrineSheet, shrineVariantFor } from './js/shrine-variants.js?v=10b09351';
 import { giantDisplayName } from './js/giant-names.js?v=0e295891';
 import { shrinePowderOptions, shrinePowderAchievementCounters } from './js/powders.js?v=316a1f66';
 import {
@@ -1090,7 +1090,7 @@ import {
 import { CHICKEN_PAUSE, chickenPauseRoll, easeToward, flightFloorAt, flightFloorFor, flyerLift } from './js/street-creatures.js?v=2d47da2d';
 import { chickenPose, chickenIdleSheetsAsked } from './js/chicken-idle-art.js?v=e320e159';
 import { chickenWaitPose } from './js/chicken-idles.js?v=eef0279b';
-import { itemOverlayStats } from './js/item-overlay.js?v=22fadb6f';
+import { itemOverlayStats } from './js/item-overlay.js?v=70f80233';
 import { isCrowdSad } from './js/animal-crowding.js?v=64dee3e0';
 import { createSoundBoard, DEFAULT_SFX_VOLUME, watchButtonClicks, watchPanelSounds } from './js/sound-board.js?v=f41980b8';
 import {
@@ -1127,7 +1127,7 @@ import { wholeStatAmounts, wholeEffects } from './js/stat-text.js?v=f96d8fd3';
 import { createNotifier, effectTokens, floatKey, offerCardDrop, stackFloat, tokenText, wordsOverNotices } from './js/notify.js?v=4226f585';
 import { flyItemToPack, noteFlown, unflownItems } from './js/pack-flight.js?v=8da4ab78';
 import { createMusicVoice } from './js/music-voice.js?v=75c8cf57';
-import { contextNeedsResume, createAudioResumer } from './js/audio-resume.js?v=7e1b9661';
+import { contextNeedsResume, createAudioResumer } from './js/audio-resume.js?v=70b19cdc';
 import { bubbleMs } from './js/read-time.js?v=3151fb1a';
 import { mountNotifyView } from './js/notify-view.js?v=0fbfad68';
 import { mountSocialDrawer } from './js/ui/social-drawer.js?v=06c37291';
@@ -1180,7 +1180,7 @@ import { mountStartStreet } from './js/start-street.js?v=7d8ce49c'; // #349: the
 import { arrangeMapCards, fitMapExtras } from './js/map-extras.js?v=16e261b1'; // the Map's Shortcuts
 // The interface skin (js/classic/ui-mode.js) sets <html data-ui> as it loads: before main(), so before the boot cover lifts.
 import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=7b610050';
-import { standOnFeet, anchorBottomCentre } from './js/sprite-feet.js?v=11303931';
+import { standOnFeet, anchorBottomCentre } from './js/sprite-feet.js?v=581d3644';
 import { markLeaving, packPicks, takeCopies } from './js/copy-picks.js?v=b368fd49';
 import { holdKeepsBusy } from './js/instance-holds.js?v=ff3a63a3';
 import { createLoadTurns, createStreetMove, travelTurn } from './js/street-move.js?v=1c4431bf';

@@ -13,7 +13,7 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { describe, it } from 'node:test';
 
-import { STREET_SPIRIT_ART, spiritSheet } from '../public/js/street-spirits.js?v=f9e88445';
+import { STREET_SPIRIT_ART, spiritSheet } from '../public/js/street-spirits.js?v=9f5a77c1';
 
 const PUB = new URL('../public/', import.meta.url);
 let dwebp = true;

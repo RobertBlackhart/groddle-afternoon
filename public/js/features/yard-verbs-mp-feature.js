@@ -105,7 +105,7 @@ import { ROCK_CATALOG, rockStatusLabel, tickMineRock } from '../mining.js?v=c3bd
 import { getResourceNodeDef, regrowDelayMs } from '../resource-nodes.js?v=90d75c60';
 import { getGameDayKey } from '../game-day.js?v=a532775d';
 import { rockReady } from '../street-objects.js?v=efc0dddc';
-import { resourceNodesFeature } from './resource-nodes-feature.js?v=3723061e';
+import { resourceNodesFeature } from './resource-nodes-feature.js?v=0a5547e6';
 import {
   ROCK_RESPAWN_MS,
   STOCK_NODE_VERBS,
