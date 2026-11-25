@@ -19,6 +19,7 @@ import { drawnLayerOffset, layerScreenDir } from './camera-feel.js?v=e668afc5';
 import { ensureDepthStencil, readbackPixels } from './render-probe.js?v=519c86ef';
 import { QUAD_SPAN, quadSpans, wideRect } from './wide-quads.js?v=f34556e6';
 import { anchorBottomCentre } from './sprite-feet.js?v=6358a697';
+import { blurFix, blurredDecoCanvas } from './deco-blur.js';
 import { signWords } from './deco-sign.js?v=e98e50f9';
 import { loadWorldFont, WORLD_FONT_FAMILY } from './world-text.js?v=6b49f88c';
 import { buildDoorSprite } from './door-view.js?v=5aa64a59';
@@ -226,6 +227,33 @@ export async function loadSignpostTextures(PIXI) {
  * @param {object} signpost
  * @param {{ x: number, y: number }} pos screen
  */
+/** Blurred copies by deco, size and file (several placements of one deco often share all three). */
+const lostBlurCache = new Map();
+
+/**
+ * G1174 (js/deco-blur.js): the deco drawn at its placed size with the blur its squash lost, on a
+ * padded canvas; the padding is kept round the registration point (bottom centre of the w x h box).
+ */
+function applyLostBlur(PIXI, spr, tex, deco, fix, sizeDeco) {
+  if (spr.destroyed) return;
+  const image = tex?.source?.resource;
+  if (!image || typeof document === 'undefined') return;
+  const key = `${deco.sprite}|${deco.w}|${deco.h}|${tex.source.uid ?? ''}`;
+  let blurred = lostBlurCache.get(key);
+  if (!blurred || blurred.destroyed) {
+    try {
+      blurred = PIXI.Texture.from(blurredDecoCanvas(image, deco.w, deco.h, fix).canvas);
+    } catch {
+      return;
+    }
+    lostBlurCache.set(key, blurred);
+  }
+  spr.texture = blurred;
+  spr.blurPad = { px: fix.px, py: fix.py };
+  spr.anchor.set(0.5, (fix.py + deco.h) / (deco.h + 2 * fix.py));
+  sizeDeco();
+}
+
 function buildSignpostSprite(PIXI, signpost, pos) {
   const g = new PIXI.Container();
   g.x = pos.x;
@@ -3458,7 +3486,9 @@ export function buildStreetView(street, PIXI, opts = {}) {
       const farUrl = far && !own ? decoUrl(url) : null;
       // A playing deco draws its strip (the still until it loads), never a sharp copy.
       const animated = !own && animates(deco, sprite);
-      const sharp = !own && !animated && isSharpDeco(url);
+      // G1174: a deco squashed below its stage gets back the blur its own SWF drew at its own size.
+      const lostBlur = !own && !animated ? blurFix(sprite, deco.w, deco.h) : null;
+      const sharp = !own && !animated && !lostBlur && isSharpDeco(url);
       let pick = sharp ? sharpPick(url, far, blur) : null;
       if (pick && (far || blur) && !farAdmitted.has(pick.url)) pick = null;
       let tex = pick ? sharpTexture(pick) : farUrl ? textureFromUrl(farUrl, { raw: true }) : textureFromUrl(url);
@@ -3469,12 +3499,14 @@ export function buildStreetView(street, PIXI, opts = {}) {
       const sizeDeco = () => {
         // The street may be gone before a slow texture arrives.
         if (spr.destroyed) return;
-        if (deco.w > 0) spr.width = deco.w;
-        if (deco.h > 0) spr.height = deco.h;
+        const pad = spr.blurPad || { px: 0, py: 0 };
+        if (deco.w > 0) spr.width = deco.w + 2 * pad.px;
+        if (deco.h > 0) spr.height = deco.h + 2 * pad.py;
         if (deco.flip) spr.scale.x = -Math.abs(spr.scale.x);
       };
       sizeDeco();
       if (!isLoaded(tex)) onLoaded(tex.source, sizeDeco);
+      if (lostBlur) onLoaded(tex.source, () => applyLostBlur(PIXI, spr, tex, deco, lostBlur, sizeDeco));
       if (deco.hidden) spr.visible = false;
       spr.x = pos.x;
       spr.y = pos.y;
