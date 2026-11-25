@@ -54,7 +54,7 @@ import {
   REMAKE_QUEST_NPCS,
 } from '../../public/js/quest-offers.js?v=6eccdc80';
 import { MULTIPLAYER_QUESTS } from '../../public/js/quests-mp.js?v=e697cec3';
-import { QUEST_ROOMS } from '../../public/js/quest-rooms/catalog.js?v=10c8100d';
+import { QUEST_ROOMS } from '../../public/js/quest-rooms/catalog.js?v=f37a25ba';
 import { placeIndex, questHold } from '../../public/js/quest-reach.js?v=7f804115';
 import { SUBWAY_STREETS, closedStreets, initializeStreetJobs, normalizeStreetJobState } from '../../public/js/street-jobs.js?v=76471e42';
 import { routeGraph } from '../../public/js/map-routes.js?v=52140ba2';

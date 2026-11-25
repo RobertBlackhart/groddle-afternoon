@@ -33,7 +33,7 @@ import {
   room,
   watching,
 } from '../public/js/quest-rooms/being-watched.js?v=dba51c66';
-import { QUEST_ROOMS } from '../public/js/quest-rooms/catalog.js?v=10c8100d';
+import { QUEST_ROOMS } from '../public/js/quest-rooms/catalog.js?v=f37a25ba';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const GSJS = join(homedir(), 'Documents/glitch-audit/glitch-GameServerJS');

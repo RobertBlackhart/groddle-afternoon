@@ -26,8 +26,8 @@ import {
   tierAt,
   tierSurfaces,
   walkable,
-} from '../public/js/quest-rooms/radiant-glare.js?v=5cfa83e4';
-import { QUEST_ROOMS, roomModulePath } from '../public/js/quest-rooms/catalog.js?v=10c8100d';
+} from '../public/js/quest-rooms/radiant-glare.js?v=16a15b48';
+import { QUEST_ROOMS, roomModulePath } from '../public/js/quest-rooms/catalog.js?v=f37a25ba';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const gsjs = (file) => readFileSync(join(root, '../glitch-GameServerJS/quests', file), 'utf8');

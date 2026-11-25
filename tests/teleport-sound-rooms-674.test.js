@@ -20,8 +20,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { tripSound } from '../public/js/street-trip.js?v=89addd51';
-import { QUEST_HUB_LOST, QUEST_ROOMS, ROOM_HUBS, ROOM_STREETS, roomHub } from '../public/js/quest-rooms/catalog.js?v=10c8100d';
+import { tripSound } from '../public/js/street-trip.js?v=04c3258c';
+import { QUEST_HUB_LOST, QUEST_ROOMS, ROOM_HUBS, ROOM_STREETS, roomHub } from '../public/js/quest-rooms/catalog.js?v=f37a25ba';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');
