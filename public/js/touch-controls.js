@@ -228,6 +228,24 @@ export function actDragPlan(dx, dy, { step = ACT_DRAG_STEP, cancelX = ACT_CANCEL
   return { steps: Math.trunc(y / step) || 0, cancel: false };
 }
 
+/** Whether `el` holds the capture of pointer `id` (undefined where the browser cannot say). */
+function hasCapture(el, id) {
+  try { return typeof el?.hasPointerCapture === 'function' ? el.hasPointerCapture(id) : undefined; } catch { return undefined; }
+}
+
+/**
+ * #679: whether a control's press (pointer `heldId`) is over when a new press `e` lands on it, though
+ * its lift was never heard: its own pointer id went down again, the new press is the primary one (a
+ * touch is primary only when no other finger is down; a mouse or pen has one pointer), or the capture
+ * the press took (`captured`) has gone from `el`.
+ */
+export function pressIsOver(e, heldId, captured = false, el = null) {
+  if (heldId == null) return true;
+  if (e?.pointerId === heldId) return true;
+  if (e?.isPrimary === true) return true;
+  return Boolean(captured) && hasCapture(el, heldId) === false;
+}
+
 /** A tap on the stick's corner shorter than this (ms) that never moved it goes to the street behind. */
 export const STICK_TAP_MS = 300;
 
@@ -297,7 +315,7 @@ export function touchWords(text, touch = isPhoneDevice()) {
  * Builds the stick and the Jump and Act buttons into `root` (the game's wrap) and wires them.
  * press(key) / release(key): the held keys (game.js `keys`); jump(): a jump's edge; act(): Enter;
  * actMenu(): the open menu Act drives ({ step(n), choose() }), or null (ACTPRESS).
- * Returns { el, releaseAll, destroy }.
+ * Returns { el, releaseAll, releaseStick, destroy }.
  */
 export function installTouchControls({ root, press, release, jump, act = null, actMenu = null, tapThrough = null, floatStick = null, doc = globalThis.document, win = globalThis.window } = {}) {
   if (!root || !doc) return null;
@@ -369,16 +387,29 @@ export function installTouchControls({ root, press, release, jump, act = null, a
     if (frame) win.cancelAnimationFrame(frame);
     frame = 0;
   };
+  // #679: whether the stick took its finger's capture, so a capture gone with no lift heard says the press is over.
+  let stickCaptured = false;
   zone.addEventListener('pointerdown', (e) => {
     if (stickId != null) {
-      if (e.pointerId !== stickId) {
-        e.preventDefault();
-        e.stopPropagation();
-        others.add(e.pointerId);
-        multi = true;
+      // #679 (iPhone, the loading card): the press before ended where nothing heard its lift, and a stick
+      // still "held" took every new press for a second finger. A press is over when its own pointer id
+      // goes down again, when the new press is the primary one (no other finger is down), or when the
+      // capture it took has gone; then the new press takes the stick.
+      if (pressIsOver(e, stickId, stickCaptured, zone)) {
+        endStick();
+        others.clear();
+      } else {
+        if (e.pointerId !== stickId) {
+          e.preventDefault();
+          e.stopPropagation();
+          others.add(e.pointerId);
+          multi = true;
+        }
+        return;
       }
-      return;
     }
+    // A primary press: no other finger is down, so any kept as "others" lifted where nothing heard it.
+    if (e.isPrimary === true) others.clear();
     if (others.has(e.pointerId)) return;
     e.preventDefault();
     stickId = e.pointerId;
@@ -388,6 +419,7 @@ export function installTouchControls({ root, press, release, jump, act = null, a
     tapReady = false;
     downAt = e.timeStamp;
     try { zone.setPointerCapture(e.pointerId); } catch { /* a synthetic pointer */ }
+    stickCaptured = hasCapture(zone, e.pointerId) === true;
     zone.classList.add('is-held');
     placeBase(e.clientX, e.clientY);
     frame = win.requestAnimationFrame(keepHeld);
@@ -473,6 +505,8 @@ export function installTouchControls({ root, press, release, jump, act = null, a
     e.preventDefault();
     // A WebKit cancel whose click never came: that press is over.
     if (actPress?.cancelPending) endAct(false);
+    // #679: a press whose lift nothing heard (the stick's note above) is over too.
+    if (actPress && pressIsOver(e, actPress.id, actPress.captured, actBtn)) endAct(false);
     if (actPress) {
       // A second finger on Act: the press lets go without choosing.
       if (e.pointerId !== actPress.id) actPress.cancelled = true;
@@ -483,6 +517,7 @@ export function installTouchControls({ root, press, release, jump, act = null, a
     const press = { id: e.pointerId, x: e.clientX, y: e.clientY, steps: 0, dragged: false, opened: !had, ready: Boolean(had), cancelled: false, cancelPending: false };
     actPress = press;
     try { actBtn.setPointerCapture(e.pointerId); } catch { /* a synthetic pointer */ }
+    press.captured = hasCapture(actBtn, e.pointerId) === true;
     if (!had) {
       act?.();
       // A menu this press opened lights its first row on the next frame (game.js openVerbMenu, the
@@ -549,14 +584,41 @@ export function installTouchControls({ root, press, release, jump, act = null, a
     others.clear();
     tapReady = false;
   };
+  // #679: a lift or cancel heard anywhere on the page ends the press it belongs to (bubbling, so the
+  // control's own listener, which knows a tap, runs first; a WebKit cancel waiting for its click waits).
+  const onLiftAnywhere = (e) => {
+    if (stickId != null && e.pointerId === stickId) {
+      tapReady = false;
+      endStick();
+    }
+    if (actPress && e.pointerId === actPress.id && !actPress.cancelPending) endAct(false);
+  };
+  doc.addEventListener?.('pointerup', onLiftAnywhere);
+  doc.addEventListener?.('pointercancel', onLiftAnywhere);
+  // #679: the page hidden or left (the phone locked, the app switched) lets go, as the window's blur does.
+  const onHidden = () => { if (doc.visibilityState === 'hidden') releaseAll(); };
+  doc.addEventListener?.('visibilitychange', onHidden);
+  win.addEventListener('pagehide', releaseAll);
   win.addEventListener('blur', releaseAll);
   const keyboard = watchPhoneKeyboard({ doc, win });
   return {
     el,
     releaseAll,
+    /**
+     * #679 (Austin 2026-11-25): a held stick stops at a new street. Its keys let go and the finger still
+     * down holds nothing more; walking again takes a new press.
+     */
+    releaseStick() {
+      tapReady = false;
+      endStick();
+    },
     destroy() {
       releaseAll();
       win.removeEventListener('blur', releaseAll);
+      win.removeEventListener('pagehide', releaseAll);
+      doc.removeEventListener?.('visibilitychange', onHidden);
+      doc.removeEventListener?.('pointerup', onLiftAnywhere);
+      doc.removeEventListener?.('pointercancel', onLiftAnywhere);
       doc.removeEventListener?.('pointerdown', onOtherFinger, true);
       if (actMenuWatch) win.clearTimeout?.(actMenuWatch);
       keyboard.destroy();

@@ -2915,6 +2915,8 @@ let climb = { active: false, wall: null, regrabLock: false, goalY: null };
 const ladderUp = { held: false, pressAt: -Infinity };
 // #424: the arrows the touch stick holds (installTouchControls press/release), for ladderArrivalPress.
 const stickHeld = new Set();
+// TOUCH: the phone's controls once built (installTouchControls), for the street change's stick release (#679).
+let touchControls = null;
 let homeMailboxTarget = null;
 let homeDoorTarget = null;
 let homeReturnTarget = null;
@@ -27109,6 +27111,8 @@ function clearWorldEntities({ keepWindows = false } = {}) {
   if (!keepWindows) closeStreetBoundWindows();
   // Player report 23: a new street starts with no key held (a real one comes back on its next repeat).
   heldKeys.releaseAll('street');
+  // #679 (Austin 2026-11-25): a held stick stops at the new street; its finger re-pressed the keys each frame.
+  touchControls?.releaseStick?.();
   clearHoverGlow();
   releaseSignpostFocus();
   clearSignpostBoardHover();
@@ -36110,7 +36114,7 @@ async function main() {
   }
   // TOUCH: the phone's stick and Jump (js/touch-controls.js) hold the same keys a keyboard does.
   if (TOUCH_PHONE) {
-    installTouchControls({
+    touchControls = installTouchControls({
       root: document.getElementById('game-root') || document.body,
       press: (k) => {
         keys.add(k);

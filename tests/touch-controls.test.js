@@ -40,7 +40,7 @@ describe('touch controls: who gets them', () => {
   });
   it('game.js builds them only on a phone and taps walk only for touch pointers', () => {
     assert.match(game, /const TOUCH_PHONE = isPhoneDevice\(window\);/);
-    assert.match(game, /if \(TOUCH_PHONE\) \{\s*installTouchControls\(/);
+    assert.match(game, /if \(TOUCH_PHONE\) \{\s*(?:touchControls = )?installTouchControls\(/);
     assert.match(game, /\} else if \(TOUCH_PHONE && e\.pointerType === 'touch'\) \{\s*\/\/[^\n]*\n\s*touchTapStreet\(sx, sy\);/);
   });
 });
