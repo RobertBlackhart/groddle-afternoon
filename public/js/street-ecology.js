@@ -392,7 +392,11 @@ export function rockPlacementRequest(population) {
   // G852: Hechey Track's starter rocks (STARTER_ROCK_SPOTS) sit in the gaps the trees, gardens, vendor
   // and shrine leave, so they are seated at the rocks' turn (`late`), leaving those as they were.
   const late = fixed.length && population?.starterRockSpots ? { late: true } : {};
-  return { key: 'rocks', count: population?.rockClasses?.length || 0, clearance: 74, ...(fixed.length ? { fixed } : {}), ...late };
+  // R43 (#680): the planned rocks in order, [index, class] (rockSpawnPlan), so the street furniture
+  // planned after them keeps off each one's art as drawn (rockShapeFor on its spot's room).
+  const slots = measuredRockSlots(population);
+  const art = (population?.rockClasses || []).map((classTsid, index) => (slots[index] ? null : [index, classTsid])).filter(Boolean);
+  return { key: 'rocks', count: population?.rockClasses?.length || 0, clearance: 74, ...(fixed.length ? { fixed } : {}), ...late, ...(art.length ? { art } : {}) };
 }
 
 /**
@@ -1731,12 +1735,30 @@ export const FRONT_BOXES = Object.freeze({
 function isClickFixture(fixture) {
   return fixture?.click === true || /^(signpost|door|mailbox|stone):/.test(fixture?.key || '');
 }
+/**
+ * R43 (#680): a planned rock's or node's art box [w, h] for the street furniture planned after it
+ * (null: none kept). The `planned`-th planned rock by the shape rockSpawnPlan draws it in (the rocks
+ * request's `art`, rockShapeFor on its spot's room), a node by FRONT_BOXES; a Salmon swims and a
+ * Firefly flies past anything.
+ */
+function nodeArtBox(request, point, planned, tsid) {
+  const key = String(request?.key || '');
+  if (key === 'rocks') {
+    const [index, classTsid] = request.art?.[planned] || [];
+    const widths = ROCK_SHAPE_WIDTHS[classTsid];
+    if (!widths) return [PLACEMENT_FOOTPRINTS.rocks, PLACEMENT_HEIGHTS.rocks];
+    const shape = rockShapeFor(tsid, index, classTsid, Number.isFinite(point.room) ? point.room : Infinity);
+    return [widths[shape - 1], ROCK_SHAPE_HEIGHTS[classTsid][shape - 1]];
+  }
+  if (!key.startsWith('resource:') || /npc_salmon|npc_firefly/.test(key)) return null;
+  return FRONT_BOXES[key] || null;
+}
 /** G1236: art boxes for the fixture check of groups FRONT_BOXES leaves out: a dropped Note (NOTE_ART 45 x 14). */
 export const FIXTURE_ART_BOXES = Object.freeze({ furnitureNote: [45, 14] });
 export const CLICK_FIXTURE_GROUPS = Object.freeze(['shrine', 'vendor', 'furnitureStone', 'furnitureMailbox', 'furnitureBoard']);
 /** The FRONT_BOXES things a player has to find and click (FRONT_FIND_SHARE); the other nodes keep FRONT_HIDE_SHARE. */
 export const FRONT_FIND_KEYS = Object.freeze(['shrine', 'vendor', 'resource:jellisac']);
-/** #490, #574: the nodes and furniture moved after the plan when the front art covers them (planStreetPlacements reseatHiddenNodes). */
+/** #490, #574: the nodes and furniture moved once their group is planned when the front art covers them (planStreetPlacements reseatHiddenNodes). */
 export const NODE_FRONT_KEYS = Object.freeze(Object.keys(FRONT_BOXES).filter((k) => !FRONT_FIND_KEYS.includes(k)));
 /**
  * #574: the planned street furniture among them (street-furniture.js FURNITURE_GROUPS). A player goes
@@ -2123,6 +2145,9 @@ export function planStreetPlacements(
   const hiddenCache = new Map();
   const edgeCache = new Map();
   const fits = new Map();
+  const moved = [];
+  // R43 (#680): the planned rocks' and nodes' art boxes, where they stand once seated (NODE_ART_BOX).
+  const nodeArt = [];
 
   for (const request of requests || []) {
     const count = whole(request?.count, 0, 40);
@@ -2191,7 +2216,11 @@ export function planStreetPlacements(
     // A Salmon swims past them (its spot is only where it starts), as a flyer flies.
     const art = !(height > 0) && !perching && request.key !== 'resource:npc_salmon' && (FRONT_BOXES[request.key] || FIXTURE_ART_BOXES[request.key]);
     const fixtureBox = art ? { footprint: art[0], height: art[1] } : null;
-    const clickFixtures = art ? fixtures.filter(isClickFixture) : [];
+    // R43 (#680): a piece of street furniture keeps off every rock and node before it too (the measured
+    // nodes' boxes, measuredNodeCovers, and the planned ones' art, nodeArt): Konka Brink's planned
+    // Visiting Stone stood on a measured Mortar Barnacle.
+    const furniture = FURNITURE_FRONT_KEYS.includes(request.key);
+    const clickFixtures = art ? [...fixtures.filter((f) => isClickFixture(f) || (furniture && /^node:/.test(f.key || ''))), ...(furniture ? nodeArt : [])] : [];
     // The fixture each spot would cover for this request (null: clear); the arrival covers nothing.
     const covers = new Map();
     // G1061: the spots a CANOPY_RANK_ONLY group would take in a crown and nothing else: still roomy floor.
@@ -2218,7 +2247,9 @@ export function planStreetPlacements(
         && !covers.has(c.id) && !(branchFree && onBranch.has(c.id)) && !(maxSlope != null && (c.slope || 0) > maxSlope)
         && (loose || !zoneMiss(c)) && !footAtWalkway(c, footprint, walkways);
       // Furniture (FURNITURE_FRONT_KEYS) may leave its zone, last: `miss` ranks the spots out of it.
-      fits.set(request.key, { fit, loose, miss: (c) => (zoneMiss(c) > 0 ? 1 : 0), pool });
+      // R43 (#680): outside it, the nearer the better (as the planner ranks a zone, by 400 px bands):
+      // Konka Brink's stone, kept off the measured barnacles in its dead end, went to the far end of the street.
+      fits.set(request.key, { fit, loose, miss: (c) => Math.ceil(zoneMiss(c) / 400), pool });
     }
     for (let index = groups[request.key].length; index < count; index += 1) {
       if (fixedAt?.has(index)) {
@@ -2328,18 +2359,34 @@ export function planStreetPlacements(
       groups[request.key].push(point);
       occupied.push(point);
       if (request.key === 'trees') canopies.push(canopyOf(point));
-      // G1236: a planned shrine, vendor or piece of street furniture is a thing players click, kept
-      // clear like a signpost by every group after it (its art's box, FRONT_BOXES).
-      const clickBox = CLICK_FIXTURE_GROUPS.includes(request.key) && FRONT_BOXES[request.key];
-      if (clickBox) {
-        const [w, h] = clickBox;
+    }
+    // #490, R43 (#680): a node or piece of furniture the front art covers moves now, before the next
+    // group is planned, so every group after it keeps clear of where it stands and no group after it
+    // moves it. A group's spots depend only on the groups before it: the realtime server lays out the
+    // shared nodes from the groups up to theirs (tools/build-realtime-objects.mjs) and every page,
+    // whatever it plans after them, has them at the same spots. Moved after the whole plan, Lonkari
+    // Line's Peat Bog stood where the page's mailbox had been planned clear of its first spot.
+    // `reseat: false` (tests only): the plan as it was before #490, to show what reseatHiddenNodes moved.
+    if (reseat && fits.has(request.key)) moved.push(...reseatHiddenNodes({ groups, occupied, candidates, used, fronts, fits, keys: [request.key] }));
+    let plannedIndex = 0;
+    for (const point of groups[request.key]) {
+      if (!point || point.fixed) continue;
+      const size = nodeArtBox(request, point, plannedIndex, tsid);
+      plannedIndex += 1;
+      if (size) nodeArt.push({ ...point, block: { l: point.x - size[0] / 2, r: point.x + size[0] / 2, t: point.y - size[1], b: point.y } });
+    }
+    // G1236: a planned shrine, vendor or piece of street furniture is a thing players click, kept
+    // clear like a signpost by every group after it (its art's box, FRONT_BOXES), where it stands.
+    const clickBox = CLICK_FIXTURE_GROUPS.includes(request.key) && FRONT_BOXES[request.key];
+    if (clickBox) {
+      const [w, h] = clickBox;
+      for (const point of groups[request.key]) {
+        if (!point || point.fixed) continue;
         fixtures.push({ ...point, click: true, block: { l: point.x - w / 2, r: point.x + w / 2, t: point.y - h, b: point.y } });
       }
     }
   }
 
-  // `reseat: false` (tests only): the plan as it was before #490, to show what reseatHiddenNodes moved.
-  const moved = reseat ? reseatHiddenNodes({ groups, occupied, candidates, used, fronts, fits }) : [];
   const seated = seatOnFloor(groups, requests, platforms);
   return { seed: String(seed), groups, occupied, candidateCount: candidates.length, fallbacks, perches, blocked, steep, branch, moved, seated };
 }
@@ -2403,16 +2450,18 @@ export const ROCK_SEAT_MAX_PX = 28;
 export const SEATED_GROUP = (key) => key === 'rocks' || String(key || '').startsWith('resource:');
 
 /**
- * #490 (R2): a planned node mostly behind the front art (hiddenBehindFront, NODE_FRONT_KEYS) moves to
- * the nearest free spot its group would take that the front art leaves clear (keeping every other
+ * #490 (R2): a planned node mostly behind the front art (hiddenBehindFront, NODE_FRONT_KEYS) moves, as
+ * soon as its group is planned (`keys`: that group; R43, #680), to the nearest free spot its group would take that the front art leaves clear (keeping every other
  * thing's clearance where it can, half of it at least); every other spot stays as planned, so a street's layout moves only where
  * something was hidden. With no such spot it stays (the front art covers every floor left). The
  * point is moved in place (groups and occupied share it), so its index and key stay its own.
  */
-function reseatHiddenNodes({ groups, occupied, candidates, used, fronts, fits }) {
+function reseatHiddenNodes({ groups, occupied, candidates, used, fronts, fits, keys = [...fits.keys()] }) {
   const moved = [];
   if (!fronts.length) return moved;
-  for (const [key, { fit, loose, miss, pool }] of fits) {
+  for (const key of keys) {
+    if (!fits.has(key)) continue;
+    const { fit, loose, miss, pool } = fits.get(key);
     for (const [index, point] of (groups[key] || []).entries()) {
       if (point.fixed || !hiddenBehindFront(point, key, fronts)) continue;
       // The nearest spot clear of every other thing's clearance, else the nearest at half of it (the

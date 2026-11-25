@@ -91,7 +91,7 @@ import {
   rockSpawnPlan,
   setStreetEcologyCatalog,
   streetReservedSpots,
-} from '../public/js/street-ecology.js?v=87c86d65';
+} from '../public/js/street-ecology.js?v=58aafb61';
 import { ROCK_CATALOG } from '../public/js/mining.js?v=5e49efb3';
 import { MEGA_ROCK_CHANCE, MEGA_ROCK_CHUNKS } from '../public/js/imagination-effects.js?v=70169933';
 import { ROCK_RESPAWN_EXTRA_AFTER, ROCK_RESPAWN_EXTRA_MS, ROCK_RESPAWN_MS } from '../public/js/pace.js?v=c07dfbd8';
@@ -101,16 +101,16 @@ import { TRANT_CARE_PACKAGES } from '../public/js/trant-care.js?v=cb7f539b';
 import { WOOD_TREE_MATURITY_MAP } from '../public/js/woodcutting.js?v=9e9af511';
 import { ANIMAL_KINSHIP_PACKAGES } from '../public/js/animal-kinship.js?v=75d3cb34';
 import { locationIsDepressing } from '../public/js/animal-mood.js?v=a49495fc';
-import { resourcePlacementGroups, resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=a968c6f5';
-import { soilCountsForStreet, soilPlacementGroups } from '../public/js/features/patches-feature.js?v=b70e2b9b';
-import { KITTY_GROUP, kittyPlacementGroups } from '../public/js/features/heli-kitties-feature.js?v=21c3ff13';
-import { BATTERFLY_GROUP, batterflyPlacementGroups } from '../public/js/features/animal-husbandry-feature.js?v=51a10671';
+import { resourcePlacementGroups, resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=d7187368';
+import { soilCountsForStreet, soilPlacementGroups } from '../public/js/features/patches-feature.js?v=abba3395';
+import { KITTY_GROUP, kittyPlacementGroups } from '../public/js/features/heli-kitties-feature.js?v=2fd7f726';
+import { BATTERFLY_GROUP, batterflyPlacementGroups } from '../public/js/features/animal-husbandry-feature.js?v=2225e295';
 import { hasRaceDispenser } from '../public/js/races.js?v=ab22a079';
 import { setWildlifeCatalog, wildlifeFor } from '../public/js/wildlife.js?v=670c3a7f';
 import { boardSpotRow, furnitureFor, furniturePlacementGroups, stoneSpotRow } from '../public/js/street-furniture.js?v=071203fc';
-import { INCUBATION } from '../public/js/animal-husbandry.js?v=50ad891f';
-import { SHARED_NODE_CLASSES, freshTreePlan } from '../public/js/street-objects.js?v=226e8b1f';
-import { PIGGY_TRIP } from '../public/js/street-creatures.js?v=d893b203';
+import { INCUBATION } from '../public/js/animal-husbandry.js?v=81f93f65';
+import { SHARED_NODE_CLASSES, freshTreePlan } from '../public/js/street-objects.js?v=bded08f8';
+import { PIGGY_TRIP } from '../public/js/street-creatures.js?v=d9fdedc4';
 import { CRAB_PLACEMENT_KEY, CRAB_WALK, crabPlacementGroups } from '../public/js/crabs.js?v=5f0b8099';
 import { KITTY_PET } from '../public/js/heli-kitties.js?v=e4af4096';
 import { FIRE_DRAGON_PLACEMENT_KEY, FIRE_DRAGON_WALK, fireDragonPlacementGroups } from '../public/js/fire-dragon.js?v=b7f3d751';
@@ -209,7 +209,19 @@ export function streetObjectLayout(data, { starter = false, ecology = ecologyFor
   const population = populationForStreet(data.tsid, ecology, { starter });
   const platforms = platformsScreen(data);
   const reserved = streetReservedSpots(data);
-  const plan = planStreetPlacements(platforms, placementRequests(population), {
+  // R43 (#680): one plan, with the groups a page plans (game.js enterStreet: the core groups, then every
+  // feature's up to the Batterflies', creatureRequests, then the Crabs' and the Fire Dragons'), street
+  // furniture included. A group's spots depend only on the groups before it (planStreetPlacements
+  // moves a node the front art covers before the next group), so the groups a page plans after these
+  // from its player's own projects and the season never move them: every page has each shared thing
+  // here, and its mailbox, Visiting Stone and Notice Board planned clear of them
+  // (tests/client-server-placement.test.js, tests/g1236-click-fixtures-clear.test.js).
+  const kittyGroups = kittyPlacementGroups(wildlifeFor(ecologyCatalog, data.tsid));
+  const crabGroups = crabPlacementGroups(data.tsid);
+  // Fire Dragons (fire-dragon-feature, after the Crabs; slice 3): from the street's population, which
+  // no shared street has yet (the made animal lives in a draft zone, and zones are solo only).
+  const dragonGroups = fireDragonPlacementGroups(population);
+  const plan = planStreetPlacements(platforms, [...creatureRequests(population, data, ecologyCatalog), ...crabGroups, ...dragonGroups], {
     worldW: streetWidth(data),
     seed: data.tsid,
     reserved,
@@ -262,33 +274,15 @@ export function streetObjectLayout(data, { starter = false, ecology = ecologyFor
   const chickens = placement('chickens').map((p, i) => [i, r1(p.x), r1(p.y ?? ground)]);
   const rest = placement('butterflies').map((p, i) => [i, r1(p.x), r1(p.y ?? ground), 0]);
   const butterflies = [...rest, ...placement('flyingButterflies').map((p, j) => [rest.length + j, r1(p.x), r1(p.y ?? ground), 1])];
-  // The Batterflies' group comes after the feature groups (creatureRequests): its own planner pass.
-  // Heli Kitties (heli-kitties-feature) and Crabs (crabs-feature, after it) are planned in that pass
-  // too; a page draws them from the server's spots (the snapshot's "spots"), the same for everyone,
-  // since groups from each player's own projects and the seasons come before the Crabs' (slice 2 of
+  // Batterflies (animal-husbandry-feature), Heli Kitties (heli-kitties-feature) and Crabs (crabs-feature):
+  // a page draws them from the server's spots (the snapshot's "spots"), the same for everyone, since
+  // groups from each player's own projects and the seasons come before the Crabs' (slice 2 of
   // research/plans/street-animals-shared.md).
-  let batterflies = [];
-  let kitties = [];
-  let crabs = [];
-  const kittyGroups = kittyPlacementGroups(wildlifeFor(ecologyCatalog, data.tsid));
-  const crabGroups = crabPlacementGroups(data.tsid);
-  // Fire Dragons (fire-dragon-feature, after the Crabs; slice 3): from the street's population, which
-  // no shared street has yet (the made animal lives in a draft zone, and zones are solo only).
-  const dragonGroups = fireDragonPlacementGroups(population);
-  let dragons = [];
-  if (batterflyPlacementGroups(data).length || kittyGroups.length || crabGroups.length || dragonGroups.length) {
-    const requests = creatureRequests(population, data, ecologyCatalog);
-    const full = planStreetPlacements(platforms, [...requests, ...crabGroups, ...dragonGroups], {
-      worldW: streetWidth(data),
-      seed: data.tsid,
-      reserved,
-    });
-    batterflies = (full.groups[BATTERFLY_GROUP] || []).map((p, i) => [i, r1(p.x), r1(p.y ?? ground)]);
-    kitties = (full.groups[KITTY_GROUP] || []).slice(0, kittyGroups[0]?.count || 0)
-      .filter((p) => Number.isFinite(p?.x) && Number.isFinite(p?.y)).map((p, i) => [i, r1(p.x), r1(p.y)]);
-    crabs = (full.groups[CRAB_PLACEMENT_KEY] || []).map((p, i) => [i, r1(p.x), r1(p.y ?? ground)]);
-    dragons = (full.groups[FIRE_DRAGON_PLACEMENT_KEY] || []).map((p, i) => [i, r1(p.x), r1(p.y ?? ground)]);
-  }
+  const batterflies = placement(BATTERFLY_GROUP).map((p, i) => [i, r1(p.x), r1(p.y ?? ground)]);
+  const kitties = placement(KITTY_GROUP).slice(0, kittyGroups[0]?.count || 0)
+    .filter((p) => Number.isFinite(p?.x) && Number.isFinite(p?.y)).map((p, i) => [i, r1(p.x), r1(p.y)]);
+  const crabs = placement(CRAB_PLACEMENT_KEY).map((p, i) => [i, r1(p.x), r1(p.y ?? ground)]);
+  const dragons = placement(FIRE_DRAGON_PLACEMENT_KEY).map((p, i) => [i, r1(p.x), r1(p.y ?? ground)]);
 
   // The street's width, for a Batterfly's flight over it (js/street-creatures.js flierAt; the server's
   // flierpath.go drops its Guano where it flies).

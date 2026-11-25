@@ -38,7 +38,7 @@ import {
   rockShapeFor,
   rockSpawnPlan,
   setStreetEcologyCatalog,
-} from '../public/js/street-ecology.js?v=87c86d65';
+} from '../public/js/street-ecology.js?v=58aafb61';
 import { PAPER_TREE_SPOTS, PEAT_SPOTS, ROCK_BERYL_SPOTS, ROCK_DULLITE_SPOTS, ROCK_METAL_SPOTS, ROCK_SPARKLY_SPOTS } from '../public/js/node-spots-data.js?v=97d4281c';
 import { platformsScreen } from '../public/js/street-model.js?v=a9a05f9d';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
@@ -146,7 +146,8 @@ describe('rocks the snaps show', () => {
       resourceSpots: { rock_metal_1: [{ x: 900, y: 600, variant: 'rock_metal_3' }] },
     };
     const req = rockPlacementRequest(pop);
-    assert.deepEqual(req, { key: 'rocks', count: 3, clearance: 74, fixed: [{ x: 900, y: 600, w: 168, h: 92 }] });
+    // R43 (#680): `art`, the planned rocks [index, class] in order, for the furniture keeping off their art.
+    assert.deepEqual(req, { key: 'rocks', count: 3, clearance: 74, fixed: [{ x: 900, y: 600, w: 168, h: 92 }], art: [[1, 'rock_metal_1'], [2, 'rock_beryl_1']] });
     const lines = [floor('ground', 0, 2000, 1000), floor('deck', 700, 1100, 600)];
     const plan = planStreetPlacements(lines, [{ key: 'trees', count: 3, clearance: 135 }, req], { worldW: 2000, seed: 'fixed', unreached: null });
     assert.equal(plan.groups.rocks.length, 3);

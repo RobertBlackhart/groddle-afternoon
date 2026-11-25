@@ -10,7 +10,9 @@
  * seat npc_salmon:2 at the spot the server has for npc_salmon:3 (2480,1104.5), and npc_salmon:3 768 px
  * to its left. Batterflies, Visiting Stones and Heli Kitties do the same: the page's own plan drifts
  * from the server's on 27 of the 1,076 shared streets (23 before the wildlife catalog loads), and on
- * up to 46 with a player's own groups (a Funpickle find, a street job board).
+ * up to 46 with a player's own groups (a Funpickle find, a street job board). Since #680 (R43) the
+ * planner moves a covered node before it plans the next group and the builder plans the page's groups,
+ * so the page's own plan matches the server's too (tests/g1276-one-shared-plan.test.js).
  *
  * Glitch had one place for each shared item, the location's: the client drew what the server sent.
  * So online a rock, a street tree and a node stand at the snapshot's spot for their id ("spots",
@@ -22,15 +24,15 @@ import { describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { createStreetCopy, snapshotPlace, takeObjs } from '../public/js/street-objects.js?v=226e8b1f';
-import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=ac823f57';
-import { moveEntity, resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=a968c6f5';
+import { createStreetCopy, snapshotPlace, takeObjs } from '../public/js/street-objects.js?v=bded08f8';
+import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=006f7d40';
+import { moveEntity, resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=d7187368';
 import { createResourceNode } from '../public/js/resource-nodes.js?v=90d75c60';
 import { createMineRock } from '../public/js/mining.js?v=5e49efb3';
 import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=10376267';
 import { platformsScreen, streetWidth } from '../public/js/street-model.js?v=a9a05f9d';
-import { ecologyForStreet, planStreetPlacements, populationForStreet, rockSpawnPlan, setStreetEcologyCatalog, streetReservedSpots } from '../public/js/street-ecology.js?v=87c86d65';
-import { FEATURES } from '../public/js/features/index.js?v=1ab64826';
+import { ecologyForStreet, planStreetPlacements, populationForStreet, rockSpawnPlan, setStreetEcologyCatalog, streetReservedSpots } from '../public/js/street-ecology.js?v=58aafb61';
+import { FEATURES } from '../public/js/features/index.js?v=5e6597ed';
 import { setWildlifeCatalog } from '../public/js/wildlife.js?v=670c3a7f';
 import { isZoneTsid } from '../public/js/zone-streets.js?v=b40010d5';
 import { placementRequests } from '../tools/build-realtime-objects.mjs';
@@ -159,6 +161,9 @@ describe('#587 online, rocks, trees and nodes stand at the server\'s spot for th
     const near = (x, y) => entities.filter((e) => Math.abs(e.x - x) <= 700 && Math.abs(e.y - y) <= 500);
     // Her report: 2472,1103. The server: npc_salmon:3 at 2480,1104.5.
     const fish = () => entities.reduce((a, e) => (Math.abs(e.x - 2472) < Math.abs(a.x - 2472) ? e : a));
+    // R43 (#680): the page's own plan already has it there (one plan: a group after the nodes no longer
+    // moves them, tests/g1276-one-shared-plan.test.js); the snapshot keeps it there.
+    assert.equal(fish().key, 'npc_salmon:3', `the page plans ${fish().key} at 2472`);
     client.emit('msg:objs', { t: 'objs', street: INDRI, snap: true, objs: [], spots: serverSpots(objects[INDRI]) });
     streetObjectsFeature.onTick(16, 0, engine);
     assert.equal(fish().key, 'npc_salmon:3', `the fish at 2472 is ${fish().key}`);
@@ -167,7 +172,7 @@ describe('#587 online, rocks, trees and nodes stand at the server\'s spot for th
       assert.deepEqual([e.x, e.y + 2], [x, y], `${e.key} stands at the server's spot`);
     }
     assert.ok(near(2472, 1103).some((e) => e.key === 'npc_salmon:3'));
-    assert.match(engine.data.streetObjectsPlaced || '', /node:npc_salmon:3@2480,1102\.5/);
+    assert.doesNotMatch(engine.data.streetObjectsPlaced || '', /node:npc_salmon/, 'no fish had to move');
   });
 
   it('every street the server shares: what a page draws is where the server checks reach', { skip: skipWithoutServer }, async () => {
@@ -202,7 +207,9 @@ describe('#587 online, rocks, trees and nodes stand at the server\'s spot for th
       const still = off();
       if (still.length) wrong.push(`${tsid} ${data.label}: ${still.slice(0, 4).join(', ')}`);
     }
-    // The page's own plan drifts on these (the Qurazy marker group, #587); the snapshot puts them right.
+    // R43 (#680): the page's own plan now matches the server's but on the Party Space templates planned
+    // here outside their party (tests/client-server-placement.test.js plans them inside it: no drift);
+    // the snapshot puts them right.
     assert.ok(drifted >= 1, `the page's own plan drifts on ${drifted} streets`);
     console.log(`# the page's own plan drifts from the server on ${drifted} streets`);
     assert.deepEqual(wrong, [], `${wrong.length} streets draw a rock, tree or node off the server's spot\n${wrong.slice(0, 20).join('\n')}`);

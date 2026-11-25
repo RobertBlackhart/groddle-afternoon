@@ -23,7 +23,7 @@ import {
   populationForStreet,
   setStreetEcologyCatalog,
   streetReservedSpots,
-} from '../public/js/street-ecology.js?v=87c86d65';
+} from '../public/js/street-ecology.js?v=58aafb61';
 import { RACE_DISPENSER_STREETS } from '../public/js/races.js?v=ab22a079';
 import { creatureRequests, setCreatureEcology } from '../tools/build-realtime-objects.mjs';
 

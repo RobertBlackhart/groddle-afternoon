@@ -24,7 +24,7 @@ import {
   populationForStreet,
   setStreetEcologyCatalog,
   streetReservedSpots,
-} from '../public/js/street-ecology.js?v=87c86d65';
+} from '../public/js/street-ecology.js?v=58aafb61';
 import { FURNITURE_GROUPS, measuredStones } from '../public/js/street-furniture.js?v=071203fc';
 import { creatureRequests, setCreatureEcology } from '../tools/build-realtime-objects.mjs';
 import { census } from '../tools/furniture-front-census.mjs';
@@ -56,7 +56,7 @@ describe('G1084 planned street furniture stays out from behind the front art', (
     for (const cls of ['npc_mailbox', 'bag_notice_board']) assert.ok(FRONT_BOXES[FURNITURE_GROUPS[cls].key]?.[1] > 100, cls);
   });
 
-  it("Puckell Peck's Visiting Stone stands clear of the front conifer, still at its dead end", async () => {
+  it("Puckell Peck's Visiting Stone stands clear of the front conifer and of Rock 1, by its dead end", async () => {
     const data = await loadStreetDataFromFs(PUCKELL_PECK, streetsDir);
     const fronts = frontDecoCovers(data);
     assert.equal(measuredStones(PUCKELL_PECK), null, 'no snap of this stone: it is planned');
@@ -64,7 +64,9 @@ describe('G1084 planned street furniture stays out from behind the front art', (
     assert.ok(frontCoverShare({ x: 5688, y: 796 }, ...STONE_BOX, fronts) >= FRONT_HIDE_SHARE);
     const [stone] = planOf(data).groups[FURNITURE_GROUPS.visiting_stone.key];
     assert.ok(frontCoverShare(stone, ...STONE_BOX, fronts) < FRONT_HIDE_SHARE, `${Math.round(stone.x)},${Math.round(stone.y)}`);
-    assert.ok(stone.x >= 5200, 'within 800 px of the dead end (G853)');
+    // R43 (#680): the rest of its dead end (5200-6000) is under Rock 1 (5090-5220 as drawn), so it
+    // stands on the nearest clear floor before it, clear of the rock's art.
+    assert.ok(stone.x >= 4800 && stone.x + STONE_BOX[0] / 2 <= 5090, `${Math.round(stone.x)}: by the dead end (G853), off Rock 1`);
   });
 
   it('no planned stone, mailbox or board on any street is mostly behind front art (was 19 stones, 7 mailboxes)', async () => {

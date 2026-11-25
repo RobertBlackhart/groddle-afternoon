@@ -30,7 +30,7 @@ import {
   dispatcherDefaultRx,
 } from '../public/js/home-street-fixtures.js?v=4a56a718';
 import { createMailboxState, listMailboxMessages, sendMail } from '../public/js/mailbox.js?v=d50d0d05';
-import { homesFeature } from '../public/js/features/homes-feature.js?v=e3140b00';
+import { homesFeature } from '../public/js/features/homes-feature.js?v=9eebb453';
 import { Display } from './fake-scene.js';
 
 const root = join(import.meta.dirname, '..', 'public', 'js');

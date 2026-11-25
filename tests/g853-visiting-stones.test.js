@@ -21,7 +21,7 @@ import {
   populationForStreet,
   setStreetEcologyCatalog,
   streetReservedSpots,
-} from '../public/js/street-ecology.js?v=87c86d65';
+} from '../public/js/street-ecology.js?v=58aafb61';
 import {
   FURNITURE_GROUPS,
   STONE_DEAD_END_PX,
@@ -112,6 +112,9 @@ describe('Visiting Stones at dead ends', () => {
     assert.ok(planned >= 90, `${planned} planned stones checked`);
     // G1236: Patchouli Preamble's dead end is all front art but the Street Spirit's spot, and a stone no
     // longer stands on the vendor, so it goes out to the nearest clear floor too.
-    assert.ok(offZone <= 3, `${offZone} stones moved out of their dead end off the front art`);
+    // R43 (#680): a stone keeps off the rocks and nodes too. Konka Brink's dead end is front art but
+    // for its measured Mortar Barnacles, Puckell Peck's but for the floor under Rock 1, so each goes
+    // out to the nearest clear floor (231 and 191 px out).
+    assert.ok(offZone <= 5, `${offZone} stones moved out of their dead end off the front art`);
   });
 });

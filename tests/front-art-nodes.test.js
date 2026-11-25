@@ -24,8 +24,8 @@ import {
   populationForStreet,
   setStreetEcologyCatalog,
   streetReservedSpots,
-} from '../public/js/street-ecology.js?v=87c86d65';
-import { UNPLANNED_RESOURCE_CLASSES, resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=a968c6f5';
+} from '../public/js/street-ecology.js?v=58aafb61';
+import { UNPLANNED_RESOURCE_CLASSES, resourceSpawnPlan } from '../public/js/features/resource-nodes-feature.js?v=d7187368';
 import { placementRequests } from '../tools/build-realtime-objects.mjs';
 import { applyStreetIndex, loadStreetDataFromFs, setZoneStreetsShown } from '../public/js/street-loader.js?v=10376267';
 
@@ -75,26 +75,33 @@ describe('#490 planned nodes stay out from behind the front art', () => {
     for (const r of peat) assert.ok(share(r, fronts) < FRONT_HIDE_SHARE, `${r.key} ${Math.round(r.x)},${Math.round(r.y)}`);
   });
 
-  it('only the covered nodes move: every other planned thing keeps its spot (a stable layout)', async () => {
+  it('only the covered nodes move, each at its turn: the groups before it keep their spots (a stable layout)', async () => {
     let moved = 0;
     for (const tsid of Object.keys(index.streets).filter((t) => !/^GZ/.test(t)).sort()) {
       let data;
       try { data = await loadStreetDataFromFs(tsid, streetsDir); } catch { continue; }
       const fronts = frontDecoCovers(data);
+      const pop = populationForStreet(data.tsid, ecologyForStreet(data.tsid), { starter: data.tsid === index.default });
       const after = planOf(data);
       const before = planOf(data, false);
+      // Each moved node was covered where the planner put it and is clear where it stands now.
+      for (const m of after.moved) {
+        const q = after.groups[m.key][m.index];
+        assert.equal(hiddenBehindFront(m.from, m.key, fronts), true, `${tsid} ${m.key}:${m.index} was covered`);
+        assert.equal(hiddenBehindFront(q, m.key, fronts), false, `${tsid} ${m.key}:${m.index} is clear now`);
+        moved += 1;
+      }
+      // R43 (#680): a covered node moves before the next group is planned, so the groups after it are
+      // planned round where it stands (never moved by it later); up to the first group with a move, and
+      // in that group every node but the moved ones, the layout is the plan without the move.
       const movedKeys = new Set(after.moved.map((m) => `${m.key}:${m.index}`));
-      for (const [key, points] of Object.entries(before.groups)) {
-        points.forEach((p, i) => {
+      for (const { key } of placementRequests(pop)) {
+        (before.groups[key] || []).forEach((p, i) => {
+          if (movedKeys.has(`${key}:${i}`)) return;
           const q = after.groups[key][i];
-          if (!movedKeys.has(`${key}:${i}`)) {
-            assert.deepEqual([q.x, q.y], [p.x, p.y], `${tsid} ${key}:${i} moved without being covered`);
-            return;
-          }
-          assert.equal(hiddenBehindFront(p, key, fronts), true, `${tsid} ${key}:${i} was covered`);
-          assert.equal(hiddenBehindFront(q, key, fronts), false, `${tsid} ${key}:${i} is clear now`);
-          moved += 1;
+          assert.deepEqual([q.x, q.y], [p.x, p.y], `${tsid} ${key}:${i} moved without being covered`);
         });
+        if (after.moved.some((m) => m.key === key)) break;
       }
     }
     // Census (2026-11-18): only the covered planned nodes move (344 rows of the server data/objects.json;
