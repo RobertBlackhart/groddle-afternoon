@@ -110,6 +110,8 @@ describe('Visiting Stones at dead ends', () => {
       planned += 1;
     }
     assert.ok(planned >= 90, `${planned} planned stones checked`);
-    assert.ok(offZone <= 2, `${offZone} stones moved out of their dead end off the front art`);
+    // G1236: Patchouli Preamble's dead end is all front art but the Street Spirit's spot, and a stone no
+    // longer stands on the vendor, so it goes out to the nearest clear floor too.
+    assert.ok(offZone <= 3, `${offZone} stones moved out of their dead end off the front art`);
   });
 });

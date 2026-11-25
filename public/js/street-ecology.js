@@ -1722,6 +1722,18 @@ export const FRONT_BOXES = Object.freeze({
   furnitureMailbox: [UNDER_CANOPY_WIDTHS.furnitureMailbox, UNDER_CANOPY_HEIGHTS.furnitureMailbox],
   furnitureBoard: [211, 145],
 });
+/**
+ * G1236: the planned things players click that nothing planned after them may stand on (the planner
+ * keeps them clear as it keeps a signpost or a door): Glitch set each by hand, clear of the rocks and
+ * trees round it (the archived streets). Hechey Track's shrine opened a Metal Rock's menu.
+ */
+/** G1236: whether a fixture is one players click (a signpost, a door, a measured mailbox or stone, a planned CLICK_FIXTURE_GROUPS thing). */
+function isClickFixture(fixture) {
+  return fixture?.click === true || /^(signpost|door|mailbox|stone):/.test(fixture?.key || '');
+}
+/** G1236: art boxes for the fixture check of groups FRONT_BOXES leaves out: a dropped Note (NOTE_ART 45 x 14). */
+export const FIXTURE_ART_BOXES = Object.freeze({ furnitureNote: [45, 14] });
+export const CLICK_FIXTURE_GROUPS = Object.freeze(['shrine', 'vendor', 'furnitureStone', 'furnitureMailbox', 'furnitureBoard']);
 /** The FRONT_BOXES things a player has to find and click (FRONT_FIND_SHARE); the other nodes keep FRONT_HIDE_SHARE. */
 export const FRONT_FIND_KEYS = Object.freeze(['shrine', 'vendor', 'resource:jellisac']);
 /** #490, #574: the nodes and furniture moved after the plan when the front art covers them (planStreetPlacements reseatHiddenNodes). */
@@ -2073,6 +2085,7 @@ export function planStreetPlacements(
   // A request's `fixed` points (measured rocks, rockPlacementRequest) are seated before anything is
   // planned: every other group keeps clear of them, and big scenery never covers one (`w` x `h`).
   const fixedOf = new Map();
+  const latePlaced = [];
   for (const request of requests || []) {
     const pts = (Array.isArray(request?.fixed) ? request.fixed : []).filter((p) => Number.isFinite(p?.x) && Number.isFinite(p?.y));
     if (!pts.length) continue;
@@ -2092,8 +2105,12 @@ export function planStreetPlacements(
     // A `late` request's fixed points (Hechey Track's starter rocks, STARTER_ROCK_SPOTS) are seated at
     // their group's turn: they were chosen in the gaps the earlier groups leave.
     if (request.late !== true) occupied.push(...placed);
+    else latePlaced.push(...placed);
   }
-  const fixtures = occupied.filter((point) => point.block);
+  // G1236: a `late` request's fixed points keep every earlier group off them too (big things and
+  // click fixtures never cover one), though they only crowd the planner's spacing at their own turn:
+  // Hechey Track's planned shrine stood on a starter rock once a fresh game's arrival moved it.
+  const fixtures = [...occupied, ...latePlaced].filter((point) => point.block);
   // Planned trees' canopies (report #256): only the UNDER_CANOPY_HEIGHTS groups keep out of them.
   const canopies = [];
   const used = new Set();
@@ -2117,10 +2134,7 @@ export function planStreetPlacements(
       ? new Map(fixedPts.filter((p) => p.index < count).map((p) => [p.index, p]))
       : null;
     groups[request.key] = fixedAt ? [] : fixedPts.slice(0, count);
-    if (request.late === true && fixedPts.length) {
-      occupied.push(...fixedPts);
-      fixtures.push(...fixedPts.filter((point) => point.block));
-    }
+    if (request.late === true && fixedPts.length) occupied.push(...fixedPts);
     if (request.key === 'trees') for (const point of groups.trees) canopies.push(canopyOf(point));
     const maxSlope = BIG_THING_GROUPS.includes(request.key) ? BIG_THING_MAX_SLOPE : null;
     const deck = DECK_GROUPS.includes(request.key);
@@ -2172,6 +2186,12 @@ export function planStreetPlacements(
       : candidates;
     const walker = Boolean(ANIMAL_PATROL[request.key]);
     const height = Number.isFinite(request?.height) ? Math.max(0, request.height) : PLACEMENT_HEIGHTS[request.key] || 0;
+    // G1236: a thing with no scenery height keeps off the fixtures players click by its art's box
+    // (FRONT_BOXES), so a planned node or a stone never stands on a signpost, a door, a shrine or the vendor.
+    // A Salmon swims past them (its spot is only where it starts), as a flyer flies.
+    const art = !(height > 0) && !perching && request.key !== 'resource:npc_salmon' && (FRONT_BOXES[request.key] || FIXTURE_ART_BOXES[request.key]);
+    const fixtureBox = art ? { footprint: art[0], height: art[1] } : null;
+    const clickFixtures = art ? fixtures.filter(isClickFixture) : [];
     // The fixture each spot would cover for this request (null: clear); the arrival covers nothing.
     const covers = new Map();
     // G1061: the spots a CANOPY_RANK_ONLY group would take in a crown and nothing else: still roomy floor.
@@ -2183,6 +2203,7 @@ export function planStreetPlacements(
     if (!avatar && (fixtures.length || underCanopy)) {
       for (const candidate of pool) {
         let fixture = blockingFixture(candidate, fixtures, { footprint, height });
+        if (!fixture && art) fixture = blockingFixture(candidate, clickFixtures, fixtureBox);
         if (!fixture && underCanopy) {
           fixture = blockingFixture(candidate, canopies, { footprint: canopyW, height: underCanopy });
           if (fixture && rankOnly) crownOnly.add(candidate.id);
@@ -2307,6 +2328,13 @@ export function planStreetPlacements(
       groups[request.key].push(point);
       occupied.push(point);
       if (request.key === 'trees') canopies.push(canopyOf(point));
+      // G1236: a planned shrine, vendor or piece of street furniture is a thing players click, kept
+      // clear like a signpost by every group after it (its art's box, FRONT_BOXES).
+      const clickBox = CLICK_FIXTURE_GROUPS.includes(request.key) && FRONT_BOXES[request.key];
+      if (clickBox) {
+        const [w, h] = clickBox;
+        fixtures.push({ ...point, click: true, block: { l: point.x - w / 2, r: point.x + w / 2, t: point.y - h, b: point.y } });
+      }
     }
   }
 

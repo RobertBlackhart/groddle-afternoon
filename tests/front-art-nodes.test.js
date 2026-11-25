@@ -122,8 +122,9 @@ describe('#490 planned nodes stay out from behind the front art', () => {
     // Dirt Piles 18, Paper Trees 2, Barnacles 3, Ice Nubbins 154, Salmon 189). After, 34, where the
     // front art covers every free floor left: Hellinum Dum's sliding foreground snow skirts lie over
     // all its floors, and the Samudra sea streets' dark foreground rock over their sea beds.
-    const LEFT = new Set(['GHV7VE7O4MA35H6', 'GUVCHLO06EA3VBC', 'GUV2LJJO5UC30B2', 'GUVUMTSQ2FC34ES', 'GA9QTSIOV4F31QH', 'GUVVSU5NCBA3KOS', 'GUVV0NRR2FC3D3D', 'GUV2M85OU8A39GS']);
+    // G1236: Dokk Rokk's last free floor is its doorway, and a node no longer stands in a door (one Ice Nubbin).
+    const LEFT = new Set(['GHV7LLAAIDB35G2', 'GHV7VE7O4MA35H6', 'GUVCHLO06EA3VBC', 'GUV2LJJO5UC30B2', 'GUVUMTSQ2FC34ES', 'GA9QTSIOV4F31QH', 'GUVVSU5NCBA3KOS', 'GUVV0NRR2FC3D3D', 'GUV2M85OU8A39GS']);
     assert.deepEqual(Object.keys(hidden).filter((t) => !LEFT.has(t)), []);
-    assert.ok(Object.values(hidden).reduce((a, b) => a + b, 0) <= 34, JSON.stringify(hidden));
+    assert.ok(Object.values(hidden).reduce((a, b) => a + b, 0) <= 35, JSON.stringify(hidden));
   });
 });
