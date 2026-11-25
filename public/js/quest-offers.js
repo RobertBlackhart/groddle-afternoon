@@ -931,10 +931,12 @@ export const COUNTER_ROUTES = Object.freeze([
   { system: 'animals', counter: 'meats_collected_from_pigs', event: 'npc_piggy:nibble' },
   // G277: each Butterfly counts once per quest run (npc_butterfly.js 1139-1142 and 1286-1291 keep
   // pc.butterflies_massaged / pc.butterflies_milked by tsid; the quests' onComplete_custom clear them).
-  // Both counters move only while their own quests are todo (npc_butterfly.js 1139, 1286), so the
-  // Aranna Scramble's butterflies_milked (rannacramble.js r475) advances only alongside a milk quest.
+  // Both counters move only while their own quests are todo (npc_butterfly.js 1139, 1286).
   { system: 'animals', counter: 'butterflies_massaged', event: 'npc_butterfly:massage', distinct: 'animal', whileQuests: ['animalkinship_massage_butterflies'] },
-  { system: 'animals', counter: 'butterflies_milked', event: 'npc_butterfly:milk', distinct: 'animal', whileQuests: ['animalkinship_milk_butterflies', 'master_milker'] },
+  // Aranna Scramble (rannacramble) is a whileQuest too: its own offer comes only once master_milker is
+  // done, so with GSJS's two alone its milk row could never move (2026-11-25 quest audit; GSJS offered
+  // the Scramble nowhere, the remake's offer trigger is its own).
+  { system: 'animals', counter: 'butterflies_milked', event: 'npc_butterfly:milk', distinct: 'animal', whileQuests: ['animalkinship_milk_butterflies', 'master_milker', 'rannacramble'] },
   { system: 'animal-kinship', counter: 'piggy_nibble_max_reward', event: 'animal_max_reward:npc_piggy' },
   { system: 'animal-kinship', counter: 'butterfly_milk_max_reward', event: 'animal_max_reward:npc_butterfly' },
   { system: 'animal-kinship', counter: 'chicken_squeeze_max_reward', event: 'animal_max_reward:npc_chicken' },
