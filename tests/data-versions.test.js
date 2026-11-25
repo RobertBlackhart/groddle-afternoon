@@ -248,9 +248,14 @@ describe('every page that runs scripts loads the map and the hook first', () => 
   const pages = git(root, 'ls-files', 'public').split('\n').filter((f) => f.endsWith('.html') && !LIGHT_PAGES.has(f));
   const scriptTag = /<script\b([^>]*)>/g;
   const srcOf = (attrs) => /\bsrc="([^"]+)"/.exec(attrs)?.[1] || '';
+  // Scripts that fetch nothing of the game's data, so they need no map: site/theme.js, and the street
+  // pages' encyclopedia/street-live.js (G1277, #686), which asks only the site's streets/live route
+  // (a per-street count the site keeps, no file to key). Each is held to that below.
+  const SITE_ONLY = /(^|\/)(site\/theme|encyclopedia\/street-live)\.js$/;
   const needsHook = (html) => [...html.matchAll(scriptTag)].some((m) => {
     const src = srcOf(m[1]);
-    return /type="module"/.test(m[1]) || (src && !/(^|\/)site\/theme\.js$/.test(src.split('?')[0]));
+    if (src && SITE_ONLY.test(src.split('?')[0])) return false;
+    return /type="module"/.test(m[1]) || Boolean(src);
   });
 
   it('site/theme.js (the one script the other pages load) fetches nothing but the Console link\'s question, never a data file', () => {
@@ -262,6 +267,18 @@ describe('every page that runs scripts loads the map and the hook first', () => 
     // The Analytics tab's pageview beacon (groddle-afternoon-site src/Analytics.php) is the one other request.
     assert.deepEqual([...theme.matchAll(/sendBeacon\s*\(([^,)]+)/g)].map((m) => m[1].trim()), ['URL']);
     assert.match(theme, /const URL = '\/wp-json\/groddle\/v1\/hit';/);
+  });
+
+  it('encyclopedia/street-live.js fetches nothing but the site\'s streets/live route, imports nothing', () => {
+    const live = read('public/encyclopedia/street-live.js');
+    assert.deepEqual([...live.matchAll(/\bfetch(?:Fn)?\s*\(([^,)]+)/g)].map((m) => m[1].trim()), ['url']);
+    assert.match(live, /const url = new URL\(el\.dataset\.liveUrl, document\.baseURI\);/);
+    assert.doesNotMatch(live, /^\s*import\b|\bimport\s*\(|\.src\s*=|new Image\b/m);
+    // The page names the route: the site's REST address, never a game data file.
+    for (const page of git(root, 'ls-files', 'public/encyclopedia/streets').split('\n').filter((f) => f.endsWith('.html'))) {
+      const url = /data-live-url="([^"]+)"/.exec(read(page))?.[1];
+      if (url) assert.match(url, /^(\.\.\/)+wp-json\/groddle\/v1\/streets\/live$/, page);
+    }
   });
 
   it('js/data-versions.js then js/data-urls.js come before every script with a src and every module', () => {
