@@ -14,10 +14,10 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { BUTLER_HINTS, createButlerState, pickHint } from '../public/js/butler.js?v=6c66ebf5';
-import { ownerHintCtx } from '../public/js/features/butler-feature.js?v=285faa16';
-import { countHouseVisit, homesFeature } from '../public/js/features/homes-feature.js?v=4a4a8862';
+import { ownerHintCtx } from '../public/js/features/butler-feature.js?v=dba25657';
+import { countHouseVisit, homesFeature } from '../public/js/features/homes-feature.js?v=595eb258';
 import { homeTowerFeature, towerApi } from '../public/js/features/home-tower-feature.js?v=fef88525';
-import { slashCommandsFeature } from '../public/js/features/slash-commands-feature.js?v=0e4cd63b';
+import { slashCommandsFeature } from '../public/js/features/slash-commands-feature.js?v=0286b072';
 import { createFeatureHost } from '../public/js/feature-host.js?v=b87e2cbc';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

@@ -35,8 +35,8 @@ import { standOnFeet } from '../sprite-feet.js?v=11303931';
 import { textureFromUrl } from '../textures.js?v=b8e38103';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 import { SIDE_SHEET_IDS, bindTabs, selectTab } from '../ui/panel-shell.js?v=5efb38c6';
-import { homeStreetName, possessive, visitSceneTsid } from '../neighbours-mp.js?v=be96ecec';
-import { visitorHomeScene } from './homes-feature.js?v=4a4a8862';
+import { homeStreetName, possessive, visitSceneTsid } from '../neighbours-mp.js?v=f7b21163';
+import { visitorHomeScene } from './homes-feature.js?v=595eb258';
 import {
   PREVIEW_MS,
   RADIO_ART,

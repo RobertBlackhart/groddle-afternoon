@@ -70,9 +70,9 @@ import { woodTreeStatusLabel } from '../woodcutting.js?v=9e9af511';
 import { animalStatusLabel } from '../animals.js?v=56071914';
 import { frameTexture, onLoaded, sourceFromUrl, textureFromUrl } from '../textures.js?v=b8e38103';
 import { homeStreetLayout, normalizeCultivationState } from '../home-cultivation.js?v=c50349f3';
-import { readVisitScene } from '../neighbours-mp.js?v=be96ecec';
+import { readVisitScene } from '../neighbours-mp.js?v=f7b21163';
 import { saveStore } from '../save-store.js?v=4e720735';
-import { STREET_GROUND_Y, homesFeature, wearHomeCultivation } from './homes-feature.js?v=4a4a8862';
+import { STREET_GROUND_Y, homesFeature, wearHomeCultivation } from './homes-feature.js?v=595eb258';
 import { holdYardAnimal } from './animal-husbandry-feature.js?v=82b161a0';
 import { patchesFeature, treeFrameUrl } from './patches-feature.js?v=fb7eeee3';
 import {

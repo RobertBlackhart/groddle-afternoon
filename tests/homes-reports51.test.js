@@ -10,8 +10,8 @@ import { END_SEAM, roomPieces } from '../public/js/home-wallpaper.js?v=99228166'
 import { WALLPAPER_MAPS } from '../public/js/home-wallpaper-art.js?v=129c514f';
 import { DOCK_GAP, DOCK_W, dockedPickerSpot } from '../public/js/furniture-upgrade-picker.js?v=8cfd5db7';
 import { filterSwatches, swatchFilters } from '../public/js/ui/home-builder.js?v=03679434';
-import { listTextures } from '../public/js/home-decor.js?v=5fde97c9';
-import { salePlacementKey } from '../public/js/home-street-mp.js?v=f2450a6f';
+import { listTextures } from '../public/js/home-decor.js?v=adc6b830';
+import { salePlacementKey } from '../public/js/home-street-mp.js?v=7ed8aa7e';
 import { beginHomeVisit, createHomeState, imagineHome } from '../public/js/homes.js?v=dca6b2cd';
 
 const root = join(import.meta.dirname, '..');

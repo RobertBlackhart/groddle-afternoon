@@ -8,7 +8,7 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { DROP_TEXT, dropRefusalText, fullPlaceName } from '../public/js/drops-mp.js?v=6be23b70';
+import { DROP_TEXT, dropRefusalText, fullPlaceName } from '../public/js/drops-mp.js?v=34a8fc84';
 
 describe('the full refusal names the place', () => {
   it('house, Tower floor, street', () => {

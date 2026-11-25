@@ -8,7 +8,7 @@
  */
 import { after, before, describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { DROP_QUEUE_MAX, DROP_RATE, DROP_TEXT, bucketTake } from '../public/js/drops-mp.js?v=6be23b70';
+import { DROP_QUEUE_MAX, DROP_RATE, DROP_TEXT, bucketTake } from '../public/js/drops-mp.js?v=34a8fc84';
 import { dropsMpFeature } from '../public/js/features/drops-mp-feature.js?fresh=dropqueue';
 
 const STREET = 'LIF102FDNU11314';
