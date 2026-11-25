@@ -15,7 +15,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { homedir } from 'node:os';
-import { EXPAND_DIALOG, addFloor, createFloorsState, expandCountText, expandRowStatus, houseExpandView, wallExpandItems } from '../public/js/home-floors.js?v=fad615e2';
+import { EXPAND_DIALOG, addFloor, createFloorsState, expandCountText, expandRowStatus, houseExpandView, wallExpandItems } from '../public/js/home-floors.js?v=4ff29da7';
 import { createHomeDecorState, placeFurniture } from '../public/js/home-decor.js?v=adc6b830';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

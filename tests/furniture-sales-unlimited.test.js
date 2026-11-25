@@ -21,7 +21,7 @@ import { homedir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { SITE_DIR, sitePath, skipWithoutSite } from '../tools/repos.mjs';
-import { normalizeListings, normalizePiles } from '../public/js/home-street-mp.js?v=8b7fa493';
+import { normalizeListings, normalizePiles } from '../public/js/home-street-mp.js?v=5fca7fc0';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const engine = process.env.MINN_ENGINE_DIR || join(homedir(), 'Cove/Sites/minn-engine.localhost/public/minn');

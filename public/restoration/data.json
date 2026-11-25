@@ -2814,9 +2814,39 @@
   "deployed": "2026-11-25"
  },
  "git": {
-  "commits": 3467,
+  "commits": 3474,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-25",
+    "kind": "fix",
+    "text": "A machine's Make panel shows the fuel the job burns and the tank, and Max stops at what the tank pays for"
+   },
+   {
+    "date": "2026-11-25",
+    "kind": "new",
+    "text": "House expansion opens Glitch's dialog: what the next segment costs, what you have, and the button"
+   },
+   {
+    "date": "2026-11-25",
+    "kind": "fix",
+    "text": "The Buddies window and its kin open below the iPhone status bar"
+   },
+   {
+    "date": "2026-11-25",
+    "kind": "fix",
+    "text": "On a phone, Decoration Mode's note under the banner stays on the screen"
+   },
+   {
+    "date": "2026-11-25",
+    "kind": "fix",
+    "text": "Visitors see the owner's own house, not the one their region style starts with"
+   },
+   {
+    "date": "2026-11-25",
+    "kind": "fix",
+    "text": "A restyled cabinet's storage window shows the style's own picture"
+   },
    {
     "date": "2026-11-25",
     "kind": "fix",
@@ -2906,39 +2936,9 @@
     "date": "2026-11-24",
     "kind": "fix",
     "text": "Sparkly of Interest counts each chunk mined or ground on its row (n/100)"
-   },
-   {
-    "date": "2026-11-24",
-    "kind": "fix",
-    "text": "Quest steps read as words, not the editor's \"Toggle flag ...\" placeholders"
-   },
-   {
-    "date": "2026-11-24",
-    "kind": "fix",
-    "text": "On a phone online, the Butler and the hi board say where the Hi button is"
-   },
-   {
-    "date": "2026-11-24",
-    "kind": "fix",
-    "text": "A quest's place link opens the Map on the way into the region, and the Map names the way in"
-   },
-   {
-    "date": "2026-11-24",
-    "kind": "fix",
-    "text": "A house holds any number of furniture pieces"
-   },
-   {
-    "date": "2026-11-24",
-    "kind": "fix",
-    "text": "The Vine Radio stands on its art's own feet, and Classic's Make window keeps its low-window rule"
-   },
-   {
-    "date": "2026-11-24",
-    "kind": "new",
-    "text": "A Vine Radio for your home street, earned by playing tunes for crabs (#661)"
    }
   ]
  },
- "tests": 1364,
+ "tests": 1370,
  "generatedAt": "2026-11-25"
 }

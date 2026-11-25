@@ -13,7 +13,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { MAKING_BUSY } from '../public/js/make-tools.js?v=86877c3e';
 import { machineTank, roomMachineVerbs } from '../public/js/machine-rooms.js?v=ca927ffd';
-import { normalizeMachine, placedMachineVerbs } from '../public/js/home-machines.js?v=300d8850';
+import { normalizeMachine, placedMachineVerbs } from '../public/js/home-machines.js?v=a2ba898c';
 
 const root = join(import.meta.dirname, '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

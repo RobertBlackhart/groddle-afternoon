@@ -23,12 +23,12 @@
  * teach(value). Canvas: gnomes (id@x:state:dir:phrases per gnome here, ';'), gnomePlace, gnomeLast.
  */
 import { addItem, countItem, removeItem } from '../inventory.js?v=6414dbdc';
-import { readVisitScene } from '../neighbours-mp.js?v=d7a3f0f2';
+import { readVisitScene } from '../neighbours-mp.js?v=f9f82b8e';
 import { frameTexture, sourceFromUrl } from '../textures.js?v=b8e38103';
 import { GNOME_ART, GNOME_ART_DIR } from '../garden-gnome-art.js?v=994b7c76';
 import { filterText } from '../word-filter.js?v=9a7a7ebb';
 import { HOME_INTERIOR_TSID, HOME_STREET_TSID } from '../homes.js?v=dca6b2cd';
-import { homesFeature } from './homes-feature.js?v=e9651b0f';
+import { homesFeature } from './homes-feature.js?v=e3140b00';
 import {
   GNOME_CLASS,
   GNOME_PHRASE_MAX,

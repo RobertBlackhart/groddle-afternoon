@@ -137,9 +137,9 @@ import {
 } from '../potions.js?v=4f4c996d';
 import { itemVerbAchievementCounters } from '../item-verbs.js?v=ecade42e';
 import { patchesFeature } from './patches-feature.js?v=b70e2b9b';
-import { homesFeature } from './homes-feature.js?v=e9651b0f';
+import { homesFeature } from './homes-feature.js?v=e3140b00';
 import { streetTreeIndex } from './tree-death-feature.js?v=93bf3757';
-import { questRoomConverse } from './quest-instances-feature.js?v=fd47f703';
+import { questRoomConverse } from './quest-instances-feature.js?v=75ff82ee';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { copyChargesLeft, copyFromLedger, keepsCopies, spendCopyCharge, verbCopy } from '../copy-charges.js?v=ab07e909';
 import { copyTag, migrateClassTag, migrateClassValue, setCopyTag, toolCopies } from '../tools.js?v=4156bba8';

@@ -227,7 +227,7 @@ import { RADIO_TEXT, radioOwned } from '../vine-radio.js?v=5827b931';
 import { displayTopOf, itemstackOverlayPoint, overlayAlpha, overlayLifeMs, playPoofIn, trackOverlay } from '../overlay-art.js?v=e50bacca';
 import { createSheetLoader, pixiSpeed } from '../sprite-sheets.js?v=d787e3c3';
 import { fadeInNewNear } from '../poof-fade.js?v=57db6aea';
-import { projectApi } from './street-jobs-feature.js?v=e28713e9';
+import { projectApi } from './street-jobs-feature.js?v=b4b73998';
 import { TOWER_CHASSIS, TOWER_CONFIG, TOWER_DOOR_DX, TOWER_GEO, TOWER_PROTO, normalizeTowerState } from '../home-tower.js?v=a7fc0cce';
 import { drawTowerBench, drawTowerElevator, drawTowerExit, towerApi, visitorTowerView } from './home-tower-feature.js?v=4663a659';
 import { pieceUrl, roomPieces, surfaceAt, swatchPiece, wallTargetAt } from '../home-wallpaper.js?v=99228166';
@@ -307,7 +307,7 @@ import {
   quoteHouseUnexpand,
   slideDoor,
   unexpandHouseFloors,
-} from '../home-floors.js?v=fad615e2';
+} from '../home-floors.js?v=4ff29da7';
 import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
 import { anchorBottomCentre, standOnFeet } from '../sprite-feet.js?v=6358a697';
 import { autoplayLog } from '../autoplay-log.js?v=55bb4823';

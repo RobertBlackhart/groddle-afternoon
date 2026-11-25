@@ -14,7 +14,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { FURNITURE_UPGRADES, FURNITURE_UPGRADES_LEFT_OUT } from '../public/js/furniture-upgrades-data.js?v=4fe80b0f';
 import { applyUpgrade, listUpgrades, styleCurrants, upgradeArt, upgradeVerb } from '../public/js/furniture-upgrades.js?v=6cc0e2da';
-import { DOOR_CLASS } from '../public/js/home-floors.js?v=fad615e2';
+import { DOOR_CLASS } from '../public/js/home-floors.js?v=4ff29da7';
 import { normalizeHomeDecorState } from '../public/js/home-decor.js?v=adc6b830';
 
 const pub = join(import.meta.dirname, '..', 'public');
