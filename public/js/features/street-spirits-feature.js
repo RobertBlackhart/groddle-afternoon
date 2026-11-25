@@ -75,7 +75,7 @@ import {
   spiritSheets,
   zuttoNear,
   zuttoNextClip,
-} from '../street-spirits.js?v=52979ade';
+} from '../street-spirits.js?v=23cdf0ee';
 import {
   TALK_CLASSES,
   TALK_ORDER,

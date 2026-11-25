@@ -14,7 +14,7 @@ import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { describe, it } from 'node:test';
 
-import { STREET_SPIRIT_ART, STREET_SPIRIT_LONELY_ART, spiritCrySheet, spiritSheet } from '../public/js/street-spirits.js?v=52979ade';
+import { STREET_SPIRIT_ART, STREET_SPIRIT_LONELY_ART, spiritCrySheet, spiritSheet } from '../public/js/street-spirits.js?v=23cdf0ee';
 
 const PUB = new URL('../public/', import.meta.url);
 let dwebp = true;

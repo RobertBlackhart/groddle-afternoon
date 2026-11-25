@@ -61,7 +61,7 @@ import { loadUses } from './uses.mjs';
 import { dropBoilerplate, factsFile, pageFacts } from '../encyclopedia/search-facts.mjs';
 import { loadHandouts } from './handouts.mjs';
 import { howLinks } from '../encyclopedia/guides.mjs';
-import { STREET_SPIRIT_VARIANTS } from '../../public/js/street-spirits.js?v=52979ade';
+import { STREET_SPIRIT_VARIANTS } from '../../public/js/street-spirits.js?v=23cdf0ee';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = join(here, '..', '..');

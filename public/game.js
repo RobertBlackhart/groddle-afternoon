@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=0e701611';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=e16875cc';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=71e1b80d';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE, playerClickBox } from './js/reach.js?v=456da8a8';
@@ -987,7 +987,7 @@ import {
   learnFasterOpen,
   learnFasterSummary,
 } from './js/shrines.js?v=037613f7';
-import { shrineSheet, shrineVariantFor } from './js/shrine-variants.js?v=949cbdb0';
+import { shrineSheet, shrineVariantFor } from './js/shrine-variants.js?v=0b8ba768';
 import { giantDisplayName } from './js/giant-names.js?v=0e295891';
 import { shrinePowderOptions, shrinePowderAchievementCounters } from './js/powders.js?v=316a1f66';
 import {
