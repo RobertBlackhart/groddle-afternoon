@@ -45,7 +45,7 @@ import {
   setButlerHiVariant,
   setPlayerHiVariant,
   stepMissile,
-} from '../public/js/hi-signs.js?v=7f3cab9c';
+} from '../public/js/hi-signs.js?v=90d9eb6a';
 import { GAME_DAY_MS, GAME_EPOCH_MS } from '../public/js/game-day.js?v=a532775d';
 import { hiSignsFeature } from '../public/js/features/hi-signs-feature.js?v=78e3ba5d';
 import { getAchievementCatalog, loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=5ef6adb5';

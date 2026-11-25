@@ -10,7 +10,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { closedRoadText, closedStreets, initializeStreetJobs, normalizeStreetJobState, roadClosure } from '../public/js/street-jobs.js?v=3fc80dcd';
-import { findRoute } from '../public/js/map-routes.js?v=426e16ea';
+import { findRoute } from '../public/js/map-routes.js?v=8d9a6c62';
 import { streetGraph } from '../public/js/street-graph.js?v=dcc5cae4';
 
 const root = join(import.meta.dirname, '..');

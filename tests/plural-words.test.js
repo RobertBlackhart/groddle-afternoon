@@ -10,7 +10,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { countWords, pluralize, withArticle } from '../public/js/words.js?v=274023af';
 import { YARD_TEXT } from '../public/js/yard-verbs-mp.js?v=e3345b8d';
-import { pluralize as butlerPluralize } from '../public/js/butler.js?v=6c66ebf5';
+import { pluralize as butlerPluralize } from '../public/js/butler.js?v=152429c8';
 import { ensureMakingItems } from '../public/js/making.js?v=1ec1075e';
 import { ITEM_CATALOG } from '../public/js/inventory.js?v=6414dbdc';
 

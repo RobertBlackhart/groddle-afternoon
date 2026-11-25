@@ -13,7 +13,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { BUTLER, ROOK_ALERTS_KEPT, createButlerState, normalizeButlerState, rookAlert, rookAlertLine } from '../public/js/butler.js?v=6c66ebf5';
+import { BUTLER, ROOK_ALERTS_KEPT, createButlerState, normalizeButlerState, rookAlert, rookAlertLine } from '../public/js/butler.js?v=152429c8';
 import { attacksFromServer } from '../public/js/rook-mp.js?v=dda37008';
 import { rookAttackFeature } from '../public/js/features/rook-attack-feature.js?v=adff86be';
 

@@ -30,7 +30,7 @@ import {
 import { hellTicketsFeature } from '../public/js/features/hell-tickets-feature.js?v=e0be8716';
 import { hellFeature } from '../public/js/features/hell-feature.js?v=4fc52fd2';
 import { hellBarFeature } from '../public/js/features/hell-bar-feature.js?v=1c530f1d';
-import { questOffersFeature } from '../public/js/features/quest-offers-feature.js?v=c7107c8e';
+import { questOffersFeature } from '../public/js/features/quest-offers-feature.js?v=5a5eea67';
 import { questFlagsFeature } from '../public/js/features/quest-flags-feature.js?v=17c6ef48';
 import { FEATURES } from '../public/js/features/index.js?v=44170aeb';
 

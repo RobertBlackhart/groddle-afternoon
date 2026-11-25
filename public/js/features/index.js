@@ -7,7 +7,7 @@
 import { questFlagsFeature } from './quest-flags-feature.js?v=17c6ef48';
 import { hellFeature } from './hell-feature.js?v=4fc52fd2';
 import { resourceNodesFeature } from './resource-nodes-feature.js?v=528fdce8';
-import { questOffersFeature } from './quest-offers-feature.js?v=c7107c8e';
+import { questOffersFeature } from './quest-offers-feature.js?v=5a5eea67';
 import { meditationFeature } from './meditation-feature.js?v=cfc4f8f0';
 import { teleportationFeature } from './teleportation-feature.js?v=1624ce85';
 import { racesFeature } from './races-feature.js?v=87eb2616';
@@ -142,7 +142,7 @@ import { conversationsFeature } from './conversations-feature.js?v=0e6f5f71'; FE
 import { quoinShardsFeature } from './quoin-shards-feature.js?v=5d71a1eb'; FEATURES.push(quoinShardsFeature);
 import { helpMineFeature } from './help-mine-feature.js?v=15d1bda1'; FEATURES.push(helpMineFeature);
 import { familiarDialogFeature } from './familiar-dialog-feature.js?v=bf5413ed'; FEATURES.push(familiarDialogFeature);
-import { spiritLonelinessFeature } from './spirit-loneliness-feature.js?v=a5ed201e'; FEATURES.push(spiritLonelinessFeature);
+import { spiritLonelinessFeature } from './spirit-loneliness-feature.js?v=d090d731'; FEATURES.push(spiritLonelinessFeature);
 import { funpickleFeature } from './funpickle-feature.js?v=214489b1'; FEATURES.push(funpickleFeature);
 import { qurazyFeature } from './qurazy-feature.js?v=5b8f0e39'; FEATURES.push(qurazyFeature);
 import { energyDecayFeature } from './energy-decay-feature.js?v=aad277f1'; FEATURES.push(energyDecayFeature);
@@ -216,7 +216,7 @@ import { potLuckFeastFeature } from './pot-luck-feast-feature.js?v=95f6f6af'; FE
 import { feastDayFeature } from './feast-day-feature.js?v=fc0b54bb'; FEATURES.push(feastDayFeature);
 import { calendarFeature } from './calendar-feature.js?v=911e7478'; FEATURES.push(calendarFeature);
 // G1195 Happy New Ur: the countdown at the Groddle midnights of December 31, the show and the party street.
-import { newUrFeature } from './new-ur-feature.js?v=68a5efe4'; FEATURES.push(newUrFeature);
+import { newUrFeature } from './new-ur-feature.js?v=696e05a2'; FEATURES.push(newUrFeature);
 import { newUrPartyFeature } from './new-ur-party-feature.js?v=62874ea6'; FEATURES.push(newUrPartyFeature);
 import { streetObjectsFeature } from './street-objects-feature.js?v=6b505af8'; FEATURES.push(streetObjectsFeature);
 import { realtimeFeature } from './realtime-feature.js?v=ed017c68'; FEATURES.push(realtimeFeature);

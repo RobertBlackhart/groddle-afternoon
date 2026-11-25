@@ -9,7 +9,7 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { BUTLER, butlerPostRx, createButler, createButlerState, normalizeButlerState } from '../public/js/butler.js?v=6c66ebf5';
+import { BUTLER, butlerPostRx, createButler, createButlerState, normalizeButlerState } from '../public/js/butler.js?v=152429c8';
 import { HOME_LIMITS } from '../public/js/homes-catalog.js?v=0367f90f';
 import { createCultivationState, homeStreetLayout } from '../public/js/home-cultivation.js?v=c50349f3';
 import { BUTLER_BOX, STREET_ROCK } from '../public/js/home-street-fixtures.js?v=4a56a718';

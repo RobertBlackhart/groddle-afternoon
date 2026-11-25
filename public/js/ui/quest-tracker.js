@@ -18,10 +18,10 @@
  */
 
 import { escapeText } from './verb-menu.js?v=4cb51d52';
-import { questTextPlain, questTextSegments } from '../quest-text.js?v=4d0f8703';
+import { questTextPlain, questTextSegments } from '../quest-text.js?v=d0d07996';
 import { createQuestPinMenu } from './quest-pin-menu.js?v=5700ca1d';
 import { bindContextTrigger, MORE_KEYS_LABEL } from './context-menu.js?v=587d8585';
-import { createQuestPinButton } from './quest-pin-button.js?v=ec4d53fa';
+import { createQuestPinButton } from './quest-pin-button.js?v=2931d81d';
 
 /**
  * @param {{ el: HTMLElement|null, onOpen?: (classTsid: string) => void, onCollapse?: (on: boolean) => void,

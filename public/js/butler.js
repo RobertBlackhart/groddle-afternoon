@@ -65,7 +65,7 @@
 
 import { pluralize } from './words.js?v=274023af';
 import { getGameDayKey } from './game-day.js?v=a532775d';
-import { normalizeButlerHi } from './hi-signs.js?v=7f3cab9c';
+import { normalizeButlerHi } from './hi-signs.js?v=90d9eb6a';
 import { filterText } from './word-filter.js?v=9a7a7ebb';
 
 /** classProps and onCreate numbers. */

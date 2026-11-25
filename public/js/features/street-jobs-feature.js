@@ -157,7 +157,7 @@ import { createJobIndicator, jobIndicatorTip, jobIndicatorView, jobPerc } from '
 import { LOT_ART, LOT_CLASS, LOT_PLACEMENT, LOT_SIGN_BLOCKERS, LOT_SIGN_X, LOT_TEXT, floorYAt, lotFit, lotHeadline, lotVerb } from '../group-hall-lot.js?v=23e8fbd9';
 import { JOB_WORK_BUBBLE, JOB_WORK_OVERLAY, JOB_WORK_REMOTE_BUBBLE_DY, avatarDrawnHeight, jobWorkBubbleY, jobWorkFloatPoint, jobWorkSoundKey, jobWorkToolScale, jobWorkToolSheet } from '../job-work-fx.js?v=2c489570';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { SIGN_ARMS } from '../map-routes.js?v=426e16ea';
+import { SIGN_ARMS } from '../map-routes.js?v=8d9a6c62';
 import { TELEPORTERS } from '../hidden-floors.js?v=18714dfa';
 import { WINTRY_PORTAL_TELEPORTERS } from '../wintry-portal.js?v=1437deda';
 import { PROJECTS_TEXT, aheadEntries, aheadRegions, contributedJobs, mineTotal, projectEntry, projectList } from '../projects-tracker.js?v=28ac735e';

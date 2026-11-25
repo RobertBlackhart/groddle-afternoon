@@ -131,7 +131,7 @@ import {
   powderCaughtLine,
   powderRefusedLine,
   powderRefusedSound,
-} from '../hi-signs-mp.js?v=ea50d4bb';
+} from '../hi-signs-mp.js?v=3e7eeabe';
 
 export const POWDERS_FEATURE_ID = 'powders';
 

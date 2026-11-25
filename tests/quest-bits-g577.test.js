@@ -8,7 +8,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { PIN_STEPS_SHOWN, createQuestTracker, pinStepsHtml, questStepHtml } from '../public/js/ui/quest-tracker.js?v=0f7ea620';
+import { PIN_STEPS_SHOWN, createQuestTracker, pinStepsHtml, questStepHtml } from '../public/js/ui/quest-tracker.js?v=2990cd8e';
 import { questStep, orderQuestCards } from '../public/js/ui/quest-sheet.js?v=3e7ac77b';
 import { QUEST_MOVES_HERE, questTakesYouAway } from '../tools/encyclopedia/data.mjs';
 

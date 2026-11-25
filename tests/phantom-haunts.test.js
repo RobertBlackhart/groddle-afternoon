@@ -27,7 +27,7 @@ import {
 import { createQuestState } from '../public/js/quests.js?v=d0443973';
 import { loadContentCatalogsFromDir, resetContentCatalogs, getQuestCatalog } from '../public/js/content-catalogs.js?v=5ef6adb5';
 import { SUBWAY_STREETS, closedStreets, initializeStreetJobs, normalizeStreetJobState } from '../public/js/street-jobs.js?v=3fc80dcd';
-import { routeGraph } from '../public/js/map-routes.js?v=426e16ea';
+import { routeGraph } from '../public/js/map-routes.js?v=8d9a6c62';
 import { TELEPORTERS } from '../public/js/hidden-floors.js?v=18714dfa';
 import { WINTRY_PORTAL_TELEPORTERS } from '../public/js/wintry-portal.js?v=1437deda';
 import { placeIndex, questHold, questStoryNeeds } from '../public/js/quest-reach.js?v=13a444bb';

@@ -12,10 +12,10 @@ import { describe, it, before, after, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { ROUTE_TEXT, createRouteState, isRide, planRoute, routeGraph, routeRides, subwayRides } from '../public/js/map-routes.js?v=426e16ea';
+import { ROUTE_TEXT, createRouteState, isRide, planRoute, routeGraph, routeRides, subwayRides } from '../public/js/map-routes.js?v=8d9a6c62';
 import { SUBWAY_STREETS } from '../public/js/street-jobs.js?v=3fc80dcd';
 import { DUBIOUS_BUFF, PAPERS_BADGE, TEXT, gateFor, gateRefusal, gateTerms } from '../public/js/subway.js?v=ea6921ff';
-import { mapRoutesFeature } from '../public/js/features/map-routes-feature.js?v=1bbc9af3';
+import { mapRoutesFeature } from '../public/js/features/map-routes-feature.js?v=40e503a9';
 import { createFeatureHost } from '../public/js/feature-host.js?v=b87e2cbc';
 import { applyStreetIndex } from '../public/js/street-loader.js?v=10376267';
 

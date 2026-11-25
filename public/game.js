@@ -35,7 +35,7 @@ import {
   paidRewardBits,
 } from './js/quests.js?v=d0443973';
 // Quest copy is Flash htmlText: <b>/<i>/<br> drawn as formatting, the rest dropped, never innerHTML.
-import { locationLinkTarget, questRequirementText, renderQuestText, withQuestMarkup } from './js/quest-text.js?v=4d0f8703';
+import { locationLinkTarget, questRequirementText, renderQuestText, withQuestMarkup } from './js/quest-text.js?v=d0d07996';
 // G267: the world-verb quest counters skip offer-system quests; old saves drop the boot Moloko quest.
 import { dropSpiritRepeatOffers, SPIRIT_REPEAT_QUESTS } from './js/spirit-reminisce.js?v=db767dfb';
 import { FIRST_SKILL_QUEST_ID, acceptOffer, claimFirstSkillQuest, dropBootStarterQuests, questMoveNote, routesCounter, worldVerbQuestEvents, gardenPlotEvents, makingUnitQuestEvents, shrineDonationQuestEvents } from './js/quest-offers.js?v=4ca83fa9';
@@ -1136,7 +1136,7 @@ import { bindChatLinks } from './js/chat-links.js?v=b717fac7';
 import { SIDE_SHEET_IDS, bindTabs, inSideSheet, mountPanelShell, sheetKeyToWorld } from './js/ui/panel-shell.js?v=5efb38c6';
 import { createQuestSheet, failedQuestPin, questLogNeedsSwap, questStep, visibleRowCount } from './js/ui/quest-sheet.js?v=3e7ac77b';
 import { resolveQuestPins } from './js/features/quest-pins-feature.js?v=0e07d9a1';
-import { createQuestTracker } from './js/ui/quest-tracker.js?v=0f7ea620';
+import { createQuestTracker } from './js/ui/quest-tracker.js?v=2990cd8e';
 import { bindContextTrigger, createContextMenu, isContextMenuKey as isMenuKey, MORE_KEYS_LABEL } from './js/ui/context-menu.js?v=587d8585';
 import { bindCountField, countKeyValue, countStepMarkup, createCountChooser, focusedCountField, heldPress, keepCountCaret, openCountField, restoreCountCaret, saveCountCaret, typedCount } from './js/ui/count-chooser.js?v=75f69512';
 import { createScrollKeep } from './js/ui/scroll-keep.js?v=2898b5b1';
@@ -1160,7 +1160,7 @@ import { cancelAllOverlays, displayTopOf, itemstackOverlayPoint, playPoofIn, set
 import * as textureUrls from './js/textures.js?v=b8e38103';
 import { configureReadback, probeRenderTexture, readbackCanvas, readbackExtract, readScreenRow, renderProbeLine } from './js/render-probe.js?v=519c86ef';
 import { guardDestroyedSources, guardTickerRender, installPixiFixes, redrawCachedTextures } from './js/pixi-fixes.js?v=0f42b75e';
-import { hidesChatBubble } from './js/hi-signs.js?v=7f3cab9c';
+import { hidesChatBubble } from './js/hi-signs.js?v=90d9eb6a';
 // Multiplayer phase 1: the mode flag and the save interface every save read/write goes through.
 import { GAME_MODE, isSolo } from './js/game-mode.js?v=1ecf2899';
 import { freezeSoloSaves, keepUnreadableSave, saveStore } from './js/save-store.js?v=4e720735';

@@ -11,7 +11,7 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { ROUTE_TEXT, createRouteState, findRoute, planRoute } from '../public/js/map-routes.js?v=426e16ea';
+import { ROUTE_TEXT, createRouteState, findRoute, planRoute } from '../public/js/map-routes.js?v=8d9a6c62';
 import { streetGraph } from '../public/js/street-graph.js?v=dcc5cae4';
 import { VENDOR_FINDER_TEXT, vendorFinderRows, vendorRowWhere } from '../public/js/vendor-finder.js?v=7fbfc51d';
 

@@ -89,7 +89,7 @@ import {
   startCut,
   subwayRides,
   tsidAliases,
-} from '../map-routes.js?v=426e16ea';
+} from '../map-routes.js?v=8d9a6c62';
 import { _useStreetGraph, loadStreetGraph, roadsFor, streetGraphLoaded, worldRoads } from '../street-graph.js?v=dcc5cae4';
 
 export const MAP_ROUTES_FEATURE_ID = 'map-routes';
