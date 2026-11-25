@@ -133,19 +133,17 @@ export function radioRegion(hubId) {
 /**
  * The downloads-page tracks the game plays somewhere, by id (the file's name), and where: hearing one
  * there unlocks it. Street music: the Enchanted Wood's music_file (ENCHANTED_WOOD), Naraka's library
- * (Hell's one track), the three subway station tracks (SUBWAY_STATION_HUM, one per station's hub,
- * js/ambient-music.js ambientPlaylist). Sounds and cues: meditating (js/meditation.js
+ * (Hell's one track). Sounds and cues: meditating (js/meditation.js
  * MEDITATION_MUSIC), a running Metalmaker (METALMAKER), the Spinning Wheel (SPINNING_WHEEL) and the
- * Rube (features/rube-feature.js SONG). The game never plays the other fifteen (Eesti's hub has no
+ * Rube (features/rube-feature.js SONG). The game never plays the other eighteen (Eesti's hub has no
  * street, the Rook's attack picks ROOK_ATTACK, the party's lively stand-in is left out: Austin
- * 2026-11-24), so they come with the radio. tests/vine-radio.test.js checks every row against the data.
+ * 2026-11-24; #674, 2026-11-25: the subway stations play their region's music, as the 2012 client
+ * did, so the three subway tracks play nowhere), so they come with the radio.
+ * tests/vine-radio.test.js checks every row against the data.
  */
 export const HEARD_WHERE = Object.freeze({
   'enchanted_woods_1344997332': 'Heard in the Enchanted Wood',
   'Dirge-of-the-Damned_1291886020': 'Heard in Naraka',
-  'elevator_music_1344997334': 'Heard at a subway station',
-  'subway_music_1344997270': 'Heard at a subway station',
-  'waiting_muzak_1344997267': 'Heard at a subway station',
   'meditation1_1344997850': 'Heard while you meditate',
   'meditation2_1344997844': 'Heard while you meditate',
   'meditation3_1344997842': 'Heard while you meditate',

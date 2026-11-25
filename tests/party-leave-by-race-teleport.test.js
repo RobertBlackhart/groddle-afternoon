@@ -170,7 +170,9 @@ describe('the way back after a race started in a party', () => {
     partySpacesFeature.onStreetEnter({ tsid: MOON }, back);
     await flush(350);
     // ... which sends you on to the street the party was entered from.
-    assert.deepEqual(back.log.entered, [[FROM.tsid, { spawnX: FROM.x, spawnY: FROM.y, bypassFeatureGates: true }]]);
+    // #674: a teleport out (teleport only picks the trip's sound): groups/party.js 183 `pc.instances_exit('party_space');`,
+    // whose instances_left teleports you (players/inc_instances.js 175 teleportToLocationDelayed; player.js 674-678).
+    assert.deepEqual(back.log.entered, [[FROM.tsid, { spawnX: FROM.x, spawnY: FROM.y, bypassFeatureGates: true, teleport: true }]]);
     partySpacesFeature.restore({});
   });
 

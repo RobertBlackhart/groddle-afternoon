@@ -322,7 +322,10 @@ describe('Summons: the world side', () => {
     assert.equal(engine.log.entered.length, entered, 'not before 500 ms');
     teleportationFeature.onTick(16, Date.now() + 600, engine);
     await Promise.resolve();
-    assert.deepEqual(engine.log.entered.at(-1), ['GA5B', { spawnX: 420, spawnY: -120 }], 'moved 500 ms in, not after the 1 s hit1');
+    // #674: as a teleport (teleport only picks the trip's sound): inc_teleportation.js 675
+    // `pc.teleportToLocationDelayed(target.tsid, target.x, target.y);`, and teleportToLocation announced
+    // TELEPORT_AWAY_HUB or TELEPORT_AWAY (players/player.js 674-678).
+    assert.deepEqual(engine.log.entered.at(-1), ['GA5B', { spawnX: 420, spawnY: -120, teleport: true }], 'moved 500 ms in, not after the 1 s hit1');
     globalThis.requestAnimationFrame ??= () => 0;
     teleportationFeature.onStreetEnter({ tsid: 'GA5B' }, { ...engine, floatText() {} });
     assert.deepEqual(engine.log.achievements.at(-1), ['teleportation_others:summonee', 1]);

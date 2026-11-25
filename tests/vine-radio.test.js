@@ -41,7 +41,7 @@ import {
   radioUnlocks,
   visitRadio,
   withOursQuests,
-} from '../public/js/vine-radio.js?v=5827b931';
+} from '../public/js/vine-radio.js?v=c001a82c';
 import { CRAB_STREETS } from '../public/js/crabs.js?v=5a43743d';
 import { MUSICBLOCK_CATALOG } from '../public/js/musicblocks.js?v=8e985753';
 import { getAmbientMusicConfig, resolveAmbientTheme, setAmbientMusicConfig } from '../public/js/ambient-music.js?v=4b3c6041';
@@ -50,9 +50,9 @@ import { closedForEveryone, freeWays, openWorld } from '../public/js/open-roads.
 import { TELEPORTERS } from '../public/js/hidden-floors.js?v=18714dfa';
 import { WINTRY_PORTAL_TELEPORTERS } from '../public/js/wintry-portal.js?v=1437deda';
 import { WORLD_MAP } from '../public/js/map-views-data.js?v=07734585';
-import { getQuestCatalog, loadContentCatalogsFromDir, resetContentCatalogs } from '../public/js/content-catalogs.js?v=5ef6adb5';
-import { createQuestState } from '../public/js/quests.js?v=d0443973';
-import { acceptOffer, isEventEmitted, npcQuestOffers, requirementRoute, routeQuestEvent, turnInQuest } from '../public/js/quest-offers.js?v=6eccdc80';
+import { getQuestCatalog, loadContentCatalogsFromDir, resetContentCatalogs } from '../public/js/content-catalogs.js?v=2b7048b9';
+import { createQuestState } from '../public/js/quests.js?v=c8d59839';
+import { acceptOffer, isEventEmitted, npcQuestOffers, requirementRoute, routeQuestEvent, turnInQuest } from '../public/js/quest-offers.js?v=ea6fde02';
 import {
   createCultivationState,
   fixtureRx,
@@ -63,10 +63,10 @@ import {
   putOutRadio,
   radioState,
   setRadioState,
-} from '../public/js/home-cultivation.js?v=dcf357ef';
-import { MOVABLE_FIXTURES, MOVABLE_FIXTURE_IDS, RADIO_USUAL_DX, fixtureFits, fixtureText, radioOut } from '../public/js/home-street-fixtures.js?v=4a56a718';
-import { homesFeature } from '../public/js/features/homes-feature.js?v=5c76232a';
-import { radioFeature } from '../public/js/features/vine-radio-feature.js?v=5c1f5cf0';
+} from '../public/js/home-cultivation.js?v=2f71ba70';
+import { MOVABLE_FIXTURES, MOVABLE_FIXTURE_IDS, RADIO_USUAL_DX, fixtureFits, fixtureText, radioOut } from '../public/js/home-street-fixtures.js?v=4b4bc96f';
+import { homesFeature } from '../public/js/features/homes-feature.js?v=2037e237';
+import { radioFeature } from '../public/js/features/vine-radio-feature.js?v=2486a822';
 import { SIDE_SHEET_IDS } from '../public/js/ui/panel-shell.js?v=5efb38c6';
 import { page } from './social-fake-dom.js';
 import { CULTIVATION_CLASSES } from '../public/js/homes-catalog.js?v=0367f90f';
@@ -223,8 +223,9 @@ describe('4. what unlocks', () => {
     const tracks = radioThemeTracks(ambient);
     assert.equal(tracks.length, 26);
     const u0 = radioUnlocks({ config: ambient });
-    assert.equal(u0.tracks.filter((t) => t.open).length, 15);
-    assert.equal(u0.tracks.filter((t) => !t.open).length, 11);
+    // #674: the three subway stand-ins play nowhere now (stations play their region's music), so they come with the radio.
+    assert.equal(u0.tracks.filter((t) => t.open).length, 18);
+    assert.equal(u0.tracks.filter((t) => !t.open).length, 8);
     const u1 = radioUnlocks({ config: ambient, heard: ['enchanted_woods_1344997332'] });
     assert.equal(pickOpen('track:enchanted_woods_1344997332', u1), true);
     assert.equal(pickOpen('track:enchanted_woods_1344997332', u0), false);
