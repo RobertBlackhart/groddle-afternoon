@@ -20,7 +20,7 @@ import {
   mineRock,
   createMineRock,
   crushOre,
-} from '../public/js/mining.js?v=c3bd3675';
+} from '../public/js/mining.js?v=5e49efb3';
 import {
   createGarden,
   gardenActionProfile,

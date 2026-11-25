@@ -11,7 +11,7 @@ import { describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { layoutPack, saleBags } from '../public/js/pack-slots.js?v=38e4aea5';
-import { VENDOR_BAG_HOLDS, createVendorSellQuote, vendorSell } from '../public/js/vendor.js?v=6baaef80';
+import { VENDOR_BAG_HOLDS, createVendorSellQuote, vendorSell } from '../public/js/vendor.js?v=ccb42243';
 
 const root = join(import.meta.dirname, '..');
 

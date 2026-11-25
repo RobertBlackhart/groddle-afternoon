@@ -22,7 +22,7 @@ import {
   seedSeasonLine,
   setSeasonalSeedCheck,
 } from '../public/js/garden.js?v=0cbb65f0';
-import { getVerbsFor } from '../public/content.js?v=c2c8dda6';
+import { getVerbsFor } from '../public/content.js?v=0810a9a2';
 import { activeSeasons, parseSeasonDate } from '../public/js/seasons.js?v=5d8f545a';
 import { seasonsFeature } from '../public/js/features/seasons-feature.js?v=bc7371d9';
 import { createInventory, addItem } from '../public/js/inventory.js?v=6414dbdc';

@@ -25,8 +25,8 @@ import {
   useToolCondition,
 } from '../public/js/tools.js?v=4156bba8';
 import { addItem, createInventory, removeItem } from '../public/js/inventory.js?v=6414dbdc';
-import { createMineRock, mineRock, MINING_COSTS } from '../public/js/mining.js?v=c3bd3675';
-import { VENDOR_PROFILES, vendorBuy } from '../public/js/vendor.js?v=6baaef80';
+import { createMineRock, mineRock, MINING_COSTS } from '../public/js/mining.js?v=5e49efb3';
+import { VENDOR_PROFILES, vendorBuy } from '../public/js/vendor.js?v=ccb42243';
 import { harvestWoodTree } from '../public/js/woodcutting.js?v=9e9af511';
 import { createGarden, plantPlot, waterPlot } from '../public/js/garden.js?v=0cbb65f0';
 import { createPlayerSave, normalizePlayerSave } from '../public/js/player-save.js?v=3e1d7d88';

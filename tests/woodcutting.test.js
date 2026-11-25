@@ -20,8 +20,8 @@ import {
   getToolCondition,
   setToolRemaining,
 } from '../public/js/tools.js?v=4156bba8';
-import { getVerbsFor, runVerb } from '../public/content.js?v=c2c8dda6';
-import { actionDurationFor } from '../public/js/action-timing.js?v=c0253fd6';
+import { getVerbsFor, runVerb } from '../public/content.js?v=0810a9a2';
+import { actionDurationFor } from '../public/js/action-timing.js?v=b82133f0';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 

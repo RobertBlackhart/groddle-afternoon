@@ -8,9 +8,9 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { REMAKE_PACE, pace, paceFor, pacedSystemOf } from '../public/js/pace.js?v=c07dfbd8';
-import { MINING_COSTS, miningProfile, refiningProfile } from '../public/js/mining.js?v=c3bd3675';
+import { MINING_COSTS, miningProfile, refiningProfile } from '../public/js/mining.js?v=5e49efb3';
 import { SKILL_PACKAGES, skillPackageDetails } from '../public/js/skill-packages.js?v=bfb87281';
-import { actionDurationFor } from '../public/js/action-timing.js?v=c0253fd6';
+import { actionDurationFor } from '../public/js/action-timing.js?v=b82133f0';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
 
 const RANKS = ['mining_1', 'mining_2', 'mining_3', 'mining_4'];

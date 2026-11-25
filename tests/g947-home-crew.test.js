@@ -13,7 +13,7 @@ import { join } from 'node:path';
 
 import { HOME_CREW_ID, homeCrewId, homeCrewOwner, normalizeHomeCrews } from '../public/js/home-crew-mp.js?v=c769c73d';
 import { homeCrewMpFeature } from '../public/js/features/home-crew-mp-feature.js?v=f049b63a';
-import { createMineRock } from '../public/js/mining.js?v=c3bd3675';
+import { createMineRock } from '../public/js/mining.js?v=5e49efb3';
 import { createQuestState } from '../public/js/quests.js?v=d0443973';
 import { HAS_SERVER, HAS_SITE, SITE_DIR, serverPath } from '../tools/repos.mjs';
 

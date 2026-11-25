@@ -2,9 +2,9 @@
  * Groddle Afternoon — original street geometry + layered decos
  * PixiJS 8 · locations-xml streets · CoU PNG decos · quests/items
  */
-import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=c2c8dda6';
+import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=0810a9a2';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=9b80dd82';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=43b8e37c';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE, playerClickBox } from './js/reach.js?v=456da8a8';
@@ -17,7 +17,7 @@ import {
   createTimedAction,
   advanceTimedAction,
   cancelTimedAction,
-} from './js/action-timing.js?v=c0253fd6';
+} from './js/action-timing.js?v=b82133f0';
 import { createWordProgressView, wordAnchor, heldActionDelta, MAX_PUSH_DOWN } from './js/word-progress.js?v=98366023';
 // G374/G375/G378: Tiny Speck's quoin-limit and super-harvest rainbows and the musicblock notes.
 import { OVERLAY_USES, playCountdownArt, playOverlay, rainbowSound, showRainbow } from './js/overlays.js?v=91dcee74';
@@ -729,7 +729,7 @@ import {
   STARTER_MINING_SKILLS,
   findWorkingPick,
   miningToolWear,
-} from './js/mining.js?v=c3bd3675';
+} from './js/mining.js?v=5e49efb3';
 import { PICK_SHEETS, mineStandX, nodeToolOverlay } from './js/node-tools.js?v=47a93d54';
 import {
   loadStreetData,
@@ -940,7 +940,7 @@ import {
   vendorSellUnitPrice,
   vendorBuyUnitPrice,
   VENDOR_BAG_HOLDS,
-} from './js/vendor.js?v=6baaef80';
+} from './js/vendor.js?v=ccb42243';
 import {
   createAnimalState,
   resetAnimalDay,
