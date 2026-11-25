@@ -7,7 +7,7 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { RESUME_EVENTS, audioResumePlan, contextNeedsResume, createAudioResumer } from '../public/js/audio-resume.js?v=70b19cdc';
+import { RESUME_EVENTS, audioResumePlan, contextNeedsResume, createAudioResumer } from '../public/js/audio-resume.js?v=63a617ad';
 import { createMusicVoice } from '../public/js/music-voice.js?v=75c8cf57';
 
 const root = join(import.meta.dirname, '..');
