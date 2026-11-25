@@ -676,6 +676,7 @@ import {
   recipeToolChosen,
   pluralizeItem,
 } from './js/making.js?v=1ec1075e';
+import { MAKE_FUEL_TIP, makeFuelView } from './js/home-machines.js?v=300d8850';
 import { outputIconsHtml, outputsPhrase, productHaveRows, recipeOutputRows } from './js/ui/recipe-outputs.js?v=610c067f';
 import { MAKE_TOOL_SHEETS } from './js/make-tool-sheets.js?v=6f758e09';
 import { createTestTubePanel, tryTileHtml, TRY_TILE_LABEL } from './js/test-tube-panel.js?v=e5bfa842';
@@ -31600,7 +31601,11 @@ function renderMakePanel() {
       const outId = outRows[0]?.classTsid;
       const makesLine = recipeMakesLine(recipe);
       const check = canCraft(inv, recipe, recipeOpts(recipe));
-      const blockedLine = makeBlockedLine(recipe, check);
+      // #675: a machine recipe's fuel, from the machine's own tank (MakingDetailsUI.as 250-269, 317-334).
+      const station = craftOpts(recipe).station;
+      const fuelAt = (qty) => (recipe.fuel ? makeFuelView({ classTsid: recipe.tool, perUnit: recipe.toolWear, qty, upgrades: pc.imaginationUpgrades || [], toolState: station?.tool === recipe.tool ? station.toolState : null }) : null);
+      const fuelOne = fuelAt(1);
+      const blockedLine = makeBlockedLine(recipe, check) || (fuelOne?.short ? MAKE_FUEL_TIP : '');
       const maxMake = (() => {
         if (!check.ok) return 0;
         let m = recipeTaskLimit(recipe, pc.imaginationUpgrades);
@@ -31610,6 +31615,8 @@ function renderMakePanel() {
         const energyEach = recipeEnergyCost(recipe, skillState.learned, pc.imaginationUpgrades);
         // The batch needs energy strictly above its cost (inc_making.js).
         if (energyEach > 0) m = Math.min(m, Math.ceil(pc.energy / energyEach) - 1);
+        // #675: no more than the tank pays for.
+        if (fuelOne) m = fuelOne.max(m);
         return Math.max(0, m);
       })();
       makeQty = Math.max(1, Math.min(makeQty, Math.max(1, maxMake || 1)));
@@ -31634,6 +31641,7 @@ function renderMakePanel() {
           ${makesLine ? `<p class="make-outs-line" data-make-outs>${escapeHtml(makesLine)}</p>` : ''}
           ${blockedLine ? `<p class="make-why" data-make-why>${recipeBlockedHtml(blockedLine, check, { achievementName: makeAchievementName, skillName: makeSkillName, escape: escapeHtml })}</p>` : ''}
           <p>${blockedLine ? '' : `You can make up to ${maxMake}. `}Uses ${recipeEnergyCost(recipe, skillState.learned, pc.imaginationUpgrades)} energy each.</p>
+          ${fuelOne ? `<p class="make-fuel${fuelAt(makeQty).short ? ' is-short' : ''}" data-make-fuel>${escapeHtml(fuelAt(makeQty).text)}</p>` : ''}
           ${makingSkillAdjustments(recipe, skillState.learned).note ? `<p class="make-skill-note">${makingSkillAdjustments(recipe, skillState.learned).note}</p>` : ''}
           ${inputsHtml}
           <div class="qty-row">
@@ -31650,6 +31658,13 @@ function renderMakePanel() {
         makeQty = Math.max(1, Math.min(maxMake || 1, n));
         const inp = detail.querySelector('[data-mq-val]');
         if (inp) inp.value = String(makeQty);
+        // The fuel line follows the count, as getFuelCost did (MakingDetailsUI.as 317-334).
+        const fuelLine = detail.querySelector('[data-make-fuel]');
+        const f = fuelAt(makeQty);
+        if (fuelLine && f) {
+          fuelLine.textContent = f.text;
+          fuelLine.classList.toggle('is-short', f.short);
+        }
       };
       detail.querySelector('[data-make-achievement]')?.addEventListener('click', (e) => openAchievementCard(e.currentTarget.dataset.makeAchievement));
       // inc_making.js 1708 skills_linkify: the skill opens in the Skills panel, focused on it.

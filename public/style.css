@@ -6238,6 +6238,9 @@ body.buff-purple-pulse::after {
   font-weight: 700;
   color: var(--text-danger);
 }
+/* #675: a machine recipe's fuel and the tank, in the warning colour while the tank is short (MakingDetailsUI.as making_details_warn). */
+.make-detail-body .make-fuel { margin: var(--sp-1) 0; }
+.make-detail-body .make-fuel.is-short { font-weight: 700; color: var(--text-danger); }
 /* #324: the achievement a recipe needs opens its badge (inc_making.js 1715 achievements_linkify). */
 .make-detail-body .make-why-link {
   font: inherit;

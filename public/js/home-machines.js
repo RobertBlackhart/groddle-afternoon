@@ -103,6 +103,7 @@ import {
   machineTank,
   roomMachineVerbs,
   secondsToString,
+  tankFuel,
 } from './machine-rooms.js?v=ca927ffd';
 import { ASSEMBLY_SKILL, FUEL_PER_CELL, MAX_FUEL, isMachine } from './machines.js?v=5d749d26';
 import { INTERIOR, interiorBounds } from './home-decor.js?v=adc6b830';
@@ -259,6 +260,37 @@ export function jobFuel(classTsid, perUnit, qty, upgrades = []) {
     }
   }
   return uses;
+}
+
+/** MakingDetailsUI.as:254: the Make button's tip while the machine's tank is short. */
+export const MAKE_FUEL_TIP = 'You need more fuel to make this';
+
+/**
+ * #675: a machine recipe's fuel on the Make panel. Glitch sent the fuel as an ingredient row, less the
+ * Blockmaker cards (inc_making.js 1598-1619), and the details said "Uses: N energy / M units of fuel"
+ * for the chosen count, in the warning colour when the tank held less (MakingDetailsUI.as 262-269,
+ * 317-334), with Make off and its tip (250-256). `toolState` is the machine's tank (a placed machine's
+ * or a room machine's), or null away from one. Null when the recipe burns no fuel.
+ * { need, tank, short, text, max(cap) }: max is the most of a batch the tank pays for, up to cap.
+ */
+export function makeFuelView({ classTsid, perUnit, qty = 1, upgrades = [], toolState = null }) {
+  if (!(whole(perUnit) > 0)) return null;
+  const need = jobFuel(classTsid, perUnit, qty, upgrades);
+  const tank = toolState ? tankFuel(toolState, classTsid) : null;
+  const short = tank != null && tank < need;
+  const units = `${need} ${need === 1 ? 'unit' : 'units'} of fuel`;
+  return {
+    need,
+    tank,
+    short,
+    text: tank == null ? `Uses ${units}.` : `Uses ${units}. The tank has ${tank}.`,
+    max(cap) {
+      if (tank == null) return cap;
+      let n = Math.max(0, Math.floor(cap));
+      while (n > 0 && jobFuel(classTsid, perUnit, n, upgrades) > tank) n--;
+      return n;
+    },
+  };
 }
 
 /** The most one job makes (main.js:795-799 with the Mad Machinist cards). */
