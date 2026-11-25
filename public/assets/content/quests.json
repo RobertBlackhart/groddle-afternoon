@@ -33157,17 +33157,17 @@
   "requirements": [
    {
     "id": "r495",
-    "type": "flag",
+    "type": "counter",
     "name": "mine_100_sparkly_while_in_neva_neva",
-    "num": 1,
+    "num": 100,
     "classId": "sparkly",
     "desc": "Mine 100 chunks of sparkly while in Neva Neva"
    },
    {
     "id": "r496",
-    "type": "flag",
+    "type": "counter",
     "name": "grind_100_chunks_of_sparkly_in_neva_neva",
-    "num": 1,
+    "num": 100,
     "classId": "ore_grinder",
     "desc": "Grind 100 chunks of sparkly while in Neva Neva"
    }
@@ -33269,17 +33269,17 @@
   "requirements": [
    {
     "id": "r482",
-    "type": "flag",
+    "type": "counter",
     "name": "mine_100_sparkly_in_ajaya_bliss",
-    "num": 1,
+    "num": 100,
     "classId": "sparkly",
     "desc": "Mine 100 chunks of sparkly while in Ajaya Bliss"
    },
    {
     "id": "r499",
-    "type": "flag",
+    "type": "counter",
     "name": "grind_100_chunks_of_sparkly_in_ajaya_bliss",
-    "num": 1,
+    "num": 100,
     "classId": "ore_grinder",
     "desc": "Grind 100 chunks of sparkly while in Ajaya Bliss"
    }

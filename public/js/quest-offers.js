@@ -147,6 +147,39 @@ export function normalizeQuestOfferState(seed = {}) {
   };
 }
 
+/**
+ * #671: counters that were once summed out of sight (offers.distinct `sum:<counter>`, a threshold
+ * route) behind a 0/1 flag, and now count on their own row, with the number they count to. A save from
+ * before keeps what it summed: the sum moves into the row's progress (a flag already flipped reads as
+ * done) and leaves the side store, so this runs once (player-save.js normalizeQuestSnapshot).
+ */
+export const SUMS_NOW_COUNTED = Object.freeze({
+  mine_100_sparkly_while_in_neva_neva: 100,
+  grind_100_chunks_of_sparkly_in_neva_neva: 100,
+  mine_100_sparkly_in_ajaya_bliss: 100,
+  grind_100_chunks_of_sparkly_in_ajaya_bliss: 100,
+});
+
+/** Moves a saved hidden sum into its row (SUMS_NOW_COUNTED), in place; returns questState. */
+export function adoptHiddenSums(questState, counted = SUMS_NOW_COUNTED) {
+  const distinct = questState?.offers?.distinct;
+  if (!distinct || typeof distinct !== 'object') return questState;
+  for (const [id, row] of Object.entries(distinct)) {
+    if (!row || typeof row !== 'object') continue;
+    for (const [counter, num] of Object.entries(counted)) {
+      const key = `sum:${counter}`;
+      if (!Array.isArray(row[key])) continue;
+      const sum = row[key].reduce((n, entry) => n + (Number(String(entry).slice(String(entry).lastIndexOf(':') + 1)) || 0), 0);
+      delete row[key];
+      const progress = questState.active?.[id]?.progress;
+      if (!progress) continue;
+      // A flag set at the old threshold (1) came with a sum of at least num: the whole count.
+      progress[counter] = Math.min(num, Math.max(Number(progress[counter]) || 0, sum));
+    }
+  }
+  return questState;
+}
+
 /** Attach (or repair) questState.offers in place and return it. */
 export function ensureQuestOfferState(questState) {
   if (!questState.offers || typeof questState.offers !== 'object' || !questState.offers.queue) {
@@ -1033,12 +1066,14 @@ export const COUNTER_ROUTES = Object.freeze([
   { system: 'story', counter: 'return_to_spirit', event: 'street_spirit:talk' },
   { system: 'story', counter: 'quest_manor_mystery_done', event: 'note_manor_mystery:solve' },
   { system: 'story', counter: 'treasure_1', event: 'treasure_map_1:dig' },
-  // sparkly_of_interest_2 / _4: 100 chunks over the quest run, mined (game.js, a Sparkly rock's take)
-  // or ground (makingUnitQuestEvents) on that street; nothing in GSJS ever set these flags.
-  { system: 'mining', counter: 'mine_100_sparkly_while_in_neva_neva', event: 'sparkly_mined_in:neva_neva', threshold: 100 },
-  { system: 'mining', counter: 'grind_100_chunks_of_sparkly_in_neva_neva', event: 'sparkly_ground_in:neva_neva', threshold: 100 },
-  { system: 'mining', counter: 'mine_100_sparkly_in_ajaya_bliss', event: 'sparkly_mined_in:ajaya_bliss', threshold: 100 },
-  { system: 'mining', counter: 'grind_100_chunks_of_sparkly_in_ajaya_bliss', event: 'sparkly_ground_in:ajaya_bliss', threshold: 100 },
+  // sparkly_of_interest_2 / _4: the chunks mined (game.js, a Sparkly rock's take) or ground
+  // (makingUnitQuestEvents) on that street, counted on the row to 100 (build-quests.mjs
+  // REQUIREMENT_COUNTS; #671: as hidden sums behind 0/1 flags the row stood still). Nothing in GSJS
+  // ever set these flags: the counting is the remake's.
+  { system: 'mining', counter: 'mine_100_sparkly_while_in_neva_neva', event: 'sparkly_mined_in:neva_neva' },
+  { system: 'mining', counter: 'grind_100_chunks_of_sparkly_in_neva_neva', event: 'sparkly_ground_in:neva_neva' },
+  { system: 'mining', counter: 'mine_100_sparkly_in_ajaya_bliss', event: 'sparkly_mined_in:ajaya_bliss' },
+  { system: 'mining', counter: 'grind_100_chunks_of_sparkly_in_ajaya_bliss', event: 'sparkly_ground_in:ajaya_bliss' },
   // Last: every successful verb on an item also counts as VERB:<class>:<verb>
   // (items/item.js notifyVerb), e.g. npc_batterfly:feed, beer:drink.
   { system: 'verbs', counter: 'VERB:{a}:{b}', event: '{a}:{b}', note: 'generic item verb' },

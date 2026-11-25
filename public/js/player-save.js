@@ -11,7 +11,7 @@ import { normalizeEmotionalBearState } from './emotional-bear.js?v=1c88a46a';
 import { normalizeHomeState } from './homes.js?v=dca6b2cd';
 import { normalizeMailboxState } from './mailbox.js?v=d50d0d05';
 import { normalizeFeatureSlices } from './feature-host.js?v=b87e2cbc';
-import { normalizeQuestOfferState } from './quest-offers.js?v=4ca83fa9';
+import { adoptHiddenSums, normalizeQuestOfferState } from './quest-offers.js?v=4ca83fa9';
 import { cleanBuild } from './save-build.js?v=588eae75';
 
 export const PLAYER_SAVE_VERSION = 7;
@@ -232,13 +232,14 @@ export function normalizeQuestSnapshot(seed = {}) {
     const ms = Math.floor(finite(at, 0));
     if (classTsid && ms > 0) doneAt[classTsid] = ms;
   }
-  return {
+  // #671: a count once summed out of sight moves into its row (quest-offers.js SUMS_NOW_COUNTED).
+  return adoptHiddenSums({
     active,
     completed: cleanStringArray(seed?.completed),
     story,
     offers: normalizeQuestOfferState(seed?.offers),
     ...(Object.keys(doneAt).length ? { doneAt } : {}),
-  };
+  });
 }
 
 export function normalizeAchievementSnapshot(seed = {}) {

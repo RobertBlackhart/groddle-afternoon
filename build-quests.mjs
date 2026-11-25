@@ -225,6 +225,16 @@ const QUEST_DESC = {
   an_autumn_day_part2: ['', 'Reminisce An Autumn Day again.'],
 };
 
+// #671 (R53): flags the remake counts to the number their own words give, so the row reads (n/100).
+// GSJS never set these flags: nothing in it mines or grinds toward them (the Callopee chain was not
+// shipped), so the counting is the remake's (quest-offers.js COUNTER_ROUTES, mining in game.js,
+// grinding in makingUnitQuestEvents). As 0/1 flags with a hidden sum the row stood still for the
+// first 99 chunks (#671). { id: [source flag name, count] }; the build fails when the source changes.
+const REQUIREMENT_COUNTS = {
+  sparkly_of_interest_2: { r495: ['mine_100_sparkly_while_in_neva_neva', 100], r496: ['grind_100_chunks_of_sparkly_in_neva_neva', 100] },
+  sparkly_of_interest_4: { r482: ['mine_100_sparkly_in_ajaya_bliss', 100], r499: ['grind_100_chunks_of_sparkly_in_ajaya_bliss', 100] },
+};
+
 // Quest text that sends the player somewhere the archive puts nothing. Each row is a list of exact
 // [from, to] swaps on desc, offer and completion, applied to the GSJS text; the build fails when a
 // `from` is no longer in the source. Deviation from GSJS, recorded here and in the commit.
@@ -424,6 +434,12 @@ function extractQuest(classTsid, ctx, buffs) {
     const req = reqs.find((row) => row.id === id);
     if (!req || req.desc !== from) throw new Error(`REQUIREMENT_TEXT ${classTsid} ${id}: "${from}" is not its desc any more`);
     req.desc = to;
+  }
+  for (const [id, [name, num]] of Object.entries(REQUIREMENT_COUNTS[classTsid] || {})) {
+    const req = reqs.find((row) => row.id === id);
+    if (!req || req.type !== 'flag' || req.name !== name) throw new Error(`REQUIREMENT_COUNTS ${classTsid} ${id}: no flag "${name}" any more`);
+    req.type = 'counter';
+    req.num = num;
   }
   const started = fnSource(ctx, 'onStarted');
   const timerBuff = started.match(/buffs_apply\('([a-z0-9_]+)'\)/)?.[1];

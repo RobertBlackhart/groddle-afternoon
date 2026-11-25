@@ -66,15 +66,16 @@ describe('Tend to Your Community', () => {
 });
 
 describe('Sparkly of Interest', () => {
-  it('100 chunks mined, or ground, on Neva Neva over the run set its flags', () => {
+  // #671: each chunk counts on the row, to 100 (tests/sparkly-of-interest671.test.js).
+  it('chunks mined, or ground, on Neva Neva over the run count to 100', () => {
     const qs = createQuestState();
     qs.completed.push('sparkly_of_interest_1');
     assert.equal(acceptOffer(qs, 'sparkly_of_interest_2', { now: 0 }).ok, true);
     routeQuestEvent(qs, 'sparkly_mined_in:neva_neva', 60);
-    assert.equal(qs.active.sparkly_of_interest_2.progress.mine_100_sparkly_while_in_neva_neva || 0, 0);
+    assert.equal(qs.active.sparkly_of_interest_2.progress.mine_100_sparkly_while_in_neva_neva, 60);
     routeQuestEvent(qs, 'sparkly_mined_in:ajaya_bliss', 60);
-    routeQuestEvent(qs, 'sparkly_mined_in:neva_neva', 40);
-    assert.equal(qs.active.sparkly_of_interest_2.progress.mine_100_sparkly_while_in_neva_neva, 1);
+    routeQuestEvent(qs, 'sparkly_mined_in:neva_neva', 45);
+    assert.equal(qs.active.sparkly_of_interest_2.progress.mine_100_sparkly_while_in_neva_neva, 100);
     const rows = makingUnitQuestEvents({ recipe: { tool: 'ore_grinder', inputs: [{ classTsid: 'sparkly', qty: 5 }], outputs: [] } }, { street: 'neva_neva' });
     assert.ok(rows.some((r) => r.event === 'sparkly_ground_in:neva_neva' && r.amount === 5));
     const game = readFileSync(join(ROOT, 'public/game.js'), 'utf8');
