@@ -46,11 +46,14 @@
  *    with every nested clip on its own clock, after the timeline under label
  *    "as" (#658: the Firebog spirit's flames and vines); the export range
  *    grows to take it in.
- *  - sheet "render1x": "<path of a sheet of the same job>" writes the 1x
- *    strip itself from the render (no OGA sheet shows it: a "live" loop),
- *    each frame placed as that sheet's result places it (mirror, offset3x),
- *    box-averaged S:1, lossy q88 with lossless alpha like the OGA strips;
- *    then the sheet is scored against it as usual. List it after that sheet.
+ *  - sheet "render1x": true writes the 1x strip itself from the render (no
+ *    OGA sheet shows it: a "live" loop). The placement (mirror, offset) is
+ *    found on cell 0 of the strip already there, which a live loop draws
+ *    exactly (its first frame is the recorder's: every clip on frame 1),
+ *    whether that strip is the OGA one or an earlier render; then every
+ *    frame is placed so, box-averaged S:1 and written lossy q88 with
+ *    lossless alpha like the OGA strips, and the sheet is scored against it
+ *    as usual.
  *  - job "state": { "set": { "<instance>": frame | null }, "pad": n } freezes
  *    what the item's ActionScript sets (gotoAndStop / visible) on the
  *    sprite's named children (swf-state.mjs; harvestables.json).
@@ -321,12 +324,14 @@ async function exportSprite(swf, id, zoom = 3, renderer = 'png', range = null) {
 // ---------------------------------------------------------------------------
 
 /**
- * sheet "render1x" (#658): the 1x strip drawn from the render, each frame placed as the sibling
- * sheet's result places it (`like`: { mirror, offset3x }) and box-averaged S:1 (premultiplied),
- * written lossy q88 with lossless alpha, 8 columns, like the OGA strips it stands beside.
+ * sheet "render1x" (#658): the 1x strip drawn from the render. Placed on cell 0 of the strip on
+ * disk (buildSheet placeOnly: the live loop's first frame is that cell's picture), then every
+ * frame is box-averaged S:1 (premultiplied) and written lossy q88 with lossless alpha, 8 columns,
+ * like the OGA strips it stands beside.
  */
-function write1x(sheet, labels, frameDir, like) {
-  if (!like || like.status !== 'ok' || !like.offset3x) throw new Error(`render1x: ${sheet.render1x} has no placement (build it first)`);
+function write1x(job, sheet, labels, frameDir) {
+  const like = buildSheet(job, { ...sheet, frames: 1, step: 1, shift: 0 }, labels, frameDir, { placeOnly: true });
+  if (like.status !== 'placed' || like.score < sheetMin) throw new Error(`render1x: cell 0 does not place (${like.reason || `score ${like.score?.toFixed(3)}`})`);
   const label = labels.find((l) => l.name === sheet.label);
   if (!label) throw new Error(`render1x: label ${sheet.label} not in the render`);
   const step = sheet.step ?? 1;
@@ -381,7 +386,7 @@ function write1x(sheet, labels, frameDir, like) {
   execFileSync('magick', ['-size', `${W}x${H}`, '-depth', '8', 'rgba:-', '-strip', `PNG32:${tmpPng}`], { input: out, maxBuffer: 1 << 26 });
   execFileSync('magick', [tmpPng, '-quality', '88', '-define', 'webp:alpha-quality=100', dest]);
   unlinkSync(tmpPng);
-  console.log(`  1x  ${basename(sheet.path)} from the render (${count} cells, placed as ${basename(sheet.render1x)})`);
+  console.log(`  1x  ${basename(sheet.path)} from the render (${count} cells, placed on cell 0 at ${like.offset3x}, score ${like.score.toFixed(4)})`);
 }
 
 function sheetCells(sheet, ogaImg) {
@@ -397,7 +402,7 @@ function sheetCells(sheet, ogaImg) {
   return { cols, rows, cells };
 }
 
-function buildSheet(job, sheet, labels, frameDir) {
+function buildSheet(job, sheet, labels, frameDir, { placeOnly = false } = {}) {
   const oga = join(PUBLIC, sheet.path);
   const ogaImg = readRGBA(oga);
   const { cells, cols: gridCols } = sheetCells(sheet, ogaImg);
@@ -478,6 +483,7 @@ function buildSheet(job, sheet, labels, frameDir) {
   // Render pixel (X, Y) lands at cell Sx pixel (X + dx, Y + dy).
   const dx = S * best.qx - best.px;
   const dy = S * best.qy - best.py;
+  if (placeOnly) return { status: 'placed', mirror: best.mirror, offset3x: [dx, dy], score: best.score };
 
   // Score every frame with the global placement; also its own best nearby.
   const frames = [];
@@ -1026,7 +1032,7 @@ async function main() {
       const t = Date.now();
       let r;
       try {
-        if (sheet.render1x) write1x(sheet, labels, frameDir, results[sheet.render1x]);
+        if (sheet.render1x) write1x({ ...job, swf }, sheet, labels, frameDir);
         r = buildSheet({ ...job, swf }, sheet, labels, frameDir);
       } catch (err) {
         r = { status: 'rejected', reason: String(err.message || err) };

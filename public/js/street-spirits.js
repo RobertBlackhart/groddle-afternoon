@@ -132,10 +132,12 @@ export function spiritVariantForHub(hubId) {
  * `live` (#658): the state is drawn from the SWF as the game showed it, not from the OGA sheet.
  * The Firebog spirit's flames and hanging vines are nested clips the client's sheet recorder left
  * on frame 1 (animated_mcs is only its body), so every OGA idle cell is the same still; 2011-12
- * footage of a Firebog street (Eu6dojeQttM, 2:30) shows them flickering and swaying. Its idle is
- * the loop tools/vector-sprites/swf-record.mjs bakes under the label `live`: 105 frames, the
- * period of its flames (35 and 15 frames), every third kept (the vines' 100-frame sway comes
- * round within 5 frames); build.mjs writes its 1x strip from the render too.
+ * footage of a Firebog street (Eu6dojeQttM, 2:30) shows them flickering and swaying. Its clips are
+ * the loops tools/vector-sprites/swf-record.mjs bakes under the label `live`, build.mjs writing
+ * their 1x strips from the render too. The idle: 105 frames, the period of its flames (35 and 15
+ * frames), every third kept (the vines' 100-frame sway comes round within 5 frames). The talk
+ * keeps its 62 frames at 30 fps for the mouth (the vines jump back once a loop of the talk); the
+ * cry (STREET_SPIRIT_LONELY_ART) is four rounds of its 24-frame tears, every second frame kept.
  */
 export const STREET_SPIRIT_ART = Object.freeze({
   groddle: {
@@ -181,7 +183,7 @@ export const STREET_SPIRIT_ART = Object.freeze({
     looks: { medium: 'size_medium', large: 'size_large' },
     states: {
       idle: { oga: 'idle_move', frames: 105, step: 3, live: 'idle_live' },
-      talk: { oga: 'talk', frames: 62 },
+      talk: { oga: 'talk', frames: 62, live: 'talk_live' },
     },
   },
   zutto: {
@@ -274,7 +276,8 @@ export const STREET_SPIRIT_LONELY_ART = Object.freeze({
     },
   },
   firebog: {
-    cry: { oga: 'idle_cry', frames: 24, crops: { medium: { x: 0, y: 0, w: 63, h: 189 }, large: { x: 0, y: 0, w: 107, h: 244 } } },
+    // #658: live (STREET_SPIRIT_ART): 96 frames, four rounds of the 24-frame tears, every second kept.
+    cry: { oga: 'idle_cry', frames: 96, step: 2, live: 'cry_live', crops: { medium: { x: 0, y: 0, w: 63, h: 189 }, large: { x: 0, y: 0, w: 107, h: 244 } } },
     portraitLook: 'large',
     portrait: {
       in: { oga: 'loneliness_in', frames: 19, cell: { w: 183, h: 183 }, crop: { x: 1, y: 1, w: 181, h: 181 } },
@@ -362,8 +365,8 @@ export function spiritCrySheet(variant, look) {
     fw: box.crop.w,
     fh: box.crop.h,
     cols: STRIP_COLS,
-    frames: cry.frames,
-    fps: 30,
+    frames: Math.ceil(cry.frames / (cry.step || 1)),
+    fps: 30 / (cry.step || 1),
     once: false,
     anchor: box.anchor,
   };

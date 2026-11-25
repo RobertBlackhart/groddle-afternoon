@@ -90,7 +90,8 @@ function writeLonely(tmpDir) {
     const portraits = new Set();
     for (const look of Object.keys(art.looks)) {
       const cry = spiritCryBox(variant, look);
-      if (cry) writeStrip(sourceSheet(art, look, lonely.cry.oga), cry.cell, cry.crop, lonely.cry.frames, 1, join(OUT, spiritSheetName(variant, look, 'cry')), tmpDir);
+      // #658: a live cry's strip comes from the SWF render (tools/vector-sprites/build.mjs render1x).
+      if (cry && !lonely.cry.live) writeStrip(sourceSheet(art, look, lonely.cry.oga), cry.cell, cry.crop, lonely.cry.frames, 1, join(OUT, spiritSheetName(variant, look, 'cry')), tmpDir);
       portraits.add(portraitLook(variant, look));
     }
     for (const look of portraits) {

@@ -89,20 +89,19 @@ export function streetManifest() {
     for (const look of Object.keys(art.looks)) {
       const sheets = [];
       const live = [];
-      for (const [state, sheet] of Object.entries(art.states)) {
-        const row = sheetRow(spiritSheet(variant, look, state), sheet.live || sheet.oga, sheet.step || 1);
-        // #658: a live state's loop is baked after the timeline (swf-record.mjs live) and its 1x strip
-        // drawn from that render, placed as the look's talk sheet is (build.mjs render1x).
-        if (sheet.live) {
-          live.push({ label: sheet.oga, as: sheet.live, frames: sheet.frames });
-          row.render1x = rel(spiritSheet(variant, look, 'talk').path);
+      // #658: a live clip's loop is baked after the timeline (swf-record.mjs live) and its 1x strip
+      // drawn from that render (build.mjs render1x).
+      const add = (def, clip) => {
+        const row = sheetRow(def, clip.live || clip.oga, clip.step || 1);
+        if (clip.live) {
+          live.push({ label: clip.oga, as: clip.live, frames: clip.frames });
+          row.render1x = true;
         }
         sheets.push(row);
-      }
-      // build.mjs builds a job's sheets in order: the sheet a render1x one is placed like comes first.
-      sheets.sort((a, b) => Number(Boolean(a.render1x)) - Number(Boolean(b.render1x)));
+      };
+      for (const [state, sheet] of Object.entries(art.states)) add(spiritSheet(variant, look, state), sheet);
       const cry = spiritCrySheet(variant, look);
-      if (cry) sheets.push(sheetRow(cry, STREET_SPIRIT_LONELY_ART[variant].cry.oga, 1));
+      if (cry) add(cry, STREET_SPIRIT_LONELY_ART[variant].cry);
       const medium = variant === 'firebog' && look === 'medium';
       const parts = lookParts(variant, look);
       jobs.push({

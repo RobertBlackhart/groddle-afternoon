@@ -268,18 +268,20 @@
       "label": "idle_move",
       "as": "idle_live",
       "frames": 105
+     },
+     {
+      "label": "talk",
+      "as": "talk_live",
+      "frames": 62
+     },
+     {
+      "label": "idle_cry",
+      "as": "cry_live",
+      "frames": 96
      }
     ]
    },
    "sheets": [
-    {
-     "path": "assets/sprites/street-spirits/firebog_medium_talk.webp",
-     "label": "talk",
-     "fw": 63,
-     "fh": 189,
-     "cols": 8,
-     "frames": 62
-    },
     {
      "path": "assets/sprites/street-spirits/firebog_medium_idle.webp",
      "label": "idle_live",
@@ -288,15 +290,26 @@
      "cols": 8,
      "frames": 35,
      "step": 3,
-     "render1x": "assets/sprites/street-spirits/firebog_medium_talk.webp"
+     "render1x": true
     },
     {
-     "path": "assets/sprites/street-spirits/firebog_medium_cry.webp",
-     "label": "idle_cry",
+     "path": "assets/sprites/street-spirits/firebog_medium_talk.webp",
+     "label": "talk_live",
      "fw": 63,
      "fh": 189,
      "cols": 8,
-     "frames": 24
+     "frames": 62,
+     "render1x": true
+    },
+    {
+     "path": "assets/sprites/street-spirits/firebog_medium_cry.webp",
+     "label": "cry_live",
+     "fw": 63,
+     "fh": 189,
+     "cols": 8,
+     "frames": 48,
+     "step": 2,
+     "render1x": true
     }
    ]
   },
@@ -317,18 +330,20 @@
       "label": "idle_move",
       "as": "idle_live",
       "frames": 105
+     },
+     {
+      "label": "talk",
+      "as": "talk_live",
+      "frames": 62
+     },
+     {
+      "label": "idle_cry",
+      "as": "cry_live",
+      "frames": 96
      }
     ]
    },
    "sheets": [
-    {
-     "path": "assets/sprites/street-spirits/firebog_large_talk.webp",
-     "label": "talk",
-     "fw": 94,
-     "fh": 244,
-     "cols": 8,
-     "frames": 62
-    },
     {
      "path": "assets/sprites/street-spirits/firebog_large_idle.webp",
      "label": "idle_live",
@@ -337,15 +352,26 @@
      "cols": 8,
      "frames": 35,
      "step": 3,
-     "render1x": "assets/sprites/street-spirits/firebog_large_talk.webp"
+     "render1x": true
+    },
+    {
+     "path": "assets/sprites/street-spirits/firebog_large_talk.webp",
+     "label": "talk_live",
+     "fw": 94,
+     "fh": 244,
+     "cols": 8,
+     "frames": 62,
+     "render1x": true
     },
     {
      "path": "assets/sprites/street-spirits/firebog_large_cry.webp",
-     "label": "idle_cry",
+     "label": "cry_live",
      "fw": 107,
      "fh": 244,
      "cols": 8,
-     "frames": 24
+     "frames": 48,
+     "step": 2,
+     "render1x": true
     }
    ]
   },
