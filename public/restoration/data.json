@@ -2814,9 +2814,14 @@
   "deployed": "2026-11-25"
  },
  "git": {
-  "commits": 3443,
+  "commits": 3448,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-24",
+    "kind": "fix",
+    "text": "Firebog street spirits' flames and vines move when they talk and cry too"
+   },
    {
     "date": "2026-11-24",
     "kind": "fix",
@@ -2931,11 +2936,6 @@
     "date": "2026-11-24",
     "kind": "new",
     "text": "Encyclopedia \"How do I…\" guides: six short answers to questions players asked, shown first when a search matches"
-   },
-   {
-    "date": "2026-11-24",
-    "kind": "improve",
-    "text": "Doors between house floors slide along their own floor"
    }
   ]
  },
