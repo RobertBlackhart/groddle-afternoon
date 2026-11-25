@@ -65,9 +65,10 @@ export async function addStreets(d, { inventory, picture, slug }) {
   const oneWay = json('assets/content/one-way-roads.json').streets || {};
   const jobs = json('assets/content/street-jobs.json');
   const strips = json('assets/content/loading-images.json');
-  const [ecology, vendor, npcs, stores, sj, routes, hidden, wintry, subway, maps, reach, exploration, resources] = await Promise.all([
+  const [ecology, vendor, npcs, stores, sj, routes, hidden, wintry, subway, maps, reach, exploration, resources, patches] = await Promise.all([
     mod('street-ecology.js'), mod('vendor.js'), mod('vendor-npcs.js'), mod('store-catalog.js'), mod('street-jobs.js'), mod('map-routes.js'),
     mod('hidden-floors.js'), mod('wintry-portal.js'), mod('subway-line.js'), mod('hub-map-backgrounds.js'), mod('quest-reach.js'), mod('exploration.js'), mod('resource-nodes.js'),
+    mod('patches.js'),
   ]);
   const locInv = inventory.location || new Map();
   const places = [...d.entries.values()].filter((e) => e.section === 'places');
@@ -185,6 +186,9 @@ export async function addStreets(d, { inventory, picture, slug }) {
     const strip = strips[g]?.local ? picture(strips[g].local) : null;
     const bg = maps.HUB_MAP_BACKGROUNDS[hubId];
     const w = way.get(g);
+    // G1277 (#686): a street with trees or Patches gets the realtime server's last count of them.
+    const soil = Object.keys(eco.soil?.[g] || {}).length > 0 && !pop.sourceEmpty;
+    const liveClasses = [...new Set([...pop.treeClasses, ...(soil ? Object.keys(patches.GROWN_TREE_LABELS) : [])])].sort();
     const e = {
       name: labelOf(g), status: k.status, register: '', group: place.name, icon: place.icon, refs: [],
       desc: `${labelOf(g)}, a street in ${place.name}.`,
@@ -204,6 +208,7 @@ export async function addStreets(d, { inventory, picture, slug }) {
         upgrade: upgrade ? { name: upgrade.current?.name || '', desc: upgrade.current?.desc || '', options: (upgrade.options || []).map((o) => ({ name: o.name, desc: o.desc })) } : null,
         reach: w ? { projects: w.projects, first: w.first } : null,
         music: musicOf.get(g) || null,
+        live: liveClasses.length ? Object.fromEntries(liveClasses.map((c) => [c, patches.GROWN_TREE_LABELS[c] || ''])) : null,
         quests: [...(questsOn.get(g) || [])].sort(),
         achievement: completist.has(hubId) && exploration.countsTowardHub(g, hubId) ? completist.get(hubId) : null,
         strip,
@@ -381,6 +386,8 @@ export function streetPage(e, P, { info, d, backOf, kit }) {
   const lists = (d.streetListsOf?.get(e.key) || []).map((l) => `<a href="../with/${l.slug}/">${esc(l.short)}</a>`);
   const hereParts = KIND_ORDER.filter((k) => groups.has(k)).map((k) => sub(k, P.chips(groups.get(k))));
   if (lists.length) hereParts.push(sub('Other streets with these', `<p class="st-lists-here">Every street with each of them, by region: ${lists.join(', ')}.</p>`));
+  const live = liveBlock(st, p, d, info);
+  if (live) hereParts.splice(hereParts.length - (lists.length ? 1 : 0), 0, live);
   const hereHtml = hereParts.join('\n        ');
   const hereLead = st.empty ? 'Its file in Tiny Speck’s archive holds nothing to place, so nothing lives here.' : st.interiorWhy ? 'Indoors: only what its own file holds.' : 'As the remake places them, from the street’s own file.';
 
@@ -417,6 +424,27 @@ ${band('here-h', 'What is here', hereHtml || `<p class="cat-muted">${hereLead}</
 ${band('rel-h', 'Quests and achievements', [sub('Quests', P.tiles(questTiles)), sub('Achievements', P.tiles(achTiles))].filter(Boolean).join('\n        '), { alt: true })}
 ${band('remake-h', 'In the remake', remake)}
   </main>`;
+}
+
+/** G1277 (#686, Austin 2026-11-25): said on every street page with trees or Patches. */
+export const LIVE_NOTE = 'Trees can die and new ones can be planted, so what grows where changes over time.';
+
+/**
+ * G1277: "On the street now", filled by street-live.js from the site's cached count
+ * (groddle/v1/streets/live, at most an hour old, never more than a day): hidden until then, so a
+ * page without JavaScript or without the count shows its starting counts only. The note under it
+ * always shows.
+ */
+export function liveBlock(st, p, d, info) {
+  if (!st.live) return '';
+  const names = {};
+  for (const [c, label] of Object.entries(st.live)) {
+    const k = d.keyOf(c);
+    names[c] = (k && info(k)?.name) || label;
+  }
+  return `<div class="st-live" data-live-street="${esc(st.tsid)}" data-live-url="${p}wp-json/groddle/v1/streets/live" data-live-names="${esc(JSON.stringify(names))}" hidden><h3>On the street now <span class="st-live-when"></span></h3>
+        <ul class="cat-list st-live-list"></ul></div>
+        <p class="ency-lead-small st-live-note">${LIVE_NOTE}</p>`;
 }
 
 /** The Streets index: every street by region, as plain links (thousands of them, so no pictures). */

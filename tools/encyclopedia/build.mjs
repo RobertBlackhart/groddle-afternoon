@@ -109,7 +109,7 @@ const FOOT = (p) => `  <footer class="foot">
     </div>
   </footer>`;
 
-const shell = ({ p, title, description, body, script, css }) => `<!doctype html>
+const shell = ({ p, title, description, body, script, css, module }) => `<!doctype html>
 <html lang="en">
 <head>
   <meta charset="utf-8" />
@@ -124,7 +124,7 @@ ${script ? mapTags(p) : ''}  <script src="${p}${sharedLink('site/theme.js', root
 ${css ? `  <link rel="stylesheet" href="${p}${css}" />\n` : ''}  <link rel="icon" href="${p}favicon.svg?v=arch" type="image/svg+xml" />
   <link rel="icon" href="${p}favicon.ico?v=arch" sizes="32x32" />
   <link rel="apple-touch-icon" href="${p}apple-touch-icon.png?v=arch" />
-${script ? `  <script type="module" src="${p}encyclopedia/encyclopedia.js?v=${moduleKeyOf('encyclopedia/encyclopedia.js', root)}"></script>\n` : ''}</head>
+${script ? `  <script type="module" src="${p}encyclopedia/encyclopedia.js?v=${moduleKeyOf('encyclopedia/encyclopedia.js', root)}"></script>\n` : ''}${module ? `  <script type="module" src="${p}${module}?v=${moduleKeyOf(module, root)}"></script>\n` : ''}</head>
 <body class="notes catalog ency">
 ${siteNav(p, 'items')}
 ${body}
@@ -254,7 +254,7 @@ export async function buildEncyclopedia(data = null) {
         .replace(/<(section|nav) class="band(?: band-alt)?/g, (m, tag) => `<${tag} class="band${nth++ % 2 ? ' band-alt' : ''}`);
       const desc = plainText(e.quest?.desc || e.creature?.desc || e.skill?.description || e.ach?.desc || e.desc || e.sound?.moment || '').slice(0, 150);
       // A sound's page loads the encyclopedia's script for its synth stand-in and its players.
-      put(`${OUT}/${sec.key}/${e.id}/index.html`, shell({ p, title: `${e.name} · Groddle Encyclopedia`, description: `${desc ? `${desc} ` : ''}${statusLabel(e.status)}.`, body, script: sec.key === 'sounds', css: sec.css }));
+      put(`${OUT}/${sec.key}/${e.id}/index.html`, shell({ p, title: `${e.name} · Groddle Encyclopedia`, description: `${desc ? `${desc} ` : ''}${statusLabel(e.status)}.`, body, script: sec.key === 'sounds', css: sec.css, module: sec.key === 'streets' && e.street.live ? 'encyclopedia/street-live.js' : null }));
     });
     if (sec.key === 'sounds') {
       put(`${OUT}/sounds/index.html`, soundsIndex(sec, list, info, d.nameOf));
@@ -996,7 +996,7 @@ function homePage(bySection, items, info, nameOf, stations = 0) {
 
 /* -- Write / check ------------------------------------------ */
 
-const STATIC = new Set(['encyclopedia.js', 'search-core.js', 'sections.css', 'streets.css']);
+const STATIC = new Set(['encyclopedia.js', 'search-core.js', 'street-live.js', 'sections.css', 'streets.css']);
 /** The Items section's folder: tools/catalog/build.mjs writes and checks it, so it is never a stray here. */
 const CATALOG = `${OUT}/items`;
 

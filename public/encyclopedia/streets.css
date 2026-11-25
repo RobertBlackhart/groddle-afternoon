@@ -21,6 +21,10 @@
 .st-list-note { color: var(--muted); font-size: 13px; }
 .st-lists .ency-chips { margin: 0 0 8px; }
 .st-lists-here { margin: 0 0 10px; }
+/* G1277 (#686): what stands on the street now, from the cached count (street-live.js). */
+.st-live-when { font-weight: normal; font-size: 0.8em; color: var(--muted); }
+.st-live-list { margin-top: 4px; }
+.st-live-note { color: var(--muted); }
 
 /*
  * G917 (#445): the Subway System map (tools/encyclopedia/subway.mjs), the game's own SVG
