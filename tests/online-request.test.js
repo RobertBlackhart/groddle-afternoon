@@ -192,6 +192,8 @@ const NOT_A_REQUEST = Object.freeze([
   'public/js/online-request.js ACT_ANSWER_MARGIN_MS',
   'public/js/online-request.js ANSWER_WAIT_MAX_MS',
   'public/js/online-request.js ANSWER_WAIT_MIN_MS',
+  // #676: the socket's own liveness check (a ping's answer), not a request's.
+  'public/js/realtime-client.js PROBE_TIMEOUT_MS',
   'public/js/street-move.js MAX_QUEUE_WAIT_MS',
   'public/js/test-tube.js EXPERIMENT_WAIT_MS',
   'public/js/ui/reports-sheet.js PICTURE_WAIT_MS',
@@ -233,7 +235,7 @@ describe('R26: no online feature keeps a request wait of its own', () => {
   it('gardens, Patches and street objects ask through the helper', () => {
     for (const f of ['shared-gardens-feature.js', 'shared-patches-feature.js', 'street-objects-feature.js']) {
       const src = readFileSync(join(root, 'public/js/features', f), 'utf8');
-      assert.match(src, /createOnlineRequests\(\{ waitMs: \(\) => answerWaitMs\(client\) \}\)/, f);
+      assert.match(src, /createOnlineRequests\(\{ waitMs: \(\) => answerWaitMs\(client\)(?:, probe: \(\) => client\?\.probe\?\.\(\))? \}\)/, f);
       assert.doesNotMatch(src, /REQUEST_TIMEOUT|new Map\(\);\s*\n\s*let grant/, f);
     }
     assert.doesNotMatch(readFileSync(join(root, 'public/js/street-objects.js'), 'utf8'), /REQUEST_TIMEOUT_MS/);

@@ -40,6 +40,20 @@ export const SAVE_FIRST_MS = 20_000;
 /** A late request is kept this long for its answer, then let go. */
 export const LATE_KEEP_MS = 5 * 60_000;
 
+/**
+ * #676 (Austin's ruling 2026-11-25): a request this long with no answer asks whether the socket is
+ * still there (realtime-client.js probe: a ping, and no answer drops and reconnects it at once). A
+ * phone whose connection died had kept saying "still asking" for the answer's whole wait.
+ */
+export const PROBE_AFTER_MS = 3000;
+/** #676: the words while the socket connects again, in place of "still asking" and "still connecting". */
+export const RECONNECTING_LINE = 'Reconnecting...';
+
+/** #676: a feature's line (busy, connecting, timeout), or RECONNECTING_LINE while its client connects again. */
+export function waitLine(client, line) {
+  return client?.reconnecting ? RECONNECTING_LINE : line;
+}
+
 /** How long to wait for an answer on this connection: hello's word, else the fallback. */
 export function answerWaitMs(client) {
   const w = Number(client?.answerWaitMs);
@@ -62,6 +76,8 @@ export function createOnlineRequests({
   waitMs = () => ANSWER_WAIT_FALLBACK_MS,
   later = (fn, ms) => setTimeout(fn, ms),
   cancel = (id) => clearTimeout(id),
+  probe = null,
+  probeAfterMs = PROBE_AFTER_MS,
 } = {}) {
   const all = new Map();
   const live = () => [...all.values()].filter((r) => !r.late && !r.gone);
@@ -117,6 +133,7 @@ export function createOnlineRequests({
     /** A request about to go out. */
     open(req, rec) {
       rec.sentAt = 0;
+      rec.probed = false;
       rec.late = false;
       rec.gone = false;
       all.set(req, rec);
@@ -163,20 +180,31 @@ export function createOnlineRequests({
       all.delete(req);
       return rec;
     },
-    /** Requests out longer than the wait, newly late (the feature says so); very old late ones are let go. */
+    /**
+     * Requests out longer than the wait, newly late (the feature says so); very old late ones are let go.
+     * #676: a request out PROBE_AFTER_MS with no answer calls `probe` (once for it).
+     */
     expire() {
       const t = now();
       const wait = waitMs();
       const out = [];
+      let ask = false;
       for (const [req, rec] of all) {
         if (rec.late) {
           if (t - rec.lateAt >= LATE_KEEP_MS) all.delete(req);
           continue;
         }
+        if (rec.sentAt && !rec.probed && !rec.gone && t - rec.sentAt >= probeAfterMs) {
+          rec.probed = true;
+          ask = true;
+        }
         if (!rec.sentAt || t - rec.sentAt < wait) continue;
         rec.late = true;
         rec.lateAt = t;
         if (!rec.gone) out.push(rec);
+      }
+      if (ask && typeof probe === 'function') {
+        try { probe(); } catch { /* the client is gone */ }
       }
       return out;
     },

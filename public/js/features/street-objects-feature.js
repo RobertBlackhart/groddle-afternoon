@@ -155,7 +155,7 @@ import {
   treeSkill,
   waitingIds,
 } from '../street-objects.js?v=4ce8ad4f';
-import { answerWaitMs, createOnlineRequests } from '../online-request.js?v=2a5117ff';
+import { answerWaitMs, createOnlineRequests, waitLine } from '../online-request.js?v=2a5117ff';
 import { ROCK_CATALOG } from '../mining.js?v=5e49efb3';
 import { TRANT_META, trantStatusLabel } from '../trants.js?v=864ea9ff';
 import { quoteWoodTreeHarvest } from '../woodcutting.js?v=9e9af511';
@@ -205,7 +205,8 @@ let syncedStreet = '';
 let syncAskedAt = 0;
 let reqSeq = 0;
 /** R26: the requests out (js/online-request.js): the wait is the server's, a late answer still lands. */
-const pending = createOnlineRequests({ waitMs: () => answerWaitMs(client) });
+// #676: a request 3 s with no answer asks whether the socket is still there (realtime-client.js probe).
+const pending = createOnlineRequests({ waitMs: () => answerWaitMs(client), probe: () => client?.probe?.() });
 let grant = null;
 let dirtyAll = false;
 const dirty = new Set();
@@ -254,7 +255,7 @@ function bind(engine) {
   c.on('state', ({ state }) => {
     if (state === 'online') return;
     reset();
-    if (pending.size && !LOCAL_STATES.has(state)) engine.toast?.(COPY.timeout, 2400);
+    if (pending.size && !LOCAL_STATES.has(state)) engine.toast?.(waitLine(c, COPY.timeout), 2400);
     const waited = [...pending.values()];
     pending.clear();
     publish(engine);
@@ -1092,20 +1093,20 @@ function ask(engine, target, verbId) {
   if (!verb) return null;
   if (copy.none && copy.street === objectRoom(engine)) return null;
   if (!shared(engine)) {
-    engine.toast?.(COPY.connecting, 2400);
+    engine.toast?.(waitLine(client, COPY.connecting), 2400);
     return true;
   }
   // The player's own side (pick, skill, energy, daily limits) refuses locally, as in solo.
   if (!verb.ready()) return null;
   for (const p of pending.values()) {
     if (p.id === verb.id && !p.silent) {
-      engine.toast?.(COPY.busy, 1600);
+      engine.toast?.(waitLine(client, COPY.busy), 1600);
       return true;
     }
   }
   reqSeq += 1;
   if (!sendOut(reqSeq, { id: verb.id, target, verbId }, () => c.send('obj_act', actMessage({ req: reqSeq, id: verb.id, verb: verb.wire || verbId, perks: verb.perks, skill: verb.skill, c: verb.c, n: verb.n })))) {
-    engine.toast?.(COPY.connecting, 2400);
+    engine.toast?.(waitLine(client, COPY.connecting), 2400);
     return true;
   }
   menuAgain(engine, target);
@@ -1175,12 +1176,12 @@ function askName(engine, target, value) {
   if (pig >= 0) {
     id = pigId(pig);
     if (!shared(engine) || !copy.objs.has(id)) {
-      engine.toast?.(COPY.connecting, 2400);
+      engine.toast?.(waitLine(client, COPY.connecting), 2400);
       return true;
     }
   } else if (animal && NAMEABLE_KINDS.has(animal.kind)) {
     if (!shared(engine)) {
-      engine.toast?.(COPY.connecting, 2400);
+      engine.toast?.(waitLine(client, COPY.connecting), 2400);
       return true;
     }
     // Only an animal this street's snapshot named is the server's; any other stays the page's own.
@@ -1189,7 +1190,7 @@ function askName(engine, target, value) {
   } else return null;
   for (const p of pending.values()) {
     if (p.id === id && !p.silent) {
-      engine.toast?.(COPY.busy, 1600);
+      engine.toast?.(waitLine(client, COPY.busy), 1600);
       return true;
     }
   }
@@ -1197,7 +1198,7 @@ function askName(engine, target, value) {
   // canName 6: the client says Animal Kinship V, as "ak6" for a nibble.
   const perks = (engine.learnedSkills || []).includes('animalkinship_5') ? ['ak5'] : [];
   if (!sendOut(reqSeq, { id, target, verbId: 'name', naming: true }, () => c.send('obj_act', actMessage({ req: reqSeq, id, verb: 'name', perks, name: value })))) {
-    engine.toast?.(COPY.connecting, 2400);
+    engine.toast?.(waitLine(client, COPY.connecting), 2400);
     return true;
   }
   return true;
@@ -1326,18 +1327,18 @@ export const streetObjectsFeature = {
     if (pig < 0 || (copy.none && copy.street === objectRoom(engine))) return null;
     const id = pigId(pig);
     if (!shared(engine) || !copy.objs.has(id)) {
-      engine.toast?.(COPY.connecting, 2400);
+      engine.toast?.(waitLine(client, COPY.connecting), 2400);
       return true;
     }
     for (const p of pending.values()) {
       if (p.id === id && !p.silent) {
-        engine.toast?.(COPY.busy, 1600);
+        engine.toast?.(waitLine(client, COPY.busy), 1600);
         return true;
       }
     }
     reqSeq += 1;
     if (!sendOut(reqSeq, { id, target, verbId: 'youth', youth: true }, () => c.send('obj_act', actMessage({ req: reqSeq, id, verb: 'youth', k: Number.isInteger(k) && k >= 0 ? k : null })))) {
-      engine.toast?.(COPY.connecting, 2400);
+      engine.toast?.(waitLine(client, COPY.connecting), 2400);
       return true;
     }
     return true;
@@ -1377,13 +1378,13 @@ export const streetObjectsFeature = {
     if (!a || a.kind !== 'batterfly' || !shared(engine) || !guanoPiles(copy) || !copy.animals.has(a.id)) return null;
     for (const p of pending.values()) {
       if (p.id === a.id && !p.silent) {
-        engine.toast?.(COPY.busy, 1600);
+        engine.toast?.(waitLine(client, COPY.busy), 1600);
         return true;
       }
     }
     reqSeq += 1;
     if (!sendOut(reqSeq, { id: a.id, target, verbId: 'pickup' }, () => client.send('obj_act', actMessage({ req: reqSeq, id: a.id, verb: 'pickup', x })))) {
-      engine.toast?.(COPY.connecting, 2400);
+      engine.toast?.(waitLine(client, COPY.connecting), 2400);
       return true;
     }
     return true;
@@ -1475,7 +1476,7 @@ export const streetObjectsFeature = {
     if (!c || c.state !== 'online') return null;
     for (const p of pending.values()) {
       if (p.verbId === 'dust') {
-        engine.toast?.(COPY.busy, 1600);
+        engine.toast?.(waitLine(client, COPY.busy), 1600);
         return true;
       }
     }

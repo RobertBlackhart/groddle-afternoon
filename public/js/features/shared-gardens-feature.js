@@ -71,7 +71,7 @@ import { addItem, countItem, ITEM_CATALOG, itemIcon } from '../inventory.js?v=64
 import { JOB_WORK_BUBBLE, JOB_WORK_OVERLAY, JOB_WORK_REMOTE_BUBBLE_DY, jobWorkToolScale, jobWorkToolSheet } from '../job-work-fx.js?v=a2dc6a5a';
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=b8e38103';
 import { gardenGrowModifier } from '../imagination-effects.js?v=70169933';
-import { answerWaitMs, createOnlineRequests } from '../online-request.js?v=2a5117ff';
+import { answerWaitMs, createOnlineRequests, waitLine } from '../online-request.js?v=2a5117ff';
 import { saveStore, savedThrough } from '../save-store.js?v=4e720735';
 import {
   LOCK_LINE,
@@ -113,7 +113,8 @@ let syncedStreet = '';
 let syncAskedAt = 0;
 let reqSeq = 0;
 /** R26: the requests out (js/online-request.js): the wait is the server's, a late answer still lands. */
-const pending = createOnlineRequests({ waitMs: () => answerWaitMs(client) });
+// #676: a request 3 s with no answer asks whether the socket is still there (realtime-client.js probe).
+const pending = createOnlineRequests({ waitMs: () => answerWaitMs(client), probe: () => client?.probe?.() });
 let grant = null;
 let lastAnswer = '';
 let applied = [];
@@ -281,7 +282,7 @@ function bind(engine) {
   client = c;
   c.on('state', ({ state }) => {
     if (state === 'online') return;
-    if (pending.size && !LOCAL_STATES.has(state)) engine.toast?.(COPY.timeout, 2400);
+    if (pending.size && !LOCAL_STATES.has(state)) engine.toast?.(waitLine(c, COPY.timeout), 2400);
     pending.clear();
     if (LOCAL_STATES.has(state)) backToLocal(engine);
     const beds = copy.beds;
@@ -537,7 +538,7 @@ function ask(engine, target, verbId) {
   const c = bind(engine);
   if (!c || LOCAL_STATES.has(c.state)) return null;
   if (!shared(engine)) {
-    engine.toast?.(COPY.connecting, 2400);
+    engine.toast?.(waitLine(client, COPY.connecting), 2400);
     return true;
   }
   const plan = planVerb(engine, target, verbId);
@@ -550,7 +551,7 @@ function ask(engine, target, verbId) {
   const id = plan.send.id || `bed:${plan.send.bed}`;
   for (const p of pending.values()) {
     if (p.id === id) {
-      engine.toast?.(COPY.busy, 1600);
+      engine.toast?.(waitLine(client, COPY.busy), 1600);
       return true;
     }
   }
@@ -567,7 +568,7 @@ function ask(engine, target, verbId) {
 
 /** R26: a request that never went out says why. */
 function unsent(engine, out) {
-  if (out === 'unsent') engine.toast?.(COPY.connecting, 2400);
+  if (out === 'unsent') engine.toast?.(waitLine(client, COPY.connecting), 2400);
   else if (out === 'save-failed') engine.toast?.(COPY.saveFailed, 2600);
 }
 
@@ -783,14 +784,14 @@ export const sharedGardensFeature = {
     const c = bind(engine);
     if (!c || LOCAL_STATES.has(c.state)) return null;
     if (!shared(engine)) {
-      engine.toast?.(COPY.connecting, 2400);
+      engine.toast?.(waitLine(client, COPY.connecting), 2400);
       return true;
     }
     const bed = gardenBedKey(target.state.garden);
     const id = `bed:${bed}`;
     for (const p of pending.values()) {
       if (p.id === id) {
-        engine.toast?.(COPY.busy, 1600);
+        engine.toast?.(waitLine(client, COPY.busy), 1600);
         return true;
       }
     }

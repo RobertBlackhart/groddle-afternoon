@@ -43,6 +43,12 @@ export const MOVE_EVERY_MS = 100;
 export const PING_EVERY_MS = 20000;
 /** No frame at all for this long: the socket is dead even if it never closed. */
 export const QUIET_MS = 50000;
+/**
+ * #676 (Austin's ruling 2026-11-25): a request with no answer asks whether the socket is still there
+ * (probe()): a ping, and no frame back within this long drops the socket and connects again at once.
+ * A phone that lost its connection had waited QUIET_MS (and the answer's whole wait) to notice.
+ */
+export const PROBE_TIMEOUT_MS = 2500;
 export const BACKOFF_MIN_MS = 1000;
 export const BACKOFF_MAX_MS = 30000;
 /** The server's limits (hub.go maxChat; maxLook is 4096 bytes of JSON). */
@@ -194,6 +200,10 @@ export function createRealtimeClient({
   let lastMoveAt = -Infinity;
   let pendingMove = null;
   let closeCode = 0;
+  /** #676: a probe's timer while its ping is out, whether a frame came since, and whether this page has been online. */
+  let probeTimer = null;
+  let probeHeard = false;
+  let wasOnline = false;
 
   function emit(type, detail) {
     for (const fn of listeners.get(type) || []) {
@@ -213,6 +223,20 @@ export function createRealtimeClient({
     if (moveTimer != null) cancel?.(moveTimer);
     retryTimer = pingTimer = moveTimer = null;
     pendingMove = null;
+    clearProbe();
+  }
+
+  function clearProbe() {
+    if (probeTimer != null) cancel?.(probeTimer);
+    probeTimer = null;
+  }
+
+  /** #676: the socket answered nothing: drop it and connect again now (no backoff), saying it reconnects. */
+  function dropDead() {
+    const socket = ws;
+    ws = null;
+    try { socket?.close(CLOSE_QUIET, 'no pong'); } catch { /* gone */ }
+    closed(CLOSE_QUIET, { now: true });
   }
 
   function resetStreet() {
@@ -290,6 +314,7 @@ export function createRealtimeClient({
     socket.onmessage = (event) => {
       if (ws !== socket) return;
       lastFrameAt = now();
+      probeHeard = true;
       let msg;
       try { msg = JSON.parse(String(event.data)); } catch { return; }
       if (msg && typeof msg.t === 'string') handle(msg);
@@ -302,11 +327,12 @@ export function createRealtimeClient({
     socket.onerror = () => { /* onclose follows */ };
   }
 
-  function closed(code) {
+  function closed(code, { now: soon = false } = {}) {
     closeCode = code;
     if (pingTimer != null) cancel?.(pingTimer);
     if (moveTimer != null) cancel?.(moveTimer);
     pingTimer = moveTimer = null;
+    clearProbe();
     pendingMove = null;
     lastMove = null;
     resetStreet();
@@ -320,6 +346,12 @@ export function createRealtimeClient({
       // A used or expired ticket: a new one straight away (twice, then back off).
       ticketRetries += 1;
       setState('connecting', { code });
+      scheduleRetry(0);
+      return;
+    }
+    if (soon) {
+      // #676: a socket found dead by a probe connects again at once.
+      setState('offline', { code, reconnecting: true });
       scheduleRetry(0);
       return;
     }
@@ -361,6 +393,7 @@ export function createRealtimeClient({
         answerWait = Number(msg.wait) > 0 ? Number(msg.wait) : 0;
         attempt = 0;
         ticketRetries = 0;
+        wasOnline = true;
         setState('online');
         emit('hello', me);
         pingLoop();
@@ -489,6 +522,32 @@ export function createRealtimeClient({
     get closeCode() { return closeCode; },
     /** Failed connects in a row (0 once online). */
     get attempt() { return attempt; },
+    /** #676: connecting again after this page was online (the words say "Reconnecting..."). */
+    get reconnecting() { return wasOnline && (state === 'offline' || state === 'connecting'); },
+    /** #676: a probe's ping is out, its answer not yet in. */
+    get probing() { return probeTimer != null; },
+
+    /**
+     * #676: is the socket still there? A ping goes out; a frame back within PROBE_TIMEOUT_MS says yes,
+     * none drops the socket and connects again at once (state 'offline' with reconnecting: true). A
+     * ping that cannot go out drops it now. One probe at a time. False when not online.
+     */
+    probe() {
+      if (state !== 'online' || !ws) return false;
+      if (probeTimer != null) return true;
+      const socket = ws;
+      probeHeard = false;
+      if (!send({ t: 'ping' })) {
+        dropDead();
+        return true;
+      }
+      probeTimer = later(() => {
+        probeTimer = null;
+        if (ws !== socket || state !== 'online') return;
+        if (!probeHeard) dropDead();
+      }, PROBE_TIMEOUT_MS);
+      return true;
+    },
 
     on(type, fn) {
       if (!listeners.has(type)) listeners.set(type, new Set());

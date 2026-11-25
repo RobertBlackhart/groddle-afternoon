@@ -72,7 +72,7 @@
 
 import { addItem, countItem, ITEM_CATALOG } from '../inventory.js?v=6414dbdc';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
-import { answerWaitMs, createOnlineRequests } from '../online-request.js?v=2a5117ff';
+import { answerWaitMs, createOnlineRequests, waitLine } from '../online-request.js?v=2a5117ff';
 import { saveStore, savedThrough } from '../save-store.js?v=4e720735';
 import { patchesFeature } from './patches-feature.js?v=5c1671f0';
 import {
@@ -125,7 +125,8 @@ let syncedStreet = '';
 let syncAskedAt = 0;
 let reqSeq = 0;
 /** R26: the requests out (js/online-request.js): the wait is the server's, a late answer still lands. */
-const pending = createOnlineRequests({ waitMs: () => answerWaitMs(client) });
+// #676: a request 3 s with no answer asks whether the socket is still there (realtime-client.js probe).
+const pending = createOnlineRequests({ waitMs: () => answerWaitMs(client), probe: () => client?.probe?.() });
 /** Streets the server said it doesn't share, this connection (no flash of shared soil next time). */
 const noneStreets = new Set();
 /** The server has no Patches module (bad_frame) on this connection. */
@@ -289,7 +290,7 @@ function bind(engine) {
   client = c;
   c.on('state', ({ state }) => {
     if (state === 'online') return;
-    if ([...pending.values()].some((p) => p.phase === 'land') && !LOCAL_STATES.has(state)) engine.toast?.(COPY.timeout, 2400);
+    if ([...pending.values()].some((p) => p.phase === 'land') && !LOCAL_STATES.has(state)) engine.toast?.(waitLine(c, COPY.timeout), 2400);
     pending.clear();
     startRefused.clear();
     serverOff = false;
@@ -396,7 +397,7 @@ function ask(engine, target, verbId) {
   if (!SOIL_VERBS.has(verb)) return null;
   if (!live(engine)) return null;
   if (!shared(engine)) {
-    engine.toast?.(COPY.connecting, 2400);
+    engine.toast?.(waitLine(client, COPY.connecting), 2400);
     return true;
   }
   const quote = patchesFeature.quoteSharedVerb?.(engine, key, verbId);
@@ -408,7 +409,7 @@ function ask(engine, target, verbId) {
   }
   for (const p of pending.values()) {
     if (p.key === key && p.phase === 'land') {
-      engine.toast?.(COPY.waiting, 1600);
+      engine.toast?.(waitLine(client, COPY.waiting), 1600);
       return true;
     }
   }
@@ -443,7 +444,7 @@ function ask(engine, target, verbId) {
 
 /** R26: a request that never went out says why. */
 function unsent(engine, out) {
-  if (out === 'unsent') engine.toast?.(COPY.connecting, 2400);
+  if (out === 'unsent') engine.toast?.(waitLine(client, COPY.connecting), 2400);
   else if (out === 'save-failed') engine.toast?.(COPY.saveFailed, 2600);
 }
 
@@ -462,14 +463,14 @@ function askTree(engine, target, verbId, { pour = false, k = null } = {}) {
   if (!wire) return null;
   if (!live(engine)) return null;
   if (!shared(engine)) {
-    engine.toast?.(COPY.connecting, 2400);
+    engine.toast?.(waitLine(client, COPY.connecting), 2400);
     return true;
   }
   const learned = engine.learnedSkills || [];
   if (!pour && !sharedTreeReady(target.state, target.classId, wire, { inv: engine.inv, pc: engine.pc, learned, tools: engine.toolState })) return null;
   for (const p of pending.values()) {
     if (p.key === key && p.phase === 'land') {
-      engine.toast?.(COPY.waiting, 1600);
+      engine.toast?.(waitLine(client, COPY.waiting), 1600);
       return true;
     }
   }
