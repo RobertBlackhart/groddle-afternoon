@@ -5347,6 +5347,44 @@
         "game:7b29779c731",
         "site:b71f6e4"
       ]
+    },
+    {
+      "id": "G1252",
+      "area": "Homes",
+      "text": "A room held at most 160 pieces of furniture; Glitch had no cap.",
+      "show": "fixing",
+      "commits": [
+        "game:4a18775d9e5",
+        "site:374bad0"
+      ]
+    },
+    {
+      "id": "G1253",
+      "area": "Map",
+      "text": "A quest's place link did nothing, and a region with unbuilt streets didn't say how to get in.",
+      "show": "fixing",
+      "commits": [
+        "game:2afd23611a3"
+      ]
+    },
+    {
+      "id": "G1254",
+      "area": "Phones",
+      "text": "On a phone, the hi sign hint said to type hi instead of pointing at the Hi button.",
+      "show": "fixing",
+      "commits": [
+        "game:a0cc462981d"
+      ]
+    },
+    {
+      "id": "G1255",
+      "area": "Quests",
+      "text": "Sparkly of Interest counted mining out of sight and showed editor placeholder text.",
+      "show": "fixing",
+      "commits": [
+        "game:a20f39c4549",
+        "game:738bb562754"
+      ]
     }
   ]
 }

@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.67.0",
+  "release": "v0.68.0",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -42,7 +42,7 @@
     "fixing": 3,
     "known": 15,
     "unreleased": 0,
-    "fixed": 531,
+    "fixed": 535,
     "lost": 5,
     "purpose": 17,
     "idea": 10
@@ -392,6 +392,12 @@
           "text": "Only the player on the Peter out Peat quest could see its 9 second countdown, so helpers had to guess.",
           "state": "fixed",
           "version": "v0.59.0"
+        },
+        {
+          "id": "G1255",
+          "text": "Sparkly of Interest counted mining out of sight and showed editor placeholder text.",
+          "state": "fixed",
+          "version": "v0.68.0"
         }
       ]
     },
@@ -840,6 +846,12 @@
           "text": "On the Map, streets still being built looked like streets you had not visited yet.",
           "state": "fixed",
           "version": "v0.58.2"
+        },
+        {
+          "id": "G1253",
+          "text": "A quest's place link did nothing, and a region with unbuilt streets didn't say how to get in.",
+          "state": "fixed",
+          "version": "v0.68.0"
         }
       ]
     },
@@ -1287,6 +1299,12 @@
           "text": "The house floor move took Stills out of their owners' homes onto the shared floor.",
           "state": "fixed",
           "version": "v0.67.0"
+        },
+        {
+          "id": "G1252",
+          "text": "A room held at most 160 pieces of furniture; Glitch had no cap.",
+          "state": "fixed",
+          "version": "v0.68.0"
         },
         {
           "id": "G48",
@@ -2433,6 +2451,12 @@
           "text": "On a phone, party, quest room, crowns and race bars sat in the status bar over the top bar.",
           "state": "fixed",
           "version": "v0.67.0"
+        },
+        {
+          "id": "G1254",
+          "text": "On a phone, the hi sign hint said to type hi instead of pointing at the Hi button.",
+          "state": "fixed",
+          "version": "v0.68.0"
         }
       ]
     },
