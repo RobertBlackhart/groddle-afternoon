@@ -191,7 +191,7 @@
  "an_autumn_day": {
   "classTsid": "an_autumn_day",
   "title": "An Autumn Day",
-  "desc": "",
+  "desc": "Try something new on an autumn day, where your choices shape what happens.",
   "offer": "As you may or may not know, many choices lack a right or wrong answer. <split butt_txt=\"Say what?\" />The Giants have decided a great many things. Their decisions form our experience. <split butt_txt=\"Magical!\" /> Just between you and I, I don't think this is unique to the Giants alone. Would you like to try something new?",
   "completion": "Did you enjoy yourself, {pc_label}? I thought you could benefit from that experience. Talk to you later, and next time perhaps your decision will have a different outcome.",
   "requirements": [
@@ -200,7 +200,7 @@
     "type": "flag",
     "name": "leave",
     "num": 1,
-    "desc": "toggle flag leave",
+    "desc": "Stay until the autumn day ends",
     "route": "quest-instances"
    }
   ],
@@ -257,7 +257,7 @@
  "an_autumn_day_part2": {
   "classTsid": "an_autumn_day_part2",
   "title": "An Autumn Day",
-  "desc": "",
+  "desc": "Reminisce An Autumn Day again.",
   "offer": "Are you ready to reminisce An Autumn Day?",
   "completion": "Welcome back, {pc_label}. I hope you enjoyed yourself.",
   "requirements": [
@@ -266,7 +266,7 @@
     "type": "flag",
     "name": "leave",
     "num": 1,
-    "desc": "toggle flag leave",
+    "desc": "Stay until the autumn day ends",
     "route": "quest-instances"
    }
   ],
@@ -1717,7 +1717,7 @@
  "blue_and_white_part1": {
   "classTsid": "blue_and_white_part1",
   "title": "A Summer's Day",
-  "desc": "Blah blah, part 1",
+  "desc": "Visit a memory of a summer's day shared by all the Giants.",
   "offer": "Yes. Good. Here it is: there's a certain memory of a summer's day shared by all the Giants. <split butt_txt=\"Yes?\" />None of them remember what happened or even why they remember it... yet they do. <split butt_txt=\"Interesting\" />It is just an impression, a feeling. Maybe it is important, maybe it is not. <split butt_txt=\"OK\" />Would you like to go there now and see what you think?",
   "completion": "You see, {pc_label}? I thought you could benefit from that experience. No one knows what it means, so let your imagination go wild.",
   "requirements": [
@@ -1726,7 +1726,7 @@
     "type": "flag",
     "name": "leave",
     "num": 1,
-    "desc": "Toggle flag leave"
+    "desc": "Stay until the summer's day ends"
    }
   ],
   "rewards": {},
@@ -1789,7 +1789,7 @@
  "blue_and_white_part2": {
   "classTsid": "blue_and_white_part2",
   "title": "A Summer's Day",
-  "desc": "Blah blah, part 2",
+  "desc": "Visit the summer's day memory again.",
   "offer": "Are you ready to reminisce A Summer's Day?",
   "completion": "Welcome back, {pc_label}. I hope you enjoyed yourself.",
   "requirements": [
@@ -1798,7 +1798,7 @@
     "type": "flag",
     "name": "leave",
     "num": 1,
-    "desc": "Toggle flag leave"
+    "desc": "Stay until the summer's day ends"
    }
   ],
   "rewards": {},
@@ -2309,7 +2309,7 @@
     "name": "butlers_zombied",
     "num": 31,
     "classId": "bag_butler",
-    "desc": "Increment counter butlers_zombied to 31"
+    "desc": "Say \"zombie\" to 31 butlers in one game day"
    }
   ],
   "rewards": {
@@ -33169,7 +33169,7 @@
     "name": "grind_100_chunks_of_sparkly_in_neva_neva",
     "num": 1,
     "classId": "ore_grinder",
-    "desc": "Toggle flag grind_100_chunks_of_sparkly_in_neva_neva"
+    "desc": "Grind 100 chunks of sparkly while in Neva Neva"
    }
   ],
   "rewards": {
@@ -35797,7 +35797,7 @@
  "winter_walk": {
   "classTsid": "winter_walk",
   "title": "Winter Walk",
-  "desc": "",
+  "desc": "Walk through a cold, snow-covered memory and see what is special about its icicles.",
   "offer": "Feel that cool breeze? It's reminiscent of something … <split butt_txt=\"What?\" /> A cold, snow-covered place — crisp air and the quiet peace of each year's night. <split butt_txt=\"Tell me more!\" /> I believe there's something special about the icicles … but perhaps you would like to see it for yourself?",
   "completion": "Brrr! Did you really have to bring the chill back with you? Oh, I think you dropped this on your way back.",
   "requirements": [
@@ -35806,7 +35806,7 @@
     "type": "flag",
     "name": "leave",
     "num": 1,
-    "desc": "Toggle flag leave"
+    "desc": "Stay until the winter walk ends"
    }
   ],
   "rewards": {
@@ -35880,7 +35880,7 @@
  "winter_walk_part2": {
   "classTsid": "winter_walk_part2",
   "title": "Winter Walk",
-  "desc": "part 2",
+  "desc": "Take the winter walk again.",
   "offer": "Ready for another Winter Walk?",
   "completion": "Hope it was a breath of fresh air.",
   "requirements": [
@@ -35889,7 +35889,7 @@
     "type": "flag",
     "name": "leave",
     "num": 1,
-    "desc": "Toggle flag leave"
+    "desc": "Stay until the winter walk ends"
    }
   ],
   "rewards": {},

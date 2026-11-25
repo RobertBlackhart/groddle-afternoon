@@ -194,6 +194,35 @@ const REQUIREMENT_TEXT = {
   focusedmeditation_get_mood_or_energy: {
     r160: ['Focus your meditation to gain 24 mood or energy', 'Focus your meditation to gain 24 mood or energy in a single focus'],
   },
+  // #671: the quest editor's own placeholders ("Toggle flag <name>", "Increment counter <name> to <n>"),
+  // which Tiny Speck never replaced. The grind line takes Another Simple Sample's wording
+  // (sparkly_of_interest_4.js 32); the rest take the quest's desc, or what sets the flag: A Summer's Day
+  // and the Winter Walk set `leave` as the memory ends (blue_and_white_part1.js 53-60, winter_walk.js 65-73).
+  sparkly_of_interest_2: {
+    r496: ['Toggle flag grind_100_chunks_of_sparkly_in_neva_neva', 'Grind 100 chunks of sparkly while in Neva Neva'],
+  },
+  butler_zombies: {
+    r434: ['Increment counter butlers_zombied to 31', 'Say "zombie" to 31 butlers in one game day'],
+  },
+  blue_and_white_part1: { r363: ['Toggle flag leave', 'Stay until the summer\'s day ends'] },
+  blue_and_white_part2: { r364: ['Toggle flag leave', 'Stay until the summer\'s day ends'] },
+  winter_walk: { r512: ['Toggle flag leave', 'Stay until the winter walk ends'] },
+  winter_walk_part2: { r513: ['Toggle flag leave', 'Stay until the winter walk ends'] },
+  // an_autumn_day.js 66-76: the flag is set as the day's memory ends.
+  an_autumn_day: { r536: ['toggle flag leave', 'Stay until the autumn day ends'] },
+  an_autumn_day_part2: { r537: ['toggle flag leave', 'Stay until the autumn day ends'] },
+};
+
+// #671: a quest `desc` left as a placeholder ("Blah blah, part 1", "part 2", nothing) on the hidden
+// seasonal memories, which the encyclopedia shows. [exact source desc, words from the quest's offer]
+// (blue_and_white_part1.js 3, winter_walk.js 3, an_autumn_day.js 3); the build fails when the source changes.
+const QUEST_DESC = {
+  blue_and_white_part1: ['Blah blah, part 1', 'Visit a memory of a summer\'s day shared by all the Giants.'],
+  blue_and_white_part2: ['Blah blah, part 2', 'Visit the summer\'s day memory again.'],
+  winter_walk: ['', 'Walk through a cold, snow-covered memory and see what is special about its icicles.'],
+  winter_walk_part2: ['part 2', 'Take the winter walk again.'],
+  an_autumn_day: ['', 'Try something new on an autumn day, where your choices shape what happens.'],
+  an_autumn_day_part2: ['', 'Reminisce An Autumn Day again.'],
 };
 
 // Quest text that sends the player somewhere the archive puts nothing. Each row is a list of exact
@@ -468,6 +497,11 @@ for (const file of files) {
   }
   catalog[classTsid] = extractQuest(classTsid, ctx, buffs);
   if (REQUIREMENT_OVERRIDES[classTsid]) catalog[classTsid].requirements = REQUIREMENT_OVERRIDES[classTsid].map((r) => ({ ...r }));
+  if (QUEST_DESC[classTsid]) {
+    const [from, to] = QUEST_DESC[classTsid];
+    if (catalog[classTsid].desc !== from) throw new Error(`QUEST_DESC ${classTsid}: "${from}" is not its desc any more`);
+    catalog[classTsid].desc = to;
+  }
   for (const [from, to] of TEXT_OVERRIDES[classTsid] || []) {
     const def = catalog[classTsid];
     const key = ['desc', 'offer', 'completion'].find((k) => String(def[k] || '').includes(from));
