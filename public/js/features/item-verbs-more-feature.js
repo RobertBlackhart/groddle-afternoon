@@ -119,7 +119,7 @@ import {
 } from '../item-verbs-more.js?v=377f760a';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { forceMetabolic } from '../metabolics.js?v=48f784bf';
-import { standOnFeet } from '../sprite-feet.js?v=c775bc5d';
+import { standOnFeet } from '../sprite-feet.js?v=6358a697';
 
 export const ITEM_VERBS_MORE_FEATURE_ID = 'item-verbs-more';
 

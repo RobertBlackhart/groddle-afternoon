@@ -12,7 +12,7 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { DEAD_END_EXIT, DEAD_END_TEXT, deadEndExitSpot, floorAt, isDeadEndTsid, urReach } from '../public/js/dead-ends.js?v=8b015857';
-import { DEAD_END_EXIT_CLASS, deadEndActive, deadEndsFeature as de } from '../public/js/features/dead-ends-feature.js?v=03710d7d';
+import { DEAD_END_EXIT_CLASS, deadEndActive, deadEndsFeature as de } from '../public/js/features/dead-ends-feature.js?v=1a5e981f';
 import { loadStreetIndexObject } from '../public/js/street-loader.js?v=10376267';
 import { STRAY_FALLBACK_TSID, streetsReachingUr } from '../public/js/quest-instance.js?v=15090adc';
 import { ROOM_STREETS } from '../public/js/quest-rooms/catalog.js?v=10c8100d';

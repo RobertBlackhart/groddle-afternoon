@@ -170,7 +170,7 @@ describe('the dead do not race', () => {
   });
 
   it('a race_match that reaches a dead page is left at once (races-feature)', async () => {
-    const { racesFeature } = await import('../public/js/features/races-feature.js?v=6dad355b');
+    const { racesFeature } = await import('../public/js/features/races-feature.js?v=07f10d7d');
     const client = fakeClient(7);
     const toasts = [];
     const engine = {
@@ -262,7 +262,7 @@ describe('a Game of Crowns reload asks the server, and the dead stay out (crowns
   });
 
   it('solo still gives a ticket back on a street change', async () => {
-    const { crownsFeature } = await import('../public/js/features/crowns-feature.js?v=c7a035d4');
+    const { crownsFeature } = await import('../public/js/features/crowns-feature.js?v=8279217d');
     const engine = { mode: 'solo', inv: {}, query: () => null, toast() {}, updateHud() {}, param: () => null, instanceHold: null, setData() {} };
     crownsFeature.restore({ pendingTicket: CROWNS_TICKET }, engine);
     crownsFeature.onStreetEnter({ tsid: 'GA5' }, engine);

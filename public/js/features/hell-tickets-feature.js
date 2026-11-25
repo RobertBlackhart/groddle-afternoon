@@ -64,8 +64,8 @@ import {
   remoteGraveVisit,
   ticketDue,
 } from '../hell-tickets.js?v=d5074b41';
-import { hellFeature } from './hell-feature.js?v=d993ab50';
-import { doorsFeature } from './doors-feature.js?v=508076a0';
+import { hellFeature } from './hell-feature.js?v=74604dfc';
+import { doorsFeature } from './doors-feature.js?v=4de9bab5';
 
 export const HELL_TICKETS_FEATURE_ID = 'hell-tickets';
 

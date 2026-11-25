@@ -431,7 +431,7 @@ import {
   buildParadiseCourseArt,
   paradiseCoursePreloadUrls,
   paradiseCourseRuntime,
-} from './js/paradise-course-runtime.js?v=3e1604af';
+} from './js/paradise-course-runtime.js?v=ea5ad051';
 import { installWorldText, loadWorldFont, NAMEPLATE_STYLE, WORLD_FONT_FAMILY, worldCanvasFont, worldLabelStyle } from './js/world-text.js?v=6b49f88c';
 import {
   createAchievementState,
@@ -738,7 +738,7 @@ import {
   ensureStreetIndex,
   resolveIndexTsid,
 } from './js/street-loader.js?v=10376267';
-import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=209cd58d';
+import { showDraftBanner, startDraftPlay } from './js/builder/draft-play.js?v=2881af60';
 import {
   ladderTopDeck,
   groundBeneath,
@@ -770,7 +770,7 @@ import {
   setSignpostHover,
   setSignpostKeys,
   signpostBoardAt,
-} from './js/street-render.js?v=5fbae515';
+} from './js/street-render.js?v=2f6413a4';
 import {
   GAME_DAY_MS,
   GAME_EPOCH_MS,
@@ -896,7 +896,7 @@ import { hellBuffDesc, isInHell } from './js/hell.js?v=d77f15ef';
 import { climbBobY, ladderAnimState, ladderSwap } from './js/ladder-anim.js?v=a8b327a0';
 import { VECTOR_AVATAR } from './js/avatar-vector-sheets.js?v=ad801376';
 import { PLACEHOLDER_SHEETS, isPlaceholderPack, ownPackFor, washPlaceholderPixels, whenOwnLookReady } from './js/avatar-placeholder.js?v=ae5c39e4';
-import { createNpcGlitchKit } from './js/npc-glitch.js?v=329a50e9';
+import { createNpcGlitchKit } from './js/npc-glitch.js?v=7d79973b';
 import { bakeIdleSheet, bakeLook, bakeSheet, loadCatalog as loadAvatarCatalog, paintPreview as paintVectorPreview, prepareIdle, prepareLook } from './js/avatar-compositor.js?v=dfe4b032';
 import { LATE_SHEETS, anchorSheetFrames, createRetireQueue, ensureAnimSheets, ensureLateSheet, fillPackAnims, packComplete, redrawFrame, showsStandIn } from './js/avatar-pack.js?v=65324246';
 import { catalogItem, colourwaySwatches, lookKey, randomVectorFields, resolveLook, swatchBackground } from './js/avatar-looks.js?v=5a28384d';
@@ -988,7 +988,7 @@ import {
   learnFasterOpen,
   learnFasterSummary,
 } from './js/shrines.js?v=037613f7';
-import { shrineSheet, shrineVariantFor } from './js/shrine-variants.js?v=0b8ba768';
+import { shrineSheet, shrineVariantFor } from './js/shrine-variants.js?v=832a5e61';
 import { giantDisplayName } from './js/giant-names.js?v=0e295891';
 import { shrinePowderOptions, shrinePowderAchievementCounters } from './js/powders.js?v=316a1f66';
 import {
@@ -1091,7 +1091,7 @@ import {
 import { CHICKEN_PAUSE, chickenPauseRoll, flierAt, flierSeed, flightFloorFor, followPath, PATH_STEP } from './js/street-creatures.js?v=63e7da49';
 import { chickenPose, chickenIdleSheetsAsked } from './js/chicken-idle-art.js?v=e320e159';
 import { chickenWaitPose } from './js/chicken-idles.js?v=eef0279b';
-import { itemOverlayStats } from './js/item-overlay.js?v=6d940627';
+import { itemOverlayStats } from './js/item-overlay.js?v=b0086ba6';
 import { isCrowdSad } from './js/animal-crowding.js?v=64dee3e0';
 import { createSoundBoard, DEFAULT_SFX_VOLUME, watchButtonClicks, watchPanelSounds } from './js/sound-board.js?v=f41980b8';
 import {
@@ -1181,7 +1181,7 @@ import { mountStartStreet } from './js/start-street.js?v=7d8ce49c'; // #349: the
 import { arrangeMapCards, fitMapExtras } from './js/map-extras.js?v=16e261b1'; // the Map's Shortcuts
 // The interface skin (js/classic/ui-mode.js) sets <html data-ui> as it loads: before main(), so before the boot cover lifts.
 import { installInterfaceSettings } from './js/classic/classic-prefs.js?v=7b610050';
-import { standOnFeet, anchorBottomCentre } from './js/sprite-feet.js?v=c775bc5d';
+import { standOnFeet, anchorBottomCentre } from './js/sprite-feet.js?v=6358a697';
 import { markLeaving, packPicks, takeCopies } from './js/copy-picks.js?v=b368fd49';
 import { holdKeepsBusy } from './js/instance-holds.js?v=ff3a63a3';
 import { createLoadTurns, createStreetMove, travelTurn } from './js/street-move.js?v=1c4431bf';

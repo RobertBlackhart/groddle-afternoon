@@ -17,7 +17,7 @@ import { fileURLToPath } from 'node:url';
 import { PACK_COPY, roomFor } from '../public/js/pack-slots.js?v=38e4aea5';
 import { getVerbsFor } from '../public/content.js?v=0810a9a2';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=5ef6adb5';
-import { itemVerbsMoreFeature, disperseGroundElements } from '../public/js/features/item-verbs-more-feature.js?v=0019d87c';
+import { itemVerbsMoreFeature, disperseGroundElements } from '../public/js/features/item-verbs-more-feature.js?v=62a38d82';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const GS = join(root, '../glitch-GameServerJS');

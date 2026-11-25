@@ -64,7 +64,7 @@ import {
   leadPath,
   toScreen,
 } from '../gwendolyn-room-23.js?v=918c0f6b';
-import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=c775bc5d';
+import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=6358a697';
 
 export const GWENDOLYN_ROOM_23_FEATURE_ID = 'gwendolyn-room-23';
 const CHECK_MS = 120;

@@ -128,12 +128,12 @@ import {
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { copyChargesLeft, copyFromLedger, keepsCopies, spendCopyCharge, verbCopy } from '../copy-charges.js?v=ab07e909';
 import { migrateClassValue } from '../tools.js?v=4156bba8';
-import { playPotionBottle } from '../potion-bottle-fx.js?v=5ed8cf8a';
+import { playPotionBottle } from '../potion-bottle-fx.js?v=0808be52';
 import { feedZone, placeRookBadge, unionBox } from '../rook-badge-place.js?v=e2bcbbaa';
 import { ROOK_STARS, stepStunStars, stunStarsState } from '../rook-stun-stars.js?v=62d5c3cb';
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=b8e38103';
 import { publicStreet } from '../shared-street.js?v=dce5694b';
-import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=c775bc5d';
+import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=6358a697';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 
 export const ROOK_FEATURE_ID = 'rook-attack';

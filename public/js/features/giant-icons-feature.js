@@ -75,7 +75,7 @@ import { CONVERSATION_RULES, adoptLegacyTalks, conversationRecord, hasCompleted,
 import { TELLERS } from '../conversations-data.js?v=f11b7e02';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { publicStreet } from '../shared-street.js?v=dce5694b';
-import { standOnFeet } from '../sprite-feet.js?v=c775bc5d';
+import { standOnFeet } from '../sprite-feet.js?v=6358a697';
 
 export const ICONS_FEATURE_ID = 'giant-icons';
 const WORLD_ART = (iconClass) => `assets/sprites/giant-icons/${iconClass}.webp`;

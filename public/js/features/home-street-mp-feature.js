@@ -62,7 +62,7 @@ import { signpostX as fixtureSignpostX } from '../home-street-fixtures.js?v=4a56
 import { PROTO_DEPLETED_ART } from '../home-proto-art.js?v=9309e9f3';
 import { NOTE_POLE_CONTAINERS, NOTE_POLE_PARTS, NOTE_POLE_SIGN_Y } from '../note-pole-art.js?v=fbda2f8a';
 import { textureFromUrl } from '../textures.js?v=b8e38103';
-import { addSignBoard, signArmWidth, signLabel } from '../street-render.js?v=5fbae515';
+import { addSignBoard, signArmWidth, signLabel } from '../street-render.js?v=2f6413a4';
 import { openNotePicker, openNoteView } from '../note-view.js?v=c512b345';
 import { homeStreetName, possessive, readVisitScene } from '../neighbours-mp.js?v=d7a3f0f2';
 import { BACK_YARD_GROUND_Y, SIGN_PROMPT_LIFT, STREET_GROUND_Y, homesFeature, visitorHomeState } from './homes-feature.js?v=cb7a6204';
@@ -108,7 +108,7 @@ import {
   signpostArms,
   signpostCandidates,
 } from '../home-street-mp.js?v=8b7fa493';
-import { standOnFeet } from '../sprite-feet.js?v=c775bc5d';
+import { standOnFeet } from '../sprite-feet.js?v=6358a697';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 
 export { HOME_STREET_MP_ID };

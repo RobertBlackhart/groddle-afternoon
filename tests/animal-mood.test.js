@@ -35,7 +35,7 @@ import { advanceYard, capturePiggy, captureVerbState, feedPiggyStack, normalizeH
 import { getVerbsFor, runVerb } from '../public/content.js?v=0810a9a2';
 import { animalMoodFeature, describeAnimalPlace } from '../public/js/features/animal-mood-feature.js?v=91dd2609';
 import { remakeStatus } from '../public/js/imagination-remake.js?v=c37ad887';
-import { animalHusbandryFeature, deathRollFor, normalizeHusbandrySlot } from '../public/js/features/animal-husbandry-feature.js?v=d8dad0e0';
+import { animalHusbandryFeature, deathRollFor, normalizeHusbandrySlot } from '../public/js/features/animal-husbandry-feature.js?v=639d2a8c';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const GSJS = join(homedir(), 'Documents/glitch-audit/glitch-GameServerJS/items');

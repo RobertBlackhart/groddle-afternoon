@@ -12,7 +12,7 @@
 
 import { textureFromUrl } from '../textures.js?v=b8e38103';
 import { touchesQuoin } from './kit.js?v=a1480706';
-import { anchorBottomCentre } from '../sprite-feet.js?v=c775bc5d';
+import { anchorBottomCentre } from '../sprite-feet.js?v=6358a697';
 
 export const JUMP_RISE = 100;
 export const JUMP_GAP = 150;

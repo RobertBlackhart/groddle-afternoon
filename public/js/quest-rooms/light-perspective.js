@@ -50,7 +50,7 @@
  * EXIT sign; the sign texts already matched.
  */
 
-import { BODY_H, JUMP_GAP, JUMP_RISE, pushOutOfSolids, spawnQuoins, takeQuoins } from './puzzle-kit.js?v=fa135916';
+import { BODY_H, JUMP_GAP, JUMP_RISE, pushOutOfSolids, spawnQuoins, takeQuoins } from './puzzle-kit.js?v=cd390984';
 import { runOutcome } from '../autoplay-log.js?v=55bb4823';
 import { bulbSprite as rigBulb, dishSprite, knobSprite, ledgeStrip, mixHex, poleSprite, shadeSprite } from './light-rig-art.js?v=1f92771e';
 

@@ -85,7 +85,7 @@ import {
 import { frameTexture, sourceFromUrl, textureFromUrl } from '../textures.js?v=b8e38103';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
 import { findRoute, loadStreetGraph, openRoads, roadsFor, streetGraphLoaded } from '../street-graph.js?v=d767f3a2';
-import { standOnFeet } from '../sprite-feet.js?v=c775bc5d';
+import { standOnFeet } from '../sprite-feet.js?v=6358a697';
 
 export const SMUGGLING_FEATURE_ID = 'smuggling';
 const ART = 'assets/sprites/smuggling/';

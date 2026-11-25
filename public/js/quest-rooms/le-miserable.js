@@ -34,7 +34,7 @@
  */
 
 import { onLoaded } from '../textures.js?v=b8e38103';
-import { standOnFeet } from '../sprite-feet.js?v=c775bc5d';
+import { standOnFeet } from '../sprite-feet.js?v=6358a697';
 
 export const STREET = 'GIFM4BD43383DKV';
 const BOUNDS = { l: -2000, t: -1000 };
