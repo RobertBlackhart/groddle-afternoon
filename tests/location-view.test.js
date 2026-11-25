@@ -108,7 +108,9 @@ test('game.js sizes the canvas from the rule, live', () => {
   assert.match(game, /sceneWidth: sceneViewWidthCap\(bgLayer, WORLD_W\)/);
   assert.match(game, /sceneHeight = sceneViewCap\(bgLayer\)/);
   assert.match(game, /if \(bgLayer !== viewSceneLayer\) syncLocationViewHeight\(\);/);
-  assert.match(game, /yCamOffsetAnchor\(Number\.isFinite\(offset\) \? offset : 150, LOCATION_VIEW_H\)/);
+  // #681: streetCameraAnchor takes the view it asks for, LOCATION_VIEW_H by default.
+  assert.match(game, /function streetCameraAnchor\(\{ viewH = LOCATION_VIEW_H, scale = STAGE_SCALE \} = \{\}\)/);
+  assert.match(game, /yCamOffsetAnchor\(Number\.isFinite\(offset\) \? offset : 150, viewH\)/);
   // The renderer follows both axes, and its density follows the scale.
   assert.match(game, /app\.renderer\.resize\(VIEW_W, VIEW_H, resolution\)/);
   // Authored scenes keep the 540 px canvas they were drawn for.

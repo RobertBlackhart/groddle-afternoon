@@ -836,7 +836,7 @@ import { easeCameraAxis } from './js/camera-feel.js?v=e668afc5';
 import { renderResolution, resolutionCap, RESOLUTION_STEP, phoneZoomResolution } from './js/render-density.js?v=74c6f5f9';
 // g458: low energy and mood turn amber and red, and a click offers something from the pack.
 import { makingNeeds, vitalMenuEmpty, vitalMenuHeading, vitalSnacks } from './js/vitals.js?v=85a51302';
-import { DEFAULT_VP_H, LOCATION_VIEW_W, VIEW_CEIL_H, stageFor, sceneViewCap, sceneViewWidthCap, zoomMovesStage, phoneZoomSpan, phoneCameraAnchor, phoneFeetWorldHeight, phoneGroundWorldHeight, reachableFloorY, sceneBottomLine, sceneGroundLine, stageBandColour, stageEdgeColour, stageEdgeSampler, stageRoomBeside } from './js/location-view.js?v=febc0a91';
+import { DEFAULT_VP_H, LOCATION_VIEW_W, VIEW_CEIL_H, stageFor, sceneViewCap, sceneViewWidthCap, zoomMovesStage, phoneZoomSpan, phoneCameraAnchor, phoneFeetWorldHeight, phoneGroundWorldHeight, phoneSceneDrop, reachableFloorY, sceneBottomLine, sceneGroundLine, stageBandColour, stageEdgeColour, stageEdgeSampler, stageRoomBeside } from './js/location-view.js?v=febc0a91';
 import {
   levelInfoForXp,
   reconcilePlayerProgression,
@@ -2331,7 +2331,17 @@ function phoneGroundLine() {
 
 function measureStage() {
   // ZOOM (js/world-zoom.js): Wide (0) to Original (1), this device's choice.
-  return stageFor({ ...stageArgs(), zoom: worldZoom() });
+  const args = { ...stageArgs(), zoom: worldZoom() };
+  const stage = stageFor(args);
+  // #681: upright on a phone, a short scene's canvas grows up by the camera's drop (js/location-view.js phoneSceneDrop).
+  if (!stage.phone || stage.landscape || !bgLayer) return stage;
+  const sceneDrop = phoneSceneDrop({
+    stage,
+    height: args.height,
+    sceneBottom: sceneBottomLine(bgLayer),
+    cameraWorldH: activeCameraWorldHeight(streetCameraAnchor({ viewH: stage.viewH, scale: stage.scale }), { viewH: stage.viewH, scale: stage.scale }),
+  });
+  return sceneDrop > 0 ? stageFor({ ...args, sceneDrop }) : stage;
 }
 
 /** PHONE ZOOM (js/world-zoom.js phoneZoom): the close-up level the phone stage draws at, upright or sideways. */
@@ -2742,12 +2752,12 @@ function deepestReachableFloorY() {
 }
 
 /** The street's own y_cam_offset (G*.xml physics; default 150) as a viewport anchor. */
-function streetCameraAnchor() {
+function streetCameraAnchor({ viewH = LOCATION_VIEW_H, scale = STAGE_SCALE } = {}) {
   const offset = Number(currentStreet?.physics?.setting?.y_cam_offset);
-  const anchor = yCamOffsetAnchor(Number.isFinite(offset) ? offset : 150, LOCATION_VIEW_H);
+  const anchor = yCamOffsetAnchor(Number.isFinite(offset) ? offset : 150, viewH);
   // G673: on a phone, that share of the room over the real pack row (js/location-view.js phoneCameraAnchor).
   if (!TOUCH_PHONE || !modernUi() || PINNED_VIEW_H > 0) return anchor;
-  return phoneCameraAnchor({ anchor, viewH: LOCATION_VIEW_H, packReserve: PACK_VIEW_RESERVE, packCoverCss: cameraPackCoverCss, scale: STAGE_SCALE, clearance: MIN_GROUND_CLEARANCE, floorCoverCss: cameraFloorCoverCss });
+  return phoneCameraAnchor({ anchor, viewH, packReserve: PACK_VIEW_RESERVE, packCoverCss: cameraPackCoverCss, scale, clearance: MIN_GROUND_CLEARANCE, floorCoverCss: cameraFloorCoverCss });
 }
 
 /** G673: CSS px of the canvas's bottom the pack row covers (syncCameraSafeArea; phones and, G1157, computers); NaN when not shown. */
@@ -2813,20 +2823,21 @@ function syncCameraFloorCover(c = app?.canvas?.isConnected ? app.canvas.getBound
   cameraFloorCoverCss = Number.isFinite(floor) && c?.height > 0 ? Math.max(0, c.bottom - floor) : NaN;
 }
 
-function activeCameraWorldHeight(anchorRatio = 0.75) {
+// #681: `viewH` and `scale` ask for a stage not yet taken (measureStage's phoneSceneDrop).
+function activeCameraWorldHeight(anchorRatio = 0.75, { viewH = LOCATION_VIEW_H, scale = STAGE_SCALE } = {}) {
   const deepest = deepestWalkableGroundY();
-  const world = cameraWorldHeightForGround(bgLayer?.worldH || VIEW_H, deepest, LOCATION_VIEW_H, anchorRatio);
+  const world = cameraWorldHeightForGround(bgLayer?.worldH || VIEW_H, deepest, viewH, anchorRatio);
   // GROUND LINE (G1146, report #617): a phone's canvas stops at the street's ground art, the feet kept over the pack row.
   // SCENE BOTTOM (G1157): a computer's at the street's or room's bottom (or ground line), by the same rule.
   const phoneLine = phoneGroundLine();
   const line = phoneLine > 0 ? phoneLine : computerGroundBottom();
   const floor = phoneLine > 0 ? deepest : deepestReachableFloorY();
   const ground = line > 0
-    ? phoneGroundWorldHeight({ worldHeight: world, groundLine: line, floorY: floor, packReserve: PACK_VIEW_RESERVE, packCoverCss: cameraPackCoverCss, scale: STAGE_SCALE, clearance: MIN_GROUND_CLEARANCE })
+    ? phoneGroundWorldHeight({ worldHeight: world, groundLine: line, floorY: floor, packReserve: PACK_VIEW_RESERVE, packCoverCss: cameraPackCoverCss, scale, clearance: MIN_GROUND_CLEARANCE })
     : world;
   // G1229 (#654): on the phone layout the feet on the deepest floor stay over the controls and the pack
   // row (the region model's free street area), past the street's bottom where both cannot hold.
-  return phoneFeetWorldHeight({ worldHeight: ground, floorY: deepest, packReserve: PACK_VIEW_RESERVE, floorCoverCss: cameraFloorCoverCss, scale: STAGE_SCALE, clearance: MIN_GROUND_CLEARANCE });
+  return phoneFeetWorldHeight({ worldHeight: ground, floorY: deepest, packReserve: PACK_VIEW_RESERVE, floorCoverCss: cameraFloorCoverCss, scale, clearance: MIN_GROUND_CLEARANCE });
 }
 
 /**

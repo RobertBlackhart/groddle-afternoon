@@ -44,7 +44,7 @@ describe('G673: a zoomed-in phone frames the avatar like the desktop camera', ()
     assert.equal(1000 - cameraTargetY(1000, 3000, 300, 0.9), 270);
   });
   it('game.js feeds it from the measured pack row, on phones in Modern only', () => {
-    assert.match(game, /if \(!TOUCH_PHONE \|\| !modernUi\(\) \|\| PINNED_VIEW_H > 0\) return anchor;\n\s*return phoneCameraAnchor\(\{ anchor, viewH: LOCATION_VIEW_H, packReserve: PACK_VIEW_RESERVE, packCoverCss: cameraPackCoverCss, scale: STAGE_SCALE/);
+    assert.match(game, /if \(!TOUCH_PHONE \|\| !modernUi\(\) \|\| PINNED_VIEW_H > 0\) return anchor;\n\s*return phoneCameraAnchor\(\{ anchor, viewH, packReserve: PACK_VIEW_RESERVE, packCoverCss: cameraPackCoverCss, scale/);
     assert.match(game, /function syncCameraSafeArea\(\) \{\n\s*syncCameraPackCover\(\);/);
   });
 });

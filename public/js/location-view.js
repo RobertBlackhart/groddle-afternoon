@@ -272,12 +272,13 @@ export function stageFor({
   groundFit,
   topBand,
   minViewW,
+  sceneDrop,
 } = {}) {
   const W = finite(width);
   const H = finite(height);
   const pack = finite(packReserve, MIN_PACK_HEIGHT);
   const pinned = finite(pinnedHeight);
-  if (phone && !(pinned > 0) && W > 0 && H > W) return phoneStage({ width: W, height: H, packReserve: pack, sceneWidth, sceneHeight, closeup, groundLine, topBand, minViewW });
+  if (phone && !(pinned > 0) && W > 0 && H > W) return phoneStage({ width: W, height: H, packReserve: pack, sceneWidth, sceneHeight, closeup, groundLine, topBand, minViewW, sceneDrop });
   if (phone && !(pinned > 0) && W > 0 && H > 0) return landscapePhoneStage({ width: W, height: H, packReserve: pack, sceneWidth, sceneHeight, zoom, closeup, fitViewH });
   return computerStage({ width: W, height: H, packReserve: pack, sceneWidth, sceneHeight, pinnedHeight: pinned, zoom, borders: sceneBorders, fitViewH, groundFit });
 }
@@ -538,7 +539,7 @@ export function stageEdgeSampler({ move = STAGE_EDGE_MOVE, gapMs = STAGE_EDGE_GA
  * house and its yard, a Tower floor: PHONE_HOME_MIN_VIEW_W), so they reach up to the strip; it never
  * raises it. What band is left over a short scene shows the scene carried on up (stageBandColour).
  */
-export function phoneStage({ width, height, packReserve = MIN_PACK_HEIGHT, sceneWidth, sceneHeight, closeup = 0, groundLine, topBand = 0, minViewW } = {}) {
+export function phoneStage({ width, height, packReserve = MIN_PACK_HEIGHT, sceneWidth, sceneHeight, closeup = 0, groundLine, topBand = 0, minViewW, sceneDrop = 0 } = {}) {
   const W = finite(width);
   const H = finite(height);
   const pack = finite(packReserve, MIN_PACK_HEIGHT);
@@ -564,9 +565,32 @@ export function phoneStage({ width, height, packReserve = MIN_PACK_HEIGHT, scene
   if (c > 0 && top > scale) scale *= (top / scale) ** (c * PHONE_CLOSEST_SHARE);
   const viewW = Math.round(W / scale);
   const room = Math.floor(H / scale + 1e-6) - pack;
-  const viewH = Math.max(VIEW_FLOOR_H, Math.min(room, fitH));
+  // #681: a short scene's canvas grows up by the camera's drop (phoneSceneDrop), at the same scale.
+  const drop = Math.max(0, Math.ceil(finite(sceneDrop, 0)));
+  const viewH = Math.max(VIEW_FLOOR_H, Math.min(room, fitH + drop));
   const held = viewH < room;
   return { scale, viewW, viewH, canvasH: viewH + pack, cssWidth: W, cssHeight: held ? (viewH + pack) * scale : H, pinned: false, phone: true };
+}
+
+/**
+ * PURE (#681, Austin's ruling 2026-11-25): how far (world px) an upright phone's held canvas grows up
+ * over a short scene. There the camera drops below the scene's bottom so the feet on its deepest floor
+ * stay over the stick, Act and Jump (game.js activeCameraWorldHeight: phoneFeetWorldHeight), and the
+ * canvas, capped at the scene's height, then started part way down the scene: the top of the Greedy
+ * Street Spirit's room sat under the band. Grown by that drop, the canvas shows the scene whole from
+ * its top and the band fills only above it. `stage` is phoneStage's (not sideways, not pinned, held
+ * under the window's `height`), `sceneBottom` the scene's bottom or ground line (sceneBottomLine), and
+ * `cameraWorldH` the camera's world height for that stage. A scene taller than the canvas (a tall or
+ * held street the camera scrolls) never grows: 0.
+ */
+export function phoneSceneDrop({ stage, height, sceneBottom, cameraWorldH } = {}) {
+  if (!stage?.phone || stage.landscape || stage.pinned) return 0;
+  const H = finite(height);
+  if (!(H > 0) || !(stage.cssHeight < H - 0.5)) return 0;
+  const bottom = finite(sceneBottom);
+  if (!(bottom > 0) || bottom > finite(stage.canvasH) + 1) return 0;
+  const drop = finite(cameraWorldH) - finite(stage.viewH);
+  return drop > 0.5 ? Math.ceil(drop) : 0;
 }
 
 /**
