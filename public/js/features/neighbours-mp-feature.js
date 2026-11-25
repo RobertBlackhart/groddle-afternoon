@@ -180,9 +180,9 @@ import {
   visitSceneTsid,
 } from '../neighbours-mp.js?v=d7a3f0f2';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { butlerCarries, registerButlerDrop } from '../butler-drop.js?v=24ed5859';
+import { butlerCarries, registerButlerDrop } from '../butler-drop.js?v=7b1e5ad7';
 import { takeDragged } from '../drag-stack.js?v=4c7d198d';
-import { worldPoint } from './world-drop-feature.js?v=ff109b67';
+import { worldPoint } from './world-drop-feature.js?v=7d09823a';
 import { clampToExpansion, elevatorStops, floorJobFor, TOWER_JOBS } from '../home-tower.js?v=a7fc0cce';
 
 export const NEIGHBOURS_MP_FEATURE_ID = 'neighbours-mp';

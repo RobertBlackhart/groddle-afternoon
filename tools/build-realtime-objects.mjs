@@ -108,9 +108,9 @@ import { BATTERFLY_GROUP, batterflyPlacementGroups } from '../public/js/features
 import { hasRaceDispenser } from '../public/js/races.js?v=ab22a079';
 import { setWildlifeCatalog, wildlifeFor } from '../public/js/wildlife.js?v=670c3a7f';
 import { boardSpotRow, furnitureFor, furniturePlacementGroups, stoneSpotRow } from '../public/js/street-furniture.js?v=071203fc';
-import { INCUBATION } from '../public/js/animal-husbandry.js?v=83779ca2';
-import { SHARED_NODE_CLASSES, freshTreePlan } from '../public/js/street-objects.js?v=ab6e252a';
-import { PIGGY_TRIP } from '../public/js/street-creatures.js?v=8574c2a4';
+import { INCUBATION } from '../public/js/animal-husbandry.js?v=886ea707';
+import { SHARED_NODE_CLASSES, freshTreePlan } from '../public/js/street-objects.js?v=de342bbd';
+import { PIGGY_TRIP } from '../public/js/street-creatures.js?v=63e7da49';
 import { CRAB_PLACEMENT_KEY, CRAB_WALK, crabPlacementGroups } from '../public/js/crabs.js?v=5f0b8099';
 import { KITTY_PET } from '../public/js/heli-kitties.js?v=e4af4096';
 import { FIRE_DRAGON_PLACEMENT_KEY, FIRE_DRAGON_WALK, fireDragonPlacementGroups } from '../public/js/fire-dragon.js?v=b7f3d751';
