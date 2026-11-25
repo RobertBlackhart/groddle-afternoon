@@ -291,6 +291,23 @@ describe('the Feat feature in multiplayer (features/solo-feats-feature.js)', () 
     assert.equal(goalLine(runFromServer({ feat: 'animal_love', total: 1800, ...g }, 0)), 'Minimum goal met! 1,700 more to meet the bonus goal.');
   });
 
+  it('#683: the once-a-second progress moves your place as others pass you', () => {
+    const client = fakeClient();
+    const engine = mpEngine(client);
+    soloFeatsFeature.init(engine);
+    soloFeatsFeature.restore({}, engine);
+    soloFeatsFeature.onStreetEnter({ tsid: engine.streetTsid }, engine);
+    const g = mpGoalsFor('animal_love', 35);
+    client.deliver({ t: 'feat_state', now: Date.now(), run: 5348, feat: 'animal_love', start: Date.now() - 1000, end: Date.now() + RUN_MS, total: 40, ...g, basis: 35, tier: 0, count: 3, mine: 12, place: 1, top: [] });
+    assert.equal(engine.calls.data.mpFeat, 'animal_love:40/1750:12:1');
+    // Two others pass: the server's progress says this player is third now.
+    client.deliver({ t: 'feat_progress', run: 5348, feat: 'animal_love', total: 90, tier: 0, count: 3, top: [], mine: 12, place: 3 });
+    assert.equal(engine.calls.data.mpFeat, 'animal_love:90/1750:12:3');
+    // An older server's progress without them keeps the last place.
+    client.deliver({ t: 'feat_progress', run: 5348, feat: 'animal_love', total: 95, tier: 0, count: 3, top: [] });
+    assert.equal(engine.calls.data.mpFeat, 'animal_love:95/1750:12:3');
+  });
+
   it('applies the first contribution\'s badges and the reward once, then acks', async () => {
     const client = fakeClient();
     const engine = mpEngine(client);

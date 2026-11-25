@@ -775,7 +775,10 @@ function createMp(engine, client) {
   });
   client.on('msg:feat_progress', (msg) => {
     if (!s.run || Number(msg.run) !== s.run.run || msg.feat !== s.run.feat) return;
-    const next = runFromServer({ ...msg, start: 0, end: 0, goal: s.run.goal, bonus: s.run.bonus, super: s.run.super, mine: s.run.mine, place: s.run.place }, offset);
+    // #683: the server tells each player their own amount and place with it (feats.go progressToEach), so a
+    // place moves as others pass you; an older server's progress without them keeps the last ones.
+    const own = 'place' in msg;
+    const next = runFromServer({ ...msg, start: 0, end: 0, goal: s.run.goal, bonus: s.run.bonus, super: s.run.super, mine: own ? msg.mine : s.run.mine, place: own ? msg.place : s.run.place }, offset);
     s.run = { ...next, start: s.run.start, end: s.run.end };
     seen('feat_progress');
     refresh();
