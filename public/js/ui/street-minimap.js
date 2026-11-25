@@ -219,6 +219,36 @@ export function signpostMarks(street) {
   return out;
 }
 
+/** A door's drawn box ({ w, h }, world px) when the street gives one, for besideArt. */
+function artSize(door) {
+  const w = Number(door?.w);
+  const h = Number(door?.h);
+  return w > 0 && h > 0 ? { w, h } : {};
+}
+
+/**
+ * PURE (G1237): the world point a door or station mark `mw` map px wide stands on, beside its door's
+ * art rather than on it (the dino on Teobocci Shasha was hidden under its button on the phone map):
+ * its foot on the door's floor, just past the art's right edge, or its left one where the map ends
+ * first. A mark with no art box (`w`) stands on the door, as a signpost's does.
+ */
+export function besideArt(geom, mark, mw) {
+  const x = Number(mark?.x);
+  const y = Number(mark?.y);
+  const w = Number(mark?.w);
+  if (!(w > 0) || !geom) return { x, y };
+  const p = (x / geom.W) * geom.w;
+  const half = ((w / geom.W) * geom.w) / 2;
+  const gap = Math.max(1, Math.round(geom.u));
+  const right = p + half + gap + mw / 2;
+  const left = p - half - gap - mw / 2;
+  const fitsRight = right + mw / 2 <= geom.w;
+  const fitsLeft = left - mw / 2 >= 0;
+  // No room either side (a door wider than the map): the right side, kept on the map.
+  const mx = fitsRight ? right : fitsLeft ? left : Math.min(right, geom.w - mw / 2);
+  return { x: (mx / geom.w) * geom.W, y };
+}
+
 /**
  * PURE (#463, the remake's own: Glitch's minimap showed only signposts, MiniMapView.as
  * maybeAddSignpost): the street's subway entrances, as marks like the signposts'. Doors are in
@@ -232,7 +262,7 @@ export function stationMarks(street) {
     const x = Number(door.x);
     const y = Number(door.y);
     if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
-    out.push({ kind: 'station', id: `station:${door.id || out.length}`, x, y, tip: String(door.subwayStation) });
+    out.push({ kind: 'station', id: `station:${door.id || out.length}`, x, y, tip: String(door.subwayStation), ...artSize(door) });
   }
   return out;
 }
@@ -253,7 +283,7 @@ export function doorMarks(street) {
     const x = Number(door.x);
     const y = Number(door.y);
     if (!Number.isFinite(x) || !Number.isFinite(y)) continue;
-    out.push({ kind: 'door', id: `door:${door.id || out.length}`, x, y, tip: tip || null });
+    out.push({ kind: 'door', id: `door:${door.id || out.length}`, x, y, tip: tip || null, ...artSize(door) });
   }
   return out;
 }
@@ -856,8 +886,12 @@ export function createStreetMinimap(doc, host, opts = {}) {
     const sw = SIGNPOST_MARK.w * geom.u;
     const sh = SIGNPOST_MARK.h * geom.u;
     for (const s of signs.values()) {
-      if (s.mark.kind === 'station' || s.mark.kind === 'door') placeEl(s.el, s.mark.x, s.mark.y, STATION_MARK.w * geom.u, STATION_MARK.h * geom.u);
-      else placeEl(s.el, s.mark.x, s.mark.y, sw, sh);
+      if (s.mark.kind === 'station' || s.mark.kind === 'door') {
+        // G1237: beside the door's art, so the button never hides the dino or the entrance.
+        const mw = STATION_MARK.w * geom.u;
+        const at = besideArt(geom, s.mark, mw);
+        placeEl(s.el, at.x, at.y, mw, STATION_MARK.h * geom.u);
+      } else placeEl(s.el, s.mark.x, s.mark.y, sw, sh);
     }
     for (const d of dots.values()) {
       const size = dotLook(d.mark).size * geom.u;
