@@ -46,8 +46,8 @@ import {
   spiritCell,
   spiritCryBox,
   spiritCrySheet,
-} from '../public/js/street-spirits.js?v=52979ade';
-import { spiritLonelinessFeature } from '../public/js/features/spirit-loneliness-feature.js?v=cba3ab3c';
+} from '../public/js/street-spirits.js?v=23cdf0ee';
+import { spiritLonelinessFeature } from '../public/js/features/spirit-loneliness-feature.js?v=ffed4be4';
 import { ROUTE_SOURCES } from '../public/js/map-routes.js?v=52140ba2';
 import { setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=ff90efe4';
 import { applyStreetIndex } from '../public/js/street-loader.js?v=10376267';
@@ -336,7 +336,21 @@ describe('art', () => {
         const size = pngSize(join(oga, art.dir, cryFile));
         assert.equal(size.w % box.cell.w, 0, `${v} ${look} cry width`);
         assert.equal(size.h % box.cell.h, 0, `${v} ${look} cry height`);
-        assert.ok((size.w / box.cell.w) * (size.h / box.cell.h) >= lonely.cry.frames);
+        // A live cry (#658) is drawn from the SWF: the OGA sheet holds only the recorder's own frames.
+        const ogaCells = lonely.cry.live ? lonely.cry.recorded : lonely.cry.frames;
+        assert.ok(Number.isInteger(ogaCells) && ogaCells > 0, `${v} cry: the OGA sheet's frame count`);
+        assert.ok((size.w / box.cell.w) * (size.h / box.cell.h) >= ogaCells, `${v} ${look} cry cells`);
+        if (lonely.cry.live) {
+          // The live strip: one cell per kept frame, 8 columns, at 1x and 3x.
+          const sheet = spiritCrySheet(v, look);
+          assert.equal(sheet.frames, Math.ceil(lonely.cry.frames / (lonely.cry.step || 1)), `${v} ${look} live cry cells`);
+          const rows = Math.ceil(sheet.frames / sheet.cols);
+          for (const d of [1, 3]) {
+            const file = join(PUBLIC, d === 3 ? sheet.path.replace(/\.webp$/, '@3x.webp') : sheet.path);
+            assert.ok(existsSync(file), `${v} ${look} live cry ${d}x`);
+            assert.deepEqual(webpSize(file), { w: sheet.cols * sheet.fw * d, h: rows * sheet.fh * d }, `${v} ${look} live cry ${d}x grid`);
+          }
+        }
         for (const s of PORTRAIT_STATES) {
           const pl = portraitLook(v, look);
           const f = find(pl, lonely.portrait[s].oga);

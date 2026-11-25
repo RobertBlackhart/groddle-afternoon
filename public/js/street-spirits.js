@@ -277,7 +277,8 @@ export const STREET_SPIRIT_LONELY_ART = Object.freeze({
   },
   firebog: {
     // #658: live (STREET_SPIRIT_ART): 96 frames, four rounds of the 24-frame tears, every second kept.
-    cry: { oga: 'idle_cry', frames: 96, step: 2, live: 'cry_live', crops: { medium: { x: 0, y: 0, w: 63, h: 189 }, large: { x: 0, y: 0, w: 107, h: 244 } } },
+    // `recorded`: the cells of the OGA idle_cry sheet (the recorder's stills), which the live strip replaces.
+    cry: { oga: 'idle_cry', frames: 96, step: 2, live: 'cry_live', recorded: 24, crops: { medium: { x: 0, y: 0, w: 63, h: 189 }, large: { x: 0, y: 0, w: 107, h: 244 } } },
     portraitLook: 'large',
     portrait: {
       in: { oga: 'loneliness_in', frames: 19, cell: { w: 183, h: 183 }, crop: { x: 1, y: 1, w: 181, h: 181 } },
