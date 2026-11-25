@@ -557,18 +557,23 @@ describe('street animals: the feature', () => {
     assert.equal(streetObjectsFeature.runVerbOverride(r.bat, 'feed:grain:99', r.engine), null);
   });
 
-  it('the hourly Guano: one pile under each Batterfly, kept by a server that says so', () => {
+  it('the hourly Guano: each Batterfly\'s piles where it fell, kept by a server that says so', () => {
     // The copy: the server's start and its piles; a server from before says nothing.
     const copy = createStreetCopy();
     assert.equal(guanoPiles(copy), null);
-    takeObjs(copy, snap({ guano: 1_731_300_000_000, objs: [{ id: 'batterfly:0', food: 0, guano: 3 }, { id: 'batterfly:1', food: 2 }, { id: 'chicken:1', guano: 9 }] }));
+    // Lane flyk: each pile where its Guano fell ([x, count, path clock], objects_guano.go dropGuano).
+    takeObjs(copy, snap({ guano: 1_731_300_000_000, spots: { 'batterfly:0': [700, 820] }, objs: [{ id: 'batterfly:0', food: 0, guano: 3, piles: [[2210.5, 2, 1_731_300_400_000], [480, 1, 1_731_304_000_000]] }, { id: 'batterfly:1', food: 2 }, { id: 'chicken:1', guano: 9 }] }));
     assert.equal(copy.guano, 1_731_300_000_000);
-    assert.deepEqual(guanoPiles(copy), { 'batterfly:0': 3 });
+    assert.deepEqual(guanoPiles(copy), { 'batterfly:0': [[2210.5, 2, 1_731_300_400_000], [480, 1, 1_731_304_000_000]] });
+    // A server from before the piles names a count only: one pile under its spot.
+    takeObjs(copy, { t: 'objs', street: 'GSTREET', objs: [{ id: 'batterfly:0', food: 0, guano: 3 }] });
+    assert.deepEqual(guanoPiles(copy), { 'batterfly:0': [[700, 3, 0]] });
     takeObjs(copy, { t: 'objs', street: 'GSTREET', objs: [{ id: 'batterfly:0', food: 0 }] });
     assert.deepEqual(guanoPiles(copy), {});
     takeObjs(copy, snap({ objs: [{ id: 'batterfly:0', food: 0, guano: 3 }] }));
     assert.equal(guanoPiles(copy), null, 'a server from before the shared pile');
     assert.deepEqual(actMessage({ req: 4, id: 'batterfly:0', verb: 'pickup' }), { req: 4, id: 'batterfly:0', verb: 'pickup' });
+    assert.deepEqual(actMessage({ req: 4, id: 'batterfly:0', verb: 'pickup', x: 2210.5 }), { req: 4, id: 'batterfly:0', verb: 'pickup', x: 2210.5 });
 
     // Solo: this page's own clock.
     const solo = rig({ mode: 'solo' });
@@ -580,10 +585,10 @@ describe('street animals: the feature', () => {
     assert.equal(streetObjectsFeature.sharedGuano(r.engine), null, 'no snapshot yet: neither clock moves');
     r.client.emit('msg:objs', snap({ guano: 1_731_300_000_000, spots: { 'batterfly:0': [700, 820] }, objs: [{ id: 'batterfly:0', food: 0, lag: 0, hold: 0, guano: 3 }] }));
     streetObjectsFeature.onTick(16, 0, r.engine);
-    assert.deepEqual(streetObjectsFeature.sharedGuano(r.engine), { since: 1_731_300_000_000, piles: { 'batterfly:0': 3 }, spots: { 'batterfly:0': [700, 820] } });
-    // Pick up asks the server by the Batterfly's id; a second ask waits for the first.
-    assert.equal(streetObjectsFeature.sharedGuanoPick(r.bat, r.engine), true);
-    assert.deepEqual(r.sent.at(-1), { t: 'obj_act', req: 1, id: 'batterfly:0', verb: 'pickup' });
+    assert.deepEqual(streetObjectsFeature.sharedGuano(r.engine), { since: 1_731_300_000_000, piles: { 'batterfly:0': [[700, 3, 0]] }, spots: { 'batterfly:0': [700, 820] } });
+    // Pick up asks the server by the Batterfly's id and the pile's x; a second ask waits for the first.
+    assert.equal(streetObjectsFeature.sharedGuanoPick(r.bat, r.engine, 700), true);
+    assert.deepEqual(r.sent.at(-1), { t: 'obj_act', req: 1, id: 'batterfly:0', verb: 'pickup', x: 700 });
     assert.equal(streetObjectsFeature.sharedGuanoPick(r.bat, r.engine), true);
     assert.equal(r.sent.filter((m) => m.verb === 'pickup').length, 1);
     // The answer: the pile into the pack once, and the pile is gone here.

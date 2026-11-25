@@ -929,7 +929,8 @@ export function flierPlan({ kind = 'butterfly', seed = 1, worldW = 2000 } = {}) 
   let x = x0;
   let h = h0;
   const leg = (tx, th) => {
-    const ms = Math.hypot(tx - x, th - h) / speed;
+    // A square root, not Math.hypot, so the realtime server's port (flierpath.go) gets the same bits.
+    const ms = Math.sqrt((tx - x) * (tx - x) + (th - h) * (th - h)) / speed;
     legs.push(Object.freeze({ at, ms, x, h, tx, th }));
     at += ms;
     x = tx;
@@ -968,6 +969,24 @@ export function flierAt({ kind = 'butterfly', seed = 1, worldW = 2000, floor = n
   const h = leg.h + (leg.th - leg.h) * u;
   const under = flightFloorAt(floor, x);
   return { x, y: (under == null ? Number(groundY) || 0 : under) - h, h, dir: leg.tx >= leg.x ? 1 : -1 };
+}
+
+/**
+ * Where a Batterfly's hourly Guano falls (lane flyk; npc_batterfly.js onInterval 1064-1072:
+ * createItemStackFromSource('guano', 1, this.x, this.y, this)): the k-th of n owed since `from`
+ * (Unix ms) came due at from + k * intervalMs, where its flight had it then (flierAt on the path
+ * clock, the realtime server's flierpath.go does the same). One due within the last 5 s falls where
+ * the page draws it now (`live`, { x, y }), as a page's own clock may stand behind while it was
+ * held. Returns [{ x, y, due }].
+ */
+export function hourlyGuanoDrops({ home, from, n, now, intervalMs, live = null }) {
+  const out = [];
+  for (let k = 1; k <= n; k += 1) {
+    const due = Number.isFinite(from) ? from + k * intervalMs : now;
+    const at = live && now - due < 5000 ? live : flierAt(home, due - GAME_EPOCH_MS);
+    out.push({ x: at.x, y: at.y, due });
+  }
+  return out;
 }
 
 /** A resting Butterfly's y at path time t (it bobs where it sits). */

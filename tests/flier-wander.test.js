@@ -21,9 +21,10 @@ import { before, describe, it } from 'node:test';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { FLIER_LIFT, FLY_WANDER, flierAt, flierPlan, flierSeed, flightFloor, pathTime } from '../public/js/street-creatures.js?v=8574c2a4';
+import { FLIER_LIFT, FLY_WANDER, flierAt, flierPlan, flierSeed, flightFloor, hourlyGuanoDrops, pathTime } from '../public/js/street-creatures.js?v=8574c2a4';
 import { platformsScreen, streetWidth } from '../public/js/street-model.js?v=a9a05f9d';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
+import { GAME_EPOCH_MS } from '../public/js/game-day.js?v=a532775d';
 
 const root = join(import.meta.dirname, '..');
 const read = (rel) => readFileSync(join(root, rel), 'utf8');
@@ -134,5 +135,58 @@ describe('street fliers wander inside their street (flierAt)', () => {
     // A Batterfly waits for the player at it, for everyone (npc_batterfly.js onWaitStart 1074-1081).
     assert.doesNotMatch(objects, /spot\.kind == "batterfly" \{\n\t\t\tno\("bad_verb"/);
     assert.doesNotMatch(read('public/js/features/street-objects-feature.js'), /a\.kind === 'batterfly' \|\| now\.has/);
+  });
+});
+
+describe('a Batterfly\'s Guano falls where it is flying (npc_batterfly.js onInterval 1064-1072)', () => {
+  // Austin 2026-11-24 (lane flyk): as Glitch, createItemStackFromSource('guano', 1, this.x, this.y,
+  // this), not under its spot. The shared pile's cap (10 on the street) and rate (one an hour per
+  // Batterfly) stay: js/animal-husbandry.js passiveGuano and objects_guano.go are unchanged there.
+  const H = 3_600_000;
+
+  it('solo: each owed Guano lies where the flight had the Batterfly when it came due; one just due where it is drawn', () => {
+    const home = { kind: 'batterfly', seed: flierSeed('batterfly', 1, 1521), worldW: 6000, groundY: 700 };
+    const from = GAME_EPOCH_MS + 553_312_000_000;
+    const drops = hourlyGuanoDrops({ home, from, n: 3, now: from + 3 * H + 1000, intervalMs: H, live: { x: 10, y: 20 } });
+    assert.equal(drops.length, 3, 'the hours owed, no more');
+    for (const [k, d] of drops.slice(0, 2).entries()) {
+      const at = flierAt(home, from + (k + 1) * H - GAME_EPOCH_MS);
+      assert.deepEqual([d.x, d.y, d.due], [at.x, at.y, from + (k + 1) * H]);
+      assert.ok(d.x >= 0 && d.x <= 6000);
+    }
+    assert.deepEqual([drops[2].x, drops[2].y], [10, 20], 'the one just due falls where the page draws it');
+    assert.notEqual(Math.round(drops[0].x), Math.round(drops[1].x), 'not all on one spot');
+    const husbandry = read('public/js/features/animal-husbandry-feature.js');
+    assert.match(husbandry, /for \(const at of hourlyGuanoDrops\(\{ home: b\.home, from, n, now: t, intervalMs: BATTERFLY\.passiveIntervalMs, live \}\)\) \{\n\s+dropGuano\(engine, at\.x, 1, at\.y\);/);
+    // A fed Batterfly's Guano falls from where it flies too (feed 817-820), onto the floor under it.
+    assert.match(husbandry, /dropGuano\(engine, entity\.sprite\.x, res\.guano, entity\.sprite\.y\);/);
+    assert.match(husbandry, /const y = Number\.isFinite\(fromY\) \? stackRestY\(engine\.platforms, x, fromY\) : null;/);
+  });
+
+  it('online: the server drops it at the same x the game draws (flierpath.go holds the game\'s numbers), over the same street width', { skip: skipWithoutServer }, () => {
+    const go = readFileSync(serverPath('flierpath_test.go'), 'utf8');
+    const rows = [...go.matchAll(/\{"(\w+)", (\d+), ([\d.]+), ([\d.]+), (\d+), ([\d.]+), ([\d.]+)\},/g)];
+    assert.ok(rows.length >= 16, `${rows.length} cases`);
+    for (const [, kind, i, sx, w, seed, t, x] of rows) {
+      assert.equal(flierSeed(kind, Number(i), Number(sx)), Number(seed));
+      assert.equal(flierAt({ kind, seed: Number(seed), worldW: Number(w) }, Number(t)).x, Number(x), `${kind}:${i} at ${t}`);
+    }
+    // Every Batterfly street tells the server its width, the width every page flies it over.
+    const streets = JSON.parse(readFileSync(serverPath('data/objects.json'), 'utf8')).streets;
+    const wrong = [];
+    for (const [tsid, row] of Object.entries(streets)) {
+      if (!row.batterflies?.length) continue;
+      const data = JSON.parse(readFileSync(join(root, 'public/assets/streets', `${tsid}.json`), 'utf8'));
+      if (row.w !== streetWidth(data)) wrong.push(`${tsid}: ${row.w} vs ${streetWidth(data)}`);
+    }
+    assert.deepEqual(wrong, []);
+    // Each pile is drawn where it fell, from the Batterfly's height then, and picked up by its x.
+    const husbandry = read('public/js/features/animal-husbandry-feature.js');
+    assert.match(husbandry, /fromY = flierAt\(home, w\.clock - GAME_EPOCH_MS\)\.y;/);
+    assert.match(husbandry, /engine\.query\?\.\('sharedGuanoPick', b\.target, engine, pile\.x\)/);
+    const guano = readFileSync(serverPath('objects_guano.go'), 'utf8');
+    assert.match(guano, /o\.dropGuano\(obs\[first\], next\[first\]\)/);
+    assert.match(guano, /guanoCap = 10/);
+    assert.match(guano, /guanoEvery = time\.Hour/);
   });
 });

@@ -140,7 +140,7 @@ describe('Batterflies and Guano (npc_batterfly.js)', () => {
     const src = readFileSync(new URL('../public/js/features/animal-husbandry-feature.js', import.meta.url), 'utf8');
     const body = src.slice(src.indexOf('function spawnStreet('), src.indexOf('// Named animals keep their names'));
     const rows = body.indexOf("for (const row of s.guano) buildPile(engine, 'guano', row);");
-    const catchUp = body.indexOf('ownHourlyGuano(engine, now(),');
+    const catchUp = body.indexOf('ownHourlyGuano(engine, now())');
     assert.ok(rows > 0 && catchUp > 0, 'both steps are in spawnStreet');
     assert.ok(rows < catchUp, 'saved rows are drawn first');
     assert.equal(body.split("buildPile(engine, 'guano', row)").length - 1, 1, 'the rows are drawn once');

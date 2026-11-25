@@ -5966,7 +5966,7 @@
    "id": "street-flyer-pace",
    "title": "Street Butterflies fly 30-50 px/s and Batterflies 30-45 px/s",
    "kind": "behaviour",
-   "status": "proposed",
+   "status": "kept",
    "where": [
     {
      "file": "public/js/street-creatures.js",
@@ -5976,7 +5976,8 @@
    "why": "apiStartFlyingInTheArea's speed lived in the game server, which did not survive; the remake keeps its old 39 px/s drift and its yard Butterflies' 30-50 (Eleven's rebuild of the call uses 90 px/s).",
    "rows": [
     "G1265"
-   ]
+   ],
+   "ruling": "Austin 2026-11-24 (lane flyk calls): keep the remake's pace"
   }
  ]
 }

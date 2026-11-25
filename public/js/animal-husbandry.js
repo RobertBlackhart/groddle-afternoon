@@ -250,7 +250,7 @@ export function passiveGuano(state, now, guanoOnStreet = 0) {
 
 /**
  * The hourly Guano this page's own clock owes one Batterfly, by who keeps the street's Guano
- * (register G641; online the realtime server keeps one pile under each street Batterfly for
+ * (register G641; online the realtime server keeps each street Batterfly's Guano where it fell, for
  * everyone, groddle-afternoon-server objects_guano.go):
  * - `sharing` false: this page does (solo, or a server from before the shared pile): passiveGuano.
  * - `sharing` null: not known yet (online, the street's first word from the server has not come):

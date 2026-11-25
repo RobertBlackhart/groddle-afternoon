@@ -1350,9 +1350,9 @@ export const streetObjectsFeature = {
 
   /**
    * animal-husbandry-feature: who keeps this street's hourly Batterfly Guano. { since, piles, spots }
-   * when the realtime server keeps one pile under each Batterfly for everyone (objects_guano.go):
-   * since is the Unix ms its clocks started, piles the Guano under each ({"batterfly:0": 3}) and
-   * spots each Batterfly's place, the same for everyone. False when this page's own clock runs as in
+   * when the realtime server keeps it for everyone (objects_guano.go): since is the Unix ms its
+   * clocks started, piles each Batterfly's Guano where it fell ({"batterfly:0": [[x, n, path
+   * clock]]}, js/street-objects.js guanoPiles) and spots each Batterfly's place, the same for everyone. False when this page's own clock runs as in
    * solo (a server from before the shared pile, a street the server has no layout for, a site with
    * no realtime). Null while that is not known yet (connecting, the snapshot not here): then
    * neither clock moves, so nothing is made twice.
@@ -1368,11 +1368,11 @@ export const streetObjectsFeature = {
   },
 
   /**
-   * animal-husbandry-feature: pick up the Guano under a street Batterfly (target: the Batterfly).
-   * True when the server was asked (or refused for now: busy), null when the pile is not the
-   * server's. The answer runs sharedGuanoPicked with what it gave.
+   * animal-husbandry-feature: pick up a pile of a street Batterfly's Guano (target: the Batterfly,
+   * x: where the pile lies). True when the server was asked (or refused for now: busy), null when
+   * the pile is not the server's. The answer runs sharedGuanoPicked with what it gave.
    */
-  sharedGuanoPick(target, engine) {
+  sharedGuanoPick(target, engine, x = null) {
     const a = creatureOf(target);
     if (!a || a.kind !== 'batterfly' || !shared(engine) || !guanoPiles(copy) || !copy.animals.has(a.id)) return null;
     for (const p of pending.values()) {
@@ -1382,7 +1382,7 @@ export const streetObjectsFeature = {
       }
     }
     reqSeq += 1;
-    if (!sendOut(reqSeq, { id: a.id, target, verbId: 'pickup' }, () => client.send('obj_act', actMessage({ req: reqSeq, id: a.id, verb: 'pickup' })))) {
+    if (!sendOut(reqSeq, { id: a.id, target, verbId: 'pickup' }, () => client.send('obj_act', actMessage({ req: reqSeq, id: a.id, verb: 'pickup', x })))) {
       engine.toast?.(COPY.connecting, 2400);
       return true;
     }

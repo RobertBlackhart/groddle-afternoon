@@ -457,7 +457,7 @@ export function createStreetCopy() {
   // pigTrips: the server walks street Piggies to food too (their state's "trip"); homes: each
   // Piggy's spot and walk ({"pig:0":[x, range]}) and trunks: the street's tree x, the numbers the
   // server walks it from (js/street-creatures.js piggyAt), so no page's planner can disagree.
-  // guano: the server keeps the Batterflies' hourly Guano, one pile under each for everyone, its
+  // guano: the server keeps the Batterflies' hourly Guano, where each fell, for everyone, its
   // clocks running since this Unix ms (objects_guano.go); 0: each page's own clock, as before.
   return { street: '', snap: false, none: false, objs: new Map(), version: 0, creatures: false, pigPaths: false, pigTrips: false, guano: 0, homes: {}, trunks: null, animals: new Set(), spots: {}, offset: 0, clock: [] };
 }
@@ -519,15 +519,25 @@ export function snapshotPlace(copy, id, kind) {
 }
 
 /**
- * The Guano under each of the street's Batterflies as the server has it ({"batterfly:0": 3}; a
- * Batterfly with none is left out), or null when this server does not share it (objects_guano.go).
+ * The Guano each of the street's Batterflies dropped, as the server has it: by Batterfly, its piles
+ * [x, count, path clock] where each fell ({"batterfly:0": [[2210.5, 2, 1731300400000]]}; lane flyk,
+ * objects_guano.go dropGuano: where it was flying), a Batterfly with none left out; or null when
+ * this server does not share it. A server from before the piles names only a count: one pile under
+ * the Batterfly's spot (the snapshot's "spots"), path clock 0.
  */
 export function guanoPiles(copy) {
   if (!copy?.snap || copy.none || !(copy.guano > 0)) return null;
   const out = {};
   for (const [id, row] of copy.objs) {
     const n = Math.floor(Number(row?.state?.guano) || 0);
-    if (idKind(id) === 'batterfly' && n > 0) out[id] = n;
+    if (idKind(id) !== 'batterfly' || n <= 0) continue;
+    const rows = Array.isArray(row.state.piles)
+      ? row.state.piles
+        .filter((p) => Array.isArray(p) && Number.isFinite(Number(p[0])) && Number(p[1]) >= 1)
+        .map((p) => [Number(p[0]), Math.floor(Number(p[1])), Math.max(0, Number(p[2]) || 0)])
+      : [];
+    const spotX = Number(copy.spots?.[id]?.[0]);
+    out[id] = rows.length ? rows : [[Number.isFinite(spotX) ? spotX : NaN, n, 0]];
   }
   return out;
 }
@@ -590,7 +600,7 @@ export function reconcile(obj, copy, now = Date.now()) {
 }
 
 /** An obj_act message, validated the way the server will. */
-export function actMessage({ req, id, verb, perks = [], skill = '', on = '', c = '', n = 0, at = 0, name = '', k = null }) {
+export function actMessage({ req, id, verb, perks = [], skill = '', on = '', c = '', n = 0, at = 0, name = '', k = null, x = null }) {
   const msg = { req: Math.max(1, Math.floor(Number(req) || 1)), id: String(id || ''), verb: String(verb || '') };
   const words = (perks || []).filter((p) => /^[a-z0-9_]{1,24}$/.test(p)).slice(0, 8);
   if (words.length) msg.perks = words;
@@ -608,5 +618,7 @@ export function actMessage({ req, id, verb, perks = [], skill = '', on = '', c =
   // G605: the Potion of Animal Youth poured, its place among the player's bottles (objects_uses.go copyOf).
   if (verb === 'youth' && Number.isInteger(k) && k >= 0 && k <= 255) msg.k = k;
   if (verb === 'wait' && Number.isSafeInteger(Math.round(Number(at))) && Number(at) > 0) msg.at = Math.round(Number(at));
+  // A pickup of a Batterfly's Guano names the pile by where it lies (objects_guano.go pickGuano).
+  if (verb === 'pickup' && x != null && Number.isFinite(Number(x))) msg.x = Number(x);
   return msg;
 }
