@@ -77,7 +77,8 @@ export const DROP_TEXT = Object.freeze({
   by: (name) => `Dropped by ${name}`, // ours
   busy: 'Wait a moment, you are still dropping something.', // drops.go
   slow: 'Slow down a little.', // drops.go allow (slow_down)
-  // drops.go dropTextFull (the server's line) says "street" everywhere; a house or Tower floor holds 60 too (dropStreetMax).
+  // drops.go dropTextFull (the server's line) says "street" everywhere. Only a street fills (dropStreetMax 60):
+  // a house or Tower floor holds any number since G1224, so the place named is a street in practice.
   full: (place) => `This ${place} can't hold any more dropped things.`,
   gone: 'That stack has already been picked up.', // the game's own
   locked: 'You are not allowed to pick this up.', // takeable.js:39

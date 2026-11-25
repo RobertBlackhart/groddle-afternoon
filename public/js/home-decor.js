@@ -179,7 +179,8 @@ const OLD_GEO = Object.freeze({ segmentW: 200, endCapW: 56, towerW: 1200 });
 
 export const TEXTURE_KINDS = Object.freeze(['wall', 'floor', 'ceiling']);
 const TEXTURE_CONFIG_KEY = { wall: 'walls', floor: 'floors', ceiling: 'ceilings' };
-const MAX_PLACED = 160;
+// No cap on the pieces a room holds, as Glitch: config_base.js home_limits (213-236) limits only
+// floors, walls and the yard, and inc_homes.js counts no furniture (Austin 2026-11-25, chat 11-24).
 const MAX_STORAGE_STACK = 999;
 
 /** A placeable class's row: furniture, or a trophy (js/home-trophies.js). */
@@ -405,7 +406,6 @@ export function normalizeHomeDecorState(seed = {}) {
     if (!item || seen.has(item.id)) continue;
     seen.add(item.id);
     placed.push(item);
-    if (placed.length >= MAX_PLACED) break;
   }
   for (const item of placed) if (item.on && !seen.has(item.on)) item.on = null;
   const maxId = placed.reduce((m, p) => Math.max(m, p.id), 0);
@@ -765,7 +765,6 @@ function topZ(state) {
 export function placeFurniture(state, inv, classTsid, at = {}, opts = {}) {
   const def = furnitureDef(classTsid);
   if (!def) return { ok: false, reason: 'not_furniture', msg: "That isn't furniture." };
-  if (state.placed.length >= MAX_PLACED) return { ok: false, reason: 'full', msg: 'Your house is full of furniture already.' };
   const stored = state.storage[classTsid] || 0;
   const packed = Math.max(0, Math.floor(finite(inv?.[classTsid], 0)));
   // G358: `opts.style` picks an upgraded piece from storage; otherwise a plain one goes first.

@@ -27,7 +27,7 @@
 import { SEED_CATALOG, applyFertilizer, sowPlot, wetPlot } from './garden.js?v=0cbb65f0';
 import { normalizeParcelBox, stackCopy } from './butler.js?v=6c66ebf5';
 import { normalizeVisitGnomes } from './garden-gnome.js?v=d9f8e52b';
-import { DROP_TEXT } from './drops-mp.js?v=6be23b70';
+import { DROP_TEXT } from './drops-mp.js?v=34a8fc84';
 
 /** The realtime server's street for a player's home street (homes.go). */
 export const HOME_STREET_PREFIX = 'HOME_';
@@ -430,7 +430,8 @@ export function normalizeOwnerStacks(rows) {
     const place = String(r?.place ?? '');
     if (!/^[A-Za-z0-9_-]{1,40}$/.test(id) || !/^[a-z0-9_]{1,64}$/.test(c) || !(n >= 1 && n <= 9999) || !Number.isFinite(x) || !Number.isFinite(y) || !/^(house|tower:[0-9])$/.test(place)) continue;
     out.push({ id, place, c, n, x: Math.round(x), y: Math.round(y), ...(Number.isInteger(r?.on) && r.on > 0 ? { on: r.on } : {}) });
-    if (out.length >= 2200) break;
+    // The site's STACKS_MAX (1000) for each of 11 rooms: the house and the Tower's 10 floors.
+    if (out.length >= 11000) break;
   }
   return out;
 }
