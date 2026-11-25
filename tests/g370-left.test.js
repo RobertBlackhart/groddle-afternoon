@@ -2,8 +2,10 @@
  * G277, G172 and G266 leftovers (lane LEFT, 2026-10-27), each from what the source says:
  *
  * - G277: butterflies_milked moves only while a milk quest is todo (npc_butterfly.js 1286:
- *   animalkinship_milk_butterflies or master_milker), so the Aranna Scramble's r475 advances only
- *   alongside one; butterflies_massaged only while animalkinship_massage_butterflies is (1139).
+ *   animalkinship_milk_butterflies or master_milker); butterflies_massaged only while
+ *   animalkinship_massage_butterflies is (1139). The Aranna Scramble's r475 joined the gate in the
+ *   2026-11-25 quest audit (G1262): GSJS offered the Scramble nowhere, and the remake offers it only
+ *   after Master Milker, so behind Glitch's two alone its row could never move.
  * - G277: the potions' tray stand-ins (Crazy Quoin Collector, Feeling Called Love, Please Wait's
  *   npc_bureaucrat) join buff-triggers BUFF_ICONS, which applyBuff reads, so the icon is right
  *   from the first frame instead of a tick later.
@@ -25,7 +27,7 @@ import { fileURLToPath } from 'node:url';
 
 import { loadContentCatalogsFromDir, resetContentCatalogs } from '../public/js/content-catalogs.js?v=5ef6adb5';
 import { createQuestState } from '../public/js/quests.js?v=d0443973';
-import { acceptOffer, routeQuestEvent } from '../public/js/quest-offers.js?v=6eccdc80';
+import { COUNTER_ROUTES, acceptOffer, routeQuestEvent } from '../public/js/quest-offers.js?v=6eccdc80';
 import { applyBuff, createBuffState } from '../public/js/buffs.js?v=14eee338';
 import { BUFF_ICONS } from '../public/js/buff-triggers.js?v=9fd877c4';
 import { FEAT_BY_ID, UNWIRED_FEATS, WIRED_FEATS, featsInEpic } from '../public/js/solo-feats.js?v=0ec0bd95';
@@ -48,15 +50,33 @@ before(async () => {
 describe('G277: butterfly counters move only while their own quests are todo', () => {
   const milk = (qs, animal) => routeQuestEvent(qs, 'npc_butterfly:milk', 1, { managedOnly: true, detail: { animal } });
 
-  it("the Aranna Scramble's butterflies_milked waits for a milk quest", () => {
+  it("the gate is Glitch's two milk quests, and the Aranna Scramble counts its own milking (G1262)", () => {
+    const route = COUNTER_ROUTES.find((r) => r.counter === 'butterflies_milked');
+    assert.deepEqual(route.whileQuests, ['animalkinship_milk_butterflies', 'master_milker', 'rannacramble']);
+    // Its offer comes after Master Milker (quests.json offerTriggers), so neither milk quest is ever todo with it.
     const qs = createQuestState();
-    assert.equal(acceptOffer(qs, 'rannacramble', { now: Date.now(), ignorePrereq: true }).ok, true);
+    qs.completed.push('animalkinship_massage_butterflies', 'animalkinship_milk_butterflies', 'master_milker');
+    assert.equal(acceptOffer(qs, 'rannacramble', { now: Date.now() }).ok, true);
     milk(qs, 'GA94:npc_butterfly:0');
-    assert.equal(qs.active.rannacramble.progress.butterflies_milked || 0, 0);
-    assert.equal(acceptOffer(qs, 'animalkinship_milk_butterflies', { now: Date.now(), ignorePrereq: true }).ok, true);
-    milk(qs, 'GA94:npc_butterfly:1');
-    assert.equal(qs.active.rannacramble.progress.butterflies_milked, 1);
-    assert.equal(qs.active.animalkinship_milk_butterflies.progress.butterflies_milked, 1);
+    milk(qs, 'GA94:npc_butterfly:0');
+    assert.equal(qs.active.rannacramble.progress.butterflies_milked, 1, 'each butterfly once a run');
+    // Alongside a milk quest both count, as before.
+    assert.equal(acceptOffer(qs, 'animalkinship_milk_butterflies', { now: Date.now(), ignorePrereq: true }).ok, false, 'done, not repeatable');
+    const both = createQuestState();
+    assert.equal(acceptOffer(both, 'rannacramble', { now: Date.now(), ignorePrereq: true }).ok, true);
+    assert.equal(acceptOffer(both, 'animalkinship_milk_butterflies', { now: Date.now(), ignorePrereq: true }).ok, true);
+    milk(both, 'GA94:npc_butterfly:1');
+    assert.equal(both.active.rannacramble.progress.butterflies_milked, 1);
+    assert.equal(both.active.animalkinship_milk_butterflies.progress.butterflies_milked, 1);
+  });
+
+  it('butterflies_massaged still waits for its own quest (npc_butterfly.js 1139)', () => {
+    const route = COUNTER_ROUTES.find((r) => r.counter === 'butterflies_massaged');
+    assert.deepEqual(route.whileQuests, ['animalkinship_massage_butterflies']);
+    const qs = createQuestState();
+    assert.equal(acceptOffer(qs, 'animalkinship_massage_butterflies', { now: Date.now(), ignorePrereq: true }).ok, true);
+    routeQuestEvent(qs, 'npc_butterfly:massage', 1, { detail: { animal: 'a' } });
+    assert.equal(qs.active.animalkinship_massage_butterflies.progress.butterflies_massaged, 1);
   });
 
   it('Master Milker opens the gate too, and a milk quest alone still counts', () => {
