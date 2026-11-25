@@ -209,7 +209,7 @@
    "group": "world",
    "name": "Music and sounds",
    "status": "source",
-   "blurb": "Every region’s own music again, Urwok, Kloro Haoma and Jal included, from a fan’s copy of the game server’s sound folder, file for file the same as Tiny Speck’s, and the original tracks on many streets and party spaces. Every recovered Musicblock and meditation track, Esquibeth’s melody from her own overlay files, and real recordings for most sound keys (that copy, Wayback files and Tiny Speck’s archived sound effects). Where a theme is still missing (the subway, the Enchanted Wood, Eesti, the Rook) a track from Tiny Speck’s downloads page plays instead, and gentle synth stand-ins play the other sounds still lost.",
+   "blurb": "Every region’s own music again, Urwok, Kloro Haoma and Jal included, from a fan’s copy of the game server’s sound folder, file for file the same as Tiny Speck’s, and the original tracks on many streets and party spaces. Every recovered Musicblock and meditation track, Esquibeth’s melody from her own overlay files, and real recordings for most sound keys (that copy, Wayback files and Tiny Speck’s archived sound effects). Where a theme is still missing (the Enchanted Wood, Eesti, the Rook) a track from Tiny Speck’s downloads page plays instead, and gentle synth stand-ins play the other sounds still lost.",
    "multiplayer": null,
    "spot": null,
    "evidence": [
@@ -2344,14 +2344,14 @@
  "sounds": {
   "keys": 635,
   "deadKeys": 3,
-  "withFile": 475,
+  "withFile": 476,
   "playable": 564,
-  "soundsZip": 192,
+  "soundsZip": 193,
   "archiveorgSfx": 214,
   "recoveredWayback": 38,
   "downloadsBestFit": 27,
   "otherFiles": 4,
-  "aliases": 89,
+  "aliases": 88,
   "ambientTracks": 34,
   "musicTracks": 200
  },
@@ -2814,9 +2814,24 @@
   "deployed": "2026-11-25"
  },
  "git": {
-  "commits": 3481,
+  "commits": 3490,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-25",
+    "kind": "fix",
+    "text": "The three subway tracks come with the Vine Radio, now that no station plays them"
+   },
+   {
+    "date": "2026-11-25",
+    "kind": "fix",
+    "text": "Quest rooms play the teleport chime going in and out, and the Door Drink plays it once"
+   },
+   {
+    "date": "2026-11-25",
+    "kind": "fix",
+    "text": "A Subway ticket plays the teleport chime, and stations play their region's music"
+   },
    {
     "date": "2026-11-25",
     "kind": "new",
@@ -2921,24 +2936,9 @@
     "date": "2026-11-24",
     "kind": "fix",
     "text": "A first shrine donation offers Respect for the Beginnings"
-   },
-   {
-    "date": "2026-11-24",
-    "kind": "fix",
-    "text": "Firebog street spirits' flames flicker and their vines sway while they wait"
-   },
-   {
-    "date": "2026-11-24",
-    "kind": "fix",
-    "text": "Change Street Style tiles show their pictures on an iPad"
-   },
-   {
-    "date": "2026-11-24",
-    "kind": "fix",
-    "text": "Street music keeps its speed after the browser was minimized on an iPad"
    }
   ]
  },
- "tests": 1372,
+ "tests": 1374,
  "generatedAt": "2026-11-25"
 }
