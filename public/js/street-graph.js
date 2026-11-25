@@ -36,7 +36,7 @@
  * Pure apart from the one fetch in loadStreetGraph: no DOM, no Pixi.
  */
 
-import { doorKeysHeld } from './doors.js?v=727d0e0b';
+import { doorKeysHeld } from './doors.js?v=f815e7c8';
 
 /** The signpost graph (tools/build-signpost-graph.mjs); js/data-urls.js keys the URL. */
 export const STREET_GRAPH_URL = 'assets/content/signpost-graph.json';

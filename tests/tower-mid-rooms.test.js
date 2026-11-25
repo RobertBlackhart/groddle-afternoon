@@ -12,7 +12,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { FRAME_DT_CAP, assertStreetGeometry, platformYAt, resolveGround } from '../public/js/street-model.js?v=a9a05f9d';
-import { insideBottomRect } from '../public/js/doors.js?v=727d0e0b';
+import { insideBottomRect } from '../public/js/doors.js?v=f815e7c8';
 import {
   GREETERBOT,
   HALL_TSID,
@@ -31,8 +31,8 @@ import {
   midTowerRoomByTsid,
   midTowerRoomStreet,
 } from '../public/js/tower-mid-rooms.js?v=07360655';
-import { greet, greeterAction, midTowerFeature } from '../public/js/features/mid-tower-feature.js?v=cae3051b';
-import { towerRoomsFeature } from '../public/js/features/tower-rooms-feature.js?v=6b1c7042';
+import { greet, greeterAction, midTowerFeature } from '../public/js/features/mid-tower-feature.js?v=793a7e93';
+import { towerRoomsFeature } from '../public/js/features/tower-rooms-feature.js?v=894f7b1d';
 import { populationForStreet } from '../public/js/street-ecology.js?v=ff90efe4';
 import { reachStreet } from '../public/js/builder/reach-graph.js?v=467ca20f';
 

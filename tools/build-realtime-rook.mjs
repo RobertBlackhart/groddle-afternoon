@@ -49,7 +49,7 @@ import { streetIsRookable } from '../public/js/rook-attack.js?v=5e62a79f';
 import { rebuiltRoomEcology } from '../public/js/rebuilt-rooms.js?v=8c2eaf24';
 import { winterStreetEcology } from '../public/js/winter-walk-streets.js?v=c921bf92';
 import { isZoneTsid } from '../public/js/zone-streets.js?v=b40010d5';
-import { upgradeEcologyEntry } from '../public/js/street-jobs.js?v=3fc80dcd';
+import { upgradeEcologyEntry } from '../public/js/street-jobs.js?v=76471e42';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const streetsDir = join(root, 'public/assets/streets');

@@ -25,10 +25,10 @@
  * space of its foot, '' without it), deadEndLast ('left:<tsid>' after using it).
  */
 
-import { DEAD_END_EXIT, DEAD_END_TEXT, deadEndExitSpot, isDeadEndTsid, urReach } from '../dead-ends.js?v=2782066a';
+import { DEAD_END_EXIT, DEAD_END_TEXT, deadEndExitSpot, isDeadEndTsid, urReach } from '../dead-ends.js?v=8b015857';
 import { STREET_INDEX, isDraftStreet, resolveIndexTsid } from '../street-loader.js?v=10376267';
-import { strayWayOut } from '../quest-instance.js?v=8858d29d';
-import { loadStreetGraph, worldRoads } from '../street-graph.js?v=dcc5cae4';
+import { strayWayOut } from '../quest-instance.js?v=15090adc';
+import { loadStreetGraph, worldRoads } from '../street-graph.js?v=d767f3a2';
 import { isLoaded, onLoaded, textureFromUrl } from '../textures.js?v=b8e38103';
 import { anchorBottomCentre } from '../sprite-feet.js?v=11303931';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';

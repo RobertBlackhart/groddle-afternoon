@@ -11,11 +11,11 @@ import { describe, it, before, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { SUBWAY_RIDE_STREETS, findRoute, loadStreetGraph, roadsFor, streetGraph, worldRoads } from '../public/js/street-graph.js?v=dcc5cae4';
-import { createRouteState, isRide, planRoute, routeRides, subwayRides } from '../public/js/map-routes.js?v=8d9a6c62';
-import { SUBWAY_STREETS } from '../public/js/street-jobs.js?v=3fc80dcd';
+import { SUBWAY_RIDE_STREETS, findRoute, loadStreetGraph, roadsFor, streetGraph, worldRoads } from '../public/js/street-graph.js?v=d767f3a2';
+import { createRouteState, isRide, planRoute, routeRides, subwayRides } from '../public/js/map-routes.js?v=52140ba2';
+import { SUBWAY_STREETS } from '../public/js/street-jobs.js?v=76471e42';
 import { applyStreetIndex } from '../public/js/street-loader.js?v=10376267';
-import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=bc92f2af';
+import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=bf36372a';
 import { gateRefusal } from '../public/js/subway.js?v=ea6921ff';
 
 const PUB = join(import.meta.dirname, '..', 'public');

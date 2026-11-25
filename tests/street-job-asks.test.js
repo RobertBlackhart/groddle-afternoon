@@ -11,10 +11,10 @@ import assert from 'node:assert/strict';
 import { after, before, describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { normalizeStreetJobState, phaseRequirements } from '../public/js/street-jobs.js?v=3fc80dcd';
+import { normalizeStreetJobState, phaseRequirements } from '../public/js/street-jobs.js?v=76471e42';
 import { ITEM_GET_ANCHOR, JOB_ASK_TEXT, itemAskSubject, itemGetHref, showAskRule, workSkillMissing, workSkillNote } from '../public/js/street-job-asks.js?v=84b712a3';
 
-import { streetJobsFeature, projectApi } from '../public/js/features/street-jobs-feature.js?v=bc92f2af';
+import { streetJobsFeature, projectApi } from '../public/js/features/street-jobs-feature.js?v=bf36372a';
 import { createToolConditionState } from '../public/js/tools.js?v=4156bba8';
 import { Display, FakeEl, fakePixi } from './fake-scene.js';
 

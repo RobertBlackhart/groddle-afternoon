@@ -11,11 +11,11 @@ import { describe, it, before, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { ROUTE_TEXT, regionWayIn, subwayRides } from '../public/js/map-routes.js?v=8d9a6c62';
-import { streetGraph } from '../public/js/street-graph.js?v=dcc5cae4';
-import { SUBWAY_STREETS, closedStreets, normalizeStreetJobState } from '../public/js/street-jobs.js?v=3fc80dcd';
+import { ROUTE_TEXT, regionWayIn, subwayRides } from '../public/js/map-routes.js?v=52140ba2';
+import { streetGraph } from '../public/js/street-graph.js?v=d767f3a2';
+import { SUBWAY_STREETS, closedStreets, normalizeStreetJobState } from '../public/js/street-jobs.js?v=76471e42';
 import { locationLinkTarget, renderQuestText } from '../public/js/quest-text.js?v=d0d07996';
-import { mapRoutesFeature } from '../public/js/features/map-routes-feature.js?v=40e503a9';
+import { mapRoutesFeature } from '../public/js/features/map-routes-feature.js?v=79015ba3';
 import { createFeatureHost } from '../public/js/feature-host.js?v=b87e2cbc';
 import { applyStreetIndex } from '../public/js/street-loader.js?v=10376267';
 

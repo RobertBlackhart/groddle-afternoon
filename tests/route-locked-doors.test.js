@@ -14,12 +14,12 @@ import { describe, it, before, beforeEach } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { ROUTE_TEXT, isRide, regionWayIn, routeNeeds, subwayRides } from '../public/js/map-routes.js?v=8d9a6c62';
-import { _useStreetGraph, findRoute, keysNow, lockedOnTheWay, reachableStreets, roadsFor, streetGraph } from '../public/js/street-graph.js?v=dcc5cae4';
-import { DOOR_KEYS, DOOR_TEXT, doorKeysHeld } from '../public/js/doors.js?v=727d0e0b';
-import { SUBWAY_STREETS, closedStreets, normalizeStreetJobState } from '../public/js/street-jobs.js?v=3fc80dcd';
+import { ROUTE_TEXT, isRide, regionWayIn, routeNeeds, subwayRides } from '../public/js/map-routes.js?v=52140ba2';
+import { _useStreetGraph, findRoute, keysNow, lockedOnTheWay, reachableStreets, roadsFor, streetGraph } from '../public/js/street-graph.js?v=d767f3a2';
+import { DOOR_KEYS, DOOR_TEXT, doorKeysHeld } from '../public/js/doors.js?v=f815e7c8';
+import { SUBWAY_STREETS, closedStreets, normalizeStreetJobState } from '../public/js/street-jobs.js?v=76471e42';
 import { PAPERS_BADGE } from '../public/js/subway.js?v=ea6921ff';
-import { mapRoutesFeature } from '../public/js/features/map-routes-feature.js?v=40e503a9';
+import { mapRoutesFeature } from '../public/js/features/map-routes-feature.js?v=79015ba3';
 import { createFeatureHost } from '../public/js/feature-host.js?v=b87e2cbc';
 import { applyStreetIndex } from '../public/js/street-loader.js?v=10376267';
 

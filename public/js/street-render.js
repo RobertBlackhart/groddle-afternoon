@@ -21,8 +21,8 @@ import { QUAD_SPAN, quadSpans, wideRect } from './wide-quads.js?v=f34556e6';
 import { anchorBottomCentre } from './sprite-feet.js?v=11303931';
 import { signWords } from './deco-sign.js?v=e98e50f9';
 import { loadWorldFont, WORLD_FONT_FAMILY } from './world-text.js?v=6b49f88c';
-import { buildDoorSprite } from './door-view.js?v=3b5ea084';
-import { visibleDoors } from './doors.js?v=727d0e0b';
+import { buildDoorSprite } from './door-view.js?v=da288f39';
+import { visibleDoors } from './doors.js?v=f815e7c8';
 
 const DECO_BASE = 'assets/decos/groddle/';
 /**

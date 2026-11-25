@@ -59,8 +59,8 @@
  * restore a stale one after a later croak).
  */
 
-import { closedOnTheWay, doorRooms, findRoute, graphKey, hasRoad, isClosed, lockedOnTheWay, routeGraph, sameStreet, tsidAliases } from './street-graph.js?v=dcc5cae4';
-import { DOOR_KEYS, DOOR_TEXT } from './doors.js?v=727d0e0b';
+import { closedOnTheWay, doorRooms, findRoute, graphKey, hasRoad, isClosed, lockedOnTheWay, routeGraph, sameStreet, tsidAliases } from './street-graph.js?v=d767f3a2';
+import { DOOR_KEYS, DOOR_TEXT } from './doors.js?v=f815e7c8';
 
 /**
  * R11 (G969): the graph and its walks live in js/street-graph.js, closed roads included; these

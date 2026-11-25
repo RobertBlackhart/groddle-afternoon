@@ -23,8 +23,8 @@ import {
   towerRoomStreet,
   turned,
 } from '../public/js/tower-rooms.js?v=4f1f6af7';
-import { inTowerSpot, towerSpotsFor } from '../public/js/home-tower.js?v=84d99af0';
-import { restockGarden, towerRoomsFeature } from '../public/js/features/tower-rooms-feature.js?v=6b1c7042';
+import { inTowerSpot, towerSpotsFor } from '../public/js/home-tower.js?v=a7fc0cce';
+import { restockGarden, towerRoomsFeature } from '../public/js/features/tower-rooms-feature.js?v=894f7b1d';
 import {
   ALL_TOWER_ROOMS,
   CHALLENGE_ROOMS,

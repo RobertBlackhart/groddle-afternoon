@@ -22,7 +22,7 @@
  */
 
 import { addItem } from '../inventory.js?v=6414dbdc';
-import { DOOR_KEYS, doorKeyClass } from '../doors.js?v=727d0e0b';
+import { DOOR_KEYS, doorKeyClass } from '../doors.js?v=f815e7c8';
 import {
   KEY_RESPAWN_MS,
   KEY_SPAWNS,

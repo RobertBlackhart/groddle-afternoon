@@ -18,9 +18,9 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, it } from 'node:test';
 
-import { builtForEveryone, closedForEveryone, exemptForEveryone, freeWays, keptForYou, openWorld, projectReachable } from '../public/js/open-roads.js?v=597feeb5';
-import { closedStreets, isJobBuilt, jobStatus, normalizeStreetJobState } from '../public/js/street-jobs.js?v=3fc80dcd';
-import { projectEntry, PROJECTS_TEXT } from '../public/js/projects-tracker.js?v=28ac735e';
+import { builtForEveryone, closedForEveryone, exemptForEveryone, freeWays, keptForYou, openWorld, projectReachable } from '../public/js/open-roads.js?v=2e03b0a6';
+import { closedStreets, isJobBuilt, jobStatus, normalizeStreetJobState } from '../public/js/street-jobs.js?v=76471e42';
+import { projectEntry, PROJECTS_TEXT } from '../public/js/projects-tracker.js?v=78916eff';
 import { TELEPORTERS } from '../public/js/hidden-floors.js?v=18714dfa';
 import { WINTRY_PORTAL_TELEPORTERS } from '../public/js/wintry-portal.js?v=1437deda';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';

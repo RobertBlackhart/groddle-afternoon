@@ -17,7 +17,7 @@ import {
   composeTower,
   towerOrigin,
   towerSignFoot,
-} from '../public/js/home-tower.js?v=84d99af0';
+} from '../public/js/home-tower.js?v=a7fc0cce';
 import { NOTE_POLE_STAGE } from '../public/js/home-street-mp.js?v=8b7fa493';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

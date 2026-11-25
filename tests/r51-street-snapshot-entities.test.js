@@ -10,9 +10,9 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { STREET_DRAWN, STREET_ENTITY_KINDS, markStreetEntity, streetEntityRows } from '../public/js/street-render.js?v=680cca90';
-import { doorArt } from '../public/js/door-view.js?v=3b5ea084';
-import { snapshotEntities, streetEntities } from '../public/js/features/street-minimap-feature.js?v=75d3cd8a';
+import { STREET_DRAWN, STREET_ENTITY_KINDS, markStreetEntity, streetEntityRows } from '../public/js/street-render.js?v=a43d35cd';
+import { doorArt } from '../public/js/door-view.js?v=da288f39';
+import { snapshotEntities, streetEntities } from '../public/js/features/street-minimap-feature.js?v=298b1b33';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

@@ -15,7 +15,7 @@ import {
   homeStreetLayout,
   normalizeCultivationState,
   placementCheck,
-} from '../public/js/home-cultivation.js?v=c50349f3';
+} from '../public/js/home-cultivation.js?v=dcf357ef';
 import {
   DISPATCHER_HALF,
   DISPATCHER_TEXT,
@@ -26,7 +26,7 @@ import {
   signpostX,
   streetFixtures,
 } from '../public/js/home-street-fixtures.js?v=4a56a718';
-import { homesFeature } from '../public/js/features/homes-feature.js?v=8ac584d6';
+import { homesFeature } from '../public/js/features/homes-feature.js?v=b8f7eea6';
 
 const root = join(import.meta.dirname, '..', 'public', 'js');
 const read = (rel) => readFileSync(join(root, rel), 'utf8');
