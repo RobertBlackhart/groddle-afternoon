@@ -8085,6 +8085,23 @@ function syncStreetMusic() {
   startStreetTrack(list.tracks[list.index], list.loop, STREET_TRACK_FADE_SEC);
 }
 
+/**
+ * #660 (root R25): the page came back from a background in which the system stopped its audio (an
+ * iPad's browser minimized). The street track is made again (a new element and source node) at
+ * the place it had reached, rather than the old ones played on (js/audio-resume.js).
+ */
+function rebuildStreetMusic(voice) {
+  if (!audio.ctx || !voice || voice.stopped || audio.music !== voice || !streetMusicAllowed()) return false;
+  const list = ambientPlaylistState;
+  audio.musicResume = { url: voice.url, time: voice.time() };
+  voice.stop(0);
+  audio.music = null;
+  audio.trackGain = null;
+  audio.trackTarget = null;
+  startStreetTrack(voice.url, Boolean(list?.loop) || Boolean(voice.el?.loop), STREET_MIX_FADE_SEC);
+  return true;
+}
+
 function syncMuteButton() {
   document.getElementById('sound-btn')?.setAttribute('data-muted', String(state.muted));
   const btn = document.getElementById('mute-btn');
@@ -36322,7 +36339,8 @@ async function main() {
     getCtx: () => audio.ctx,
     getVoice: () => audio.music,
     isMuted: () => state.muted,
-    onResume: (reason, plan) => setCanvasData('audioResume', `${reason}:${plan.ctx ? 'ctx' : ''}${plan.el ? '+el' : ''}`),
+    rebuildVoice: rebuildStreetMusic,
+    onResume: (reason, plan) => setCanvasData('audioResume', `${reason}:${plan.ctx ? 'ctx' : ''}${plan.el ? '+el' : ''}${plan.rebuild ? '+rebuild' : ''}`),
   });
   // Panel open/close and dialog button clicks (client CLICK_SUCCESS/FAILURE).
   watchPanelSounds(document, playSound, soundForPanel);
