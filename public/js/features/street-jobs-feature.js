@@ -3301,10 +3301,14 @@ function aheadName(to) {
   return m.hubName ? `${m.label} (${m.hubName})` : m.label;
 }
 
-/** G801: the Projects panel opened on the roads to a street (the Map's Roads to build). */
+/**
+ * G801: the Projects panel opened on the roads to a street (the Map's Roads to build), or to a
+ * region ("h:<hub id>": the Map card of a region no open road leads into, check 2026-11-25).
+ */
 function openAhead(engine, tsid) {
   pj.aheadOpen = true;
-  pj.aheadTo = tsid ? `s:${streetMeta(tsid).tsid}` : pj.aheadTo;
+  const to = String(tsid || '');
+  pj.aheadTo = to.startsWith('h:') ? to : to ? `s:${streetMeta(to).tsid}` : pj.aheadTo;
   pj.aheadSig = '';
   if (!pj.open) openProjects(engine);
   else renderProjectsPanel(engine);

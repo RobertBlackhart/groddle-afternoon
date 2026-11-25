@@ -59,7 +59,7 @@
  * restore a stale one after a later croak).
  */
 
-import { closedOnTheWay, doorRooms, findRoute, graphKey, hasRoad, routeGraph, sameStreet, tsidAliases } from './street-graph.js?v=dcc5cae4';
+import { closedOnTheWay, doorRooms, findRoute, graphKey, hasRoad, isClosed, routeGraph, sameStreet, tsidAliases } from './street-graph.js?v=dcc5cae4';
 
 /**
  * R11 (G969): the graph and its walks live in js/street-graph.js, closed roads included; these
@@ -85,6 +85,9 @@ export const ROUTE_TEXT = Object.freeze({
   notFound: 'Path not found',
   /** The remake's own (Austin 2026-11-15): the destination is still under construction, or only closed roads lead there. */
   noRoad: 'No road there yet',
+  /** The remake's own (check 2026-11-25, regionWayIn): the Map card's way into a region whose map shows unbuilt roads. */
+  wayIn: 'The way in: ',
+  noRoadInto: 'No open road leads into ',
   /** GpsUI.as moveMoveEnded 347-352 growl. */
   rerouteFailed: 'Creating path failed: Path not found',
   /** items/contraband.js check_address 71. */
@@ -615,4 +618,31 @@ export function hubRouteDrawing(remaining, segments, hubOf, hubId) {
     }
   }
   return { lines, joins, exitHub, pin, pinVia };
+}
+
+/**
+ * The way into a region whose map shows unbuilt roads (check 2026-11-25, R11, a sibling of G801).
+ * A player could not find a way into Xalanga for "To Xalanga, And Beyond": its map shows 38 of its
+ * 40 streets under construction, and the two open ones (Hazy Gate 3, Languid Line S) are reached
+ * from Yellow Yawning in Moshi Moshi Oshilatis, which nothing on that map named. From `from` over
+ * the open roads (and `opts.rides`, as a route would go): the region's nearest open street
+ * (`entry`), the street before it on the way (`before`, '' when you start there) and the route.
+ * Null when you are in the region already, when none of its streets is under construction (its map
+ * shows every way in), or with no street to start from; { noRoad: true } when no open road gets
+ * there but built roads would (the Projects sheet's Roads to a region, G801). Glitch's world was
+ * fully open, so it never needed this.
+ * @param {object} graph  a street graph (js/street-graph.js), closed roads in it
+ * @param {{ from: string, hubId: string, streets: string[], hubOf: (tsid: string) => string, rides?: object, oneWay?: object, startCut?: Iterable<string> }} o
+ */
+export function regionWayIn(graph, { from = '', hubId = '', streets = [], hubOf = () => '', ...opts } = {}) {
+  const hub = String(hubId || '');
+  const list = (streets || []).filter((t) => graphKey(graph, t));
+  if (!from || !hub || !list.length || !graphKey(graph, from)) return null;
+  if (String(hubOf(from) || '') === hub) return null;
+  if (!list.some((t) => isClosed(graph, t))) return null;
+  const path = findRoute(graph, from, list, opts);
+  if (!path) return closedOnTheWay(graph, from, list, opts) ? { noRoad: true } : null;
+  const at = path.findIndex((t) => String(hubOf(t) || '') === hub);
+  if (at < 0) return null;
+  return { entry: path[at], before: at > 0 ? path[at - 1] : '', path };
 }

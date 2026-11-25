@@ -35,6 +35,9 @@
  *   engine.query('mapRoute', 'find', { to }, engine)                      -> { destination, hops } | { unknown } | null
  *     (G774, the vendor finder: the route set would take, from where you stand, without setting it;
  *     { unknown: true } at home, off the map or while the roads load; null when no way gets there)
+ *   engine.query('mapRoute', 'wayIn', { hubId }, engine)                  -> { entry, before, path } | { noRoad } | null
+ *     (check 2026-11-25: the way into a region whose map shows unbuilt roads, map-routes.js regionWayIn;
+ *     its Map card names it and offers Show the way, and a location link opens the Map on its entry)
  *
  * QA (see tests/map-routes.test.js):
  *   &routedemo=<tsid>        set a player route from the street you load on
@@ -78,6 +81,7 @@ import {
   normalizeRouteState,
   oneWayRoads,
   planRoute,
+  regionWayIn,
   resurrectRoute,
   routeRides,
   routeStopsLine,
@@ -328,6 +332,46 @@ function homeDoorStreet(engine) {
   if (!home?.inHome) return '';
   const tsid = String(home.wayOut?.tsid || home.returnLocation?.tsid || '');
   return tsid && graphKey(roads(engine) || {}, tsid) ? tsid : '';
+}
+
+/** The streets the street index puts in a region. */
+function hubStreets(hubId) {
+  const id = String(hubId || '');
+  if (!id) return [];
+  return Object.entries(STREET_INDEX.streets || {}).filter(([, m]) => String(m?.hubId || '') === id).map(([t]) => t);
+}
+
+/**
+ * Check 2026-11-25 (R11, Xalanga): the way into region `hubId` from where a route would start
+ * (map-routes.js regionWayIn), or null (you are there, its map shows every way in, off the map,
+ * or the roads are still loading).
+ */
+function wayInto(engine, hubId) {
+  const graph = roads(engine);
+  if (!graph) {
+    loadGraph();
+    return null;
+  }
+  const door = homeDoorStreet(engine);
+  if (!door && offWorld(engine)) return null;
+  const from = door || routeStreet(engine);
+  const ask = (by) => regionWayIn(graph, { from, hubId, streets: hubStreets(hubId), hubOf, rides: by, oneWay, startCut: door ? null : cutHere(engine) });
+  const way = ask(ridesFor(engine, 'player'));
+  // R24: when only the subway gets in and the gate would turn you back, the way in is still the
+  // subway (Groddle Heights from Groddle Forest Junction): Show the way then says what the gate needs.
+  if (way?.noRoad && refusedRides(engine, 'player')) {
+    const byTrain = ask(rides);
+    if (byTrain?.entry) return byTrain;
+  }
+  return way;
+}
+
+/** The Map card's words for a way in: "The way in: Hazy Gate 3, from Yellow Yawning (Moshi Moshi Oshilatis)." */
+function wayInLine(engine, way) {
+  if (!way?.before) return `${ROUTE_TEXT.wayIn}${label(way?.entry)}.`;
+  const ride = isRide(roads(engine), rides, way.before, way.entry);
+  const where = `${label(way.before)}${hubName(way.before) ? ` (${hubName(way.before)})` : ''}`;
+  return `${ROUTE_TEXT.wayIn}${label(way.entry)}, ${ride ? 'by subway from' : 'from'} ${where}.`;
 }
 
 /** G774: where a route to the nearest of `opts.to` would end and how many streets away, without setting it. */
@@ -1135,6 +1179,16 @@ function mapCard(engine) {
     lines.push(pickMode ? `${isPhoneDevice() ? 'Tap' : 'Click'} a street to set it as your destination.` : 'No destination set.');
   }
   if (noRoadPick && !pickMode) lines.push(`No open road leads to ${label(noRoadPick)} yet.`);
+  // Check 2026-11-25 (R11): a region whose map shows unbuilt roads names its way in from where you are
+  // (Xalanga's two open streets are reached from Yellow Yawning, in another region).
+  const shownHub = hubOf(document.querySelector('#map-canvas g.map-street[data-tsid]')?.getAttribute('data-tsid') || '');
+  const way = !pickMode && !noRoadPick && shownHub && !(r && hubOf(r.destination) === shownHub) ? wayInto(engine, shownHub) : null;
+  const wayText = way?.entry ? wayInLine(engine, way) : way?.noRoad ? `${ROUTE_TEXT.noRoadInto}${hubName(hubStreets(shownHub)[0])} yet.` : '';
+  // In the Map's one-line row it leads, in place of "No destination set.", so it is not cut off.
+  if (wayText && !r && !quest) lines.splice(0, lines.length, wayText);
+  else if (wayText) lines.push(wayText);
+  card.dataset.mapWayIn = way?.entry || (way?.noRoad ? 'none' : '');
+  engine.setData?.('mapWayIn', way?.entry ? `${shownHub}:${way.entry}` : way?.noRoad ? `${shownHub}:none` : '');
   card.dataset.mapRouteQuest = quest ? quest.source : '';
   const body = `${lead}<div class="map-route-body">${head ? `<strong>${esc(head)}</strong><br>` : ''}${lines.map((l) => `<span>${esc(l)}</span>`).join('<br>')}</div>`;
   card.innerHTML = `${body}<span class="map-route-actions"></span>`;
@@ -1170,7 +1224,6 @@ function mapCard(engine) {
     return b;
   };
   // Another hub's destination: a button to its map (a door-only room in this hub is pinned on its street, G192).
-  const shownHub = hubOf(document.querySelector('#map-canvas g.map-street[data-tsid]')?.getAttribute('data-tsid') || '');
   if (r && hubOf(r.destination) && document.querySelector('#map-canvas svg') && hubOf(r.destination) !== shownHub) {
     // MAPZOOM: its region opens zoomed in on it (game.js focusMapOn).
     button('Show destination', () => engine.openMap?.(hubOf(r.destination), { focus: r.destination }));
@@ -1215,6 +1268,18 @@ function mapCard(engine) {
       noRoadPick = '';
       engine.query?.('projectsPanel', 'ahead', engine, to);
     }).dataset.routeAhead = to;
+  }
+  // Check 2026-11-25: the way in as a route (drawn on every map it crosses, and the GPS), or the roads to build.
+  if (way?.entry) {
+    const to = way.entry;
+    button('Show the way', () => {
+      const res = setRoute(engine, { to, source: 'player' });
+      if (!res.ok) engine.toast?.(res.error, res.subway ? 6000 : 2600);
+      else engine.pushActivity?.(`Destination set: ${label(res.route.destination)}.`);
+    }).dataset.routeWayIn = to;
+  } else if (way?.noRoad) {
+    const hub = shownHub;
+    button('Roads to build', () => engine.query?.('projectsPanel', 'ahead', engine, `h:${hub}`)).dataset.routeAhead = `h:${hub}`;
   }
   if (pickMode) roomPicker(engine, card, shownHub);
   // openMap renders the SVG before it asks for cards, so the route can go on now.
@@ -1358,6 +1423,7 @@ export const mapRoutesFeature = {
   mapRoute(action, opts, engine) {
     if (action === 'get') return state.route;
     if (action === 'find') return findNearest(engine, opts || {});
+    if (action === 'wayIn') return wayInto(engine, opts?.hubId);
     if (action === 'clear') return dropRoute(engine, opts || {});
     if (action === 'set') {
       if (streetGraphLoaded()) return setRoute(engine, opts || {});

@@ -5358,6 +5358,31 @@
    ]
   },
   {
+   "id": "region-way-in",
+   "title": "The Map card of a region whose map shows unbuilt roads names its way in from where you are (\"The way in: Hazy Gate 3, from Yellow Yawning\") with Show the way, or Roads to build when no open road gets in; a quest's place link opens the region on that street.",
+   "kind": "UI",
+   "status": "kept",
+   "where": [
+    {
+     "file": "public/js/map-routes.js",
+     "symbol": "regionWayIn / ROUTE_TEXT.wayIn"
+    },
+    {
+     "file": "public/js/features/map-routes-feature.js",
+     "symbol": "wayInto / wayInLine (mapCard)"
+    },
+    {
+     "file": "public/game.js",
+     "symbol": "openLocationLink"
+    }
+   ],
+   "why": "Glitch's world was fully open, so a region's map always showed its ways in. In the remake most roads start closed, and Xalanga's map showed 38 unbuilt streets and nothing about the way to its two open ones (chat 2026-11-25, To Xalanga, And Beyond).",
+   "ruling": "Austin 2026-11-25: show the way in (lane wayk)",
+   "rows": [
+    "G1253"
+   ]
+  },
+  {
    "id": "unhidden-home-finishes",
    "title": "Eight home finishes Glitch defined but never offered are in the Decorate swatch tray: Blue Tiles, Dark Starry Sky Wallpaper, Pastel Glow Wallpaper, Dark Starry Sky Floor, Starry Sky Floor, Rook Forest Floor, Dark Starry Sky Ceiling and Rook Forest Ceiling, with Tiny Speck's names and prices",
    "kind": "content",

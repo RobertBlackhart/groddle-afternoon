@@ -35,7 +35,7 @@ import {
   paidRewardBits,
 } from './js/quests.js?v=d0443973';
 // Quest copy is Flash htmlText: <b>/<i>/<br> drawn as formatting, the rest dropped, never innerHTML.
-import { questRequirementText, renderQuestText, withQuestMarkup } from './js/quest-text.js?v=4d0f8703';
+import { locationLinkTarget, questRequirementText, renderQuestText, withQuestMarkup } from './js/quest-text.js?v=4d0f8703';
 // G267: the world-verb quest counters skip offer-system quests; old saves drop the boot Moloko quest.
 import { dropSpiritRepeatOffers, SPIRIT_REPEAT_QUESTS } from './js/spirit-reminisce.js?v=db767dfb';
 import { FIRST_SKILL_QUEST_ID, acceptOffer, claimFirstSkillQuest, dropBootStarterQuests, questMoveNote, routesCounter, worldVerbQuestEvents, gardenPlotEvents, makingUnitQuestEvents, shrineDonationQuestEvents } from './js/quest-offers.js?v=4ca83fa9';
@@ -6773,6 +6773,40 @@ const questSheet = createQuestSheet({
 });
 questSheet.bindMenu(document.getElementById('quest'));
 questSheet.mountTools(document.getElementById('quest-tabs'));
+
+/**
+ * A place named in quest copy opens the Map on it, as Glitch's location links did (TSLinkedTextField.as
+ * 141-162, js/quest-text.js locationLinkTarget). Check 2026-11-25 (R11): a region whose map shows unbuilt
+ * roads opens on its way in from where you are (map-routes-feature wayIn: Xalanga on Hazy Gate 3, reached
+ * from Yellow Yawning), and the Map card names it with Show the way.
+ */
+function openLocationLink(link) {
+  const target = locationLinkTarget(link);
+  if (!target) return false;
+  if (target.map) {
+    openMap();
+    return true;
+  }
+  const way = target.tsid ? null : features.query('mapRoute', 'wayIn', { hubId: target.hubId }, engine);
+  const find = target.tsid || way?.entry || '';
+  if (app?.canvas) app.canvas.dataset.questLinkOpened = `${target.hubId}:${find}`;
+  openMap(target.hubId, find ? { find } : {});
+  return true;
+}
+const questLinkAt = (e) => e.target?.closest?.('[data-quest-link^="location"]') || null;
+document.addEventListener('click', (e) => {
+  const el = questLinkAt(e);
+  if (!el || !openLocationLink(el.getAttribute('data-quest-link'))) return;
+  e.preventDefault();
+  e.stopPropagation();
+}, true);
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Enter' && e.key !== ' ') return;
+  const el = questLinkAt(e);
+  if (!el || !openLocationLink(el.getAttribute('data-quest-link'))) return;
+  e.preventDefault();
+  e.stopPropagation();
+}, true);
 
 /** The pins (features/quest-pins-feature.js: up to two, in the player save). */
 function questPins() {

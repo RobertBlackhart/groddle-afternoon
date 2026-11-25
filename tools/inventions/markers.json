@@ -818,7 +818,8 @@
     "remake-own: * PURE (#104, a remake addition: GpsUI.as showed only To and Next): the Map's": "map-route-line",
     "remake-own: * The remake's own (R24): only the subway gets there, and the gate": "subway-ride-cost",
     "remake-own: * the subway (a remake addition, subwayRides): the path holds the two surface": "subway-route-card",
-    "remake-own: /** The remake's own (Austin 2026-11-15): the destination is still": "map-route-line"
+    "remake-own: /** The remake's own (Austin 2026-11-15): the destination is still": "map-route-line",
+    "remake-own: /** The remake's own (check 2026-11-25, regionWayIn): the Map card's": "region-way-in"
   },
   "public/js/map-zoom.js": {
     "remake-own: MAP_W / MAP_ACTUAL_W): this is the remake's own.": "map-zoom"
@@ -1439,8 +1440,8 @@
     "remake-own: The remake's own window without a stick (animal-husbandry-feature": "flyer-hover-bob"
   },
   "public/style.css": {
-    "ours: G1246 (ours, Austin 2026-11-24): a sorted bag's badge, its": "ours-bag-sort-badge",
     "ours: G1245 Vine Radio (#661, ours; js/features/vine-radio-feature.js): Choose": "ours-vine-radio",
+    "ours: G1246 (ours, Austin 2026-11-24): a sorted bag's badge, its": "ours-bag-sort-badge",
     "reimagined: .avatar-reimagined-tag": "ours-style-css",
     "reimagined: .avatar-reimagined-tag #2": "ours-style-css",
     "reimagined: .badge-reimagined": "ours-style-css",

@@ -4670,6 +4670,19 @@ button.play-context-head:focus-visible {
   text-decoration: underline dotted;
   text-underline-offset: 2px;
 }
+/* A place in quest copy opens the Map on it (game.js openLocationLink). */
+.q-link[role='link'] {
+  cursor: pointer;
+  text-decoration-style: solid;
+}
+.q-link[role='link']:hover {
+  text-decoration-thickness: 2px;
+}
+.q-link[role='link']:focus-visible {
+  outline: 2px solid currentColor;
+  outline-offset: 1px;
+  border-radius: 2px;
+}
 .quest-log-body .q-bar {
   height: 6px;
   background: var(--c-sage-93);

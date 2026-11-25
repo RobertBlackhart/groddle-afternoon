@@ -145,12 +145,35 @@ export function renderQuestText(el, raw = '', opts = {}) {
       const span = doc.createElement('span');
       span.className = 'q-link';
       span.setAttribute('data-quest-link', seg.link.id ? `${seg.link.kind}|${seg.link.id}` : seg.link.kind);
+      // A place opens the Map (locationLinkTarget; game.js opens it), so it is a link you can reach and press.
+      if (locationLinkTarget(seg.link)) {
+        span.setAttribute('role', 'link');
+        span.setAttribute('tabindex', '0');
+        span.setAttribute('title', 'Show on the Map');
+      }
       span.appendChild(node);
       node = span;
     }
     el.appendChild(node);
   }
   return el;
+}
+
+/**
+ * A place in quest copy (<a href="event:location|95">Xalanga</a>): Glitch opened the Map on it
+ * (TSLinkedTextField.as 141-162): "location|hub#street" on that region with the street shown,
+ * "location|hub" on the region, "location|map" the Map as it opens. Spaces in a link are dropped
+ * there too. Takes a segment's link ({ kind, id }) or a data-quest-link value ("location|95").
+ * @returns {{ map: true } | { hubId: string, tsid: string } | null}
+ */
+export function locationLinkTarget(link) {
+  const raw = typeof link === 'string' ? link : link && link.kind === 'location' ? `location|${link.id || ''}` : '';
+  const m = /^location\|(.*)$/i.exec(String(raw || ''));
+  if (!m) return null;
+  const [hub = '', street = ''] = m[1].split('#').map((x) => x.split(' ').join(''));
+  if (hub === 'map') return { map: true };
+  if (!/^\d+$/.test(hub)) return null;
+  return { hubId: hub, tsid: street ? street.replace(/^L/, 'G') : '' };
 }
 
 /**
