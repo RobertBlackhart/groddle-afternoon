@@ -109,6 +109,7 @@ import {
   waitingOffers,
   wintryPlaceLeave,
   homeTreesGrown,
+  offerOnShrineDonation,
   COLD_COMFORT,
   COLD_COMFORT_LEAVE_TEXT,
   HOME_TREE_GROWN_TEXT,
@@ -822,6 +823,15 @@ export const questOffersFeature = {
     finish(result.completable, engine);
     // G458: patch.js 781-782: a bean planted in a yard you own also counts pol_beans_planted.
     if (/^patch(?:_dark)?:plant$/.test(String(counter)) && onOwnYard(engine)) this.onEvent('patch:plant_home', 1, engine);
+    // A first shrine donation offers Respect for the Beginnings (include/shrines.js 573-592, quest-offers.js offerOnShrineDonation).
+    // It is an emergency (donate_to_all_shrines.js is_emergency 1): the next check pops it on the street
+    // (a QA route's ?questoffer=off keeps it waiting, as it keeps every offer).
+    if (offerOnShrineDonation(engine.questState, counter)) {
+      engine.setData('questOffer', 'donate_to_all_shrines');
+      engine.save();
+      syncWaiting(engine);
+      nextOfferCheckAt = Math.min(nextOfferCheckAt || Infinity, Date.now() + EMERGENCY_RETRY_MS);
+    }
   },
 
   onTick(dtMs, now, engine) {

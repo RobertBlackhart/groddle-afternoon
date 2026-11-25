@@ -52,6 +52,7 @@
  *   pendingQuestOffers(questState, pc, ctx) / nextQuestOffer(questState, pc, ctx)
  *   npcQuestOffers(questState, npcClass, pc, ctx)
  *   enqueueQuestOffer(questState, id) / markOffered / declineOffer / putOffOffer / acceptOffer
+ *   offerOnShrineDonation(questState, event)  Respect for the Beginnings on a first donation
  *   listDeclinedOffers(questState) / waitingOffers(questState) / questOfferCard(id)
  *   routeQuestEvent(questState, event, amount, ctx) / syncItemRequirements(questState, inv, ctx)
  *   eventCounters(event) / requirementRoute(req) / isEventEmitted(event) / questRoutingReport(catalog)
@@ -344,6 +345,26 @@ export function questStatus(questState, classTsid) {
   if (offers.offered[classTsid]) return 'offered';
   if ((questState.completed || []).includes(classTsid)) return 'done';
   return 'none';
+}
+
+/**
+ * Respect for the Beginnings (donate_to_all_shrines), the quest the street spirits' first talks and
+ * the Last Pilgrimage of Esquibeth wait on. GSJS offers it on a donation made while the player has no
+ * instance of it: the Giant screen opens and its close offers the quest (items/include/shrines.js
+ * 573-592, offerGiantQuest 1262-1265: quests_offer('donate_to_all_shrines', true), force_now, so at
+ * once, past the five-minute spacing: players/inc_quests.js 586-631). Its offer trigger here (the
+ * event shrine_donation) is one the familiar's context never carries, so nothing offered it (the
+ * 2026-11-25 quest audit, tools/quests/audit.mjs). A shrine donation event (`shrines_donated:<giant>`)
+ * now marks it offered, waiting in the log as a familiar offer does. Returns the quest id when it did.
+ */
+export const GIANT_QUEST = 'donate_to_all_shrines';
+export function offerOnShrineDonation(questState, event, now = Date.now()) {
+  if (!/^shrines_donated:[a-z]+$/.test(String(event || ''))) return null;
+  const def = getQuestCatalog()[GIANT_QUEST];
+  if (!def?.solo || questStatus(questState, GIANT_QUEST) !== 'none') return null;
+  if (questHeldCheck?.(GIANT_QUEST)) return null;
+  markOffered(questState, GIANT_QUEST, now);
+  return GIANT_QUEST;
 }
 
 /**
