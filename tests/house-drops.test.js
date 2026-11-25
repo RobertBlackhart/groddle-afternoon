@@ -24,8 +24,8 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { homePlaceOf, isSharedStreet, shareReason } from '../public/js/drops-mp.js?v=34a8fc84';
 import { dropsMpFeature } from '../public/js/features/drops-mp-feature.js?fresh=housedrops';
-import { homeStreetMpFeature } from '../public/js/features/home-street-mp-feature.js?v=8e17c3df';
-import { neighboursMpFeature } from '../public/js/features/neighbours-mp-feature.js?v=45cdeaf8';
+import { homeStreetMpFeature } from '../public/js/features/home-street-mp-feature.js?v=575ed52f';
+import { neighboursMpFeature } from '../public/js/features/neighbours-mp-feature.js?v=955ae3d5';
 import { OWNER_STACK_TEXT, isOwnerStackId, normalizeHomeView, normalizeOwnerStacks, ownerStacksFor, sharedHomeStreet } from '../public/js/neighbours-mp.js?v=d7a3f0f2';
 import { GAME_DIR, HAS_SERVER, HAS_SITE, SITE_DIR, serverPath } from '../tools/repos.mjs';
 

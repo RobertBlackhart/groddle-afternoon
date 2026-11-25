@@ -20,7 +20,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=5ef6adb5';
 import { createQuestState } from '../public/js/quests.js?v=d0443973';
-import { acceptOffer, routeQuestEvent } from '../public/js/quest-offers.js?v=4ca83fa9';
+import { acceptOffer, routeQuestEvent } from '../public/js/quest-offers.js?v=71ef8434';
 import { RECIPE_CATALOG, craftRecipe, loadRecipeCatalogFromFile } from '../public/js/making.js?v=1ec1075e';
 import { stationForRecipe } from '../public/js/make-tools.js?v=86877c3e';
 

@@ -2814,9 +2814,19 @@
   "deployed": "2026-11-24"
  },
  "git": {
-  "commits": 3417,
+  "commits": 3420,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-24",
+    "kind": "fix",
+    "text": "Sparkly of Interest counts each chunk mined or ground on its row (n/100)"
+   },
+   {
+    "date": "2026-11-24",
+    "kind": "fix",
+    "text": "Quest steps read as words, not the editor's \"Toggle flag ...\" placeholders"
+   },
    {
     "date": "2026-11-24",
     "kind": "fix",
@@ -2926,19 +2936,9 @@
     "date": "2026-11-24",
     "kind": "fix",
     "text": "Under a low street on a phone the view shows ground, not a band of yellow sky"
-   },
-   {
-    "date": "2026-11-24",
-    "kind": "fix",
-    "text": "On a phone the buff chips have their own place under the street's name"
-   },
-   {
-    "date": "2026-11-24",
-    "kind": "fix",
-    "text": "A picture that fails to load no longer leaves an unhandled error behind"
    }
   ]
  },
- "tests": 1349,
+ "tests": 1350,
  "generatedAt": "2026-11-24"
 }

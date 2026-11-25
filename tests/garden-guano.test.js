@@ -26,7 +26,7 @@ import { GARDEN_SPEEDUP,
 } from '../public/js/garden.js?v=0cbb65f0';
 import { getVerbsFor, runVerb } from '../public/content.js?v=0e701611';
 import { actionDurationFor, actionLabelFor } from '../public/js/action-timing.js?v=c0253fd6';
-import { gardenPlotEvents } from '../public/js/quest-offers.js?v=4ca83fa9';
+import { gardenPlotEvents } from '../public/js/quest-offers.js?v=71ef8434';
 import { applyTendAct, normalizeTendActs, plotsSnapshot, tendAct, tendedText } from '../public/js/neighbours-mp.js?v=d7a3f0f2';
 import { guanoOver, plotHit } from '../public/js/features/garden-guano-feature.js?v=3d55f5cf';
 

@@ -10,7 +10,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=5ef6adb5';
 import { createQuestState, assignQuest } from '../public/js/quests.js?v=d0443973';
-import { FIRST_SKILL_QUEST_ID, claimFirstSkillQuest, markOffered, declineOffer, pendingQuestOffers, questStatus } from '../public/js/quest-offers.js?v=4ca83fa9';
+import { FIRST_SKILL_QUEST_ID, claimFirstSkillQuest, markOffered, declineOffer, pendingQuestOffers, questStatus } from '../public/js/quest-offers.js?v=71ef8434';
 import { GATE_DEVIATIONS, SPECIAL_TRIGGERS, STAND_INS } from '../tools/quest-gates/table.mjs';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
