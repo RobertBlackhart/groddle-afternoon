@@ -605,6 +605,36 @@ def seal_svg(text):
     return ''.join(out)
 
 
+def render_rows(work, z, rows):
+    """build.render_batch for sharp rows: a SCRIPT_MASKS deco's art render with its alpha multiplied
+    by its mask's render (build.script_mask_composite, G1173)."""
+    items = [(r['name'], r['_swf']) for r in rows] + [(r['name'] + '__mask', r['_mask_swf']) for r in rows if r.get('_mask_swf')]
+    found, tmp = build.render_batch(work, z, items)
+    for r in rows:
+        if r.get('_mask_swf') and r['name'] in found and r['name'] + '__mask' in found:
+            found[r['name']] = build.script_mask_composite(found[r['name']], found.pop(r['name'] + '__mask'),
+                                                           os.path.join(work, f"{r['name']}-z{z}-masked.png"))
+    return found, tmp
+
+
+def script_mask_svg(text, masked, mask):
+    """FFDec's SVG of a deco whose code masks root child `masked` with root child `mask` (build.py
+    SCRIPT_MASKS, G1173): the mask's <use> moves into an alpha <mask> that the masked <use> takes,
+    so the browser draws what Flash did (FFDec's export draws the mask as art)."""
+    use = re.search(r'<use\b[^>]*\bid="' + re.escape(mask) + r'"[^>]*/>', text)
+    art = re.search(r'<use\b[^>]*\bid="' + re.escape(masked) + r'"[^>]*/>', text)
+    if not use or not art:
+        raise ValueError(f'script mask: no <use id="{masked}"> and <use id="{mask}">')
+    mid = f'script-mask-{mask}'
+    box = 'x="-100000" y="-100000" width="200000" height="200000"'
+    defs = f'<mask id="{mid}" maskUnits="userSpaceOnUse" {box} style="mask-type:alpha">{use.group(0)}</mask>'
+    text = text.replace(use.group(0), '', 1)
+    # On a group round the masked <use>, so the mask is in the space the two siblings share (on the
+    # <use> itself the browser measures it in the <use>'s own space).
+    text = text.replace(art.group(0), f'<g mask="url(#{mid})">{art.group(0)}</g>', 1)
+    return text.replace('<defs>', '<defs>' + defs, 1) if '<defs>' in text else text.replace('</svg>', f'<defs>{defs}</defs></svg>', 1)
+
+
 def export_svgs(work, items):
     """items [(name, swf)] -> {name: svg text}; one JVM per batch."""
     src = os.path.join(work, 'src-svg')
@@ -703,7 +733,10 @@ SIZING = ('R', 'ratio_min', 'front_min', 'edge_min', 'outline_ratio', 'target', 
 
 def row_key(r, prow):
     keep = {k: SETTINGS[k] for k in SETTINGS if k not in SIZING}
-    return hashlib.sha256(json.dumps([r['name'], prow.get('swf_sha'), r.get('edge_of'), keep], sort_keys=True).encode()).hexdigest()[:20]
+    parts = [r['name'], prow.get('swf_sha'), r.get('edge_of'), keep]
+    # G1173: a deco its own code masks (build.py SCRIPT_MASKS) is redone when that changes.
+    parts += [['script_mask', list(build.SCRIPT_MASKS[r['name']])]] if r['name'] in build.SCRIPT_MASKS else []
+    return hashlib.sha256(json.dumps(parts, sort_keys=True).encode()).hexdigest()[:20]
 
 
 def out_files(r):
@@ -756,6 +789,11 @@ def cmd_build(args):
             continue
         # In the state the client drew it by default (build.py HIDDEN_BY_DEFAULT: no For Sale sign).
         r['_swf'] = build.default_state(audit.swf_path(prow['swf'], work, index), work)[0]
+        if r['name'] in build.SCRIPT_MASKS:
+            # G1173: the SVG from the whole deco (its mask becomes an SVG mask, script_mask_svg), the
+            # rasters from its art and its mask apart, the alphas multiplied (render_rows).
+            r['_svg_swf'] = r['_swf']
+            r['_swf'], r['_mask_swf'] = build.script_mask_state(r['name'], r['_swf'], work)
         r['base'] = 1.5 if prow.get('hires') else 1
         r['stage'] = prow['stage']
         r['_prow'] = prow
@@ -809,8 +847,11 @@ def seam_reference(r, refs):
 
 def build_chunk(work, chunk, args):
     S = SETTINGS
-    items = [(r['name'], r['_swf']) for r in chunk]
+    items = [(r['name'], r.get('_svg_swf') or r['_swf']) for r in chunk]
     svgs = export_svgs(work, items)
+    for r in chunk:
+        if r['name'] in build.SCRIPT_MASKS and svgs.get(r['name']):
+            svgs[r['name']] = script_mask_svg(svgs[r['name']], *build.SCRIPT_MASKS[r['name']])
     # Check renders: FFDec raster at a zoom giving check_side, stage resampled to the check size.
     groups = collections.defaultdict(list)
     for r in chunk:
@@ -824,7 +865,7 @@ def build_chunk(work, chunk, args):
     shutil.rmtree(cdir, ignore_errors=True)
     os.makedirs(cdir)
     for z, rs in groups.items():
-        found, tmp = build.render_batch(work, z, [(r['name'], r['_swf']) for r in rs])
+        found, tmp = render_rows(work, z, rs)
         for r in rs:
             if r['name'] in found:
                 # Seams sealed as in build.py's files (G1162): the SVG is checked against the art Flash drew.
@@ -896,7 +937,7 @@ def build_chunk(work, chunk, args):
     for z, rs in g2.items():
         for j in range(0, len(rs), 8):
             sub = rs[j:j + 8]
-            found, tmp = build.render_batch(work, z, [(r['name'], r['_swf']) for r in sub])
+            found, tmp = render_rows(work, z, sub)
             for r in sub:
                 if r['name'] not in found:
                     r['kind'] = None

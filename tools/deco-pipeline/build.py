@@ -92,6 +92,7 @@ HIDDEN_BY_DEFAULT = ('sign',)
 # (FFDec's SVG export loses some multiply strata and overlay highlights). Firebog's ground fronts: their siblings with the same multiply/overlay structure
 # (front_ground_2, _3, _set_3) already ship FFDec's raster, which draws them like those.
 SWF_WINS = {
+    'skyCrack_01_masked': "the old PNG draws the deco's mask (topmask, a white fade) as art; its code masks the crack with it (SCRIPT_MASKS)",
     'front_ground_1': 'the old PNG draws the overlay highlight columns opaque (its siblings and FFDec do not)',
     'front_ground_set_1': "the old PNG is the same art about 10 px lower and 3% taller than the SWF's stage",
     'front_ground_set_2': "the old PNG is front_ground_set_1's art",
@@ -150,6 +151,16 @@ OVERLAY_AS_NORMAL = {
     'underground_bogwillow_3': 0.5,
 }
 
+# Decos whose own code masks one root child with another (G1173): Flash drew `masked` with its alpha
+# multiplied by `mask`'s (both cacheAsBitmap, an alpha mask) and drew `mask` itself not at all, while
+# FFDec's static render draws both. Each is rendered twice, without its mask child and with only it,
+# and the two alphas multiplied (script_mask_composite). A sweep of every location SWF's ABC for the
+# `mask` property (2026-11-24, 6055 SWFs) finds one deco: skyCrack_01_masked (MainTimeline frame1:
+# masked.mask = topmask; Groddle Ladder, before its starry sky). tests/deco-script-masks.test.js.
+SCRIPT_MASKS = {
+    'skyCrack_01_masked': ('masked', 'topmask'),
+}
+
 SETTINGS = {
     'version': 1,
     'zoom': 3,              # FFDec zoom for the render both sizes come from (more for denser PNGs)
@@ -199,6 +210,29 @@ def default_state(swf, work):
     if soft:
         swfinfo.root_blend_normal(src, out, 13, soft)
     return out, hide
+
+
+def script_mask_state(name, swf, work):
+    """(art SWF, mask SWF) for a SCRIPT_MASKS deco: the deco without its mask child, and with only it."""
+    masked, mask = SCRIPT_MASKS[name]
+    base = os.path.join(work, 'script-mask', name)
+    os.makedirs(base, exist_ok=True)
+    art, only = os.path.join(base, 'art.swf'), os.path.join(base, 'mask.swf')
+    swfinfo.drop_root_places(swf, art, {mask})
+    swfinfo.drop_root_places(swf, only, {masked})
+    return art, only
+
+
+def script_mask_composite(art_png, mask_png, out_png):
+    """The art render with its alpha multiplied by the mask render's (Flash's alpha mask)."""
+    art = np.asarray(Image.open(art_png).convert('RGBA')).copy()
+    mask = np.asarray(Image.open(mask_png).convert('RGBA'))
+    h, w = min(art.shape[0], mask.shape[0]), min(art.shape[1], mask.shape[1])
+    alpha = np.zeros(art.shape[:2], np.float32)
+    alpha[:h, :w] = mask[:h, :w, 3] / 255.0
+    art[..., 3] = np.round(art[..., 3] * alpha).astype(np.uint8)
+    Image.fromarray(art, 'RGBA').save(out_png)
+    return out_png
 
 
 def png_size(path):
@@ -557,9 +591,10 @@ def expect_swf(row):
     return same_art(row['diff']) or bool(row.get('svg_ok')) or row.get('name') in SWF_WINS
 
 
-def inputs_key(name, mode, swf_sha, src_sha, svg_ok=None, hidden=None):
+def inputs_key(name, mode, swf_sha, src_sha, svg_ok=None, hidden=None, script_mask=None):
     keep = {k: SETTINGS[k] for k in SETTINGS if k not in DECISION}
     parts = [name, mode, swf_sha, src_sha, svg_ok, keep] + ([hidden] if hidden else [])
+    parts += [['script_mask', script_mask]] if script_mask else []
     parts += [['overlay', OVERLAY_AS_NORMAL[name]]] if name in OVERLAY_AS_NORMAL else []
     return hashlib.sha256(json.dumps(parts, sort_keys=True).encode()).hexdigest()[:20]
 
@@ -699,6 +734,9 @@ def cmd_build(args):
             d['_swf_path'], hidden = default_state(swf, work)
             if hidden:
                 d['hidden'] = hidden
+            if n in SCRIPT_MASKS:
+                d['_swf_path'], d['_mask_path'] = script_mask_state(n, d['_swf_path'], work)
+                d['script_mask'] = list(SCRIPT_MASKS[n])
             if n in OVERLAY_AS_NORMAL:
                 d['overlay'] = OVERLAY_AS_NORMAL[n]
         old = plan['decos'].get(n) or {}
@@ -708,7 +746,7 @@ def cmd_build(args):
         d['svg_ok'] = old.get('svg_ok') if old.get('swf_sha') == swf_sha else None
         if d['svg_ok'] is None:
             d.pop('svg_ok')
-        d['key'] = inputs_key(n, d['mode'], swf_sha, src_sha, d.get('svg_ok'), d.get('hidden'))
+        d['key'] = inputs_key(n, d['mode'], swf_sha, src_sha, d.get('svg_ok'), d.get('hidden'), d.get('script_mask'))
         done = (old.get('key') == d['key'] and os.path.exists(os.path.join(OUT, n + '.webp'))
                 and (not old.get('hires') or os.path.exists(os.path.join(OUT, n + '@1.5x.webp'))))
         if done and old.get('mode') == 'swf' and expect_swf(old) is False:
@@ -723,6 +761,7 @@ def cmd_build(args):
     with concurrent.futures.ThreadPoolExecutor(args.jobs) as pool:
         for d in pool.map(lambda d: emit_png(work, d), todo_png):
             d.pop('_swf_path', None)
+            d.pop('_mask_path', None)
             plan['decos'][d['name']] = d
     if todo_png:
         write_plan(plan)
@@ -742,8 +781,13 @@ def cmd_build(args):
             while i < len(ds) and len(batch) < args.batch and (not batch or px < 60e6):
                 batch.append(ds[i]); px += ds[i]['size2'][0] * ds[i]['size2'][1] * 2.25; i += 1
             t = time.time()
-            found, tmp = render_batch(work, zoom, [(d['name'], d['_swf_path']) for d in batch])
+            items = [(d['name'], d['_swf_path']) for d in batch]
+            items += [(d['name'] + '__mask', d['_mask_path']) for d in batch if d.get('_mask_path')]
+            found, tmp = render_batch(work, zoom, items)
             def one(d):
+                if d.get('_mask_path') and d['name'] in found and d['name'] + '__mask' in found:
+                    found[d['name']] = script_mask_composite(found[d['name']], found[d['name'] + '__mask'],
+                                                             os.path.join(work, d['name'] + '-masked.png'))
                 if d['name'] not in found:
                     d['mode'] = 'png'
                     d['reason'] = 'no render: FFDec produced no frame'
@@ -754,6 +798,7 @@ def cmd_build(args):
             with concurrent.futures.ThreadPoolExecutor(args.jobs) as pool:
                 for d in pool.map(one, batch):
                     d.pop('_swf_path', None)
+                    d.pop('_mask_path', None)
                     plan['decos'][d['name']] = d
             for p in tmp:
                 shutil.rmtree(p, ignore_errors=True)
