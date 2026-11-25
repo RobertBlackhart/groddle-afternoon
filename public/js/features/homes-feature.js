@@ -107,6 +107,7 @@ import { groundKey, groundStacks, ownGroundRows, ownGroundState } from '../groun
 import { keepsOwnStack } from '../tools.js?v=4156bba8';
 import { PHONE_HOME_MIN_VIEW_W } from '../location-view.js?v=febc0a91';
 import { createCountChooser } from '../ui/count-chooser.js?v=75f69512';
+import { createTilePainter } from '../ui/style-tile-paint.js?v=d0e1312b';
 import { isBagClass } from '../pack-slots.js?v=38e4aea5';
 import { registerDropTarget } from '../drop-targets.js?v=59e6edb4';
 import { DRAG_TAKE_SOON_MS, draggedCount, draggedStack, markDragged, takeDragged } from '../drag-stack.js?v=4c7d198d';
@@ -3898,9 +3899,7 @@ const CSS = `
 .homes-styles .hs-tile.current .hs-label::after{content:" (yours)";color:var(--moss);font-weight:700}
 .homes-styles .hs-label{font-size:var(--fs-xs);font-weight:700;line-height:var(--lh-tight);padding:0 var(--sp-1)}
 .homes-styles .hs-prev{position:relative;display:block;height:64px;border-radius:var(--radius-md);overflow:hidden}
-.homes-styles .hs-prev img{position:absolute;transform:translateX(-50%);max-width:none;pointer-events:none}
-.homes-styles .hs-band{position:absolute;left:0;right:0}
-.homes-styles .hs-field{position:absolute;left:0;right:0;bottom:0}
+.homes-styles .hs-prev .hs-pic{position:absolute;inset:0;width:100%;height:100%;display:block;pointer-events:none}
 .homes-modes button{white-space:nowrap}
 .homes-sign{position:absolute;left:50%;top:132px;transform:translateX(-50%);z-index:calc(var(--z-panel) + 10);width:200px;background:var(--surface-card);border-radius:var(--radius-2xl);box-shadow:0 12px 32px color-mix(in srgb, var(--c-sand-24) 28%, transparent);border:1px solid color-mix(in srgb, var(--c-umber-41) 18%, transparent);font-family:var(--font-ui);color:var(--text);overflow:hidden}
 .homes-sign[hidden]{display:none}
@@ -4113,23 +4112,32 @@ export function stylePreviewLayout(look) {
   return { field, parts };
 }
 
-/** A small picture of a style for its tile: sky, field and a few of its decos (stylePreviewLayout). */
+/** The tiles' canvases (#659, js/ui/style-tile-paint.js), made on first use. */
+let stylePainter = null;
+const tilePainter = () => (stylePainter ||= createTilePainter({
+  doc: document,
+  urlFor: (s) => (typeof globalThis.groddleDataUrl === 'function' ? globalThis.groddleDataUrl(decoImageUrl(s)) : decoImageUrl(s)),
+}));
+
+/**
+ * A small picture of a style for its tile: the sky as the box's gradient, then its field, bands and
+ * a few of its decos (stylePreviewLayout) painted into the tile's one canvas (#659: no stack of
+ * full-size <img>, which an iPad left blank). paintStylePreviews paints it once the tile is laid out.
+ */
 function stylePreviewEl(look) {
   const box = el('span', { class: 'hs-prev', 'aria-hidden': 'true' });
   box.style.background = `linear-gradient(${look.sky.map(hexColor).join(',')})`;
-  const { field, parts } = stylePreviewLayout(look);
-  const p = (v) => `${Math.round(v * 100) / 100}%`;
-  const band = (b) => el('span', { class: 'hs-band', style: `bottom:${p(b.bottom)};height:${p(b.height)};background:${hexColor(b.color)};opacity:${b.alpha}` });
-  const img = (x) => el('img', {
-    src: decoImageUrl(x.s),
-    alt: '',
-    loading: 'lazy',
-    style: `left:${p(x.left)};bottom:${p(x.bottom)};height:${p(x.height)};${x.flip ? 'transform:translateX(-50%) scaleX(-1);' : ''}${x.lum < 0.98 ? `filter:brightness(${x.lum.toFixed(2)});` : ''}${x.alpha != null ? `opacity:${x.alpha};` : ''}`,
-  });
-  for (const x of parts.filter((q) => !q.near)) box.append(x.band ? band(x) : img(x));
-  box.append(el('span', { class: 'hs-field', style: `height:${p(field)};background:${hexColor(look.field)}` }));
-  for (const x of parts.filter((q) => q.near)) box.append(img(x));
+  box.append(tilePainter().canvasFor(look));
   return box;
+}
+
+/** Paints the dialog's tiles whose canvas is new or changed size (a re-render reuses the painted ones). */
+function paintStylePreviews(choices) {
+  if (!stylePainter) return;
+  const entries = choices.map((row) => ({ look: row.look, layout: { ...stylePreviewLayout(row.look), fieldColor: row.look.field } }));
+  const go = () => stylePainter.paint(entries, globalThis.devicePixelRatio || 1).catch(() => {});
+  if (typeof requestAnimationFrame === 'function') requestAnimationFrame(go);
+  else go();
 }
 
 function ensureStylesUi(engine) {
@@ -4285,6 +4293,7 @@ function renderStyleDialog(engine) {
   const scrollTop = box.querySelector('.hs-grid')?.scrollTop || 0;
   box.replaceChildren(header, sel, ...(note ? [note] : []), grid);
   grid.scrollTop = scrollTop;
+  paintStylePreviews(choices);
 }
 
 function renderModes(engine) {
