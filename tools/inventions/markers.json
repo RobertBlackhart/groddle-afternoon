@@ -819,6 +819,9 @@
     "remake-own: * The remake's own (R24): only the subway gets there, and the gate": "subway-ride-cost",
     "remake-own: * the subway (a remake addition, subwayRides): the path holds the two surface": "subway-route-card",
     "remake-own: /** The remake's own (Austin 2026-11-15): the destination is still": "map-route-line",
+    "remake-own: /** The remake's own (Austin 2026-11-25): the only way rides the": "region-way-in",
+    "remake-own: /** The remake's own (Austin 2026-11-25): the subway or a locked": "region-way-in",
+    "remake-own: /** The remake's own (Austin 2026-11-25): the way in needs Your": "region-way-in",
     "remake-own: /** The remake's own (check 2026-11-25, regionWayIn): the Map card's": "region-way-in"
   },
   "public/js/map-zoom.js": {
