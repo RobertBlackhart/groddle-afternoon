@@ -1,5 +1,5 @@
 /**
- * G1269 (report #686): a street page's "On the street now". A player found no Wood Trees on Thicket
+ * G1277 (report #686): a street page's "On the street now". A player found no Wood Trees on Thicket
  * where its Encyclopedia page lists 3: all three had been felled on the live server, and a felled
  * Wood Tree is a Patch, as in Glitch (wood_tree.js onDie 857-866). Austin 2026-11-25: "Maybe the live
  * count could say last check within last 24 hours, so a cached lookup rather then a realtime check.
@@ -20,7 +20,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { SITE_DIR, sitePath, skipWithoutSite } from '../tools/repos.mjs';
 import { LIVE_NOTE } from '../tools/encyclopedia/streets.mjs';
-import { agoText, fill, liveLines, load } from '../public/encyclopedia/street-live.js';
+import { agoText, fill, liveLines, load } from '../public/encyclopedia/street-live.js?v=1df27e44';
 
 const root = join(import.meta.dirname, '..');
 const page = (slug) => readFileSync(join(root, 'public/encyclopedia/streets', slug, 'index.html'), 'utf8');
