@@ -369,6 +369,12 @@ export const DECLARING_CTX = /^(VariableDeclarator|prop:.+|array)$/;
 
 const EXCLUDE_TAGS = ['deleted', 'adminonly', 'test'];
 const EXCLUDE_ID = /(^test_|_test$|_test_|^admin_|_admin$|^dev_|debug|^qa_|tester)/;
+/**
+ * A GSJS store sells it: a real item whatever its id looks like. The Test Tube (test_tube, sold by the
+ * Alchemy vendor in items/catalog_stores.js) matched ^test_ and was left out as a test class; no test
+ * or admin class is in a store.
+ */
+const GSJS_STORE_FILE = /items\/catalog_stores\.js$/;
 const SPAWN_CTX = /^(prop:(classId|classTsid|cls|class_tsid|class_id|itemClass|npc|npcClass|spawn)|call:.*(spawn|Spawn|create|Create|place|Place|register|Register|ensure|Ensure|add[A-Z]|make[A-Z]))/;
 /** Files that only list items (catalogs, art tables, labels): a mention there proves nothing. */
 export const CATALOG_FILE = /(store-catalog|icon-hires|sound-keys|deco-hires|-data|dialogue|npc-glitch-looks|sprite-sheets|vector-sprites|stat-text|sound-moments|synth-sfx|inventory|achievements|quest-offers|content-catalogs)\.js$/;
@@ -408,8 +414,8 @@ export function judgeItems({ items, reach, present, codeCtx, gsjsRefs, families 
     if (it.id.startsWith('quest_req_icon_')) { add('excluded', 'quest requirement icon: the class_id of a quests/*.js requirement row, drawn in the quest log, never held'); continue; }
     const tag = it.tags.find((t) => EXCLUDE_TAGS.includes(t));
     if (tag) { add('excluded', `catalog_tags/tags: ${tag}`); continue; }
-    if (EXCLUDE_ID.test(it.id)) { add('excluded', 'test/admin id'); continue; }
     const refs = gsjsRefs.get(it.id) || new Set();
+    if (EXCLUDE_ID.test(it.id) && ![...refs].some((f) => GSJS_STORE_FILE.test(f))) { add('excluded', 'test/admin id'); continue; }
     if (reach.has(it.id)) { add('source', `obtainable: ${reach.get(it.id)}`); continue; }
     if (present.has(it.id)) { add('source', `in the world: ${present.get(it.id)}`); continue; }
     const ctx = (codeCtx.get(it.id) || []).filter((c) => !CATALOG_FILE.test(c.file));
