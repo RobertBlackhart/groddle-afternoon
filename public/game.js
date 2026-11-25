@@ -1088,7 +1088,7 @@ import {
   gardenPlacementRequest,
   ROCK_SHAPE_WIDTHS,
 } from './js/street-ecology.js?v=ff90efe4';
-import { CHICKEN_PAUSE, chickenPauseRoll, flierAt, flierSeed, flightFloorFor, followPath, PATH_STEP } from './js/street-creatures.js?v=2d47da2d';
+import { CHICKEN_PAUSE, chickenPauseRoll, flierAt, flierSeed, flightFloorFor, followPath, PATH_STEP } from './js/street-creatures.js?v=8574c2a4';
 import { chickenPose, chickenIdleSheetsAsked } from './js/chicken-idle-art.js?v=e320e159';
 import { chickenWaitPose } from './js/chicken-idles.js?v=eef0279b';
 import { itemOverlayStats } from './js/item-overlay.js?v=6d940627';

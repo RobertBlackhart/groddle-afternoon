@@ -154,7 +154,7 @@ import {
   treeReady,
   treeSkill,
   waitingIds,
-} from '../street-objects.js?v=efc0dddc';
+} from '../street-objects.js?v=ab6e252a';
 import { answerWaitMs, createOnlineRequests } from '../online-request.js?v=2a5117ff';
 import { ROCK_CATALOG } from '../mining.js?v=c3bd3675';
 import { TRANT_META, trantStatusLabel } from '../trants.js?v=864ea9ff';
@@ -190,7 +190,7 @@ import {
   dragonWalkAt,
   kittyWalkAt,
   walkerSpan,
-} from '../street-creatures.js?v=2d47da2d';
+} from '../street-creatures.js?v=8574c2a4';
 
 export const STREET_OBJECTS_FEATURE_ID = 'street-objects';
 const RECONCILE_MS = 250;

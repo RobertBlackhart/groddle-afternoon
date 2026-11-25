@@ -21,7 +21,7 @@ import { before, describe, it } from 'node:test';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { FLIER_LIFT, FLY_WANDER, flierAt, flierPlan, flierSeed, flightFloor, pathTime } from '../public/js/street-creatures.js?v=2d47da2d';
+import { FLIER_LIFT, FLY_WANDER, flierAt, flierPlan, flierSeed, flightFloor, pathTime } from '../public/js/street-creatures.js?v=8574c2a4';
 import { platformsScreen, streetWidth } from '../public/js/street-model.js?v=a9a05f9d';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
 

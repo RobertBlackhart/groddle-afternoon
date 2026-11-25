@@ -94,10 +94,10 @@ import {
   visitorRewardDelta,
   visitorRewardSnapshot,
   visitorTreeState,
-} from '../yard-verbs-mp.js?v=80fd69f1';
+} from '../yard-verbs-mp.js?v=6183db55';
 import { yardFixtureRows, yardFixtureVerbs, yardFixturesKey } from '../yard-fixtures-mp.js?v=dd022fe8';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
-import { followYardPath, holdYardWalk, stickForClass } from '../yard-wander.js?v=f5fcac8b';
+import { followYardPath, holdYardWalk, stickForClass } from '../yard-wander.js?v=d92e74f2';
 import { showsChickenIdle, yardChickenPose } from '../chicken-idle-art.js?v=e320e159';
 import { chickenWaitPose } from '../chicken-idles.js?v=eef0279b';
 import { countItem, removeItem } from '../inventory.js?v=6414dbdc';

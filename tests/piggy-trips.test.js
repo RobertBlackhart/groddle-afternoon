@@ -22,12 +22,12 @@ import {
   piggyWalkAt,
   tripBaseTime,
   tripFrom,
-} from '../public/js/street-creatures.js?v=2d47da2d';
+} from '../public/js/street-creatures.js?v=8574c2a4';
 import { EAT_PAUSE_MS } from '../public/js/animal-mood.js?v=a49495fc';
 import { ANIMAL_BODY, TREE_FOOTPRINT, setStreetEcologyCatalog } from '../public/js/street-ecology.js?v=ff90efe4';
 import { GAME_EPOCH_MS } from '../public/js/game-day.js?v=a532775d';
-import { createStreetCopy, takeObjs, reconcile } from '../public/js/street-objects.js?v=efc0dddc';
-import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=6b505af8';
+import { createStreetCopy, takeObjs, reconcile } from '../public/js/street-objects.js?v=ab6e252a';
+import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=ad53cdd0';
 import { setCreatureEcology, streetObjectLayout } from '../tools/build-realtime-objects.mjs';
 import { STREET_INDEX, applyStreetIndex, loadStreetDataFromFs } from '../public/js/street-loader.js?v=10376267';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';

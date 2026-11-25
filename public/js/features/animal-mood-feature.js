@@ -163,7 +163,7 @@ import {
   satePiggy,
 } from '../animal-mood.js?v=a49495fc';
 import { ownGroundRows, pruneOwnGround } from '../ground-stacks.js?v=22792362';
-import { wallBetween } from '../yard-wander.js?v=f5fcac8b';
+import { wallBetween } from '../yard-wander.js?v=d92e74f2';
 
 export const ANIMAL_MOOD_FEATURE_ID = 'animal-mood';
 const YARD_TSID = 'RH_HOME_EXT';
