@@ -2814,9 +2814,19 @@
   "deployed": "2026-11-25"
  },
  "git": {
-  "commits": 3431,
+  "commits": 3436,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-24",
+    "kind": "fix",
+    "text": "Aranna Scramble's milk row counts the butterflies milked for it"
+   },
+   {
+    "date": "2026-11-24",
+    "kind": "fix",
+    "text": "A first shrine donation offers Respect for the Beginnings"
+   },
    {
     "date": "2026-11-24",
     "kind": "fix",
@@ -2926,19 +2936,9 @@
     "date": "2026-11-24",
     "kind": "improve",
     "text": "On an upright phone the top of the screen shows the scene, not a dark band"
-   },
-   {
-    "date": "2026-11-24",
-    "kind": "new",
-    "text": "Encyclopedia search finds what each page says, and lists every street with a community garden, shrine, vendor and more"
-   },
-   {
-    "date": "2026-11-24",
-    "kind": "fix",
-    "text": "On a phone the home's buttons have their own row under your home's name"
    }
   ]
  },
- "tests": 1355,
+ "tests": 1356,
  "generatedAt": "2026-11-24"
 }
