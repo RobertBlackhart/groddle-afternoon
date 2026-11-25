@@ -210,7 +210,11 @@ test('the controls: Menu Settings and the Sound popover (topbar), Preferences, a
   const prefs = read('js/classic/classic-prefs.js');
   assert.match(prefs, /id: 'prefs-zoom'/);
   const game = read('game.js');
-  assert.match(game, /return stageFor\(\{ \.\.\.stageArgs\(\), zoom: worldZoom\(\) \}\);/);
+  // #681: measureStage builds the args once (zoom with them) and every stage it returns comes from them.
+  const measure = game.slice(game.indexOf('function measureStage('), game.indexOf('function phoneCloseup('));
+  assert.match(measure, /const args = \{ \.\.\.stageArgs\(\), zoom: worldZoom\(\) \};\n\s*const stage = stageFor\(args\);/);
+  assert.match(measure, /return sceneDrop > 0 \? stageFor\(\{ \.\.\.args, sceneDrop \}\) : stage;/);
+  assert.equal((measure.match(/stageFor\(/g) || []).length, 2, 'no stage without the zoom');
   assert.match(game, /onZoomChange\(\(\) => applyWorldZoom\(\)\);/);
   assert.match(game, /syncLocationViewHeight\(\{ keepFraming: true \}\)/);
   // game.js loads Classic's zoom before main() adds its resize listener.

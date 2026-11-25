@@ -977,10 +977,32 @@ describe('a short scene on an upright phone leaves no flat dark band (Chrome, Au
 
   // Coordinator 2026-11-24: reading the canvas back is a GPU sync that can hitch a phone's frame. It
   // reads on a scene's arrival (and once as its art loads), then never while the camera holds still.
+  // #681 (Austin's ruling 2026-11-25): a short scene's canvas grows up by the camera's drop, so the back
+  // yard fills a Safari tab whole with no band left; the read-back budget is kept on scenes that still
+  // leave one (a Towers hall, Hell Bar).
+  const BAND_SCENES = [SCENES[1], ['Hell Bar', 'streetdemo=GA5FPUNAI7P2NVF']];
+  it('#681: the back yard fills a Safari tab 402x874 whole from its top, with no band left', { timeout: 120_000 }, async () => {
+    const base = `http://127.0.0.1:${server.address().port}`;
+    const ctx = await chrome.browser.newContext({ viewport: { width: 402, height: 874 }, isMobile: true, hasTouch: true, deviceScaleFactor: 1, userAgent: UA });
+    await ctx.addInitScript(() => { try { localStorage.setItem('groddle-play-device', 'qa-game'); } catch { /* none */ } });
+    const tab = await ctx.newPage();
+    await tab.goto(`${base}/play/?autostart=1&questoffer=off&hstip=0&fresh=1&resetgame=1&${SCENES[0][1]}`);
+    await tab.waitForFunction(() => !document.body.classList.contains('is-booting') && document.getElementById('overlay')?.classList.contains('hidden') && document.documentElement.classList.contains('phone-layout'), null, { timeout: 60_000 });
+    await tab.waitForTimeout(3500);
+    const m = await tab.evaluate(() => {
+      const c = document.querySelector('#game-root > canvas[role="application"]');
+      const root = document.getElementById('game-root');
+      return { top: c.getBoundingClientRect().top - root.getBoundingClientRect().top, fill: root.hasAttribute('data-stage-sky-fill'), camY: Number(c.dataset.cameraY) };
+    });
+    await ctx.close();
+    assert.ok(m.top <= 1, `the canvas reaches the screen's top (${m.top} px band)`);
+    assert.equal(m.fill, false, 'no band to fill');
+    assert.ok(m.camY <= 0, `the camera's top is the yard's top or above it (${m.camY})`);
+  });
   it('the band reads the canvas back on arrival, then not at all while the camera holds still (Safari tab 402x874)', { timeout: 180_000 }, async (t) => {
     const base = `http://127.0.0.1:${server.address().port}`;
     const bad = [];
-    for (const [scene, q] of SCENES) {
+    for (const [scene, q] of BAND_SCENES) {
       const ctx = await chrome.browser.newContext({ viewport: { width: 402, height: 874 }, isMobile: true, hasTouch: true, deviceScaleFactor: 1, userAgent: UA });
       await ctx.addInitScript(() => { try { localStorage.setItem('groddle-play-device', 'qa-game'); } catch { /* none */ } });
       const tab = await ctx.newPage();
