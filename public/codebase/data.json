@@ -1,30 +1,30 @@
 {
  "measured": "the tags tools/deploy/live.json names",
- "deployed": "2026-11-24",
+ "deployed": "2026-11-25",
  "repos": [
   {
    "id": "game",
    "name": "groddle-afternoon",
    "url": "https://github.com/TinyBitAdventures/groddle-afternoon",
-   "ref": "v0.67.0",
-   "commit": "29054134",
+   "ref": "v0.68.0",
+   "commit": "a17133ed",
    "licence": "MIT",
    "history": {
-    "commits": 3411,
+    "commits": 3422,
     "first": "2026-10-19",
     "latest": "2026-11-24"
    },
    "code": {
-    "files": 5294,
-    "lines": 1088919,
-    "bytes": 70203719
+    "files": 5297,
+    "lines": 1089734,
+    "bytes": 70250432
    },
    "languages": [
     {
      "id": "javascript",
      "label": "JavaScript",
-     "files": 2484,
-     "lines": 737942
+     "files": 2487,
+     "lines": 738744
     },
     {
      "id": "html",
@@ -36,7 +36,7 @@
      "id": "css",
      "label": "CSS",
      "files": 10,
-     "lines": 22576
+     "lines": 22589
     },
     {
      "id": "python",
@@ -63,35 +63,35 @@
      "label": "Pages and styles",
      "path": "public/ (pages, stylesheets, page scripts)",
      "files": 2737,
-     "lines": 334485
+     "lines": 334498
     },
     {
      "id": "tests",
      "label": "Tests",
      "path": "tests/",
-     "files": 1396,
-     "lines": 272831
+     "files": 1399,
+     "lines": 273348
     },
     {
      "id": "core",
      "label": "Game core",
      "path": "public/game.js, public/content.js, public/js/",
      "files": 577,
-     "lines": 240344
+     "lines": 240494
     },
     {
      "id": "features",
      "label": "Feature modules",
      "path": "public/js/features/",
      "files": 174,
-     "lines": 132957
+     "lines": 133042
     },
     {
      "id": "tools",
      "label": "Build tools",
      "path": "tools/, build-*.mjs",
      "files": 375,
-     "lines": 87200
+     "lines": 87250
     },
     {
      "id": "rooms",
@@ -104,11 +104,11 @@
    "largest": [
     {
      "path": "public/game.js",
-     "lines": 37208
+     "lines": 37242
     },
     {
      "path": "public/style.css",
-     "lines": 15804
+     "lines": 15817
     },
     {
      "path": "public/js/features/homes-feature.js",
@@ -134,13 +134,13 @@
      "id": "data",
      "label": "Data (JSON)",
      "files": 3203,
-     "bytes": 217387964
+     "bytes": 217397566
     },
     {
      "id": "generated",
      "label": "Generated modules and built pages",
      "files": 2286,
-     "bytes": 29384143,
+     "bytes": 29384912,
      "lines": 305848
     },
     {
@@ -163,10 +163,10 @@
      "bytes": 8288803
     }
    ],
-   "totalFiles": 36196,
+   "totalFiles": 36199,
    "tests": {
-    "files": 1347,
-    "cases": 14945,
+    "files": 1350,
+    "cases": 14979,
     "runner": "node --test"
    }
   },
@@ -284,25 +284,25 @@
    "id": "site",
    "name": "groddle-afternoon-site",
    "url": "https://github.com/TinyBitAdventures/groddle-afternoon-site",
-   "ref": "v0.46.0",
-   "commit": "a9908cf0",
+   "ref": "v0.47.0",
+   "commit": "374bad09",
    "licence": "MIT",
    "history": {
-    "commits": 334,
+    "commits": 335,
     "first": "2026-10-24",
     "latest": "2026-11-24"
    },
    "code": {
     "files": 174,
-    "lines": 55887,
-    "bytes": 2964283
+    "lines": 55910,
+    "bytes": 2965674
    },
    "languages": [
     {
      "id": "php",
      "label": "PHP",
      "files": 143,
-     "lines": 45883
+     "lines": 45906
     },
     {
      "id": "javascript",
@@ -336,14 +336,14 @@
      "label": "Player services",
      "path": "src/ classes behind the groddle/v1 REST routes",
      "files": 48,
-     "lines": 19039
+     "lines": 19056
     },
     {
      "id": "ledger",
      "label": "Shared ledger",
      "path": "src/Ledger*.php, src/Economy.php",
      "files": 21,
-     "lines": 11172
+     "lines": 11178
     },
     {
      "id": "styles",
@@ -404,8 +404,8 @@
    ],
    "totalFiles": 283,
    "tests": {
-    "files": 166,
-    "cases": 2437,
+    "files": 167,
+    "cases": 2447,
     "runner": "node --test",
     "where": "groddle-afternoon"
    }
