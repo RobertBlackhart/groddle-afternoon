@@ -15196,6 +15196,19 @@ body.is-booting .touch-controls { display: none; }
 :root.touch-phone[data-ui="modern"] .prefs-window { padding-top: 0; }
 :root.touch-phone[data-ui="modern"] .prefs-window > h2 { position: sticky; top: 0; z-index: var(--z-raised); margin: 0 calc(-1 * var(--sp-9)) var(--sp-5); padding: var(--sp-8) var(--sp-9) var(--sp-4); background: var(--surface-card); }
 :root.touch-phone[data-ui="modern"] .prefs-window > .prefs-close { position: sticky; top: var(--sp-1); z-index: calc(var(--z-raised) + 1); float: right; margin: var(--sp-1) calc(-1 * var(--sp-5)) 0 0; }
+/* #685 (an iPhone, upright, Buddies): these windows were sized to the screen less 2rem with no top inset, so a
+   tall one ran under the status bar. One rule for all of them: the shade keeps clear of the safe area
+   (--safe-t, which upright on a phone takes the status bar's fade too) and the window is that much shorter.
+   --safe-* are 0 on a computer, so nothing moves there. */
+:root :is(.grp-shade, .account-shade, .buddies-shade, .keys-shade, .hs-shade, .prefs-shade) {
+  padding-top: calc(var(--sp-8) + var(--safe-t));
+  padding-right: calc(var(--sp-8) + var(--safe-r));
+  padding-bottom: calc(var(--sp-8) + var(--safe-b));
+  padding-left: calc(var(--sp-8) + var(--safe-l));
+}
+:root :is(.grp-panel, .account-panel, .buddies-panel, .keys-panel, .hs-panel, .prefs-window) {
+  max-height: calc(100dvh - 2rem - var(--safe-t) - var(--safe-b));
+}
 /* end PHONEPANELS */
 
 /* === LANDSCAPE-PANELS (land2) === */
