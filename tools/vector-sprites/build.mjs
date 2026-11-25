@@ -48,9 +48,9 @@
  *    grows to take it in.
  *  - sheet "render1x": true writes the 1x strip itself from the render (no
  *    OGA sheet shows it: a "live" loop). The placement (mirror, offset) is
- *    found on cell 0 of the strip already there, which a live loop draws
- *    exactly (its first frame is the recorder's: every clip on frame 1),
- *    whether that strip is the OGA one or an earlier render; then every
+ *    found against the strip already there (up to 8 non-empty cells): an
+ *    earlier render matches exactly, an OGA strip everywhere but the parts
+ *    the recorder froze (a porthole's first cells are blank); then every
  *    frame is placed so, box-averaged S:1 and written lossy q88 with
  *    lossless alpha like the OGA strips, and the sheet is scored against it
  *    as usual.
@@ -324,14 +324,15 @@ async function exportSprite(swf, id, zoom = 3, renderer = 'png', range = null) {
 // ---------------------------------------------------------------------------
 
 /**
- * sheet "render1x" (#658): the 1x strip drawn from the render. Placed on cell 0 of the strip on
- * disk (buildSheet placeOnly: the live loop's first frame is that cell's picture), then every
+ * sheet "render1x" (#658): the 1x strip drawn from the render. Placed against the strip on disk
+ * (buildSheet placeOnly, its usual sample of up to 8 non-empty cells: an earlier render matches
+ * exactly, an OGA strip on everything but the parts the recorder froze), then every
  * frame is box-averaged S:1 (premultiplied) and written lossy q88 with lossless alpha, 8 columns,
  * like the OGA strips it stands beside.
  */
 function write1x(job, sheet, labels, frameDir) {
-  const like = buildSheet(job, { ...sheet, frames: 1, step: 1, shift: 0 }, labels, frameDir, { placeOnly: true });
-  if (like.status !== 'placed' || like.score < sheetMin) throw new Error(`render1x: cell 0 does not place (${like.reason || `score ${like.score?.toFixed(3)}`})`);
+  const like = buildSheet(job, { ...sheet, shift: 0 }, labels, frameDir, { placeOnly: true });
+  if (like.status !== 'placed' || like.score < sheetMin) throw new Error(`render1x: the strip there does not place it (${like.reason || `score ${like.score?.toFixed(3)}`})`);
   const label = labels.find((l) => l.name === sheet.label);
   if (!label) throw new Error(`render1x: label ${sheet.label} not in the render`);
   const step = sheet.step ?? 1;
@@ -386,7 +387,7 @@ function write1x(job, sheet, labels, frameDir) {
   execFileSync('magick', ['-size', `${W}x${H}`, '-depth', '8', 'rgba:-', '-strip', `PNG32:${tmpPng}`], { input: out, maxBuffer: 1 << 26 });
   execFileSync('magick', [tmpPng, '-quality', '88', '-define', 'webp:alpha-quality=100', dest]);
   unlinkSync(tmpPng);
-  console.log(`  1x  ${basename(sheet.path)} from the render (${count} cells, placed on cell 0 at ${like.offset3x}, score ${like.score.toFixed(4)})`);
+  console.log(`  1x  ${basename(sheet.path)} from the render (${count} cells, placed at ${like.offset3x ?? like.offset}, score ${like.score.toFixed(4)})`);
 }
 
 function sheetCells(sheet, ogaImg) {

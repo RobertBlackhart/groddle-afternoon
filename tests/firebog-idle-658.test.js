@@ -108,11 +108,33 @@ describe('#658 Firebog street spirits: flames and vines move in idle, talk and c
     }
   }
 
+  it('G1264: the loneliness porthole is live too (its face follows the porthole labels, failed on main)', () => {
+    const portrait = STREET_SPIRIT_LONELY_ART.firebog.portrait;
+    assert.deepEqual(['in', 'loop', 'out'].map((s) => [portrait[s].live, portrait[s].tick0]), [['lonely_in_live', 0], ['lonely_loop_live', 19], ['lonely_out_live', 94]], 'the loop follows the 19-frame in, the out the 75-frame loop');
+    const manifest = JSON.parse(readFileSync(new URL('../tools/vector-sprites/spirit-portraits.json', import.meta.url), 'utf8'));
+    const job = manifest.jobs.find((j) => j.name === 'spirit-portrait-firebog-large');
+    assert.deepEqual(job.record.clips, ['large', 155], 'the face clip (sprite 155) is synced to the porthole labels');
+    assert.deepEqual(job.record.live, [
+      { label: 'loneliness_in', as: 'lonely_in_live', frames: 19 },
+      { label: 'loneliness', as: 'lonely_loop_live', frames: 75, tick0: 19 },
+      { label: 'loneliness_out', as: 'lonely_out_live', frames: 13, tick0: 94 },
+    ]);
+    for (const sheet of job.sheets) assert.equal(sheet.render1x, true, sheet.path);
+  });
+
+  it('G1264: firebog_large_lonely_loop.webp moves (it was 75 copies of one picture)', { skip: !dwebp && 'needs dwebp' }, () => {
+    const img = pixels('assets/sprites/street-spirits/firebog_large_lonely_loop.webp');
+    let most = 0;
+    for (let k = 1; k < 75; k++) most = Math.max(most, change(img, 166, 166, 8, 0, k));
+    assert.ok(most > 0.01, `the porthole loop is still (most change ${(most * 100).toFixed(2)}%)`);
+  });
+
   it('the other Street Spirits have no clip the recorder froze (nothing live there)', () => {
     for (const [variant, art] of Object.entries(STREET_SPIRIT_ART)) {
       if (variant === 'firebog') continue;
       for (const sheet of Object.values(art.states)) assert.equal(sheet.live, undefined, variant);
       assert.equal(STREET_SPIRIT_LONELY_ART[variant]?.cry?.live, undefined, variant);
+      for (const p of Object.values(STREET_SPIRIT_LONELY_ART[variant]?.portrait || {})) assert.equal(p.live, undefined, `${variant} porthole`);
     }
   });
 });

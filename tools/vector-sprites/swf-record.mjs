@@ -33,9 +33,11 @@
  * { label, as, frames } adds `frames` baked frames after the root's last, under the new label `as`:
  * frame k shows the root (and every synced clip) `k mod` the label's length into `label`, and every
  * other nested clip on its own clock, frame (k mod its length) + 1, as a playing MovieClip shows
- * after k ticks. A loop as long as the clips' common period plays seamlessly.
+ * after k ticks. A loop as long as the clips' common period plays seamlessly. `tick0` (default 0)
+ * starts those clocks later: a clip that follows another (the Firebog porthole's loop after its
+ * 19-frame in) carries on from where the first left its nested clips.
  *
- * Usage (from build.mjs, job "record": { "clips": ["<class or id>", ...], "hold"?: { "<class or id>": frame }, "place"?: true, "live"?: [{ "label", "as", "frames" }] }):
+ * Usage (from build.mjs, job "record": { "clips": ["<class or id>", ...], "hold"?: { "<class or id>": frame }, "place"?: true, "live"?: [{ "label", "as", "frames", "tick0"? }] }):
  *   recordState(inFile, outFile, rootId, { clips, classes })
  */
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -403,14 +405,14 @@ export function recordState(inFile, outFile, rootId, { clips = [], hold = {}, cl
     rootBody.push(Buffer.from([SHOW_FRAME << 6, 0]));
   }
   // live: the loops the game showed, after the last frame, each under its own label.
-  for (const { label, as, frames: count } of live) {
+  for (const { label, as, frames: count, tick0 = 0 } of live) {
     const start = root.labels.get(label);
     if (!start) throw new Error(`live: no label ${label} in sprite ${rootId}`);
     const next = [...root.labels.values()].filter((f) => f > start).sort((a, b) => a - b)[0];
     const len = (next || root.frames + 1) - start;
     rootBody.push(tagBytes(FRAME_LABEL, Buffer.from(`${as}\0`, 'utf8')));
     for (let k = 0; k < count; k++) {
-      const id = bake(rootId, start + (k % len), { name: label, k: k % len }, k);
+      const id = bake(rootId, start + (k % len), { name: label, k: k % len }, tick0 + k);
       if (place) {
         if (placed) rootBody.push(tagBytes(REMOVE2, Buffer.from([1, 0])));
         rootBody.push(placeTag(1, id, rootFields));

@@ -280,10 +280,14 @@ export const STREET_SPIRIT_LONELY_ART = Object.freeze({
     // `recorded`: the cells of the OGA idle_cry sheet (the recorder's stills), which the live strip replaces.
     cry: { oga: 'idle_cry', frames: 96, step: 2, live: 'cry_live', recorded: 24, crops: { medium: { x: 0, y: 0, w: 63, h: 189 }, large: { x: 0, y: 0, w: 107, h: 244 } } },
     portraitLook: 'large',
+    // #658 (G1264): the porthole's face (sprite 155, placed at loneliness_in) runs its own in/loop/out
+    // timeline, which the recorder left on its frame 1, so the OGA loop was one still picture. Live:
+    // the face follows the porthole's labels (its in, then its loop section), its own nested clips on
+    // their clocks from when it was placed (tick0: the loop follows the 19-frame in, the out the loop).
     portrait: {
-      in: { oga: 'loneliness_in', frames: 19, cell: { w: 183, h: 183 }, crop: { x: 1, y: 1, w: 181, h: 181 } },
-      loop: { oga: 'loneliness', frames: 75, cell: { w: 167, h: 168 }, crop: { x: 0, y: 1, w: 166, h: 166 } },
-      out: { oga: 'loneliness_out', frames: 13, cell: { w: 183, h: 183 }, crop: { x: 1, y: 1, w: 181, h: 181 } },
+      in: { oga: 'loneliness_in', frames: 19, live: 'lonely_in_live', tick0: 0, cell: { w: 183, h: 183 }, crop: { x: 1, y: 1, w: 181, h: 181 } },
+      loop: { oga: 'loneliness', frames: 75, live: 'lonely_loop_live', tick0: 19, cell: { w: 167, h: 168 }, crop: { x: 0, y: 1, w: 166, h: 166 } },
+      out: { oga: 'loneliness_out', frames: 13, live: 'lonely_out_live', tick0: 94, cell: { w: 183, h: 183 }, crop: { x: 1, y: 1, w: 181, h: 181 } },
     },
   },
   zutto: {

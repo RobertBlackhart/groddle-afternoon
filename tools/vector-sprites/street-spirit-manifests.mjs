@@ -49,7 +49,8 @@ export const SPIRIT_SWFS = Object.freeze({
   // Its idle is the exception (#658, STREET_SPIRIT_ART live): footage shows its flames and vines moving.
   // Its container places the body at 0.65 (sprite 162's matrix), so the medium body rendered on
   // its own is drawn at zoom 3 x 0.65.
-  firebog: { swf: 'inhabitants/street_spirit_firebog/street_spirit_firebog.swf', sprite: 163, street: [1, 226], portrait: [223, 332], record: ['large'], medium: { sprite: 94, street: [1, 112], zoom: 1.949982, record: ['medium'] } },
+  // The porthole's face (sprite 155, no class) follows the porthole's labels as the body does (G1264).
+  firebog: { swf: 'inhabitants/street_spirit_firebog/street_spirit_firebog.swf', sprite: 163, street: [1, 226], portrait: [223, 332], record: ['large'], portraitRecord: ['large', 155], medium: { sprite: 94, street: [1, 112], zoom: 1.949982, record: ['medium'] } },
   zutto: { swf: 'inhabitants/street_spirit_zutto/street_spirit_zutto.swf', sprite: 160, street: [1, 175], portrait: [172, 266] },
   ix: { swf: 'inhabitants/street_spirit_ix/street_spirit_ix.swf', sprite: 286, street: [1, 240] },
 });
@@ -131,6 +132,9 @@ export function portraitManifest() {
   for (const [variant, lonely] of Object.entries(STREET_SPIRIT_LONELY_ART)) {
     const src = SPIRIT_SWFS[variant];
     const looks = [...new Set(Object.keys(STREET_SPIRIT_ART[variant].looks).map((l) => portraitLook(variant, l)))];
+    // G1264: live porthole clips (swf-record.mjs live, each with its tick0).
+    const live = PORTRAIT_STATES.map((state) => lonely.portrait[state]).filter((p) => p.live)
+      .map((p) => ({ label: p.oga, as: p.live, frames: p.frames, ...(p.tick0 ? { tick0: p.tick0 } : {}) }));
     for (const look of looks) {
       const parts = lookParts(variant, look);
       jobs.push({
@@ -138,9 +142,12 @@ export function portraitManifest() {
         swf: src.swf,
         sprite: src.sprite,
         frameRange: src.portrait,
-        ...(src.record ? { record: { clips: src.record } } : {}),
+        ...(src.portraitRecord || src.record ? { record: { clips: src.portraitRecord || src.record, ...(live.length ? { live } : {}) } } : {}),
         ...(parts && Object.keys(parts).length ? { parts } : {}),
-        sheets: PORTRAIT_STATES.map((state) => sheetRow(portraitSheet(variant, look, state), lonely.portrait[state].oga, 1)),
+        sheets: PORTRAIT_STATES.map((state) => {
+          const p = lonely.portrait[state];
+          return { ...sheetRow(portraitSheet(variant, look, state), p.live || p.oga, 1), ...(p.live ? { render1x: true } : {}) };
+        }),
       });
     }
   }

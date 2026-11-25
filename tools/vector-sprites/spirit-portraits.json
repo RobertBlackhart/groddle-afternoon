@@ -266,33 +266,56 @@
    ],
    "record": {
     "clips": [
-     "large"
+     "large",
+     155
+    ],
+    "live": [
+     {
+      "label": "loneliness_in",
+      "as": "lonely_in_live",
+      "frames": 19
+     },
+     {
+      "label": "loneliness",
+      "as": "lonely_loop_live",
+      "frames": 75,
+      "tick0": 19
+     },
+     {
+      "label": "loneliness_out",
+      "as": "lonely_out_live",
+      "frames": 13,
+      "tick0": 94
+     }
     ]
    },
    "sheets": [
     {
      "path": "assets/sprites/street-spirits/firebog_large_lonely_in.webp",
-     "label": "loneliness_in",
+     "label": "lonely_in_live",
      "fw": 181,
      "fh": 181,
      "cols": 8,
-     "frames": 19
+     "frames": 19,
+     "render1x": true
     },
     {
      "path": "assets/sprites/street-spirits/firebog_large_lonely_loop.webp",
-     "label": "loneliness",
+     "label": "lonely_loop_live",
      "fw": 166,
      "fh": 166,
      "cols": 8,
-     "frames": 75
+     "frames": 75,
+     "render1x": true
     },
     {
      "path": "assets/sprites/street-spirits/firebog_large_lonely_out.webp",
-     "label": "loneliness_out",
+     "label": "lonely_out_live",
      "fw": 181,
      "fh": 181,
      "cols": 8,
-     "frames": 13
+     "frames": 13,
+     "render1x": true
     }
    ]
   },

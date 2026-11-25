@@ -98,6 +98,8 @@ function writeLonely(tmpDir) {
       for (const state of PORTRAIT_STATES) {
         const box = portraitBox(variant, look, state);
         const p = lonely.portrait[state];
+        // G1264: a live porthole clip's strip comes from the SWF render (build.mjs render1x).
+        if (p.live) continue;
         writeStrip(sourceSheet(art, look, p.oga), box.cell, box.crop, p.frames, 1, join(OUT, spiritSheetName(variant, look, `lonely_${state}`)), tmpDir);
       }
     }
