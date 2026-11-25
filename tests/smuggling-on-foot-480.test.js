@@ -15,8 +15,8 @@ import { join } from 'node:path';
 
 import { DEFAULT_DESTINATIONS, DESTINATIONS, SMUGGLER_STREETS, chooseDestination, destinationPool, sourceKey } from '../public/js/smuggling.js?v=2fde7da3';
 import { applyStreetIndex, resolveIndexTsid } from '../public/js/street-loader.js?v=10376267';
-import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=38893494';
-import { NO_RIDE_SOURCES, createRouteState, isRide, planRoute, routeRides, subwayRides } from '../public/js/map-routes.js?v=426e16ea';
+import { streetJobsFeature } from '../public/js/features/street-jobs-feature.js?v=34aa6cfa';
+import { NO_RIDE_SOURCES, createRouteState, isRide, planRoute, routeRides, subwayRides } from '../public/js/map-routes.js?v=8d9a6c62';
 import { SUBWAY_STREETS } from '../public/js/street-jobs.js?v=3fc80dcd';
 import { loadStreetGraph, roadsFor } from '../public/js/street-graph.js?v=dcc5cae4';
 
