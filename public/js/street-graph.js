@@ -21,6 +21,11 @@
  * - `worldRoads()`: the game's graph with no closures, only for the geography walks below, the Map's
  *   rooms list and the closures' owner (street-jobs-feature gives it its own closures).
  * - Walks that go round closed roads: findRoute, reachableStreets, routeDistances, openRoads.
+ * - Locked doors (Austin 2026-11-25): a route (findRoute, and planRoute, enterStreet and regionWayIn
+ *   over it) goes through a locked door only with its key in the traveller's pack (roadsFor reads
+ *   it; streetGraph `keys`), the one gate check for every route. lockedOnTheWay names the doors
+ *   when only a key would get you there. reachableStreets keeps its own `keyed` switch (quest holds
+ *   ask what the world lets you reach, not what you carry).
  * - Walks that count every road, built or not, each for a reason of its own (the source test,
  *   tests/street-graph-closures.test.js, lists who may call them): fewestClosures (which projects
  *   to build: the way home, ticket 50 and #162, and the On hold note), closedOnTheWay (the Map's "No
@@ -31,12 +36,15 @@
  * Pure apart from the one fetch in loadStreetGraph: no DOM, no Pixi.
  */
 
+import { doorKeysHeld } from './doors.js?v=727d0e0b';
+
 /** The signpost graph (tools/build-signpost-graph.mjs); js/data-urls.js keys the URL. */
 export const STREET_GRAPH_URL = 'assets/content/signpost-graph.json';
 
 // Registered symbols, so two copies of this module (a page and a test importing it by different keys) agree.
 const BASE = Symbol.for('groddle.streetGraph.roads');
 const CLOSED = Symbol.for('groddle.streetGraph.closures');
+const KEYS = Symbol.for('groddle.streetGraph.keys');
 
 /** L/G (and LLI/GLI, LIF/GIF) aliases of a TSID. */
 export function tsidAliases(tsid) {
@@ -62,7 +70,7 @@ export function isStreetGraph(x) {
 
 const isJson = (x) => Boolean(x && typeof x === 'object' && x.streets && typeof x.streets === 'object' && !Array.isArray(x.streets));
 const bases = new WeakMap();
-const EMPTY = Object.freeze({ roads: Object.freeze({}), locked: new Set(), rooms: [] });
+const EMPTY = Object.freeze({ roads: Object.freeze({}), locked: new Set(), keyOf: new Map(), rooms: [] });
 
 /** The roads under a street graph, signpost-graph.json or an adjacency map (an adjacency map has no closed roads). */
 function baseFor(g) {
@@ -72,8 +80,8 @@ function baseFor(g) {
   if (!base) {
     if (isJson(g)) {
       const built = routeGraph(g);
-      base = { roads: built.graph, locked: built.locked, rooms: doorRooms(g) };
-    } else base = { roads: g, locked: new Set(), rooms: [] };
+      base = { roads: built.graph, locked: built.locked, keyOf: built.keyOf, rooms: doorRooms(g) };
+    } else base = { roads: g, locked: new Set(), keyOf: new Map(), rooms: [] };
     bases.set(g, base);
   }
   return base;
@@ -93,9 +101,10 @@ export function graphKey(graph, tsid) {
 
 /**
  * Signposts and doors in one adjacency map, plus the locked door edges ("from>to" keys) that a
- * route avoids while it can (G192). Was map-routes.js routeGraph.
+ * route takes only with the key and then only when it must (G192), and the key that opens each
+ * (`keyOf`, door_key_N). Was map-routes.js routeGraph.
  * @param {{ streets?: Record<string, string[]>, doors?: Record<string, string[]>, doorKeys?: Record<string, number> }} json
- * @returns {{ graph: Record<string, string[]>, doors: Record<string, string[]>, locked: Set<string> }}
+ * @returns {{ graph: Record<string, string[]>, doors: Record<string, string[]>, locked: Set<string>, keyOf: Map<string, number> }}
  */
 export function routeGraph(json = {}) {
   const graph = {};
@@ -108,7 +117,15 @@ export function routeGraph(json = {}) {
     graph[k] = [...out];
     for (const to of v || []) graph[to] ||= [];
   }
-  return { graph, doors, locked: new Set(Object.keys(json?.doorKeys || {})) };
+  const keyOf = new Map(Object.entries(json?.doorKeys || {}).map(([edge, id]) => [edge, Number(id) || 0]));
+  return { graph, doors, locked: new Set(keyOf.keys()), keyOf };
+}
+
+/** Locked door edges as given: a Set of "from>to" (which key opens each unknown: none held opens it), or { "from>to": key id }. */
+function lockedEdges(locked) {
+  if (locked instanceof Map) return new Map([...locked].map(([e, id]) => [e, Number(id) || 0]));
+  if (locked && typeof locked === 'object' && !(locked instanceof Set) && !Array.isArray(locked)) return new Map(Object.entries(locked).map(([e, id]) => [e, Number(id) || 0]));
+  return new Map([...(locked || [])].map((e) => [e, 0]));
 }
 
 /**
@@ -151,18 +168,26 @@ export function doorRooms(json = {}) {
  * A street graph: `source`'s roads with `closed` taken out. `closed` lists the streets whose road
  * is closed (street projects), as TSIDs in either form, or is a function that answers that list
  * when a walk starts (so the graph follows the projects as they are built); null is none.
- * `locked` overrides the source's locked door edges (a toy map in a test).
+ * `keys` are the door keys the traveller holds (key ids, or a function answering them when a walk
+ * starts; null is none): a route goes through a locked door only with its key (Austin 2026-11-25:
+ * a player with no key was sent to Xalanga through Level 2 West's Key 7 door). Like the closures,
+ * the gate is the graph's, so no walker can forget it. `locked` overrides the source's locked door
+ * edges (a toy map in a test): a Set of "from>to", or { "from>to": key id }.
  * @param {object} source  signpost-graph.json ({ streets, doors, doorKeys, offMap }), an adjacency map, or a street graph
- * @param {{ closed?: Iterable<string>|(() => Iterable<string>|null)|null, locked?: Set<string>|null }} [opts]
+ * @param {{ closed?: Iterable<string>|(() => Iterable<string>|null)|null, keys?: Iterable<number>|(() => Iterable<number>|null)|null, locked?: Set<string>|Record<string, number>|null }} [opts]
  */
-export function streetGraph(source, { closed = null, locked = undefined } = {}) {
+export function streetGraph(source, { closed = null, keys = null, locked = undefined } = {}) {
   let base = baseFor(source);
   // An adjacency map is copied, so a later change to it never changes the graph.
   if (!source?.[BASE] && !isJson(source)) base = { ...base, roads: Object.fromEntries(Object.entries(base.roads).map(([k, v]) => [k, Array.isArray(v) ? [...v] : []])) };
-  if (locked !== undefined) base = { ...base, locked: locked instanceof Set ? locked : new Set(locked || []) };
+  if (locked !== undefined) {
+    const keyOf = lockedEdges(locked);
+    base = { ...base, locked: new Set(keyOf.keys()), keyOf };
+  }
   return Object.freeze({
     [BASE]: base,
     [CLOSED]: closed,
+    [KEYS]: keys,
     /** Locked door edges ("from>to"): a route takes one only when it must (G192). */
     locked: base.locked,
     /** Rooms behind doors that no hub map draws (doorRooms, G198). */
@@ -177,6 +202,18 @@ export function closedNow(graph) {
   const out = new Set();
   for (const t of list || []) for (const a of tsidAliases(t)) out.add(a);
   return out;
+}
+
+/** The door keys the graph's traveller holds right now (key ids), as a Set. */
+export function keysNow(graph) {
+  const src = graph?.[KEYS];
+  const list = typeof src === 'function' ? src() : src;
+  return new Set([...(list || [])].map(Number).filter((n) => n > 0));
+}
+
+/** The key that opens a locked door edge ("from>to"), 0 when the door is not locked or its key is unknown. */
+export function doorKeyOf(graph, from, to) {
+  return baseFor(graph).keyOf.get(`${graphKey(graph, from) || from}>${graphKey(graph, to) || to}`) || 0;
 }
 
 /** Whether a street's road is closed now. */
@@ -308,7 +345,7 @@ function cheapest(roads, start, targets, closed, locked, rides, { oneWay = null,
   return null;
 }
 
-function routeOver(graph, from, to, closed, { locked = undefined, rides = null, oneWay = null, startCut = null } = {}) {
+function routeOver(graph, from, to, closed, { locked = undefined, rides = null, oneWay = null, startCut = null } = {}, held = keysNow(graph)) {
   const roads = roadsOf(graph);
   const start = graphKey(graph, from);
   if (!start) return null;
@@ -317,8 +354,11 @@ function routeOver(graph, from, to, closed, { locked = undefined, rides = null, 
   if (targets.has(start)) return [start];
   for (const t of [...targets]) if (closed.has(t)) targets.delete(t);
   if (!targets.size) return null;
-  const doorKeys = locked !== undefined ? locked : baseFor(graph).locked;
-  const keyed = doorKeys && doorKeys.size ? doorKeys : null;
+  const keyOf = locked !== undefined ? lockedEdges(locked) : baseFor(graph).keyOf;
+  // Every locked door, and the ones whose key the traveller does not hold: never taken (the door
+  // says "You need the correct key to unlock this door.", inc_locked_doors.js 49).
+  const keyed = keyOf.size ? new Set(keyOf.keys()) : null;
+  const shut = keyed ? new Set([...keyOf].filter(([, id]) => held === ALL_KEYS || !held.has(id)).map(([e]) => e)) : null;
   const ways = { oneWay: oneWay && Object.keys(oneWay).length ? oneWay : null, startCut: startCut ? new Set(startCut) : null };
   // The walk, or a ride when it saves more than SUBWAY_RIDE_STREETS streets of walking (#488); a
   // tie walks, and a walk is the same shortest walk as before.
@@ -328,10 +368,15 @@ function routeOver(graph, from, to, closed, { locked = undefined, rides = null, 
     if (!ride) return walk;
     return walk && walk.length - 1 <= ride.cost ? walk : ride.path;
   };
-  // A locked door only when no way without one gets there: the subway needs no key, and the rare
-  // keys would otherwise send a fresh player's road to Xalanga through Level 2 West's Key 7 door.
-  return pick(keyed) || (keyed ? pick(null) : null);
+  // A locked door only with its key, and then only when no way without one gets there (entering
+  // spends a key, inc_locked_doors.js): the subway needs no key, and a fresh player's road to
+  // Xalanga went through Level 2 West's Key 7 door with no key at all (Austin 2026-11-25).
+  if (held === ALL_KEYS) return pick(keyed) || (keyed ? pick(null) : null);
+  return pick(keyed) || (keyed && shut.size < keyed.size ? pick(shut.size ? shut : null) : null);
 }
+
+/** routeOver's "every key held" (lockedOnTheWay and closedOnTheWay ask what a key would open). */
+const ALL_KEYS = Symbol('every key');
 
 /**
  * Shortest route over visible signposts and doors (apiFindGlobalPathX, or
@@ -357,6 +402,26 @@ export function findRoute(graph, from, to, opts = {}) {
 }
 
 /**
+ * Austin 2026-11-25: when findRoute finds nothing, whether a locked door you hold no key for is
+ * what stands in the way. The route a traveller holding every key would take (closed roads still
+ * closed, `opts.rides` as given): { path, doors: [{ from, to, key }] } with the locked doors on it
+ * whose key you do not hold, or null when keys would not help (or nothing is in the way).
+ */
+export function lockedOnTheWay(graph, from, to, opts = {}) {
+  noLooseClosures(opts, 'lockedOnTheWay');
+  const path = routeOver(graph, from, to, closedNow(graph), opts, ALL_KEYS);
+  if (!path) return null;
+  const keyOf = opts.locked !== undefined ? lockedEdges(opts.locked) : baseFor(graph).keyOf;
+  const held = keysNow(graph);
+  const doors = [];
+  for (let i = 1; i < path.length; i++) {
+    const edge = `${path[i - 1]}>${path[i]}`;
+    if (keyOf.has(edge) && !held.has(keyOf.get(edge))) doors.push({ from: path[i - 1], to: path[i], key: keyOf.get(edge) });
+  }
+  return doors.length ? { path, doors } : null;
+}
+
+/**
  * The Map's "No road there yet" (Austin 2026-11-15): when findRoute finds nothing, whether the
  * roads would get there once built. { closed: true } when every destination is itself under
  * construction; { through: [street keys] } with the closed streets on the shortest way there when
@@ -369,7 +434,7 @@ export function closedOnTheWay(graph, from, to, opts = {}) {
   const list = (Array.isArray(to) ? to : [to]).filter(Boolean);
   const open = list.filter((t) => !shut.has(graphKey(graph, t) || t));
   if (!open.length) return list.length ? { closed: true } : null;
-  const any = routeOver(graph, from, open, new Set(), opts);
+  const any = routeOver(graph, from, open, new Set(), opts, ALL_KEYS);
   if (!any) return null;
   const through = any.slice(1).filter((t) => shut.has(t));
   return through.length ? { through } : null;
@@ -382,15 +447,17 @@ export function closedOnTheWay(graph, from, to, opts = {}) {
  * starts (the starter street, where you are, the streets already open to you) over the graph's
  * open roads and the ways no closure holds (`free`: the subway, the Collision-triggered
  * Teleporters), as the ticket 50 test does. `keyed: false` leaves out locked doors (a new player
- * holds no keys, G401). A G-keyed Set.
+ * holds no keys, G401); `keyed: 'held'` takes only those whose key the graph's traveller holds
+ * (streetGraph `keys`, as a route does: Austin 2026-11-25). A G-keyed Set.
  * @param {object} graph
- * @param {{ starts?: string[], free?: Record<string, string[]>, keyed?: boolean }} [opts]
+ * @param {{ starts?: string[], free?: Record<string, string[]>, keyed?: boolean|'held' }} [opts]
  */
 export function reachableStreets(graph, { starts = [], free = {}, keyed = true, ...rest } = {}) {
   noLooseClosures(rest, 'reachableStreets');
   const roads = roadsOf(graph);
   const shut = closedNow(graph);
-  const doorKeys = keyed ? null : baseFor(graph).locked;
+  const held = keyed === 'held' ? keysNow(graph) : null;
+  const doorKeys = held ? new Set([...baseFor(graph).keyOf].filter(([, id]) => !held.has(id)).map(([e]) => e)) : keyed ? null : baseFor(graph).locked;
   const seen = new Set();
   const queue = [];
   for (const s of starts.map(gKey)) if (s && !seen.has(s)) (seen.add(s), queue.push(s));
@@ -585,14 +652,15 @@ export const streetGraphLoaded = () => Boolean(loaded);
 
 /**
  * The game's street graph with `engine`'s closures (engine.query('closedRoads', engine): the
- * street projects as they stand, street-jobs-feature), or null until loadStreetGraph is done (or
- * without an engine).
+ * street projects as they stand, street-jobs-feature) and its traveller's door keys (the pack,
+ * doors.js doorKeysHeld: a route takes a locked door only with its key), or null until
+ * loadStreetGraph is done (or without an engine).
  */
 export function roadsFor(engine) {
   if (!loaded || !engine || typeof engine !== 'object') return null;
   let view = views.get(engine);
   if (!view || view[BASE] !== loaded[BASE]) {
-    view = streetGraph(loaded, { closed: () => engine.query?.('closedRoads', engine) });
+    view = streetGraph(loaded, { closed: () => engine.query?.('closedRoads', engine), keys: () => doorKeysHeld(engine.inv) });
     views.set(engine, view);
   }
   return view;

@@ -59,7 +59,8 @@
  * restore a stale one after a later croak).
  */
 
-import { closedOnTheWay, doorRooms, findRoute, graphKey, hasRoad, isClosed, routeGraph, sameStreet, tsidAliases } from './street-graph.js?v=dcc5cae4';
+import { closedOnTheWay, doorRooms, findRoute, graphKey, hasRoad, isClosed, lockedOnTheWay, routeGraph, sameStreet, tsidAliases } from './street-graph.js?v=dcc5cae4';
+import { DOOR_KEYS, DOOR_TEXT } from './doors.js?v=727d0e0b';
 
 /**
  * R11 (G969): the graph and its walks live in js/street-graph.js, closed roads included; these
@@ -88,6 +89,8 @@ export const ROUTE_TEXT = Object.freeze({
   /** The remake's own (check 2026-11-25, regionWayIn): the Map card's way into a region whose map shows unbuilt roads. */
   wayIn: 'The way in: ',
   noRoadInto: 'No open road leads into ',
+  /** The remake's own (Austin 2026-11-25): the way in needs Your Papers or a key you do not have yet. */
+  wayInGated: 'Show the way says what you need for it.',
   /** GpsUI.as moveMoveEnded 347-352 growl. */
   rerouteFailed: 'Creating path failed: Path not found',
   /** items/contraband.js check_address 71. */
@@ -98,6 +101,16 @@ export const ROUTE_TEXT = Object.freeze({
    */
   subwayPapers: 'The only way there is the subway, and the gate needs your papers.',
   subwayDubious: 'The only way there is the subway, and the gate turns away journeys of dubious purpose.',
+  /**
+   * Austin 2026-11-25: only a locked door you hold no key for gets there. Glitch's own refusal at
+   * the door (locations/inc_locked_doors.js 49, js/doors.js DOOR_TEXT.needKey), led by where the
+   * door is and followed by the key that opens it (items/door_key_N.js name_single).
+   */
+  lockedDoor: (doors, keys, many = false) => `The only way there is through ${doors}. ${many ? 'You need the correct keys to unlock them' : DOOR_TEXT.needKey.replace(/\.$/, '')}: ${keys}.`,
+  /** The remake's own (Austin 2026-11-25): the subway or a locked door, and you may take neither. */
+  subwayOrDoor: (gate, doors, keys) => `The only ways there are the subway, whose gate ${gate}, and ${doors}, which needs ${keys}.`,
+  /** The remake's own (Austin 2026-11-25): the only way rides the subway and goes through a locked door. */
+  subwayAndDoor: (gate, doors, keys) => `The only way there rides the subway, whose gate ${gate}, and goes through ${doors}, which needs ${keys}.`,
   /** items/npc_bureaucrat.js 897 (Legalize It proposition, last beat). */
   bureaucratHall: "You can go back to wherever you were now: I'll set the closest Bureaucratic Hall as the destination on your map.",
 });
@@ -276,13 +289,53 @@ export function normalizeRouteState(seed = {}) {
   };
 }
 
+/** The gate's refusal in a few words, for the sentences that name a door too (ROUTE_TEXT.subwayOrDoor). */
+const GATE_WORDS = Object.freeze({ papers: 'needs your papers', dubious: 'turns away journeys of dubious purpose' });
+
+const andList = (list) => (list.length < 2 ? list.join('') : `${list.slice(0, -1).join(', ')} and ${list[list.length - 1]}`);
+
+/**
+ * Austin 2026-11-25: what stands in the way when no route you may take gets there: the subway gate
+ * (`refused`, R24: { rides, text, gate, hint }, the rides it turns you back from) or locked doors
+ * whose key you do not hold (street-graph.js lockedOnTheWay), or both. Names what each needs, in
+ * Glitch's words where it had them. { subway, doors: [{ from, to, key }], text } or null when
+ * neither would get you there (the roads are still being built, or nothing leads there).
+ * @param {object} graph  a street graph (its keys are the traveller's)
+ * @param {string} from
+ * @param {string[]} list  the destinations
+ * @param {object} ways  findRoute's options (rides, oneWay, startCut, locked)
+ * @param {{ rides?: object, text?: string, gate?: string, hint?: string }|null} refused
+ * @param {(tsid: string) => string} label  a street's name
+ */
+export function routeNeeds(graph, from, list, ways = {}, refused = null, label = (t) => t) {
+  if (!from || !list?.length) return null;
+  const byRide = refused?.rides ? findRoute(graph, from, list, { ...ways, rides: refused.rides }) : null;
+  const byKey = lockedOnTheWay(graph, from, list, ways);
+  const both = !byRide && !byKey && refused?.rides ? lockedOnTheWay(graph, from, list, { ...ways, rides: refused.rides }) : null;
+  if (!byRide && !byKey && !both) return null;
+  const subwayText = String(refused?.text || ROUTE_TEXT.subwayPapers);
+  if (byRide && !byKey) return { subway: true, doors: [], text: subwayText };
+  const doors = (byKey || both).doors;
+  const where = [...new Set(doors.map((d) => label(d.from)))];
+  const doorWords = `${where.length > 1 || doors.length > 1 ? 'locked doors' : 'a locked door'} on ${andList(where)}`;
+  const keyIds = [...new Set(doors.map((d) => d.key))];
+  const keyWords = andList(keyIds.map((id) => `a ${DOOR_KEYS[id]?.label || 'door key'}`));
+  if (!byRide && !both) return { subway: false, doors, text: ROUTE_TEXT.lockedDoor(doorWords, keyWords, doors.length > 1) };
+  const gate = GATE_WORDS[refused?.gate] || GATE_WORDS.papers;
+  const hint = refused?.hint ? ` ${refused.hint}` : '';
+  const text = byRide ? ROUTE_TEXT.subwayOrDoor(gate, doorWords, keyWords) : ROUTE_TEXT.subwayAndDoor(gate, doorWords, keyWords);
+  return { subway: true, doors, text: `${text}${hint}` };
+}
+
 /**
  * buildPath + setPath. `from` is where the route starts (default: the street
  * you are on; the Back Alley passes the street you came from). `to` may list
- * several destinations: the closest one wins.
- * @returns {{ ok: boolean, state: object, route?: object, error?: string }}
+ * several destinations: the closest one wins. With no route you may take, the subway gate you
+ * would be refused at (`refused`, R24) or the locked doors you hold no key for (the graph's keys)
+ * are named instead (routeNeeds: `gated`, `subway`, `doors`); `label` names the streets.
+ * @returns {{ ok: boolean, state: object, route?: object, error?: string, gated?: boolean, subway?: boolean, doors?: object[] }}
  */
-export function planRoute(state, graph, { from, to, source = 'player', quest = '', inHome = false, locked = undefined, rides = null, refused = null, oneWay = null, startCut = null, now = Date.now(), ...rest } = {}) {
+export function planRoute(state, graph, { from, to, source = 'player', quest = '', inHome = false, locked = undefined, rides = null, refused = null, oneWay = null, startCut = null, label = (t) => t, now = Date.now(), ...rest } = {}) {
   const s = normalizeRouteState(state);
   if (inHome) return { ok: false, state: s, error: ROUTE_TEXT.fromHome };
   const list = (Array.isArray(to) ? to : [to]).filter(Boolean);
@@ -290,11 +343,11 @@ export function planRoute(state, graph, { from, to, source = 'player', quest = '
   if (from && list.some((t) => sameStreet(t, from))) return { ok: false, state: s, error: ROUTE_TEXT.alreadyThere };
   const ways = { ...rest, locked, rides, oneWay, startCut };
   const path = from ? findRoute(graph, from, list, ways) : null;
-  // R24: no way on foot, and the only one rides the subway this player's gate refuses
-  // (`refused`: { rides, text }): say so instead of a route the gate turns back.
-  if (!path && from && refused?.rides && findRoute(graph, from, list, { ...ways, rides: refused.rides })) {
-    return { ok: false, state: s, error: String(refused.text || ROUTE_TEXT.subwayPapers), subway: true };
-  }
+  // R24 and Austin 2026-11-25: no way you may take, and the only ones ride the subway this
+  // player's gate refuses (`refused`: { rides, text }) or go through a locked door whose key you do
+  // not hold: say what each needs instead of a route the gate or the door turns back.
+  const need = !path && from ? routeNeeds(graph, from, list, ways, refused, label) : null;
+  if (need) return { ok: false, state: s, error: need.text, gated: true, subway: need.subway, doors: need.doors };
   // No route, but the roads would get there once built (street projects): say so (not_a_destination).
   const why = !path && from ? closedOnTheWay(graph, from, list, ways) : null;
   // Every destination still under construction: no route through its crossed arm.
@@ -629,8 +682,10 @@ export function hubRouteDrawing(remaining, segments, hubOf, hubId) {
  * (`entry`), the street before it on the way (`before`, '' when you start there) and the route.
  * Null when you are in the region already, when none of its streets is under construction (its map
  * shows every way in), or with no street to start from; { noRoad: true } when no open road gets
- * there but built roads would (the Projects sheet's Roads to a region, G801). Glitch's world was
- * fully open, so it never needed this.
+ * there but built roads would (the Projects sheet's Roads to a region, G801). Only a locked door
+ * you hold no key for gets in (Austin 2026-11-25): the way in through it, with `doors` (the locked
+ * doors on it, street-graph.js lockedOnTheWay), so Show the way says which key it needs. Glitch's
+ * world was fully open, so it never needed this.
  * @param {object} graph  a street graph (js/street-graph.js), closed roads in it
  * @param {{ from: string, hubId: string, streets: string[], hubOf: (tsid: string) => string, rides?: object, oneWay?: object, startCut?: Iterable<string> }} o
  */
@@ -640,9 +695,14 @@ export function regionWayIn(graph, { from = '', hubId = '', streets = [], hubOf 
   if (!from || !hub || !list.length || !graphKey(graph, from)) return null;
   if (String(hubOf(from) || '') === hub) return null;
   if (!list.some((t) => isClosed(graph, t))) return null;
-  const path = findRoute(graph, from, list, opts);
-  if (!path) return closedOnTheWay(graph, from, list, opts) ? { noRoad: true } : null;
+  let path = findRoute(graph, from, list, opts);
+  let doors = null;
+  if (!path) {
+    const locked = lockedOnTheWay(graph, from, list, opts);
+    if (!locked) return closedOnTheWay(graph, from, list, opts) ? { noRoad: true } : null;
+    ({ path, doors } = locked);
+  }
   const at = path.findIndex((t) => String(hubOf(t) || '') === hub);
   if (at < 0) return null;
-  return { entry: path[at], before: at > 0 ? path[at - 1] : '', path };
+  return { entry: path[at], before: at > 0 ? path[at - 1] : '', path, ...(doors ? { doors } : {}) };
 }

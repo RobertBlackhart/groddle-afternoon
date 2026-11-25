@@ -55,6 +55,18 @@ export function doorKeyClass(keyId) {
   return `door_key_${Number(keyId)}`;
 }
 
+/**
+ * The door keys a pack holds (has_key, players/inc_items.js: key_id N opens door_key_N), as key
+ * ids. The street graph's routes take a locked door only with its key in here (js/street-graph.js
+ * roadsFor, Austin 2026-11-25).
+ * @param {Record<string, number>|null} inv
+ * @returns {number[]}
+ */
+export function doorKeysHeld(inv) {
+  if (!inv || typeof inv !== 'object') return [];
+  return Object.keys(DOOR_KEYS).map(Number).filter((id) => (Number(inv[doorKeyClass(id)]) || 0) > 0);
+}
+
 /** Doors the client draws: hidden connects are invisible and inert. */
 export function visibleDoors(street) {
   return (street?.doors || []).filter((door) => door && !door.hidden);

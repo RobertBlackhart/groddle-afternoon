@@ -537,20 +537,29 @@ describe('G192 doors in the route graph', () => {
     assert.equal(doorToward(streetJson(PANKA).doors, HELL_BAR), 0);
   });
 
-  it("Vicar's Peak: through its locked door, the only way in", () => {
-    const path = findRoute(built.graph, HECHEY, VICARS, { locked: built.locked });
+  it("Vicar's Peak: through its locked door, the only way in, with Door Key 1 in the pack", () => {
+    const path = findRoute(streetGraph(built.graph, { locked: built.keyOf, keys: [1] }), HECHEY, VICARS);
     assert.ok(path && path.length > 2);
     assert.deepEqual(path.slice(-2), [THORNFAD, VICARS]);
     assert.equal(findRoute(GRAPH, HECHEY, VICARS), null, 'not on the signposts alone');
+    // Austin 2026-11-25: no key, no way in (the door says "You need the correct key to unlock this door.").
+    assert.equal(findRoute(built.graph, HECHEY, VICARS, { locked: built.keyOf }), null);
+    assert.equal(findRoute(streetGraph(built.graph, { locked: built.keyOf, keys: [2] }), HECHEY, VICARS), null, 'another key does not open it');
   });
 
-  it('a locked door only when there is no other way', () => {
+  it('a locked door only with its key, and then only when there is no other way', () => {
     const toy = { GA: ['GB', 'GC'], GB: ['GA'], GC: ['GA', 'GB'] };
-    const locked = new Set(['GA>GB']);
-    assert.deepEqual(findRoute(toy, 'GA', 'GB', { locked }), ['GA', 'GC', 'GB']);
-    assert.deepEqual(findRoute({ GA: ['GB'], GB: [] }, 'GA', 'GB', { locked }), ['GA', 'GB']);
+    const locked = { 'GA>GB': 1 };
+    const held = (g, more = {}) => streetGraph(g, { locked, keys: [1], ...more });
+    assert.deepEqual(findRoute(held(toy), 'GA', 'GB'), ['GA', 'GC', 'GB']);
+    assert.deepEqual(findRoute(held({ GA: ['GB'], GB: [] }), 'GA', 'GB'), ['GA', 'GB']);
     // With closed roads too: round both, then through the lock, never through the closure.
-    assert.deepEqual(findRoute(streetGraph(toy, { closed: ['GC'] }), 'GA', 'GB', { locked }), ['GA', 'GB']);
+    assert.deepEqual(findRoute(held(toy, { closed: ['GC'] }), 'GA', 'GB'), ['GA', 'GB']);
+    // Without the key the door is no way at all (Austin 2026-11-25).
+    assert.equal(findRoute({ GA: ['GB'], GB: [] }, 'GA', 'GB', { locked }), null);
+    assert.equal(findRoute(streetGraph(toy, { closed: ['GC'], locked }), 'GA', 'GB'), null);
+    // A lock whose key is not known (a Set of edges) is never opened.
+    assert.equal(findRoute(streetGraph({ GA: ['GB'], GB: [] }, { locked: new Set(['GA>GB']), keys: [1] }), 'GA', 'GB'), null);
   });
 
   it('doorToward: visible doors with one destination, an unlocked one first', () => {

@@ -27,15 +27,17 @@
  *
  * Other modules set and clear routes through the feature host, so they need
  * no import:
- *   engine.query('mapRoute', 'set', { to, from, source, quest }, engine)  -> { ok, error, route, subway }
+ *   engine.query('mapRoute', 'set', { to, from, source, quest }, engine)  -> { ok, error, route, gated, subway, doors }
  *     (R24: a route rides the subway only when the gate would let you through, js/subway.js gateFor;
- *     subway: true when only the subway gets there and the gate would refuse you, error says why)
+ *     Austin 2026-11-25: and goes through a locked door only with its key in your pack, the street
+ *     graph's keys. gated: true when only those get there, error says what each needs; subway: true
+ *     when the subway is one of them; doors: the locked doors, map-routes.js routeNeeds)
  *   engine.query('mapRoute', 'clear', { source, reason }, engine)          -> { cleared }
  *   engine.query('mapRoute', 'get', null, engine)                         -> route | null
  *   engine.query('mapRoute', 'find', { to }, engine)                      -> { destination, hops } | { unknown } | null
  *     (G774, the vendor finder: the route set would take, from where you stand, without setting it;
  *     { unknown: true } at home, off the map or while the roads load; null when no way gets there)
- *   engine.query('mapRoute', 'wayIn', { hubId }, engine)                  -> { entry, before, path } | { noRoad } | null
+ *   engine.query('mapRoute', 'wayIn', { hubId }, engine)                  -> { entry, before, path, doors?, gated? } | { noRoad } | null
  *     (check 2026-11-25: the way into a region whose map shows unbuilt roads, map-routes.js regionWayIn;
  *     its Map card names it and offers Show the way, and a location link opens the Map on its entry)
  *
@@ -120,11 +122,11 @@ const ridesNow = (engine) => ridesFor(engine, state.route?.source);
 function refusedRides(engine, source) {
   const refusal = gateFor(engine);
   if (!refusal || NO_RIDE_SOURCES.includes(String(source || ''))) return null;
-  if (refusal.code !== 'papers') return { rides, text: ROUTE_TEXT.subwayDubious };
+  if (refusal.code !== 'papers') return { rides, text: ROUTE_TEXT.subwayDubious, gate: 'dubious', hint: '' };
   const has = (id) => (engine.unlockedAchievements || []).includes(id);
   const holds = (id) => Boolean(engine.inv) && countItem(engine.inv, id) > 0;
-  const hint = papersHint({ hasCardBadge: has(CARD_BADGE), hasPapersItem: holds('your_papers'), hasCardItem: holds(CARD_BADGE) });
-  return { rides, text: `${ROUTE_TEXT.subwayPapers} ${hint || SUBWAY_TEXT.papersAtHall}` };
+  const hint = papersHint({ hasCardBadge: has(CARD_BADGE), hasPapersItem: holds('your_papers'), hasCardItem: holds(CARD_BADGE) }) || SUBWAY_TEXT.papersAtHall;
+  return { rides, text: `${ROUTE_TEXT.subwayPapers} ${hint}`, gate: 'papers', hint };
 }
 /** The rebuilt stations' street keys (js/subway.js): a surface street's subway entrance is its door to one. */
 const STATION_STREETS = new Set(STATIONS.map((st) => st.streetTsid));
@@ -313,6 +315,8 @@ function setRoute(engine, opts = {}) {
     inHome: !opts.from && !door && Boolean(engine.homeContext?.().inHome),
     rides: ridesFor(engine, opts.source || 'player'),
     refused: refusedRides(engine, opts.source || 'player'),
+    // Austin 2026-11-25: the locked doors a refusal names (the graph's keys are your pack's).
+    label,
     oneWay,
     // From where you stand, when the route starts on the street you are on.
     startCut: opts.from && !sameStreet(opts.from, engine.streetTsid) ? null : cutHere(engine),
@@ -359,11 +363,13 @@ function wayInto(engine, hubId) {
   const way = ask(ridesFor(engine, 'player'));
   // R24: when only the subway gets in and the gate would turn you back, the way in is still the
   // subway (Groddle Heights from Groddle Forest Junction): Show the way then says what the gate needs.
-  if (way?.noRoad && refusedRides(engine, 'player')) {
+  // Austin 2026-11-25: the same when only a locked door you hold no key for gets in (way.doors):
+  // the subway's way is named first, and Show the way says what either needs.
+  if ((way?.noRoad || way?.doors) && refusedRides(engine, 'player')) {
     const byTrain = ask(rides);
-    if (byTrain?.entry) return byTrain;
+    if (byTrain?.entry && !byTrain.doors) return { ...byTrain, gated: true };
   }
-  return way;
+  return way?.doors ? { ...way, gated: true } : way;
 }
 
 /** The Map card's words for a way in: "The way in: Hazy Gate 3, from Yellow Yawning (Moshi Moshi Oshilatis)." */
@@ -371,7 +377,9 @@ function wayInLine(engine, way) {
   if (!way?.before) return `${ROUTE_TEXT.wayIn}${label(way?.entry)}.`;
   const ride = isRide(roads(engine), rides, way.before, way.entry);
   const where = `${label(way.before)}${hubName(way.before) ? ` (${hubName(way.before)})` : ''}`;
-  return `${ROUTE_TEXT.wayIn}${label(way.entry)}, ${ride ? 'by subway from' : 'from'} ${where}.`;
+  const line = `${ROUTE_TEXT.wayIn}${label(way.entry)}, ${ride ? 'by subway from' : 'from'} ${where}.`;
+  // Austin 2026-11-25: a way in you may not take yet (the gate or a locked door) says so.
+  return way.gated ? `${line} ${ROUTE_TEXT.wayInGated}` : line;
 }
 
 /** G774: where a route to the nearest of `opts.to` would end and how many streets away, without setting it. */
@@ -1130,7 +1138,7 @@ function bindMapCanvas(engine) {
       noRoadPick = !res.ok && res.error === ROUTE_TEXT.noRoad ? tsid : '';
       engine.setData?.('routeNoRoad', noRoadPick);
       if (!res.ok) {
-        engine.toast?.(res.error, res.subway ? 6000 : 2600);
+        engine.toast?.(res.error, res.gated ? 6000 : 2600);
         redrawOpenMap(engine);
         return;
       }
@@ -1274,7 +1282,7 @@ function mapCard(engine) {
     const to = way.entry;
     button('Show the way', () => {
       const res = setRoute(engine, { to, source: 'player' });
-      if (!res.ok) engine.toast?.(res.error, res.subway ? 6000 : 2600);
+      if (!res.ok) engine.toast?.(res.error, res.gated ? 6000 : 2600);
       else engine.pushActivity?.(`Destination set: ${label(res.route.destination)}.`);
     }).dataset.routeWayIn = to;
   } else if (way?.noRoad) {
@@ -1333,7 +1341,7 @@ function pickRoom(engine, room) {
   pickMode = false;
   const res = setRoute(engine, { to: room, source: 'player' });
   if (!res.ok) {
-    engine.toast?.(res.error, res.subway ? 6000 : 2600);
+    engine.toast?.(res.error, res.gated ? 6000 : 2600);
     redrawOpenMap(engine);
     return res;
   }

@@ -121,6 +121,7 @@ import { gateTerms } from '../subway.js?v=ea6921ff';
 import { forceMetabolic, gainMetabolic, loseEnergy } from '../metabolics.js?v=48f784bf';
 import { holdNote, placeIndex, questHold, questStoryKey } from '../quest-reach.js?v=a58985bd';
 import { fewestClosures, loadStreetGraph, reachableStreets, streetGraph, worldRoads } from '../street-graph.js?v=dcc5cae4';
+import { doorKeysHeld } from '../doors.js?v=727d0e0b';
 import { openWorld } from '../open-roads.js?v=597feeb5';
 import { getQuestCatalog as questCatalog } from '../content-catalogs.js?v=5ef6adb5';
 import { saveStore, savedThrough } from '../save-store.js?v=4e720735';
@@ -326,8 +327,10 @@ function walkReach(from, engine) {
   }
   let done = 0;
   for (const row of Object.values(state.jobs)) if (row?.doneAt) done += 1;
-  const key = `${state.grandfathered.length}|${done}|${demo?.jobId || ''}|${from}`;
-  if (walkCache.key !== key) walkCache = { key, reach: reachableStreets(waysReady.graph, { starts: [from] }) };
+  // Austin 2026-11-25: a locked door only with its key in your pack, as the route there would go.
+  const keys = doorKeysHeld(engine?.inv);
+  const key = `${state.grandfathered.length}|${done}|${demo?.jobId || ''}|${from}|${keys.join(',')}`;
+  if (walkCache.key !== key) walkCache = { key, reach: reachableStreets(streetGraph(waysReady.roads, { closed: closedNowHere, keys }), { starts: [from], keyed: 'held' }) };
   return walkCache.reach;
 }
 

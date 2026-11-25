@@ -61,11 +61,13 @@ describe('#488 a ride costs SUBWAY_RIDE_STREETS streets', () => {
 
   it('a locked door is still the last resort: a ride, even a long one, comes first', () => {
     const roads = { GA: ['GB', 'GX'], GB: ['GA', 'GC'], GC: ['GB'], GX: ['GA', 'GY'], GY: ['GX', 'GZ'], GZ: ['GY'] };
-    const g = streetGraph({ streets: roads, doors: {}, doorKeys: {} });
-    const locked = new Set(['GA>GX']);
+    const g = streetGraph({ streets: roads, doors: {}, doorKeys: {} }, { keys: [7] });
+    const locked = { 'GA>GX': 7 };
     const rides = subwayRides(['GC', 'GZ']);
     assert.deepEqual(findRoute(g, 'GA', 'GZ', { locked, rides }), ['GA', 'GB', 'GC', 'GZ']);
     assert.deepEqual(findRoute(g, 'GA', 'GZ', { locked }), ['GA', 'GX', 'GY', 'GZ']);
+    // Austin 2026-11-25: without the key, no ride and no door.
+    assert.equal(findRoute(streetGraph({ streets: roads, doors: {}, doorKeys: {} }), 'GA', 'GZ', { locked }), null);
   });
 
   it('papers are still the gate\'s', () => {

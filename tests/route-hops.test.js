@@ -30,7 +30,7 @@ const json = (rel) => JSON.parse(readFileSync(join(PUB, rel), 'utf8'));
 const index = json('assets/streets/index.json');
 const catalog = json('assets/content/street-jobs.json');
 const GRAPH_JSON = json('assets/content/signpost-graph.json');
-const { graph, locked } = routeGraph(GRAPH_JSON);
+const { graph, locked, keyOf } = routeGraph(GRAPH_JSON);
 const HOME = index.default;
 const byLabel = (label) => Object.keys(index.streets).find((t) => index.streets[t].label === label);
 const THICKET = byLabel('Thicket');
@@ -103,18 +103,21 @@ describe('every way in the route graph is one a player can take', () => {
     assert.deepEqual([...new Set(Object.values(GRAPH_JSON.doorKeys))].sort((x, y) => x - y), [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12]);
   });
 
-  it('a locked door only when nothing else gets there, the subway included', () => {
+  it('a locked door only with its key, and only when nothing else gets there, the subway included', () => {
+    const held = (g) => streetGraph(g, { keys: [1] });
     const g = { a: ['b', 'c'], b: ['d'], c: [], d: [] };
     const rides = { a: ['c'], c: ['a', 'd'], d: ['c'] };
-    const keyed = new Set(['b>d']);
-    // No ride offered and no other road: the door.
-    assert.deepEqual(findRoute(g, 'a', 'd', { locked: keyed }), ['a', 'b', 'd']);
+    const keyed = { 'b>d': 1 };
+    // No ride offered and no other road: the door, with its key.
+    assert.deepEqual(findRoute(held(g), 'a', 'd', { locked: keyed }), ['a', 'b', 'd']);
+    // Without the key: no way (Austin 2026-11-25).
+    assert.equal(findRoute(g, 'a', 'd', { locked: keyed }), null);
     // A ride gets there with no key: the ride, though the door is fewer hops.
-    assert.deepEqual(findRoute({ a: ['b'], b: ['d'], c: [], d: [] }, 'a', 'd', { locked: keyed, rides }), ['a', 'c', 'd']);
+    assert.deepEqual(findRoute(held({ a: ['b'], b: ['d'], c: [], d: [] }), 'a', 'd', { locked: keyed, rides }), ['a', 'c', 'd']);
     // A road beats the ride, as before.
-    assert.deepEqual(findRoute({ a: ['d', 'b'], b: ['d'], c: [], d: [] }, 'a', 'd', { locked: keyed, rides }), ['a', 'd']);
-    // The ride and the door both: the door is still there when nothing else is.
-    assert.deepEqual(findRoute({ a: ['b'], b: ['e'], e: ['f'], c: [], d: [], f: [] }, 'a', 'f', { locked: new Set(['b>e']), rides }), ['a', 'b', 'e', 'f']);
+    assert.deepEqual(findRoute(held({ a: ['d', 'b'], b: ['d'], c: [], d: [] }), 'a', 'd', { locked: keyed, rides }), ['a', 'd']);
+    // The ride and the door both: the door is still there when nothing else is, with its key.
+    assert.deepEqual(findRoute(held({ a: ['b'], b: ['e'], e: ['f'], c: [], d: [], f: [] }), 'a', 'f', { locked: { 'b>e': 1 }, rides }), ['a', 'b', 'e', 'f']);
   });
 });
 
@@ -124,7 +127,8 @@ describe("Austin's route: Thicket to Hazy Gate 3 (Set a destination on the Map)"
 
   it('a fresh world rides the subway to Onto Parada and walks the roads opened from the start', () => {
     assert.deepEqual(route().map(label), ['Thicket', "Pasha's Place", 'Groddle Forest Junction', 'Onto Parada', 'Konemaen Jaunt', 'Simo Steer', 'Kala Close', 'Shinso Ello', 'Ramyeon Kon', 'Teobocci Shasha', 'Glutton Greens', 'Shim Shiri', 'Yellow Yawning', 'Hazy Gate 3']);
-    assert.ok(findRoute(streetGraph(graph, { closed: shut() }), THICKET, HAZY_GATE_3, { locked }).includes(OPPIDAN), 'without the subway only Level 2 West\'s locked door gets there');
+    assert.ok(findRoute(streetGraph(graph, { closed: shut(), locked: keyOf, keys: [7] }), THICKET, HAZY_GATE_3).includes(OPPIDAN), 'without the subway only Level 2 West\'s locked door gets there, with its key');
+    assert.equal(findRoute(streetGraph(graph, { closed: shut() }), THICKET, HAZY_GATE_3, { locked: keyOf }), null, 'and with no key, no way (Austin 2026-11-25)');
     const res = planRoute(createRouteState(), streetGraph(graph, { closed: shut() }), { from: THICKET, to: HAZY_GATE_3, locked, rides: RIDES });
     assert.equal(res.ok, true);
     assert.ok(!route().includes(OPPIDAN), 'not through Oppidan Avenue');
