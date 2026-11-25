@@ -75,7 +75,7 @@ import {
   spiritSheets,
   zuttoNear,
   zuttoNextClip,
-} from '../street-spirits.js?v=9f5a77c1';
+} from '../street-spirits.js?v=52979ade';
 import {
   TALK_CLASSES,
   TALK_ORDER,
@@ -102,7 +102,7 @@ import {
 } from '../conversations.js?v=7cbdfea4';
 import { acceptOffer, npcQuestOffers, questStatus } from '../quest-offers.js?v=6eccdc80';
 import { getQuestCatalog } from '../content-catalogs.js?v=5ef6adb5';
-import { questRoomConverse } from './quest-instances-feature.js?v=67489662';
+import { questRoomConverse } from './quest-instances-feature.js?v=46535ae0';
 import { SPIRIT_REMINISCE_TEXT, isStreetSpiritClass, spiritReminisceOffers, withReminisceVerb } from '../spirit-reminisce.js?v=258342aa';
 import { questDoneAt } from '../quests.js?v=d0443973';
 

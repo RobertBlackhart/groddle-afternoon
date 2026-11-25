@@ -43,9 +43,9 @@ import {
 import { HELL_SPRITES } from '../hell.js?v=d77f15ef';
 import { publicStreet } from '../shared-street.js?v=dce5694b';
 import { frameTexture, sourceFromUrl } from '../textures.js?v=b8e38103';
-import { standOnFeet } from '../sprite-feet.js?v=581d3644';
-import { hellFeature } from './hell-feature.js?v=c369c634';
-import { hellTicketsFeature } from './hell-tickets-feature.js?v=b399ecbd';
+import { standOnFeet } from '../sprite-feet.js?v=c775bc5d';
+import { hellFeature } from './hell-feature.js?v=d993ab50';
+import { hellTicketsFeature } from './hell-tickets-feature.js?v=946964ea';
 
 export const GRAVES_MP_FEATURE_ID = 'graves-mp';
 const CLASS_ID = 'graveside_marker';

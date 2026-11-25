@@ -102,7 +102,7 @@ import { frameTexture, sourceFromUrl } from '../textures.js?v=b8e38103';
 import { setMetalMakingMusic } from '../sound-moments.js?v=3e66996f';
 import { itemZ } from '../item-bands.js?v=e98b10bc';
 import { topUpMetabolic } from '../metabolics.js?v=48f784bf';
-import { standOnFeet } from '../sprite-feet.js?v=581d3644';
+import { standOnFeet } from '../sprite-feet.js?v=c775bc5d';
 import { ownGroundRows } from '../ground-stacks.js?v=22792362';
 
 export const SUPPLY_FEATURE_ID = 'supply';

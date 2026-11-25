@@ -18,10 +18,10 @@ import { attachAnim, isAnimatedDeco, setAnimSource, setDecoTexture, syncAnim } f
 import { drawnLayerOffset, layerScreenDir } from './camera-feel.js?v=e668afc5';
 import { ensureDepthStencil, readbackPixels } from './render-probe.js?v=519c86ef';
 import { QUAD_SPAN, quadSpans, wideRect } from './wide-quads.js?v=f34556e6';
-import { anchorBottomCentre } from './sprite-feet.js?v=581d3644';
+import { anchorBottomCentre } from './sprite-feet.js?v=c775bc5d';
 import { signWords } from './deco-sign.js?v=e98e50f9';
 import { loadWorldFont, WORLD_FONT_FAMILY } from './world-text.js?v=6b49f88c';
-import { buildDoorSprite } from './door-view.js?v=6aa7b6f3';
+import { buildDoorSprite } from './door-view.js?v=26b49617';
 import { visibleDoors } from './doors.js?v=f815e7c8';
 
 const DECO_BASE = 'assets/decos/groddle/';

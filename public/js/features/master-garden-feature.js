@@ -47,7 +47,7 @@ import {
 import { rollDropTable } from '../drop-tables.js?v=1ed0b596';
 import { payDrop } from './drops-feature.js?v=46276af2';
 import { textureFromUrl } from '../textures.js?v=b8e38103';
-import { playPotionBottle } from '../potion-bottle-fx.js?v=ac675e04';
+import { playPotionBottle } from '../potion-bottle-fx.js?v=5ed8cf8a';
 import { copyFromLedger, keepsCopies, verbCopy } from '../copy-charges.js?v=ab07e909';
 import { gardenGrowModifier } from '../imagination-effects.js?v=70169933';
 import { topUpMetabolic } from '../metabolics.js?v=48f784bf';

@@ -72,9 +72,9 @@ import { frameTexture, onLoaded, sourceFromUrl, textureFromUrl } from '../textur
 import { homeStreetLayout, normalizeCultivationState } from '../home-cultivation.js?v=dcf357ef';
 import { readVisitScene } from '../neighbours-mp.js?v=d7a3f0f2';
 import { saveStore } from '../save-store.js?v=4e720735';
-import { STREET_GROUND_Y, homesFeature, wearHomeCultivation } from './homes-feature.js?v=32b23d10';
-import { holdYardAnimal } from './animal-husbandry-feature.js?v=67250346';
-import { patchesFeature, treeFrameUrl } from './patches-feature.js?v=07614ac4';
+import { STREET_GROUND_Y, homesFeature, wearHomeCultivation } from './homes-feature.js?v=fb930507';
+import { holdYardAnimal } from './animal-husbandry-feature.js?v=cb3e4268';
+import { patchesFeature, treeFrameUrl } from './patches-feature.js?v=0ca1049f';
 import {
   YARD_STREET,
   YARD_TEXT as T,
@@ -105,7 +105,7 @@ import { ROCK_CATALOG, rockStatusLabel, tickMineRock } from '../mining.js?v=c3bd
 import { getResourceNodeDef, regrowDelayMs } from '../resource-nodes.js?v=90d75c60';
 import { getGameDayKey } from '../game-day.js?v=a532775d';
 import { rockReady } from '../street-objects.js?v=efc0dddc';
-import { resourceNodesFeature } from './resource-nodes-feature.js?v=7ae6a071';
+import { resourceNodesFeature } from './resource-nodes-feature.js?v=5984809a';
 import {
   ROCK_RESPAWN_MS,
   STOCK_NODE_VERBS,
@@ -115,7 +115,7 @@ import {
   visitorNode,
   visitorRock,
 } from '../yard-stock-mp.js?v=7b878140';
-import { standOnFeet } from '../sprite-feet.js?v=581d3644';
+import { standOnFeet } from '../sprite-feet.js?v=c775bc5d';
 
 export { YARD_VERBS_MP_ID };
 

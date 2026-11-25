@@ -19,14 +19,14 @@
  * that lot for you first).
  */
 
-import { anchorBottomCentre } from '../sprite-feet.js?v=581d3644';
+import { anchorBottomCentre } from '../sprite-feet.js?v=c775bc5d';
 import { doorSaleArt } from '../door-sign-art.js?v=69daffff';
 import { textureFromUrl, isLoaded, onLoaded } from '../textures.js?v=b8e38103';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';
 import { createMinnAccount } from '../minn-account.js?v=c6a70577';
 import { exposeQA } from '../qa-gate.js?v=f4e2cd82';
 import { houseLot } from '../home-house.js?v=3c88c47c';
-import { houseContainer, houseOf } from './homes-feature.js?v=32b23d10';
+import { houseContainer, houseOf } from './homes-feature.js?v=fb930507';
 import {
   QUARTER_TEXT,
   isQuarterLot,

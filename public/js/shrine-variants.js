@@ -24,7 +24,7 @@
  * apart: the splatter sits 275 px down on Ix, 255 on Firebog, 195 on Uralia.
  */
 
-import { FIREBOG_HUBS, IX_HUBS, URALIA_HUBS } from './street-spirits.js?v=9f5a77c1';
+import { FIREBOG_HUBS, IX_HUBS, URALIA_HUBS } from './street-spirits.js?v=52979ade';
 
 export const SHRINE_REGIONS = Object.freeze(['base', 'firebog', 'ix', 'uralia']);
 

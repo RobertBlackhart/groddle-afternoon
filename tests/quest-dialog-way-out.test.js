@@ -26,8 +26,8 @@ import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=5
 import { createQuestState } from '../public/js/quests.js?v=d0443973';
 import { markOffered, waitingOffers } from '../public/js/quest-offers.js?v=6eccdc80';
 import { questOffersFeature, EMERGENCY_SNOOZE_MS } from '../public/js/features/quest-offers-feature.js?v=cc54329c';
-import { hellTicketsFeature } from '../public/js/features/hell-tickets-feature.js?v=b399ecbd';
-import { hellFeature } from '../public/js/features/hell-feature.js?v=c369c634';
+import { hellTicketsFeature } from '../public/js/features/hell-tickets-feature.js?v=946964ea';
+import { hellFeature } from '../public/js/features/hell-feature.js?v=d993ab50';
 import { HELL_LOCATION, createHellState, croak } from '../public/js/hell.js?v=d77f15ef';
 
 const root = join(import.meta.dirname, '..');
