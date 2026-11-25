@@ -10,7 +10,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { colourFilter, flashColorMatrixFilter, flashColorMatrixPixel, glitchLayerMatrix } from '../public/js/street-render.js?v=a43d35cd';
+import { colourFilter, flashColorMatrixFilter, flashColorMatrixPixel, glitchLayerMatrix } from '../public/js/street-render.js?v=aaab604c';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

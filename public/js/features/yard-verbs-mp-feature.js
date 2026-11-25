@@ -72,9 +72,9 @@ import { frameTexture, onLoaded, sourceFromUrl, textureFromUrl } from '../textur
 import { homeStreetLayout, normalizeCultivationState } from '../home-cultivation.js?v=dcf357ef';
 import { readVisitScene } from '../neighbours-mp.js?v=d7a3f0f2';
 import { saveStore } from '../save-store.js?v=4e720735';
-import { STREET_GROUND_Y, homesFeature, wearHomeCultivation } from './homes-feature.js?v=b8f7eea6';
-import { holdYardAnimal } from './animal-husbandry-feature.js?v=82b161a0';
-import { patchesFeature, treeFrameUrl } from './patches-feature.js?v=fb7eeee3';
+import { STREET_GROUND_Y, homesFeature, wearHomeCultivation } from './homes-feature.js?v=891be3e8';
+import { holdYardAnimal } from './animal-husbandry-feature.js?v=67250346';
+import { patchesFeature, treeFrameUrl } from './patches-feature.js?v=07614ac4';
 import {
   YARD_STREET,
   YARD_TEXT as T,
@@ -115,7 +115,7 @@ import {
   visitorNode,
   visitorRock,
 } from '../yard-stock-mp.js?v=7b878140';
-import { standOnFeet } from '../sprite-feet.js?v=11303931';
+import { standOnFeet } from '../sprite-feet.js?v=581d3644';
 
 export { YARD_VERBS_MP_ID };
 

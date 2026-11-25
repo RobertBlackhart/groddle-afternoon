@@ -28,8 +28,8 @@ import {
   forestMachineRoomStreet,
   isForestMachineRoomTsid,
 } from '../public/js/forest-machine-room.js?v=5f7e4589';
-import { machineRoomsFeature } from '../public/js/features/machine-rooms-feature.js?v=08daddeb';
-import { FEATURES } from '../public/js/features/index.js?v=c0b121cc';
+import { machineRoomsFeature } from '../public/js/features/machine-rooms-feature.js?v=655e7178';
+import { FEATURES } from '../public/js/features/index.js?v=84328e4a';
 
 const spike = join(dirname(fileURLToPath(import.meta.url)), '..');
 const streets = join(spike, 'public/assets/streets');

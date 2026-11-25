@@ -2814,9 +2814,24 @@
   "deployed": "2026-11-25"
  },
  "git": {
-  "commits": 3427,
+  "commits": 3431,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-24",
+    "kind": "fix",
+    "text": "Firebog street spirits' flames flicker and their vines sway while they wait"
+   },
+   {
+    "date": "2026-11-24",
+    "kind": "fix",
+    "text": "Change Street Style tiles show their pictures on an iPad"
+   },
+   {
+    "date": "2026-11-24",
+    "kind": "fix",
+    "text": "Street music keeps its speed after the browser was minimized on an iPad"
+   },
    {
     "date": "2026-11-24",
     "kind": "fix",
@@ -2921,24 +2936,9 @@
     "date": "2026-11-24",
     "kind": "fix",
     "text": "On a phone the home's buttons have their own row under your home's name"
-   },
-   {
-    "date": "2026-11-24",
-    "kind": "improve",
-    "text": "In the iPhone Home Screen app the street runs up under the top bar again"
-   },
-   {
-    "date": "2026-11-24",
-    "kind": "improve",
-    "text": "Piles in your house and on your Tower floors have no stack limit for any item"
-   },
-   {
-    "date": "2026-11-24",
-    "kind": "improve",
-    "text": "The Snaps viewer no longer teleports you to your own Snaps"
    }
   ]
  },
- "tests": 1352,
+ "tests": 1355,
  "generatedAt": "2026-11-24"
 }
