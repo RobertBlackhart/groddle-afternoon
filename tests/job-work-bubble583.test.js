@@ -17,7 +17,7 @@ import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync, existsSync } from 'node:fs';
 import { join } from 'node:path';
-import { JOB_WORK_BUBBLE, JOB_WORK_OVERLAY, JOB_WORK_REMOTE_BUBBLE_DY, jobWorkBubbleY, jobWorkFloatPoint, jobWorkToolSheet } from '../public/js/job-work-fx.js?v=2c489570';
+import { JOB_WORK_BUBBLE, JOB_WORK_OVERLAY, JOB_WORK_REMOTE_BUBBLE_DY, jobWorkBubbleY, jobWorkFloatPoint, jobWorkToolSheet } from '../public/js/job-work-fx.js?v=a2dc6a5a';
 import { fitTextureSide, resolutionOfUrl } from '../public/js/textures.js?v=b8e38103';
 
 const pub = join(import.meta.dirname, '../public');

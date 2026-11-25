@@ -16,7 +16,7 @@ import assert from 'node:assert/strict';
 import { readFileSync, readdirSync, statSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { TRIP_TRIES, TripFailed, enterResult, tripFailedLine, tripWithRetry } from '../public/js/street-trip.js?v=89addd51';
+import { TRIP_TRIES, TripFailed, enterResult, tripFailedLine, tripWithRetry } from '../public/js/street-trip.js?v=04c3258c';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const read = (p) => readFileSync(join(root, p), 'utf8');

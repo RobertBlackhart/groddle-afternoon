@@ -12,7 +12,7 @@ import { fileURLToPath } from 'node:url';
 import { addItem, createInventory, ensureItem } from '../public/js/inventory.js?v=6414dbdc';
 import { SCRIPT_CLASS, SCRIPT_ITEM } from '../public/js/teleportation.js?v=cbbc673f';
 import { vendorSellValue } from '../public/js/vendor.js?v=ccb42243';
-import { createShrineState, quoteShrineDonation } from '../public/js/shrines.js?v=037613f7';
+import { createShrineState, quoteShrineDonation } from '../public/js/shrines.js?v=aa29afd5';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const gsjs = join(root, '..', 'glitch-GameServerJS', 'items', 'teleportation_script.js');

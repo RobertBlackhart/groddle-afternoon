@@ -42,8 +42,8 @@ import {
   visitRadio,
   withOursQuests,
 } from '../public/js/vine-radio.js?v=5827b931';
-import { CRAB_STREETS } from '../public/js/crabs.js?v=5f0b8099';
-import { MUSICBLOCK_CATALOG } from '../public/js/musicblocks.js?v=fd84b634';
+import { CRAB_STREETS } from '../public/js/crabs.js?v=5a43743d';
+import { MUSICBLOCK_CATALOG } from '../public/js/musicblocks.js?v=8e985753';
 import { getAmbientMusicConfig, resolveAmbientTheme, setAmbientMusicConfig } from '../public/js/ambient-music.js?v=4b3c6041';
 import { streetGraph } from '../public/js/street-graph.js?v=d767f3a2';
 import { closedForEveryone, freeWays, openWorld } from '../public/js/open-roads.js?v=2e03b0a6';

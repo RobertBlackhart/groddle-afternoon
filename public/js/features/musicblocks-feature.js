@@ -40,7 +40,7 @@ import {
   chooseStartStreetMusicblock,
   endgameGiftDue,
   startStreetMusicblockDue,
-} from '../musicblocks.js?v=fd84b634';
+} from '../musicblocks.js?v=8e985753';
 import { groundStacks } from '../ground-stacks.js?v=22792362';
 
 const SYNC_MS = 1_000;

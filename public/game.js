@@ -565,7 +565,7 @@ import {
   inspectPlayerSave,
   serializePlayerSave,
   restorePlayerSave,
-} from './js/player-save.js?v=3e1d7d88';
+} from './js/player-save.js?v=300727ae';
 import {
   HOME_INTERIOR_TSID,
   HOME_STREET_TSID,
@@ -854,7 +854,7 @@ import {
   trantFruitArt,
   trantFrameKey,
 } from './js/trants.js?v=864ea9ff';
-import { growStreetTrant } from './js/patches.js?v=3f6b9b05';
+import { growStreetTrant } from './js/patches.js?v=3498abf3';
 import {
   runStreetTransition,
   showAwardScreen,
@@ -929,7 +929,7 @@ import {
   musicblockPlaySeconds,
   playMusicblock,
   starterMusicblocks,
-} from './js/musicblocks.js?v=fd84b634';
+} from './js/musicblocks.js?v=8e985753';
 import {
   VENDOR_PROFILES,
   selectVendorProfile,
@@ -988,7 +988,7 @@ import {
   formatSpeedUpTime,
   learnFasterOpen,
   learnFasterSummary,
-} from './js/shrines.js?v=037613f7';
+} from './js/shrines.js?v=aa29afd5';
 import { shrineSheet, shrineVariantFor } from './js/shrine-variants.js?v=832a5e61';
 import { giantDisplayName } from './js/giant-names.js?v=0e295891';
 import { shrinePowderOptions, shrinePowderAchievementCounters } from './js/powders.js?v=316a1f66';
@@ -1003,7 +1003,7 @@ import {
   spinMeResponse,
   spinningWheelPhase,
   startSpinningWheel,
-} from './js/spinning-wheel.js?v=0155b399';
+} from './js/spinning-wheel.js?v=00148471';
 import {
   CUBIMAL_PACKAGE_IDS,
   cubimalCollectionProgress,
@@ -1094,7 +1094,7 @@ import { chickenPose, chickenIdleSheetsAsked } from './js/chicken-idle-art.js?v=
 import { chickenWaitPose } from './js/chicken-idles.js?v=eef0279b';
 import { itemOverlayStats } from './js/item-overlay.js?v=b0086ba6';
 import { isCrowdSad } from './js/animal-crowding.js?v=64dee3e0';
-import { createSoundBoard, DEFAULT_SFX_VOLUME, watchButtonClicks, watchPanelSounds } from './js/sound-board.js?v=f41980b8';
+import { createSoundBoard, DEFAULT_SFX_VOLUME, watchButtonClicks, watchPanelSounds } from './js/sound-board.js?v=fb6a6c26';
 import {
   actionLoopFor,
   createToolLoopLedger,
@@ -1186,7 +1186,7 @@ import { standOnFeet, anchorBottomCentre } from './js/sprite-feet.js?v=6358a697'
 import { markLeaving, packPicks, takeCopies } from './js/copy-picks.js?v=b368fd49';
 import { holdKeepsBusy } from './js/instance-holds.js?v=ff3a63a3';
 import { createLoadTurns, createStreetMove, travelTurn } from './js/street-move.js?v=1c4431bf';
-import { enterResult, tripFailedLine, tripSound, tripWithRetry } from './js/street-trip.js?v=89addd51';
+import { enterResult, tripFailedLine, tripSound, tripWithRetry } from './js/street-trip.js?v=04c3258c';
 
 /** @type {object|null} assets/maps/index.json */
 let mapIndexCache = null;
@@ -36865,7 +36865,7 @@ async function main() {
   };
   window.groddleQA = qaHandlesAllowed() ? fullQA : pickReadOnly(fullQA, READ_ONLY_QA);
   if (new URLSearchParams(location.search).has('soundtest')) {
-    import('./js/sound-test.js?v=e83bbfe7').then((m) => m.openSoundTest({ document, playSound, board: () => audio.board, unmute: async () => {
+    import('./js/sound-test.js?v=fefe74ff').then((m) => m.openSoundTest({ document, playSound, board: () => audio.board, unmute: async () => {
       state.muted = false;
       if (contextNeedsResume(audio.ctx?.state)) {
         try { await audio.ctx.resume(); } catch (_) { /* opt-in */ }

@@ -411,7 +411,7 @@ describe('#333 (G751): buying an upgrade card plays YOU_WIN', () => {
   it('ImaginationPurchaseUpgradeUI.as 226: the purchase plays YOU_WIN, warmed when the panel opens', async () => {
     const { PURCHASE_SOUND } = await import('../public/js/features/imagination-feature.js?v=18225e91');
     assert.equal(PURCHASE_SOUND, 'YOU_WIN');
-    const { resolveSound } = await import('../public/js/sound-board.js?v=f41980b8');
+    const { resolveSound } = await import('../public/js/sound-board.js?v=fb6a6c26');
     const sound = resolveSound(PURCHASE_SOUND);
     assert.equal(sound.file, 'assets/audio/sfx/YOU_WIN.mp3');
     assert.ok(existsSync(join(publicRoot, sound.file)), sound.file);

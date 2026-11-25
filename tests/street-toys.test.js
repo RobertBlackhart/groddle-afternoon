@@ -20,7 +20,7 @@ import {
 } from '../public/js/street-toys.js?v=09630452';
 import { GLITCH_ONE_CLICK, oneClickChoice } from '../public/js/world-context-menu.js?v=e4c99c05';
 import { createEventRuntime, runLocationEvent } from '../public/js/location-events.js?v=44ee645e';
-import { SOUND_FILES } from '../public/js/sound-keys.js?v=d6b20718';
+import { SOUND_FILES } from '../public/js/sound-keys.js?v=8b36c250';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const street = (tsid) => JSON.parse(readFileSync(join(root, 'public/assets/streets', `${tsid}.json`), 'utf8'));

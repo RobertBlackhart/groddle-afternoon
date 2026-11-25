@@ -64,7 +64,7 @@ import {
   WOOD_TREE_MATURITY_MAP,
   maturityGrowChance,
   plantingHub,
-} from '../public/js/patches.js?v=3f6b9b05';
+} from '../public/js/patches.js?v=3498abf3';
 import { ARBOROLOGY_HARVEST, TRANT_META } from '../public/js/trants.js?v=864ea9ff';
 import { TRANT_CARE_PACKAGES } from '../public/js/trant-care.js?v=cb7f539b';
 import { WOOD_TREE_HARVEST } from '../public/js/woodcutting.js?v=9e9af511';

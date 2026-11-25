@@ -29,8 +29,8 @@
  */
 
 import { getAmbientMusicConfig } from '../ambient-music.js?v=4b3c6041';
-import { MUSICBLOCK_CATALOG } from '../musicblocks.js?v=fd84b634';
-import { musicblocksInPack } from '../crabs.js?v=5f0b8099';
+import { MUSICBLOCK_CATALOG } from '../musicblocks.js?v=8e985753';
+import { musicblocksInPack } from '../crabs.js?v=5a43743d';
 import { standOnFeet } from '../sprite-feet.js?v=6358a697';
 import { textureFromUrl } from '../textures.js?v=b8e38103';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';

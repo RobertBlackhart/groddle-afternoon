@@ -66,7 +66,7 @@ import {
   performAnimalKinship,
   highestAnimalKinshipRank,
 } from './js/animal-kinship.js?v=75d3cb34';
-import { MUSICBLOCK_CATALOG } from './js/musicblocks.js?v=fd84b634';
+import { MUSICBLOCK_CATALOG } from './js/musicblocks.js?v=8e985753';
 import { nextDialogue, formatSpokenLine } from './js/dialogue.js?v=fcfed1af';
 import {
   ensureWoodTreeState,

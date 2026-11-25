@@ -10,7 +10,7 @@ import { countItem, ensureItem } from './inventory.js?v=6414dbdc';
 import { GAME_DAY_MS, GAME_EPOCH_MS } from './game-day.js?v=a532775d';
 import { gainMetabolic, loseEnergy } from './metabolics.js?v=48f784bf';
 import { grantMoodXp } from './mood-xp.js?v=e311b45c';
-import { SOUND_ALIASES, SOUND_FILES } from './sound-keys.js?v=d6b20718';
+import { SOUND_ALIASES, SOUND_FILES } from './sound-keys.js?v=8b36c250';
 
 export const MUSICBLOCK_MONTH_MS = Math.round(30.5 * 24 * 60 * 60 * 1000);
 export const MUSICBLOCK_REPLAY_MS = 4 * 60 * 60 * 1000;

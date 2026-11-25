@@ -44,7 +44,7 @@ import {
 } from '../public/js/secret-spots.js?v=59a37384';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=5ef6adb5';
 import { applyAchievementProgress, createAchievementState } from '../public/js/achievements.js?v=47bd719d';
-import { SOUND_CATEGORIES } from '../public/js/sound-keys.js?v=d6b20718';
+import { SOUND_CATEGORIES } from '../public/js/sound-keys.js?v=8b36c250';
 import { SYNTH_RECIPES, recipeForKey } from '../public/js/synth-sfx.js?v=c30a1709';
 
 const here = dirname(fileURLToPath(import.meta.url));

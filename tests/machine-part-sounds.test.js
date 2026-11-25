@@ -24,8 +24,8 @@ import {
   startAssembly,
   startDisassembly,
 } from '../public/js/machines.js?v=5d749d26';
-import { resolveSound } from '../public/js/sound-board.js?v=f41980b8';
-import { SOUND_ALIASES, SOUND_FILES } from '../public/js/sound-keys.js?v=d6b20718';
+import { resolveSound } from '../public/js/sound-board.js?v=fb6a6c26';
+import { SOUND_ALIASES, SOUND_FILES } from '../public/js/sound-keys.js?v=8b36c250';
 import { supplyFeature } from '../public/js/features/supply-feature.js?v=62d053d6';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');

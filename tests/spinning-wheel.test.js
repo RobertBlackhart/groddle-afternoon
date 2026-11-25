@@ -22,7 +22,7 @@ import {
   spinningWheelPhase,
   startSpinningWheel,
   wheelPrizeTier,
-} from '../public/js/spinning-wheel.js?v=0155b399';
+} from '../public/js/spinning-wheel.js?v=00148471';
 import {
   ITEM_CATALOG,
   createInventory,
