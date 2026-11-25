@@ -1,6 +1,6 @@
 {
   "note": "Written by tools/gaps/build-data.mjs from tools/gaps/public-gaps.json and the coverage register. Edit those, never this file.",
-  "release": "v0.68.0",
+  "release": "v0.69.0",
   "states": {
     "fixing": {
       "label": "Being fixed",
@@ -42,7 +42,7 @@
     "fixing": 3,
     "known": 15,
     "unreleased": 0,
-    "fixed": 535,
+    "fixed": 544,
     "lost": 5,
     "purpose": 17,
     "idea": 10
@@ -398,6 +398,12 @@
           "text": "Sparkly of Interest counted mining out of sight and showed editor placeholder text.",
           "state": "fixed",
           "version": "v0.68.0"
+        },
+        {
+          "id": "G1261",
+          "text": "Respect for the Beginnings was never offered, so the spirits' first talks and the Esquibeth chain never came.",
+          "state": "fixed",
+          "version": "v0.69.0"
         }
       ]
     },
@@ -852,6 +858,12 @@
           "text": "A quest's place link did nothing, and a region with unbuilt streets didn't say how to get in.",
           "state": "fixed",
           "version": "v0.68.0"
+        },
+        {
+          "id": "G1256",
+          "text": "Show the way took a locked door you had no key for.",
+          "state": "fixed",
+          "version": "v0.69.0"
         }
       ]
     },
@@ -1307,6 +1319,12 @@
           "version": "v0.68.0"
         },
         {
+          "id": "G1257",
+          "text": "A house could have at most 60 pieces on sale, and only the first 100 currant piles could be collected.",
+          "state": "fixed",
+          "version": "v0.69.0"
+        },
+        {
           "id": "G48",
           "text": "The name sign on a player tower and the lettering of its floor numbers have no free source, so they look different from Glitch.",
           "state": "lost"
@@ -1719,6 +1737,12 @@
           "text": "An animal's name lost any apostrophe, hyphen or period, so Dr. Oink was saved as Dr Oink.",
           "state": "fixed",
           "version": "v0.59.0"
+        },
+        {
+          "id": "G1265",
+          "text": "Street Butterflies and Batterflies looped across the street instead of wandering it, and Guano fell under a Batterfly's spot.",
+          "state": "fixed",
+          "version": "v0.69.0"
         }
       ]
     },
@@ -2751,6 +2775,12 @@
           "text": "Holding Enter at a vendor could buy the same thing more than once.",
           "state": "fixed",
           "version": "v0.54.0"
+        },
+        {
+          "id": "G1258",
+          "text": "Firebog street spirits' flames and vines stood still.",
+          "state": "fixed",
+          "version": "v0.69.0"
         }
       ]
     },
@@ -3426,6 +3456,12 @@
           "text": "Some things had several near-identical Encyclopedia pages, and only one listed where to find them.",
           "state": "fixed",
           "version": "v0.61.0"
+        },
+        {
+          "id": "G1267",
+          "text": "The Test Tube had no page in the Item Catalog.",
+          "state": "fixed",
+          "version": "v0.69.0"
         }
       ]
     },
@@ -3903,6 +3939,34 @@
           "text": "There was no way to get a Bookcase.",
           "state": "fixed",
           "version": "v0.67.0"
+        }
+      ]
+    },
+    {
+      "name": "iPad",
+      "items": [
+        {
+          "id": "G1259",
+          "text": "Change Street Style tiles could show blank on an iPad.",
+          "state": "fixed",
+          "version": "v0.69.0"
+        },
+        {
+          "id": "G1260",
+          "text": "Street music could speed up after the browser was minimized on an iPad.",
+          "state": "fixed",
+          "version": "v0.69.0"
+        }
+      ]
+    },
+    {
+      "name": "Sound",
+      "items": [
+        {
+          "id": "G1266",
+          "text": "Music and sounds kept playing while you were in another app or tab.",
+          "state": "fixed",
+          "version": "v0.69.0"
         }
       ]
     }

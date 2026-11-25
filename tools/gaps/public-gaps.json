@@ -5385,6 +5385,90 @@
         "game:a20f39c4549",
         "game:738bb562754"
       ]
+    },
+    {
+      "id": "G1256",
+      "area": "Map",
+      "text": "Show the way took a locked door you had no key for.",
+      "show": "fixing",
+      "commits": [
+        "game:e6174191b8a"
+      ]
+    },
+    {
+      "id": "G1257",
+      "area": "Homes",
+      "text": "A house could have at most 60 pieces on sale, and only the first 100 currant piles could be collected.",
+      "show": "fixing",
+      "commits": [
+        "site:28f4a51"
+      ]
+    },
+    {
+      "id": "G1258",
+      "area": "Vendors",
+      "text": "Firebog street spirits' flames and vines stood still.",
+      "show": "fixing",
+      "commits": [
+        "game:286779cf436",
+        "game:0941b9d2ae6"
+      ]
+    },
+    {
+      "id": "G1259",
+      "area": "iPad",
+      "text": "Change Street Style tiles could show blank on an iPad.",
+      "show": "fixing",
+      "commits": [
+        "game:0b308fb83ff"
+      ]
+    },
+    {
+      "id": "G1260",
+      "area": "iPad",
+      "text": "Street music could speed up after the browser was minimized on an iPad.",
+      "show": "fixing",
+      "commits": [
+        "game:ed80947fd66"
+      ]
+    },
+    {
+      "id": "G1261",
+      "area": "Quests",
+      "text": "Respect for the Beginnings was never offered, so the spirits' first talks and the Esquibeth chain never came.",
+      "show": "fixing",
+      "commits": [
+        "game:742c212f6f2"
+      ]
+    },
+    {
+      "id": "G1265",
+      "area": "Animals",
+      "text": "Street Butterflies and Batterflies looped across the street instead of wandering it, and Guano fell under a Batterfly's spot.",
+      "show": "fixing",
+      "commits": [
+        "game:c083f1daa5a",
+        "game:f5d5dfe0285",
+        "server:dda33f0"
+      ]
+    },
+    {
+      "id": "G1266",
+      "area": "Sound",
+      "text": "Music and sounds kept playing while you were in another app or tab.",
+      "show": "fixing",
+      "commits": [
+        "game:4cd712bba5f"
+      ]
+    },
+    {
+      "id": "G1267",
+      "area": "Encyclopedia",
+      "text": "The Test Tube had no page in the Item Catalog.",
+      "show": "fixing",
+      "commits": [
+        "game:86925b9257c"
+      ]
     }
   ]
 }
