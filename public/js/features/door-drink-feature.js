@@ -173,8 +173,10 @@ function travel(engine, target) {
   const gate = engine.travelGate?.(target.tsid) || { ok: true };
   if (gate.ok === false) return say(engine, gate.msg, false);
   if (engine.streetExists && !engine.streetExists(target.tsid)) return say(engine, DOOR_DRINK_COPY.noDestination, false);
-  engine.playSound?.('TELEPORT_AWAY', { volume: 0.5 });
   last = `entered:${target.tsid}`;
+  // #674: one sound, the trip's. portal.js doorOpened/openDoor made one move, pc.teleportToLocation
+  // (items/portal.js 80, 127), and that played TELEPORT_AWAY, or TELEPORT_AWAY_HUB into another hub
+  // (players/player.js 674-678); this played TELEPORT_AWAY a second time before the trip's.
   engine.enter(target.tsid, { spawnX: target.x, spawnY: target.y, teleport: true });
 }
 

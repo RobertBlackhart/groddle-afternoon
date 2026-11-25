@@ -111,6 +111,29 @@ export const ROOM_STREETS = Object.freeze({
   gwendolyn: Object.freeze(['GHF8DDDBTPF3P4U']),
 });
 
+/**
+ * #674: the hub each room's source template sat in, for the teleport sound in and out
+ * (players/player.js teleportToLocation 674-678: TELEPORT_AWAY_HUB when the hub differs). From the
+ * locations dump (streets/locations-xml.zip): the instance copies keep their template's hubid, and
+ * the instance streets theirs. Every quest template that survives sat in a quest hub (61 Simple
+ * Level Quests, 67 Multiplayer Quests, 79 Tower Quest, 125 Underground Puzzles, 132 Skill Quests,
+ * 135 Puzzles), never a world hub, so a room whose template is lost is in QUEST_HUB_LOST: its number
+ * is unknown, but it is no street's hub.
+ */
+export const QUEST_HUB_LOST = 'quest';
+export const ROOM_HUBS = Object.freeze({
+  le_miserable: '135', // LIFM4BD43383DKV, instance_of LIFMMN6E7A73R0T: hubid 135 (Puzzles)
+  vision_quest: '61', // LNV1T7PCUM53T25, instance_of LNVUCOIA1MJ2M54: hubid 61 (Simple Level Quests)
+  gwendolyn: '79', // LCR8MP0IJI1299U (tower_quest_desert, Area 42): hubid 79 (Tower Quest), as Room 23 GCR8MORFJI12IR4
+  ez_cookin: '132', // GIFII3UBRFB3KBE Breezy, EZ Cookin': hub 132 (Skill Quests)
+  soil_appreciation: '132', // GHFS40864GB396O Talking 'bout Soil Appreciation: hub 132 (Skill Quests)
+});
+
+/** The hub a room's template sat in (ROOM_HUBS), else QUEST_HUB_LOST. */
+export function roomHub(roomId) {
+  return ROOM_HUBS[roomId] || QUEST_HUB_LOST;
+}
+
 /** The room whose street this is (either tsid prefix, G or L), else null. */
 export function roomForStreet(tsid) {
   const key = String(tsid || '').slice(1);

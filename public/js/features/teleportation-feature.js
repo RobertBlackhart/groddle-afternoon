@@ -439,7 +439,8 @@ async function land(engine) {
   try {
     // From a quest room: leave it as its Leave does, landing on the target (header).
     const left = questRoomHere(engine) ? await engine.query('questRoomLeave', engine, { to: warp.target }) : false;
-    if (!left && (await engine.enter(warp.target.tsid, { spawnX: warp.target.x, spawnY: warp.target.y })) === false) {
+    // #674: teleportToLocationDelayed (inc_teleportation.js 400, 529): TELEPORT_AWAY, or TELEPORT_AWAY_HUB into another hub.
+    if (!left && (await engine.enter(warp.target.tsid, { spawnX: warp.target.x, spawnY: warp.target.y, teleport: true })) === false) {
       // R46: the street never loaded (the trip said so): you stay, and the jump's charge and
       // energy come back, since it never took you anywhere.
       arrival = null;

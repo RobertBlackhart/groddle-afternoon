@@ -954,5 +954,6 @@ async function exit(ctx) {
   ctx.solve();
   ctx.sound('DOOR_OPEN', { volume: 0.6 });
   await ctx.wait(400);
-  ctx.leave({ transition: ctx.fx() });
+  // #674: out by the exit door, a door move (main.js 1172-1182), not a teleport.
+  ctx.leave({ transition: ctx.fx(), via: 'door' });
 }

@@ -739,7 +739,8 @@ async function exit(ctx) {
   ctx.data.phase = 'done';
   ctx.sound('DOOR_OPEN', { volume: 0.6 });
   await ctx.wait(400);
-  ctx.leave({ transition: ctx.fx() });
+  // #674: out by the exit door, a door move (main.js 1172-1182), not a teleport.
+  ctx.leave({ transition: ctx.fx(), via: 'door' });
 }
 
 export const PICTO_FACTS = Object.freeze({ H, FLOOR, CLOUD_W, CLOUD_H, CHAIN_DX, HIGH, LOW, JUMP_RISE, JUMP_GAP });

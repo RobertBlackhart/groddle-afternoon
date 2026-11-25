@@ -1020,6 +1020,8 @@ async function leaveStrandedCar(engine, opts = {}) {
     ...(Number.isFinite(to.x) ? { spawnX: to.x } : {}),
     ...(Number.isFinite(to.y) ? { spawnY: to.y } : {}),
     ...(opts.transition === false ? { useTransition: false } : {}),
+    // #674: off the car is a teleport (a skill's target, or the platform: TELEPORT_AWAY_HUB from hub 66).
+    teleport: true,
   });
   if (ok === false) engine.setData('subwayLast', 'stranded-failed');
   return ok !== false;

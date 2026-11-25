@@ -126,7 +126,7 @@ import {
   wayBackFrom,
 } from '../quest-instance.js?v=15090adc';
 import { loadStreetGraph, worldRoads } from '../street-graph.js?v=d767f3a2';
-import { FAMILIAR_GATES, QUEST_ROOMS, REMINISCE_ITEMS, ROOM_ITEMS, isBuiltRoom, questGiver, roomForStreet, roomModulePath } from '../quest-rooms/catalog.js?v=10c8100d';
+import { FAMILIAR_GATES, QUEST_ROOMS, REMINISCE_ITEMS, ROOM_ITEMS, isBuiltRoom, questGiver, roomForStreet, roomHub, roomModulePath } from '../quest-rooms/catalog.js?v=10c8100d';
 import * as kit from '../quest-rooms/kit.js?v=a1480706';
 import { locationEventsApi } from './location-events-feature.js?v=ac6acbc9';
 import {
@@ -143,6 +143,7 @@ import { parseQuestConversation } from '../quests.js?v=d0443973';
 import { getQuestCatalog } from '../content-catalogs.js?v=5ef6adb5';
 import { addItem, countItem, ensureItem, removeItem } from '../inventory.js?v=6414dbdc';
 import { runStreetTransition } from '../screen-fx.js?v=39954e0b';
+import { tripSound } from '../street-trip.js?v=89addd51';
 import { HOME_INTERIOR_TSID, HOME_STREET_TSID } from '../homes.js?v=dca6b2cd';
 import { armPromptTimeout, promptTimeoutMs } from '../prompt-timeout.js?v=6ef50f61';
 import { applyFamiliarLook, familiarLook } from '../familiar.js?v=b9597cd3';
@@ -1084,6 +1085,17 @@ async function buildStage(engine, stage) {
   return true;
 }
 
+/**
+ * #674: into a room by teleport. instances_enter moved you with teleportToLocation
+ * (players/inc_instances.js 89-104), which played TELEPORT_AWAY_HUB when the room's template sat
+ * in another hub than the place you stood (players/player.js 674-678): from any street, as every
+ * template sat in a quest hub (catalog ROOM_HUBS). A room's own street loads with no transition
+ * of its own (buildStage), so this is the trip's one sound.
+ */
+function teleportInSound(engine, roomId) {
+  engine.playSound?.(tripSound({ teleport: true, fromHubId: engine.street?.hubId, toHubId: roomHub(roomId) }), { volume: 0.5 });
+}
+
 /** R46: a room start whose street never loaded waits this long before it tries again. */
 const START_RETRY_MS = 30_000;
 
@@ -1129,6 +1141,7 @@ async function startInstance(engine, questId, opts = {}) {
     room.start?.(ctx);
     const label = room.loadingLabel?.(run.stage, ctx) || room.stageLabel?.(run.stage, ctx) || room.title;
     let built = true;
+    teleportInSound(engine, roomId);
     await withTransition(engine, label, room.theme, async () => {
       built = await buildStage(engine, run.stage);
     });
@@ -1288,6 +1301,7 @@ async function leaveInstance(engine, opts = {}) {
   // G886: never left standing in the room with nowhere to go: no way back saved goes the stray's way out.
   // G887: nor sent back onto a dead end (a save from before this, a room started on one).
   const back = to || liveBack(result.returnTo) || liveBack(save.returnTo) || strayExit(engine);
+  const leftRoomId = run.roomId;
   run = null;
   const leftRoom = room;
   room = null;
@@ -1301,14 +1315,22 @@ async function leaveInstance(engine, opts = {}) {
   engine.setData('qiStatus', 'left');
   engine.setData('qiOutcome', result.outcome);
   const go = async (useTransition = false) => {
-    if (to) await engine.enter(to.tsid, { spawnX: to.x, spawnY: to.y });
-    else if (back?.tsid) await engine.enter(back.tsid, { spawnX: back.x, spawnY: back.y, quiet: true, bypassFeatureGates: true, useTransition });
+    // #674: the Teleportation skill's target (inc_teleportation.js 400 teleportToLocationDelayed): a teleport.
+    if (to) await engine.enter(to.tsid, { spawnX: to.x, spawnY: to.y, teleport: true });
+    // #674: instances_exit teleported you back (instances_left 175): the trip plays TELEPORT_AWAY_HUB.
+    // An instance's exit signpost or exit door was a street move instead (main.js 1069-1082 signpost.instance_exit,
+    // 1172-1182 door.instance_exit; the quest's onExitLocation then only tidied up): via 'signpost' / 'door', the whoosh.
+    else if (back?.tsid) await engine.enter(back.tsid, { spawnX: back.x, spawnY: back.y, quiet: true, bypassFeatureGates: true, useTransition, teleport: !opts.via });
   };
   // Back to a street: the street's own loading card (its name, hub and picture), as any travel shows.
   // Back home: the quest's card, named for the home place. Never a card with no name ("An Unknown Area").
   const home = back?.tsid === HOME_STREET_TSID || back?.tsid === HOME_INTERIOR_TSID;
   if (opts.transition === false || !back?.tsid || to) await go();
-  else if (home) await withTransition(engine, back.tsid === HOME_INTERIOR_TSID ? 'Your House' : 'Your Home Street', leftRoom?.theme, () => go());
+  else if (home) {
+    // The home trip runs under the room's card, with no sound of its own: the teleport's (or the door's or signpost's) here.
+    engine.playSound?.(tripSound({ teleport: !opts.via, fromHubId: roomHub(leftRoomId), toHubId: 'home' }), { volume: 0.5 });
+    await withTransition(engine, back.tsid === HOME_INTERIOR_TSID ? 'Your House' : 'Your Home Street', leftRoom?.theme, () => go());
+  }
   else await go(true);
   publish(engine, true);
   if (activeQuest(engine, questId) && requirementsMet(engine, questId) && !hook.noTurnIn) {
@@ -1358,6 +1380,8 @@ async function resumeFromParty(engine) {
   if (!away || !room || !ctx) return false;
   const held = away;
   const label = room.stageLabel?.(run.stage, ctx) || room.title;
+  // #674: back from the party into the room, a teleport (instances_left 175) from hub 108.
+  teleportInSound(engine, run.roomId);
   await withTransition(engine, label, room.theme, async () => {
     if (held.parked && engine.resumeScene?.(held.parked, { x: held.x, y: held.y })) return;
     await buildStage(engine, run.stage);
@@ -1409,6 +1433,7 @@ async function resumeHeldSave(engine) {
     engine.stopFollowing?.();
     engine.closeMap?.();
     const label = room.loadingLabel?.(run.stage, ctx) || room.stageLabel?.(run.stage, ctx) || room.title;
+    teleportInSound(engine, run.roomId);
     await withTransition(engine, label, room.theme, async () => {
       await buildStage(engine, run.stage);
       ctx.place(held.x, held.y);
@@ -1521,6 +1546,8 @@ async function leaveStray(engine, opts = {}) {
       ...(Number.isFinite(to.y) ? { spawnY: to.y } : {}),
       ...(opts.to ? {} : { quiet: true, bypassFeatureGates: true }),
       useTransition: opts.transition !== false,
+      // #674: a teleport either way: the skill's target, or the familiar's way out (location.js 109 instances_exit_familiar).
+      teleport: true,
     })) !== false;
     if (!ok) {
       strayData = '';

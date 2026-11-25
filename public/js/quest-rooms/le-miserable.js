@@ -146,7 +146,8 @@ async function exit(ctx) {
     await quest.turnIn();
     ctx.solve();
   }
-  ctx.leave({ transition: ctx.fx() });
+  // #674: out by the exit door, a door move (main.js 1172-1182), not a teleport.
+  ctx.leave({ transition: ctx.fx(), via: 'door' });
 }
 
 function addResetButton(ctx, panel) {

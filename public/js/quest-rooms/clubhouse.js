@@ -1016,9 +1016,10 @@ async function exitPainting(ctx) {
   ctx.data.phase = 'done';
   ctx.progress('instance_exit_via_signpost');
   ctx.solve();
-  ctx.sound('SIGNPOST_TRAVEL', { volume: 0.6 });
   await ctx.wait(300);
-  ctx.leave({ transition: ctx.fx() });
+  // A signpost move out (main.js 1069-1082 signpost.instance_exit), not a teleport: the trip plays
+  // its one SIGNPOST_TRAVEL (#674: this room played it a second time before the trip's).
+  ctx.leave({ transition: ctx.fx(), via: 'signpost' });
 }
 
 /** Quoins with Qurazy ones that pay once per quest (a fresh run would otherwise farm them). */

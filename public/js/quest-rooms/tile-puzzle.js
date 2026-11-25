@@ -785,7 +785,8 @@ async function exit(ctx) {
   ctx.solve();
   ctx.sound('DOOR_OPEN', { volume: 0.6 });
   await ctx.wait(400);
-  ctx.leave({ transition: ctx.fx() });
+  // #674: out by the exit door, a door move (main.js 1172-1182), not a teleport.
+  ctx.leave({ transition: ctx.fx(), via: 'door' });
 }
 
 export const TILE_PUZZLE_FACTS = Object.freeze({ W, H, FLOOR, LINE, TOP, ROW_H, TILE_W, GREY_W, STEP_RISE, JUMP_RISE, JUMP_GAP, BODY_H });

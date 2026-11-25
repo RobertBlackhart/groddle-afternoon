@@ -1450,7 +1450,8 @@ async function finish(ctx) {
   ctx.engine.playEmotion?.('happy');
   ctx.sound('DOOR_OPEN', { volume: 0.6 });
   await ctx.wait(700);
-  ctx.leave({ transition: ctx.fx() });
+  // #674: out by the exit door, a door move (main.js 1172-1182), not a teleport.
+  ctx.leave({ transition: ctx.fx(), via: 'door' });
 }
 
 function maybePromptStuck(ctx, now) {

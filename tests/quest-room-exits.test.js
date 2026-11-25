@@ -189,7 +189,8 @@ describe('the quest room runtime (features/quest-instances-feature.js)', () => {
     const src = read('public/js/features/quest-instances-feature.js');
     const leave = src.slice(src.indexOf('async function leaveInstance('), src.indexOf('/* HUD + QA data'));
     assert.match(leave, /const to = opts\.to\?\.tsid \? opts\.to : null;/);
-    assert.match(leave, /if \(to\) await engine\.enter\(to\.tsid, \{ spawnX: to\.x, spawnY: to\.y \}\);/);
+    // #674: still the ordinary gates (no bypass), played as the teleport it is.
+    assert.match(leave, /if \(to\) await engine\.enter\(to\.tsid, \{ spawnX: to\.x, spawnY: to\.y, teleport: true \}\);/);
     // The quest still fails as a Leave fails it: the outcome code above the trip is unchanged.
     assert.match(leave, /const failed = failQuest\(engine, questId\);/);
   });
