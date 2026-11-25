@@ -30,8 +30,8 @@ import {
   measuredTreeSpots,
 } from '../public/js/street-ecology.js?v=ff90efe4';
 import { placementRequests } from '../tools/build-realtime-objects.mjs';
-import { SHRINE_SHEETS } from '../public/js/shrine-variants.js?v=0b8ba768';
-import { adoptedPlan } from '../public/js/features/patches-feature.js?v=779d05e5';
+import { SHRINE_SHEETS } from '../public/js/shrine-variants.js?v=832a5e61';
+import { adoptedPlan } from '../public/js/features/patches-feature.js?v=908cadb2';
 import { createPlot } from '../public/js/patches.js?v=3f6b9b05';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
 

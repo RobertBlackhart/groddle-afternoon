@@ -2814,9 +2814,14 @@
   "deployed": "2026-11-25"
  },
  "git": {
-  "commits": 3458,
+  "commits": 3461,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-24",
+    "kind": "fix",
+    "text": "A lonely Firebog street spirit's porthole face cries and flickers instead of standing still"
+   },
    {
     "date": "2026-11-24",
     "kind": "fix",
@@ -2926,11 +2931,6 @@
     "date": "2026-11-24",
     "kind": "fix",
     "text": "A Still left in the house or back yard stays its owner's own, one list shared with the site"
-   },
-   {
-    "date": "2026-11-24",
-    "kind": "new",
-    "text": "A sorted bag shows what it is sorted for"
    }
   ]
  },
