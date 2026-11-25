@@ -10,7 +10,7 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { EXTRA_PARADISE_COURSES as PARADISE_COURSES, paradiseControls } from '../public/js/paradise-courses.js?v=eb5c7fd9';
 import { BOARD_TEXT } from '../public/js/hi-signs-mp.js?v=ea50d4bb';
-import { HI_TEXT } from '../public/js/hi-signs.js?v=7f3cab9c';
+import { HI_TEXT, hiHintText, hiWay } from '../public/js/hi-signs.js?v=7f3cab9c';
 import { PHONE_TEXT } from '../public/js/phone/companion-data.js?v=464e4058';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -40,12 +40,33 @@ describe('phone message words', () => {
     assert.equal(PHONE_TEXT.mailNoSave, 'Your mailbox opens once you have played online.');
   });
 
-  it('hi signs: a phone types hi in chat', () => {
-    assert.doesNotMatch(BOARD_TEXT.instructTouch, KEY_WORDS);
-    assert.doesNotMatch(HI_TEXT.hintTouch, KEY_WORDS);
+  it('hi signs: a phone taps Hi online, types hi solo; a computer keeps key 5 (G823 follow-up)', () => {
+    for (const t of [BOARD_TEXT.instructTouch, BOARD_TEXT.instructTouchButton, BOARD_TEXT.instructTouchButtonClassic, HI_TEXT.hintTouch, HI_TEXT.hintTouchButton, HI_TEXT.hintTouchButtonClassic]) {
+      assert.doesNotMatch(t, KEY_WORDS, t);
+    }
+    // A new player on a phone online (chat 2026-11-25) was told to type hi; the Hi button G823 added is where it says.
+    assert.equal(hiHintText({ phone: true, online: true, drawer: true }), HI_TEXT.hintTouchButton);
+    assert.match(HI_TEXT.hintTouchButton, /tapping the Hi button: tap the speech bubble \(Social\), open the Local tab, and Hi is at the top, next to the emotes\./);
+    assert.doesNotMatch(HI_TEXT.hintTouchButton, /typing hi/);
+    assert.equal(hiHintText({ phone: true, online: true, drawer: false }), HI_TEXT.hintTouchButtonClassic);
+    assert.match(HI_TEXT.hintTouchButtonClassic, /tapping the Hi button, next to the emotes just above local chat\./);
+    // Solo has no Hi button: a chat line that is just hi.
+    assert.equal(hiHintText({ phone: true, online: false }), HI_TEXT.hintTouch);
+    assert.match(HI_TEXT.hintTouch, /typing hi in local chat/);
+    // A computer: the Butler's own words, key 5.
+    assert.equal(hiHintText({ phone: false, online: true }), HI_TEXT.hint);
+    assert.equal(hiHintText({}), HI_TEXT.hint);
+    assert.match(HI_TEXT.hint, /pressing '5'/);
+    for (const t of Object.values(HI_TEXT).filter((x) => typeof x === 'string')) assert.doesNotMatch(t, /\u2014/);
     const feature = read('public/js/features/hi-signs-feature.js');
-    assert.match(feature, /isPhoneDevice\(\) \? HI_TEXT\.hintTouch : HI_TEXT\.hint/);
-    assert.match(feature, /isPhoneDevice\(\) \? BOARD_TEXT\.instructTouch : BOARD_TEXT\.instruct/);
+    assert.match(feature, /butlerApi\.hiSay\(engine, hiHintText\(hiWayHere\(engine\)\), HI\.BUTLER_BUBBLE_MS\)/);
+    assert.match(feature, /return \{ phone: isPhoneDevice\(\), online: engine\?\.mode === 'multiplayer', drawer: Boolean\(engine\?\.social\) \};/);
+    assert.match(feature, /el\('p', '', boardInstruct\(engine\)\)/);
+    assert.equal(hiWay({ phone: true, online: true }), 'button');
+    // The button itself: on a phone, with the Local tab's emotes (realtime-feature.js).
+    const rt = read('public/js/features/realtime-feature.js');
+    assert.match(rt, /if \(isPhoneDevice\(\)\) emoteRow\.append\(el\('button', \{ type: 'button', 'data-say-hi': ''/);
+    assert.match(rt, /social\.channel\('local', \{ header: emoteRow \}\)/);
   });
 
   it('the ghost echo, the feed picker, the tutorial and the Map tap on a phone', () => {

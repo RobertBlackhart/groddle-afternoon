@@ -35,6 +35,9 @@ export const BOARD_TEXT = Object.freeze({
   instruct: 'Press "5" to say hi!',
   // TOUCH: a phone has no 5 key; a chat line that is just "hi" says hi (hi-signs-feature onSubmit).
   instructTouch: 'Type hi in chat to say hi!',
+  // G823 follow-up: online a phone has the Hi button (realtime-feature.js), at the top of the Local tab or, in Classic, above local chat.
+  instructTouchButton: 'Tap Hi at the top of the Local chat tab to say hi!',
+  instructTouchButtonClassic: 'Tap Hi, next to the emotes above local chat, to say hi!',
   more: 'Show more info',
   less: 'Show less info',
   desc: 'You can say a quick hi to people in Glitch by hitting the "5" key. Every game day in Glitch, you\'ll get a new "hi" sign. You can get one randomly assigned by saying hi before anyone says hi to you. If someone says hi to you first, you get their "hi" sign. The leaderboard below shows how many people have each sign today.',

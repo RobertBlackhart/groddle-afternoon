@@ -73,6 +73,8 @@ import {
   HI,
   HI_BUTLER_ID,
   HI_TEXT,
+  hiHintText,
+  hiWay,
   HI_ART,
   butlerHiResponse,
   butlerHiResponseDue,
@@ -551,6 +553,14 @@ function butlerSayHi(engine) {
   return out;
 }
 
+/**
+ * G823 follow-up: what this screen has for saying hi (js/hi-signs.js hiWay): a phone online has the
+ * Hi button (realtime-feature.js), in the Social drawer's Local tab (Modern) or above local chat.
+ */
+function hiWayHere(engine) {
+  return { phone: isPhoneDevice(), online: engine?.mode === 'multiplayer', drawer: Boolean(engine?.social) };
+}
+
 /** sayHiHint: wait out a conversation; tell someone who never said hi about the 5 key. */
 function sayHiHint(engine) {
   if (butlerApi.hiBusy()) {
@@ -559,7 +569,7 @@ function sayHiHint(engine) {
   }
   butlerWaiting = false;
   if (hiHintDue(p)) {
-    butlerApi.hiSay(engine, isPhoneDevice() ? HI_TEXT.hintTouch : HI_TEXT.hint, HI.BUTLER_BUBBLE_MS);
+    butlerApi.hiSay(engine, hiHintText(hiWayHere(engine)), HI.BUTLER_BUBBLE_MS);
     lastMsg = 'butler:hint';
     publish(engine, true);
   }
@@ -957,7 +967,7 @@ function renderBoard(engine) {
     setBoardOpen(engine, false);
     window.dispatchEvent(new CustomEvent('groddle:calendar'));
   });
-  const parts = [close, calendar, el('h2', '', BOARD_TEXT.title), you, el('p', '', isPhoneDevice() ? BOARD_TEXT.instructTouch : BOARD_TEXT.instruct), more];
+  const parts = [close, calendar, el('h2', '', BOARD_TEXT.title), you, el('p', '', boardInstruct(engine)), more];
   if (board.more) parts.push(el('p', 'hi-desc', BOARD_TEXT.desc));
   const list = el('ol');
   list.setAttribute('aria-label', 'Signs today');
@@ -986,6 +996,11 @@ function onKey(e) {
   // five arms, 5 takes the fifth (Austin 2026-11-01, game.js signpostArmKey) and says nothing.
   if (eng.signpostTakesKey?.(e.key)) return;
   if (e.key === '5' || e.code === 'Digit5' || e.code === 'Numpad5') sayHi(eng);
+}
+
+/** The leaderboard's line on how to say hi, in the words for this screen (hiWay). */
+function boardInstruct(engine) {
+  return { key: BOARD_TEXT.instruct, chat: BOARD_TEXT.instructTouch, button: BOARD_TEXT.instructTouchButton, buttonClassic: BOARD_TEXT.instructTouchButtonClassic }[hiWay(hiWayHere(engine))];
 }
 
 /** A phone's Hi button (realtime-feature.js, the Local tab's emotes) does what key 5 does. */

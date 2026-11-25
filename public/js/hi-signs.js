@@ -128,9 +128,32 @@ export const HI_TEXT = Object.freeze({
     'Hello, Hi-master.',
   ]),
   hint: "Do you like saying 'Hi'? It's as easy as pressing '5' (when the focus is on the game, not in chat). Every day you get a new sign --- hands, bats, flowers, birds, cubes, etc. --- if you find someone with the same sign, you both get a bonus and you get honest mood out of it, once per day.",
-  // TOUCH: the same Butler line on a phone, which has no 5 key.
+  // TOUCH: the same Butler line on a phone, which has no 5 key: solo has no Hi button, so a chat line that is just hi.
   hintTouch: "Do you like saying 'Hi'? It's as easy as typing hi in local chat. Every day you get a new sign --- hands, bats, flowers, birds, cubes, etc. --- if you find someone with the same sign, you both get a bonus and you get honest mood out of it, once per day.",
+  // G823 follow-up: a phone online has the Hi button at the top of the Social drawer's Local tab, by the emotes.
+  hintTouchButton: "Do you like saying 'Hi'? It's as easy as tapping the Hi button: tap the speech bubble (Social), open the Local tab, and Hi is at the top, next to the emotes. Every day you get a new sign --- hands, bats, flowers, birds, cubes, etc. --- if you find someone with the same sign, you both get a bonus and you get honest mood out of it, once per day.",
+  // The same in Classic, where the emotes and Hi sit just above the local chat box.
+  hintTouchButtonClassic: "Do you like saying 'Hi'? It's as easy as tapping the Hi button, next to the emotes just above local chat. Every day you get a new sign --- hands, bats, flowers, birds, cubes, etc. --- if you find someone with the same sign, you both get a bonus and you get honest mood out of it, once per day.",
 });
+
+/**
+ * How this screen says hi (G823 follow-up, check 2026-11-25: a new player on a phone had no idea how).
+ * 'key' on a computer (key 5, or a chat line that is just hi); on a phone online, 'button' (the Hi
+ * button G823 put at the top of the Social drawer's Local tab, realtime-feature.js) or
+ * 'buttonClassic' (Classic draws no drawer: the emotes and Hi sit above local chat); on a phone
+ * playing solo, 'chat' (no Hi button there: typing hi in local chat).
+ * @param {{ phone?: boolean, online?: boolean, drawer?: boolean }} o
+ */
+export function hiWay({ phone = false, online = false, drawer = true } = {}) {
+  if (!phone) return 'key';
+  if (!online) return 'chat';
+  return drawer ? 'button' : 'buttonClassic';
+}
+
+/** The Butler's hint (sayHiHint) in the words for this screen (hiWay). */
+export function hiHintText(o = {}) {
+  return { key: HI_TEXT.hint, chat: HI_TEXT.hintTouch, button: HI_TEXT.hintTouchButton, buttonClassic: HI_TEXT.hintTouchButtonClassic }[hiWay(o)];
+}
 
 /**
  * RightSideManager.as 232-235 (chatUpdate): a local chat line that is "hi",
