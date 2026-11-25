@@ -43,8 +43,8 @@ import {
   reopensAt,
 } from '../public/js/solo-feats.js?v=0ec0bd95';
 import { DAY_NAMES, GAME_DAY_MS } from '../public/js/game-day.js?v=a532775d';
-import { soloFeatsFeature } from '../public/js/features/solo-feats-feature.js?v=e0042c90';
-import { FEATURES } from '../public/js/features/index.js?v=e5290f03';
+import { soloFeatsFeature } from '../public/js/features/solo-feats-feature.js?v=1043621e';
+import { FEATURES } from '../public/js/features/index.js?v=2626c949';
 import { createPlayerSave, parsePlayerSave, serializePlayerSave } from '../public/js/player-save.js?v=cf0ebffd';
 import { createResourceNode, harvestResourceNode } from '../public/js/resource-nodes.js?v=90d75c60';
 

@@ -72,9 +72,9 @@
 import { STREET_ENTITY_KINDS } from '../street-render.js?v=cfb77c44';
 import { DOOR_SVG, createPictureCache, createStreetMinimap, doorMarks, markArt, minimapVisibility, onStreetMapChange, sceneDoorMarks, sceneSignMarks, setStreetMap, signpostMarks, snapshotStreetView, snapsWithScene, stationMarks, streetMapOn } from '../ui/street-minimap.js?v=ccb6cb94';
 import { classicArtHd, classicArtUrl } from '../classic/classic-art.js?v=87cb1722';
-import { onUiModeChange } from '../classic/ui-mode.js?v=069f076e';
+import { onUiModeChange } from '../classic/ui-mode.js?v=792d8160';
 import { focusBack } from '../ui/focus-return.js?v=da190597';
-import { isPhoneDevice } from '../touch-controls.js?v=6ed23498';
+import { isPhoneDevice } from '../touch-controls.js?v=6e1b7f26';
 import { isFailed, isLoaded, onFailed, onLoaded } from '../textures.js?v=b8e38103';
 
 export const STREET_MINIMAP_FEATURE_ID = 'street-minimap';

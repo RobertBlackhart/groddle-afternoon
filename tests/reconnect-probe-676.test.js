@@ -13,10 +13,10 @@ import { describe, it } from 'node:test';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { CLOSE_QUIET, PROBE_TIMEOUT_MS, QUIET_MS, createRealtimeClient } from '../public/js/realtime-client.js?v=5e2348b7';
-import { PROBE_AFTER_MS, RECONNECTING_LINE, createOnlineRequests, waitLine } from '../public/js/online-request.js?v=2a5117ff';
-import { COPY } from '../public/js/street-objects.js?v=226e8b1f';
-import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=ac823f57';
+import { CLOSE_QUIET, PROBE_TIMEOUT_MS, QUIET_MS, createRealtimeClient } from '../public/js/realtime-client.js?v=f93e60d3';
+import { PROBE_AFTER_MS, RECONNECTING_LINE, createOnlineRequests, waitLine } from '../public/js/online-request.js?v=825926b4';
+import { COPY } from '../public/js/street-objects.js?v=4ce8ad4f';
+import { streetObjectsFeature } from '../public/js/features/street-objects-feature.js?v=f9cff392';
 import { createTrantState } from '../public/js/trants.js?v=864ea9ff';
 
 const root = join(import.meta.dirname, '..');

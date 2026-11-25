@@ -20,7 +20,7 @@ import {
   answerWaitMs,
   createOnlineRequests,
   ledgerCallWorstMs,
-} from '../public/js/online-request.js?v=2a5117ff';
+} from '../public/js/online-request.js?v=825926b4';
 import { serverPath, skipWithoutServer } from '../tools/repos.mjs';
 
 const root = join(import.meta.dirname, '..');

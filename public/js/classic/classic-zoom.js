@@ -7,8 +7,8 @@
  * It runs on the window's resize ahead of the game's own handler (game.js imports this before
  * main() adds its listener), so the stage measures the cell at the new u.
  */
-import { uiState, onUiModeChange } from './ui-mode.js?v=069f076e';
-import { classicLayout } from './classic-layout.js?v=1aee33c2';
+import { uiState, onUiModeChange } from './ui-mode.js?v=792d8160';
+import { classicLayout } from './classic-layout.js?v=5f52c77b';
 import { worldZoom, onZoomChange } from '../world-zoom.js?v=38816228';
 
 /** PURE: the --cu-zoom value for a window and state, or null to clear it. */

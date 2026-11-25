@@ -60,7 +60,7 @@
 
 import { chatBubbleText } from '../ui/chat-input.js?v=8f2479a3';
 import { createMinnAccount } from '../minn-account.js?v=c6a70577';
-import { EMOTES, createRealtimeClient, createTrack, pushSample, sampleTrack } from '../realtime-client.js?v=5e2348b7';
+import { EMOTES, createRealtimeClient, createTrack, pushSample, sampleTrack } from '../realtime-client.js?v=f93e60d3';
 import { ANIM_FPS, EMOTION_MS, animForState, crowdScaleX } from '../avatar-anims.js?v=fb921bf4';
 import { redrawFrame } from '../avatar-pack.js?v=65324246';
 import { movedLine } from '../admin-teleport.js?v=c4d28509';
@@ -69,7 +69,7 @@ import { saveStore } from '../save-store.js?v=4e720735';
 import { STREET_INDEX } from '../street-loader.js?v=10376267';
 import { appendLinkedText } from '../chat-links.js?v=b717fac7';
 import { lineKey } from '../chat-reactions.js?v=38460172';
-import { isPhoneDevice } from '../touch-controls.js?v=6ed23498';
+import { isPhoneDevice } from '../touch-controls.js?v=6e1b7f26';
 import { playOverlay } from '../overlays.js?v=91dcee74';
 import { publicStreet } from '../shared-street.js?v=dce5694b';
 import { anchorBottomCentre } from '../sprite-feet.js?v=6358a697';

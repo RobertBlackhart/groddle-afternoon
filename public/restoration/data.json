@@ -2814,9 +2814,29 @@
   "deployed": "2026-11-25"
  },
  "git": {
-  "commits": 3490,
+  "commits": 3495,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-25",
+    "kind": "fix",
+    "text": "A dead connection is found in seconds and says \"Reconnecting...\""
+   },
+   {
+    "date": "2026-11-25",
+    "kind": "fix",
+    "text": "Your Feat place moves as others pass you"
+   },
+   {
+    "date": "2026-11-25",
+    "kind": "fix",
+    "text": "Upright on a phone a short room shows whole from its top"
+   },
+   {
+    "date": "2026-11-25",
+    "kind": "fix",
+    "text": "The phone's stick lets go when its lift is lost, and stops at a new street"
+   },
    {
     "date": "2026-11-25",
     "kind": "fix",
@@ -2916,29 +2936,9 @@
     "date": "2026-11-24",
     "kind": "fix",
     "text": "Firebog street spirits' flames and vines move when they talk and cry too"
-   },
-   {
-    "date": "2026-11-24",
-    "kind": "fix",
-    "text": "The Test Tube has its page in the Item Catalog, sold by the Alchemical Goods and Tool Vendors"
-   },
-   {
-    "date": "2026-11-24",
-    "kind": "fix",
-    "text": "The game's music and sounds pause while you are in another app or tab"
-   },
-   {
-    "date": "2026-11-24",
-    "kind": "fix",
-    "text": "Aranna Scramble's milk row counts the butterflies milked for it"
-   },
-   {
-    "date": "2026-11-24",
-    "kind": "fix",
-    "text": "A first shrine donation offers Respect for the Beginnings"
    }
   ]
  },
- "tests": 1374,
+ "tests": 1377,
  "generatedAt": "2026-11-25"
 }

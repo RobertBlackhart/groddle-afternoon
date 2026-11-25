@@ -56,7 +56,7 @@ import {
   boxToScreen,
   midTowerRoomByTsid,
 } from '../tower-mid-rooms.js?v=07360655';
-import { touchWords } from '../touch-controls.js?v=6ed23498';
+import { touchWords } from '../touch-controls.js?v=6e1b7f26';
 import { CLICK_ANYWHERE, HALL, HALL_ART, HALL_ART_ROOT, HALL_BUTTON_CLASS, HALL_WIDGET, WALL_BUTTON } from '../hall-rejected-concepts.js?v=d2d29ad6';
 import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=6358a697';
 

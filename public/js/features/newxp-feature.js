@@ -146,7 +146,7 @@ import { assignQuest, completeQuest } from '../quests.js?v=c8d59839';
 import { acceptOffer, enqueueQuestOffer, questAwardPayload, turnInQuest } from '../quest-offers.js?v=ea6fde02';
 import { getQuestCatalog } from '../content-catalogs.js?v=2b7048b9';
 import { locationEventsApi } from './location-events-feature.js?v=ac6acbc9';
-import * as kit from '../quest-rooms/kit.js?v=a1480706';
+import * as kit from '../quest-rooms/kit.js?v=37eae9f8';
 import { frameTexture, onLoaded, sourceFromUrl, textureFromUrl, whenLoaded } from '../textures.js?v=b8e38103';
 import { upgradeSource } from '../sprite-hires.js?v=e96be5f1';
 import { grantMoodXp } from '../mood-xp.js?v=e311b45c';
@@ -170,7 +170,7 @@ import {
   createAkState,
 } from '../skillquest-ak.js?v=397a9d19';
 import { filterText } from '../word-filter.js?v=9a7a7ebb';
-import { isPhoneDevice, phoneScreenFrame, safeAreaInsets, touchWords } from '../touch-controls.js?v=6ed23498';
+import { isPhoneDevice, phoneScreenFrame, safeAreaInsets, touchWords } from '../touch-controls.js?v=6e1b7f26';
 import { energyMax, forceMetabolic, moodMax } from '../metabolics.js?v=48f784bf';
 import { standOnFeet, anchorBottomCentre } from '../sprite-feet.js?v=6358a697';
 import { WORLD_FONT_FAMILY } from '../world-text.js?v=6b49f88c';

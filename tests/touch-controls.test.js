@@ -22,7 +22,7 @@ import {
   knobOffset,
   stickKeys,
   touchTapPlan,
-} from '../public/js/touch-controls.js?v=6ed23498';
+} from '../public/js/touch-controls.js?v=6e1b7f26';
 import { chooseVerbRow, stepVerbRow } from '../public/js/ui/verb-menu.js?v=4cb51d52';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');

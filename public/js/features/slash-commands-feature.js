@@ -64,7 +64,7 @@
  */
 
 import { BUTLER_STRINGS } from '../butler.js?v=152429c8';
-import { butlerApi } from './butler-feature.js?v=b6abda6c';
+import { butlerApi } from './butler-feature.js?v=97266e83';
 import { hellFeature } from './hell-feature.js?v=74604dfc';
 import { locationEventsApi } from './location-events-feature.js?v=ac6acbc9';
 import { towerApi } from './home-tower-feature.js?v=c6166c0d';
@@ -74,7 +74,7 @@ import { parseTp, runTeleportCommand, TP_TEXT } from '../admin-teleport.js?v=c4d
 import { minnUrls } from '../minn-account.js?v=c6a70577';
 import { saveStore } from '../save-store.js?v=4e720735';
 import { STREET_INDEX } from '../street-loader.js?v=10376267';
-import { isPhoneDevice } from '../touch-controls.js?v=6ed23498';
+import { isPhoneDevice } from '../touch-controls.js?v=6e1b7f26';
 
 export const SLASH_COMMANDS_FEATURE_ID = 'slash-commands';
 
