@@ -1594,6 +1594,8 @@ export function runVerb(target, verbId, ctx) {
       }
     }
     effects._activityBase = r.msgs?.[0] || 'You mine.';
+    // #672: a gem's "You got 1 Showy Sapphire!" is its own log line (game.js logs effects.dropLines).
+    if (r.effects?.dropLines?.length) effects.dropLines = [...r.effects.dropLines];
     msgs.push(...(r.msgs || []));
     finalizeMsgs(msgs, effects);
     s.rock = rock;

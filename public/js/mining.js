@@ -25,6 +25,7 @@ import { SKILL_PACKAGES, skillPackageDetails } from './skill-packages.js?v=bfb87
 import { pace, rockRespawnMs } from './pace.js?v=c07dfbd8';
 import { grantMoodXp } from './mood-xp.js?v=e311b45c';
 import { loseEnergy } from './metabolics.js?v=48f784bf';
+import { dropItemName } from './drop-tables.js?v=1ed0b596';
 import { GEM_ITEMS, MEGA_ROCK_CHUNKS, megaRockChance, miningExpertBonus, rollGemSmall, smeltingOverrides } from './imagination-effects.js?v=70169933';
 
 /**
@@ -494,6 +495,8 @@ export function mineRock(rock, inv, pc, opts = {}) {
   // Each gem scales that pick's drop chance by 0.8 until the new day
   // (addSkillPackageOverride in include/mining.js, cleared in doNewDay).
   let gem = null;
+  /** Drop-table finds, each its own Activity log line (content.js effects.dropLines, game.js logGain). */
+  const dropLines = [];
   const dropScale = Number(pc.miningDropScale?.[pick] ?? 1);
   // inc_skill_packages.js 538-541: Rubeweed x1.25 on the (scaled) chance, at most 100.
   const gemChance = rubeweedDropChance(profile.dropChance * dropScale, rubeweedOn(opts));
@@ -503,7 +506,10 @@ export function mineRock(rock, inv, pc, opts = {}) {
     gem = rollGemSmall(rng);
     if (!ITEM_CATALOG[gem]) ensureItem(gem, GEM_ITEMS[gem]);
     addItem(inv, gem, 1);
-    msgs.push(`You also found a ${GEM_ITEMS[gem]?.label || gem}!`);
+    // inc_skill_packages.js 38 and 123: runDropTable's own line, sendOnlineActivity("You got 1 Showy Sapphire!"),
+    // an Activity line of its own beside the verb's (#672: it only floated, so the log never showed a gem).
+    dropLines.push(`You got ${dropItemName(gem, 1)}!`);
+    msgs.push(dropLines.at(-1));
   }
   if (toolUse?.broke) msgs.push(toolUse.msg);
 
@@ -523,6 +529,7 @@ export function mineRock(rock, inv, pc, opts = {}) {
       xp: minedXp,
       img: minedXp,
       activityLine: msgs[0],
+      dropLines,
     },
     got,
     gem,

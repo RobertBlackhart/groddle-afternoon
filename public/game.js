@@ -11010,6 +11010,9 @@ function runVerbFinish(target, verbId) {
   // G953 (#436): a Super Harvest's own line ("Super Harvest! +6 Sprigs of Silvertongue", floated above)
   // is its own log entry, as the source's delayed grant sent it (players/inc_items.js 443-445).
   if (result.ok && result.effects?.superLine) logGain(result.effects.superLine);
+  // #672: a drop-table find on a verb (a gem while mining) is its own Activity line, as runDropTable's
+  // sendOnlineActivity("You got 1 Showy Sapphire!") was beside the verb's line (inc_skill_packages.js 38, 123).
+  if (result.ok) for (const line of result.effects?.dropLines || []) logGain(line);
   // Floating metabolic deltas, unless the answer's slugs already show them
   // (the client's slugs fly to the stats instead, SlugAnimator.as).
   if (result.ok && result.effects && !(spoke && result.speech?.slugs)) {

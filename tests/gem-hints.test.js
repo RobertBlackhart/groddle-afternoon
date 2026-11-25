@@ -65,7 +65,8 @@ describe('G617: no balance change', () => {
     const done = runVerb(target, 'mine', { pc, inv, tools: createToolConditionState(), learned: ['mining_1'], skills: { learned: ['mining_1'] }, rng: () => 0 });
     assert.equal(done.ok, true);
     assert.equal(Object.keys(GEM_ITEMS).some((id) => (inv.items?.[id] || inv[id] || 0) > 0), false);
-    assert.doesNotMatch(done.msgs.join(' '), /You also found/);
+    assert.doesNotMatch(done.msgs.join(' '), /You got 1 /);
+    assert.deepEqual(done.effects.dropLines || [], []);
   });
 });
 
