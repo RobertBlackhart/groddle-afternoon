@@ -128,6 +128,14 @@ export function spiritVariantForHub(hubId) {
  * the union box every state is cut to, `frames` the populated cells kept
  * (every `step`-th one). Strips are 8 columns at
  * assets/sprites/street-spirits/<variant>_<look>_<state>.webp.
+ *
+ * `live` (#658): the state is drawn from the SWF as the game showed it, not from the OGA sheet.
+ * The Firebog spirit's flames and hanging vines are nested clips the client's sheet recorder left
+ * on frame 1 (animated_mcs is only its body), so every OGA idle cell is the same still; 2011-12
+ * footage of a Firebog street (Eu6dojeQttM, 2:30) shows them flickering and swaying. Its idle is
+ * the loop tools/vector-sprites/swf-record.mjs bakes under the label `live`: 105 frames, the
+ * period of its flames (35 and 15 frames), every third kept (the vines' 100-frame sway comes
+ * round within 5 frames); build.mjs writes its 1x strip from the render too.
  */
 export const STREET_SPIRIT_ART = Object.freeze({
   groddle: {
@@ -172,7 +180,7 @@ export const STREET_SPIRIT_ART = Object.freeze({
     crops: { medium: { x: 0, y: 0, w: 63, h: 189 }, large: { x: 10, y: 0, w: 94, h: 244 } },
     looks: { medium: 'size_medium', large: 'size_large' },
     states: {
-      idle: { oga: 'idle_move', frames: 24 },
+      idle: { oga: 'idle_move', frames: 105, step: 3, live: 'idle_live' },
       talk: { oga: 'talk', frames: 62 },
     },
   },

@@ -42,6 +42,15 @@
  *    sprite-sheet recorder drew: the item's animated_mcs (clips) on their
  *    own copy of each label, every other nested clip on frame 1
  *    (swf-record.mjs; the Juju Bandits).
+ *    "live": [{ "label", "as", "frames" }] also bakes a loop the game showed
+ *    with every nested clip on its own clock, after the timeline under label
+ *    "as" (#658: the Firebog spirit's flames and vines); the export range
+ *    grows to take it in.
+ *  - sheet "render1x": "<path of a sheet of the same job>" writes the 1x
+ *    strip itself from the render (no OGA sheet shows it: a "live" loop),
+ *    each frame placed as that sheet's result places it (mirror, offset3x),
+ *    box-averaged S:1, lossy q88 with lossless alpha like the OGA strips;
+ *    then the sheet is scored against it as usual. List it after that sheet.
  *  - job "state": { "set": { "<instance>": frame | null }, "pad": n } freezes
  *    what the item's ActionScript sets (gotoAndStop / visible) on the
  *    sprite's named children (swf-state.mjs; harvestables.json).
@@ -310,6 +319,70 @@ async function exportSprite(swf, id, zoom = 3, renderer = 'png', range = null) {
 // ---------------------------------------------------------------------------
 // One sheet
 // ---------------------------------------------------------------------------
+
+/**
+ * sheet "render1x" (#658): the 1x strip drawn from the render, each frame placed as the sibling
+ * sheet's result places it (`like`: { mirror, offset3x }) and box-averaged S:1 (premultiplied),
+ * written lossy q88 with lossless alpha, 8 columns, like the OGA strips it stands beside.
+ */
+function write1x(sheet, labels, frameDir, like) {
+  if (!like || like.status !== 'ok' || !like.offset3x) throw new Error(`render1x: ${sheet.render1x} has no placement (build it first)`);
+  const label = labels.find((l) => l.name === sheet.label);
+  if (!label) throw new Error(`render1x: label ${sheet.label} not in the render`);
+  const step = sheet.step ?? 1;
+  const cols = sheet.cols ?? 8;
+  const count = sheet.frames;
+  const rows = Math.ceil(count / cols);
+  const W = cols * sheet.fw;
+  const H = rows * sheet.fh;
+  const out = new Uint8Array(W * H * 4);
+  const [dx, dy] = like.offset3x;
+  const fw3 = sheet.fw * S;
+  const fh3 = sheet.fh * S;
+  for (let k = 0; k < count; k++) {
+    const file = join(frameDir, `${label.start + k * step}.png`);
+    if (!existsSync(file)) throw new Error(`render1x: no render of frame ${label.start + k * step}`);
+    const raw = readRGBA(file);
+    const img = like.mirror ? mirrorRaw(raw) : raw;
+    // The cell at S x, premultiplied, then each 1x pixel the mean of its S x S block.
+    const cell = new Float32Array(fw3 * fh3 * 4);
+    for (let y = 0; y < img.h; y++) {
+      const ty = y + dy;
+      if (ty < 0 || ty >= fh3) continue;
+      for (let x = 0; x < img.w; x++) {
+        const tx = x + dx;
+        if (tx < 0 || tx >= fw3) continue;
+        const s = (y * img.w + x) * 4;
+        const d = (ty * fw3 + tx) * 4;
+        for (let c = 0; c < 4; c++) cell[d + c] = img.p[s + c];
+      }
+    }
+    const ox = (k % cols) * sheet.fw;
+    const oy = Math.floor(k / cols) * sheet.fh;
+    for (let v = 0; v < sheet.fh; v++) {
+      for (let u = 0; u < sheet.fw; u++) {
+        const acc = [0, 0, 0, 0];
+        for (let j = 0; j < S; j++) {
+          for (let i = 0; i < S; i++) {
+            const q = ((v * S + j) * fw3 + u * S + i) * 4;
+            for (let c = 0; c < 4; c++) acc[c] += cell[q + c];
+          }
+        }
+        const a = acc[3] / (S * S);
+        const d = ((oy + v) * W + ox + u) * 4;
+        if (a <= 0) continue;
+        for (let c = 0; c < 3; c++) out[d + c] = Math.max(0, Math.min(255, Math.round((acc[c] / (S * S)) * (255 / a))));
+        out[d + 3] = Math.round(a);
+      }
+    }
+  }
+  const dest = join(PUBLIC, sheet.path);
+  const tmpPng = join(WORK, `${basename(sheet.path)}.1x.tmp.png`);
+  execFileSync('magick', ['-size', `${W}x${H}`, '-depth', '8', 'rgba:-', '-strip', `PNG32:${tmpPng}`], { input: out, maxBuffer: 1 << 26 });
+  execFileSync('magick', [tmpPng, '-quality', '88', '-define', 'webp:alpha-quality=100', dest]);
+  unlinkSync(tmpPng);
+  console.log(`  1x  ${basename(sheet.path)} from the render (${count} cells, placed as ${basename(sheet.render1x)})`);
+}
 
 function sheetCells(sheet, ogaImg) {
   const cols = sheet.cols ?? Math.floor(ogaImg.w / sheet.fw);
@@ -943,13 +1016,17 @@ async function main() {
       }
       source = stated;
     }
-    const labels = swfSprites(source).find((s) => s.id === job.sprite)?.labels || [];
+    const rootSprite = swfSprites(source).find((s) => s.id === job.sprite);
+    const labels = rootSprite?.labels || [];
+    // #658: a record job's live loops sit after the timeline; the export range takes them in.
+    const range = job.frameRange && job.record?.live?.length ? [job.frameRange[0], rootSprite.frames] : job.frameRange || null;
     // job.zoom is the 3x zoom; other densities scale it.
-    const frameDir = await exportSprite(source, job.sprite, +(((job.zoom ?? 3) * S) / 3).toFixed(6), job.renderer ?? 'png', job.frameRange || null);
+    const frameDir = await exportSprite(source, job.sprite, +(((job.zoom ?? 3) * S) / 3).toFixed(6), job.renderer ?? 'png', range);
     for (const sheet of sheets) {
       const t = Date.now();
       let r;
       try {
+        if (sheet.render1x) write1x(sheet, labels, frameDir, results[sheet.render1x]);
         r = buildSheet({ ...job, swf }, sheet, labels, frameDir);
       } catch (err) {
         r = { status: 'rejected', reason: String(err.message || err) };

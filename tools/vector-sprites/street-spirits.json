@@ -262,17 +262,16 @@
    "record": {
     "clips": [
      "medium"
+    ],
+    "live": [
+     {
+      "label": "idle_move",
+      "as": "idle_live",
+      "frames": 105
+     }
     ]
    },
    "sheets": [
-    {
-     "path": "assets/sprites/street-spirits/firebog_medium_idle.webp",
-     "label": "idle_move",
-     "fw": 63,
-     "fh": 189,
-     "cols": 8,
-     "frames": 24
-    },
     {
      "path": "assets/sprites/street-spirits/firebog_medium_talk.webp",
      "label": "talk",
@@ -280,6 +279,16 @@
      "fh": 189,
      "cols": 8,
      "frames": 62
+    },
+    {
+     "path": "assets/sprites/street-spirits/firebog_medium_idle.webp",
+     "label": "idle_live",
+     "fw": 63,
+     "fh": 189,
+     "cols": 8,
+     "frames": 35,
+     "step": 3,
+     "render1x": "assets/sprites/street-spirits/firebog_medium_talk.webp"
     },
     {
      "path": "assets/sprites/street-spirits/firebog_medium_cry.webp",
@@ -302,17 +311,16 @@
    "record": {
     "clips": [
      "large"
+    ],
+    "live": [
+     {
+      "label": "idle_move",
+      "as": "idle_live",
+      "frames": 105
+     }
     ]
    },
    "sheets": [
-    {
-     "path": "assets/sprites/street-spirits/firebog_large_idle.webp",
-     "label": "idle_move",
-     "fw": 94,
-     "fh": 244,
-     "cols": 8,
-     "frames": 24
-    },
     {
      "path": "assets/sprites/street-spirits/firebog_large_talk.webp",
      "label": "talk",
@@ -320,6 +328,16 @@
      "fh": 244,
      "cols": 8,
      "frames": 62
+    },
+    {
+     "path": "assets/sprites/street-spirits/firebog_large_idle.webp",
+     "label": "idle_live",
+     "fw": 94,
+     "fh": 244,
+     "cols": 8,
+     "frames": 35,
+     "step": 3,
+     "render1x": "assets/sprites/street-spirits/firebog_large_talk.webp"
     },
     {
      "path": "assets/sprites/street-spirits/firebog_large_cry.webp",

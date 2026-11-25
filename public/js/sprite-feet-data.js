@@ -2694,7 +2694,6 @@ export const SPRITE_FEET = Object.freeze({
   "assets/sprites/street-jobs/group_hall_lot_sign@3x.webp": [86,108,43,105],
   "assets/sprites/street-jobs/sign_stake.webp": [67,105,33.5,103],
   "assets/sprites/street-spirits/firebog_large_cry.webp": [107,244,53.5,243],
-  "assets/sprites/street-spirits/firebog_large_idle.webp": [94,244,47,243],
   "assets/sprites/street-spirits/firebog_large_lonely_in.webp": [181,181,88,169],
   "assets/sprites/street-spirits/firebog_large_lonely_loop.webp": [166,166,81,161],
   "assets/sprites/street-spirits/firebog_large_lonely_out.webp": [181,181,88,173],

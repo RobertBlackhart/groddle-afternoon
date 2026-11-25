@@ -114,6 +114,8 @@ try {
       if (!unions.has(unionKey)) unions.set(unionKey, { x0: Infinity, y0: Infinity, x1: -Infinity, y1: -Infinity });
       const u = unions.get(unionKey);
       for (const [state, sheet] of Object.entries(art.states)) {
+        // #658: a live state's strip comes from the SWF render (tools/vector-sprites/build.mjs render1x).
+        if (sheet.live) continue;
         const src = sourceSheet(art, look, sheet.oga);
         const cells = join(tmp, `${variant}-${look}-${state}`);
         mkdirSync(cells);

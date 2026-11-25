@@ -27,7 +27,15 @@
  * `hold` keeps an unsynced clip on another frame than 1: one that had already played that far when
  * the recorder started (the firefly's glow pulse, sprite 2, recorded on its frame 4).
  *
- * Usage (from build.mjs, job "record": { "clips": ["<class or id>", ...], "hold"?: { "<class or id>": frame }, "place"?: true }):
+ * `live` (#658) appends loops the recorder never drew but the game showed: the Firebog spirit's
+ * flames and hanging vines are nested clips outside animated_mcs, frozen in every recorded sheet,
+ * yet they flicker and sway in 2011-12 footage (the client drew that spirit live). Each entry
+ * { label, as, frames } adds `frames` baked frames after the root's last, under the new label `as`:
+ * frame k shows the root (and every synced clip) `k mod` the label's length into `label`, and every
+ * other nested clip on its own clock, frame (k mod its length) + 1, as a playing MovieClip shows
+ * after k ticks. A loop as long as the clips' common period plays seamlessly.
+ *
+ * Usage (from build.mjs, job "record": { "clips": ["<class or id>", ...], "hold"?: { "<class or id>": frame }, "place"?: true, "live"?: [{ "label", "as", "frames" }] }):
  *   recordState(inFile, outFile, rootId, { clips, classes })
  */
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -271,7 +279,7 @@ function labelAt(src, frame) {
  * `frames` (optional [from, to] list) limits which root frames are baked;
  * the others are left empty. Returns { frames, sprites }.
  */
-export function recordState(inFile, outFile, rootId, { clips = [], hold = {}, classes = new Map(), frames: ranges = null, place = false } = {}) {
+export function recordState(inFile, outFile, rootId, { clips = [], hold = {}, classes = new Map(), frames: ranges = null, place = false, live = [] } = {}) {
   const buf = inflate(readFileSync(inFile));
   const sprites = spriteTable(buf);
   const root = sprites.get(rootId);
@@ -308,21 +316,27 @@ export function recordState(inFile, outFile, rootId, { clips = [], hold = {}, cl
   const memo = new Map();
   const out = [];
   const used = new Set(sprites.keys());
-  /** A one-frame sprite of `id` at `frame`, its children baked for label position `at`. */
-  const bake = (id, frame, at) => {
+  /**
+   * A one-frame sprite of `id` at `frame`, its children baked for label position `at`. `tick`
+   * (live loops only): unsynced nested clips play on their own clock, frame (tick mod length) + 1.
+   */
+  const bake = (id, frame, at, tick = null) => {
     const src = sprites.get(id);
     if (!src) return id; // shapes, morphs, text, bitmaps draw as they are
-    const key = `${id}:${frame}:${hasSync(id) && at ? `${at.name}+${at.k}` : ''}`;
+    const key = `${id}:${frame}:${hasSync(id) && at ? `${at.name}+${at.k}` : ''}${tick === null ? '' : `@${tick}`}`;
     if (memo.has(key)) return memo.get(key);
     const list = displayList(buf, src, frame);
     const body = [];
     for (const [depth, { char, fields }] of [...list].sort((a, b) => a[0] - b[0])) {
       let childFrame = held.get(char) ?? 1;
+      const child = sprites.get(char);
       if (synced.has(char) && at) {
-        const start = sprites.get(char)?.labels.get(at.name);
-        childFrame = start ? Math.min(sprites.get(char).frames, start + at.k) : 1;
+        const start = child?.labels.get(at.name);
+        childFrame = start ? Math.min(child.frames, start + at.k) : 1;
+      } else if (tick !== null && child) {
+        childFrame = (tick % Math.max(1, child.frames)) + 1;
       }
-      body.push(placeTag(depth, bake(char, childFrame, at), fields));
+      body.push(placeTag(depth, bake(char, childFrame, at, tick), fields));
     }
     while (used.has(nextId)) nextId -= 1;
     const newId = nextId;
@@ -359,7 +373,7 @@ export function recordState(inFile, outFile, rootId, { clips = [], hold = {}, cl
   const rootBody = [];
   const head = Buffer.alloc(4);
   head.writeUInt16LE(rootId, 0);
-  head.writeUInt16LE(root.frames, 2);
+  head.writeUInt16LE(root.frames + live.reduce((n, l) => n + l.frames, 0), 2);
   rootBody.push(head);
   let placed = false;
   let baked = 0;
@@ -387,6 +401,30 @@ export function recordState(inFile, outFile, rootId, { clips = [], hold = {}, cl
       placed = false;
     }
     rootBody.push(Buffer.from([SHOW_FRAME << 6, 0]));
+  }
+  // live: the loops the game showed, after the last frame, each under its own label.
+  for (const { label, as, frames: count } of live) {
+    const start = root.labels.get(label);
+    if (!start) throw new Error(`live: no label ${label} in sprite ${rootId}`);
+    const next = [...root.labels.values()].filter((f) => f > start).sort((a, b) => a - b)[0];
+    const len = (next || root.frames + 1) - start;
+    rootBody.push(tagBytes(FRAME_LABEL, Buffer.from(`${as}\0`, 'utf8')));
+    for (let k = 0; k < count; k++) {
+      const id = bake(rootId, start + (k % len), { name: label, k: k % len }, k);
+      if (place) {
+        if (placed) rootBody.push(tagBytes(REMOVE2, Buffer.from([1, 0])));
+        rootBody.push(placeTag(1, id, rootFields));
+      } else {
+        const b = Buffer.alloc(5);
+        b[0] = placed ? 0x03 : 0x02;
+        b.writeUInt16LE(1, 1);
+        b.writeUInt16LE(id, 3);
+        rootBody.push(tagBytes(PLACE2, b));
+      }
+      placed = true;
+      baked += 1;
+      rootBody.push(Buffer.from([SHOW_FRAME << 6, 0]));
+    }
   }
   rootBody.push(Buffer.from([0, 0]));
   // The baked sprites go right before the root (they only use earlier definitions).

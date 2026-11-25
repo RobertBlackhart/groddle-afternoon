@@ -46,6 +46,7 @@ export const SPIRIT_SWFS = Object.freeze({
   groddle: { swf: 'inhabitants/street_spirit_groddle/street_spirit_groddle.swf', sprite: 377, street: [119, 386], portrait: [383, 477] },
   // Firebog: animated_mcs is only the body ('corpus', street_spirit_firebog.as), so the client's
   // recorder left its flames and every other nested clip on frame 1 (job "record", swf-record.mjs).
+  // Its idle is the exception (#658, STREET_SPIRIT_ART live): footage shows its flames and vines moving.
   // Its container places the body at 0.65 (sprite 162's matrix), so the medium body rendered on
   // its own is drawn at zoom 3 x 0.65.
   firebog: { swf: 'inhabitants/street_spirit_firebog/street_spirit_firebog.swf', sprite: 163, street: [1, 226], portrait: [223, 332], record: ['large'], medium: { sprite: 94, street: [1, 112], zoom: 1.949982, record: ['medium'] } },
@@ -87,7 +88,19 @@ export function streetManifest() {
     const src = SPIRIT_SWFS[variant];
     for (const look of Object.keys(art.looks)) {
       const sheets = [];
-      for (const [state, sheet] of Object.entries(art.states)) sheets.push(sheetRow(spiritSheet(variant, look, state), sheet.oga, sheet.step || 1));
+      const live = [];
+      for (const [state, sheet] of Object.entries(art.states)) {
+        const row = sheetRow(spiritSheet(variant, look, state), sheet.live || sheet.oga, sheet.step || 1);
+        // #658: a live state's loop is baked after the timeline (swf-record.mjs live) and its 1x strip
+        // drawn from that render, placed as the look's talk sheet is (build.mjs render1x).
+        if (sheet.live) {
+          live.push({ label: sheet.oga, as: sheet.live, frames: sheet.frames });
+          row.render1x = rel(spiritSheet(variant, look, 'talk').path);
+        }
+        sheets.push(row);
+      }
+      // build.mjs builds a job's sheets in order: the sheet a render1x one is placed like comes first.
+      sheets.sort((a, b) => Number(Boolean(a.render1x)) - Number(Boolean(b.render1x)));
       const cry = spiritCrySheet(variant, look);
       if (cry) sheets.push(sheetRow(cry, STREET_SPIRIT_LONELY_ART[variant].cry.oga, 1));
       const medium = variant === 'firebog' && look === 'medium';
@@ -98,7 +111,7 @@ export function streetManifest() {
         sprite: medium ? src.medium.sprite : src.sprite,
         frameRange: medium ? src.medium.street : src.street,
         ...(medium && src.medium.zoom ? { zoom: src.medium.zoom } : {}),
-        ...((medium ? src.medium.record : src.record) ? { record: { clips: medium ? src.medium.record : src.record } } : {}),
+        ...((medium ? src.medium.record : src.record) ? { record: { clips: medium ? src.medium.record : src.record, ...(live.length ? { live } : {}) } } : {}),
         ...(parts && Object.keys(parts).length ? { parts } : {}),
         sheets,
       });
