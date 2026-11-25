@@ -2814,9 +2814,19 @@
   "deployed": "2026-11-25"
  },
  "git": {
-  "commits": 3437,
+  "commits": 3442,
   "since": "2026-10-19",
   "recent": [
+   {
+    "date": "2026-11-24",
+    "kind": "fix",
+    "text": "The Test Tube has its page in the Item Catalog, sold by the Alchemical Goods and Tool Vendors"
+   },
+   {
+    "date": "2026-11-24",
+    "kind": "fix",
+    "text": "The game's music and sounds pause while you are in another app or tab"
+   },
    {
     "date": "2026-11-24",
     "kind": "fix",
@@ -2926,19 +2936,9 @@
     "date": "2026-11-24",
     "kind": "improve",
     "text": "Doors between house floors slide along their own floor"
-   },
-   {
-    "date": "2026-11-24",
-    "kind": "improve",
-    "text": "The band over a short scene reads the screen only when the view moves"
-   },
-   {
-    "date": "2026-11-24",
-    "kind": "improve",
-    "text": "On an upright phone the top of the screen shows the scene, not a dark band"
    }
   ]
  },
- "tests": 1356,
+ "tests": 1358,
  "generatedAt": "2026-11-24"
 }
