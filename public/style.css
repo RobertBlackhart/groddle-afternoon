@@ -15761,6 +15761,15 @@ body.is-booting .touch-controls { display: none; }
   transform: none;
   max-width: calc(100% - var(--pr-homes-l, 8px) - 8px - var(--safe-r));
 }
+/* #684 (a phone, upright and sideways): the note under the banner (the Expand cost, #182) was centred on the
+   banner, which stands at the left here, so a note wider than the banner ran off the screen's left edge.
+   It hangs from the banner's left and is no wider than the screen right of it. */
+:root.phone-layout[data-ui="modern"] #game-root .hb-builder .hb-banner .hb-banner-note {
+  left: 0;
+  transform: none;
+  text-align: left;
+  max-width: calc(100vw - var(--pr-homes-l, 8px) - 8px - var(--safe-r));
+}
 :root.phone-layout[data-ui="modern"][data-phone-sheet="map"] #game-root :is(#homes-modes, .hb-banner) { visibility: hidden; }
 /* Beside an open sheet the buff strip keeps the sheet's left (#125) but stands in its slot too, under the
    home's row: its older top there never took the top inset either. */
