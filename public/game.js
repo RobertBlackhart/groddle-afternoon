@@ -4,7 +4,7 @@
  */
 import { ITEM_ICONS, ITEM_LABELS, getVerbsFor, ordinaryItems, runVerb } from './content.js?v=fc2948cd';
 import { createErrorOnce, createFeatureHost, createFrameStages } from './js/feature-host.js?v=b87e2cbc';
-import { FEATURES, questFlagsFeature } from './js/features/index.js?v=2626c949';
+import { FEATURES, questFlagsFeature } from './js/features/index.js?v=b144d783';
 import { buildEnterChoices, planEnter, createEnterChooser, enterPromptLabel, trimmedIconUrl, drawTileArt } from './js/enter-chooser.js?v=92133ac8';
 import { firstTendKey, stepTendKey, tendKeyAction } from './js/garden-tend.js?v=beb9a657';
 import { avatarHitBox, behindFloor, bodyReachDistance, OUT_OF_REACH_LINE, playerClickBox } from './js/reach.js?v=456da8a8';
@@ -898,7 +898,7 @@ import { climbBobY, ladderAnimState, ladderSwap } from './js/ladder-anim.js?v=a8
 import { VECTOR_AVATAR } from './js/avatar-vector-sheets.js?v=ad801376';
 import { PLACEHOLDER_SHEETS, isPlaceholderPack, ownPackFor, washPlaceholderPixels, whenOwnLookReady } from './js/avatar-placeholder.js?v=ae5c39e4';
 import { createNpcGlitchKit } from './js/npc-glitch.js?v=7d79973b';
-import { bakeIdleSheet, bakeLook, bakeSheet, loadCatalog as loadAvatarCatalog, paintPreview as paintVectorPreview, prepareIdle, prepareLook } from './js/avatar-compositor.js?v=dfe4b032';
+import { bakeIdleSheet, bakeLook, bakeSheet, loadCatalog as loadAvatarCatalog, paintPreview as paintVectorPreview, prepareIdle, prepareLook } from './js/avatar-compositor.js?v=1d3df23e';
 import { LATE_SHEETS, anchorSheetFrames, createRetireQueue, ensureAnimSheets, ensureLateSheet, fillPackAnims, packComplete, redrawFrame, showsStandIn } from './js/avatar-pack.js?v=65324246';
 import { catalogItem, colourwaySwatches, lookKey, randomVectorFields, resolveLook, swatchBackground } from './js/avatar-looks.js?v=5a28384d';
 import {
@@ -909,9 +909,9 @@ import {
   APPEARANCE_PRESETS,
   PRESET_GROUPS,
   appearanceCacheKey,
-} from './js/character-builder.js?v=03768e2e';
+} from './js/character-builder.js?v=0b5419d0';
 import { clearPresetActive, leavingDialogOpen, renderEmoteTests, renderFaceDims, renderPresetGroups, renderStarterPicker, showLeavingDialog } from './js/avatar-builder-ui.js?v=e9e684cf';
-import { NONE_TYPES, createTileArt, focusIn, pickPart, refocus, renderPartSwitch, renderPartTiles, tileJob } from './js/avatar-tiles.js?v=7aeef276';
+import { NONE_TYPES, createTileArt, focusIn, pickPart, refocus, renderPartSwitch, renderPartTiles, tileJob } from './js/avatar-tiles.js?v=90f436b8';
 import {
   loadAmbientMusicConfig,
   resolveAmbientTheme,
