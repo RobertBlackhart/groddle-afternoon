@@ -119,7 +119,7 @@ import {
 } from '../street-jobs.js?v=76471e42';
 import { gateTerms } from '../subway.js?v=ea6921ff';
 import { forceMetabolic, gainMetabolic, loseEnergy } from '../metabolics.js?v=48f784bf';
-import { holdNote, placeIndex, questHold, questStoryKey } from '../quest-reach.js?v=a58985bd';
+import { holdNote, placeIndex, questHold, questStoryKey } from '../quest-reach.js?v=7f804115';
 import { fewestClosures, loadStreetGraph, reachableStreets, streetGraph, worldRoads } from '../street-graph.js?v=d767f3a2';
 import { doorKeysHeld } from '../doors.js?v=f815e7c8';
 import { openWorld } from '../open-roads.js?v=2e03b0a6';

@@ -6,7 +6,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { hellTicketsFeature } from '../public/js/features/hell-tickets-feature.js?v=589350d2';
+import { hellTicketsFeature } from '../public/js/features/hell-tickets-feature.js?v=b399ecbd';
 import { hellFeature } from '../public/js/features/hell-feature.js?v=c369c634';
 import { loadContentCatalogsFromDir } from '../public/js/content-catalogs.js?v=5ef6adb5';
 
