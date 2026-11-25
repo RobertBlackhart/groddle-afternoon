@@ -867,7 +867,9 @@ function buyTicket(engine, station, direction) {
 async function enterCar(engine) {
   if (pendingBoard) pendingBoard.until = 0;
   const spot = boardingSpot();
-  const ok = await engine.enter(CAR_TSID, { spawnX: spot.x, spawnY: spot.y });
+  // #674: the ticket moved you by teleport (inc_transit.js 176 instances_enter), and the car's hub (66)
+  // is never a station's, so the trip plays TELEPORT_AWAY_HUB after PAY_50_CURRANTS (player.js 674-678).
+  const ok = await engine.enter(CAR_TSID, { spawnX: spot.x, spawnY: spot.y, teleport: true });
   // R46: the car never loaded (the trip said so): no ticket used, so the fare comes back, as the
   // source's transit_refund_fare did for a boarding that did not happen.
   if (ok === false && pendingBoard && !inCar(engine)) {
@@ -986,7 +988,8 @@ async function disembark(engine) {
   const spot = disembarkSpot(station);
   let ok = false;
   try {
-    ok = (await engine.enter(station.streetTsid, { spawnX: spot.x, spawnY: spot.y })) !== false;
+    // #674: off the car by teleport too (teleportToLocationDelayed): TELEPORT_AWAY_HUB, hub 66 to the station's.
+    ok = (await engine.enter(station.streetTsid, { spawnX: spot.x, spawnY: spot.y, teleport: true })) !== false;
   } finally {
     gettingOff = null;
   }
@@ -1363,7 +1366,7 @@ export const subwayFeature = {
     return { state: { ...state }, ride: ride ? { ...ride, timing: undefined } : null, dialog: dialog?.id || '', windows: windows.length, lineMap: lineMap?.key || '', chosenStop, gettingOff };
   },
 
-  /** Tests (G1139): a ride to set, the Get off answer and the boarding trip, as the dialogs run them. */
+  /** Tests (G1139, #674): a ride to set, the Get off answer, the ticket and the boarding trip, as the dialogs run them. */
   _test: {
     setRide(r, extra = {}) {
       ride = r;
@@ -1372,5 +1375,6 @@ export const subwayFeature = {
     },
     disembark,
     enterCar,
+    buyTicket,
   },
 };

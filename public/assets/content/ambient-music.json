@@ -209,6 +209,7 @@
     "subway": {
       "label": "Subway",
       "gsjsKeys": ["SUBWAY_STATION_HUM"],
+      "note": "#674 (2026-11-25): no station plays this set. The stations' music_file SUBWAY_STATION_HUM (location.js 481-482) is lost, and the 2012 client played each station's region set (NetController.as 1843-1849, main.js ambient_hub_map), so streetMusic leaves the key out and a station resolves to its hub's music.",
       "tracks": [
         "assets/audio/ambient/subway_music_1344997270.mp3",
         "assets/audio/ambient/elevator_music_1344997334.mp3",
@@ -446,6 +447,9 @@
       "tracks": ["assets/audio/sfx/AUTUMN_DAY.mp3"]
     }
   },
+  "streetMusicNotes": {
+    "SUBWAY_CAR_HUM": "Kept silent by Austin's ruling of 2026-11-25 (#674): the train plays its hum loop alone (TRAVELLING_TRAIN, inc_transit.js 287), which players prefer. Glitch played the default forest set in the car, because the car's hub (66) had no ambient_hub_map row (main.js 456); the car's own hum_caboose_4.mp3 is lost (#303)."
+  },
   "streetMusic": {
     "TOXIC_MOON": "party_moon",
     "AMBIENT_HIGHLANDS6": "party_highlands",
@@ -462,7 +466,6 @@
     "HOME_STREET_URALIA": "home_uralia",
     "HOME_STREET_FIREBOGS": "home_firebogs",
     "CLOUD_DROP_2": "sky_plunge",
-    "SUBWAY_STATION_HUM": "subway",
     "SUBWAY_CAR_HUM": "silence",
     "XAVIER_CARNIVOROUS_PLANTS": "carnivorous_plants",
     "ABANDONED_APARTMENTS1": "abandoned_apartments",

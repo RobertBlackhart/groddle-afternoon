@@ -419,7 +419,8 @@ async function goBack(engine, back) {
     if (resumed) return true;
   }
   if (!back?.tsid) return false;
-  await engine.enter(back.tsid, { spawnX: back.x, spawnY: back.y, bypassFeatureGates: true });
+  // #674: instances_exit teleported you back (inc_instances.js 175): TELEPORT_AWAY_HUB from the space's hub.
+  await engine.enter(back.tsid, { spawnX: back.x, spawnY: back.y, bypassFeatureGates: true, teleport: true });
   return true;
 }
 
@@ -671,7 +672,8 @@ async function enterParty(engine) {
   engine.instanceHold = HOLD;
   engine.save();
   const arrive = partyArrival(p.template);
-  await engine.enter(s.streetTsid, { spawnX: arrive.x, spawnY: arrive.y, bypassFeatureGates: true });
+  // #674: party.js 725 instances_enter, a teleport: TELEPORT_AWAY_HUB when the space is in another hub.
+  await engine.enter(s.streetTsid, { spawnX: arrive.x, spawnY: arrive.y, bypassFeatureGates: true, teleport: true });
 }
 
 async function leaveParty(engine, { reason = '' } = {}) {

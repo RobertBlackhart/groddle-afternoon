@@ -2703,7 +2703,7 @@
 {"s":"sounds","id":"talk_frog","n":"Talk frog","g":"Creatures and trees","st":"snd_silent","ic":"","h":"encyclopedia/sounds/talk_frog/"},
 {"s":"sounds","id":"teleport_arrive","n":"Teleport arrive","g":"New in the remake","st":"snd_synth","ic":"","h":"encyclopedia/sounds/teleport_arrive/"},
 {"s":"sounds","id":"teleport_away","n":"Teleport away","g":"UI and the world","st":"snd_original","ic":"","h":"encyclopedia/sounds/teleport_away/"},
-{"s":"sounds","id":"teleport_away_hub","n":"Teleport away hub","g":"UI and the world","st":"snd_standin","ic":"","h":"encyclopedia/sounds/teleport_away_hub/"},
+{"s":"sounds","id":"teleport_away_hub","n":"Teleport away hub","g":"UI and the world","st":"snd_original","ic":"","h":"encyclopedia/sounds/teleport_away_hub/"},
 {"s":"sounds","id":"teleporter_visible_appear","n":"Teleporter visible appear","g":"Quests, games and puzzles","st":"snd_original","ic":"","h":"encyclopedia/sounds/teleporter_visible_appear/"},
 {"s":"sounds","id":"teleporter_visible_disappears","n":"Teleporter visible disappears","g":"UI and the world","st":"snd_original","ic":"assets/sprites/icons/teleporter_visible.webp","h":"encyclopedia/sounds/teleporter_visible_disappears/"},
 {"s":"sounds","id":"teleporter_visible_portal","n":"Teleporter visible portal","g":"Quests, games and puzzles","st":"snd_original","ic":"","h":"encyclopedia/sounds/teleporter_visible_portal/"},

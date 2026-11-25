@@ -85,3 +85,17 @@ export async function enterResult(trip, { say, warn, label = '' } = {}) {
     return false;
   }
 }
+
+/**
+ * #674: the sound a trip starts with. A teleport (opts.teleport) played TELEPORT_AWAY, or
+ * TELEPORT_AWAY_HUB when the place you go is in another hub than the one you stand in
+ * (players/player.js teleportToLocation 674-678). Every instances_enter took that path
+ * (players/inc_instances.js 89-104), so boarding the Subway car (hub 66) from any station, and
+ * getting off again, played TELEPORT_AWAY_HUB. Any other trip (a signpost, a door) whooshes.
+ */
+export function tripSound({ teleport = false, fromHubId = '', toHubId = '' } = {}) {
+  if (!teleport) return 'SIGNPOST_TRAVEL';
+  const from = String(fromHubId ?? '');
+  const to = String(toHubId ?? '');
+  return from && to && from !== to ? 'TELEPORT_AWAY_HUB' : 'TELEPORT_AWAY';
+}

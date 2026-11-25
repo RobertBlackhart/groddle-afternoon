@@ -1186,7 +1186,7 @@ import { standOnFeet, anchorBottomCentre } from './js/sprite-feet.js?v=6358a697'
 import { markLeaving, packPicks, takeCopies } from './js/copy-picks.js?v=b368fd49';
 import { holdKeepsBusy } from './js/instance-holds.js?v=ff3a63a3';
 import { createLoadTurns, createStreetMove, travelTurn } from './js/street-move.js?v=1c4431bf';
-import { enterResult, tripFailedLine, tripWithRetry } from './js/street-trip.js?v=89addd51';
+import { enterResult, tripFailedLine, tripSound, tripWithRetry } from './js/street-trip.js?v=89addd51';
 
 /** @type {object|null} assets/maps/index.json */
 let mapIndexCache = null;
@@ -4227,7 +4227,8 @@ async function streetTripTo(tsid, opts = {}) {
   const visit = streetLoadingVisit(persistentWorldState.streets?.[tsid]?.features?.[STREET_VISITS_SLOT], { knownVisits: visitedBefore });
   const fromColors = currentStreet?.hubId ? await resolveHubColors(currentStreet.hubId) : { top: null, bottom: null };
   let data = null;
-  playSound(opts.teleport ? 'TELEPORT_AWAY' : 'SIGNPOST_TRAVEL', { volume: 0.5 });
+  // #674: a teleport into another hub (the Subway car, a Party Space) plays TELEPORT_AWAY_HUB (player.js 674-678).
+  playSound(tripSound({ teleport: opts.teleport, fromHubId: currentStreet?.hubId, toHubId: hubId }), { volume: 0.5 });
   await runStreetTransition(el, {
     fromLabel,
     fromHub,

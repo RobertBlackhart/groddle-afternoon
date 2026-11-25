@@ -1159,6 +1159,14 @@
    "why": "Le Miserable's light switches (p1/p2/p3_sounds_a*, 15 street events) play TEST_SOUND; Test_1.1 is the zip's only test file (0.24 s blip; TEST is another url, Glowing_Orb_Summer). Name match only"
   },
   {
+   "key": "TELEPORT_AWAY_HUB",
+   "zip": "teleport.mp3",
+   "md5": "4050932e0cefa99307d1566b46b7b5be",
+   "match": "filename",
+   "why": "players/player.js:674-678 teleportToLocation: TELEPORT_AWAY_HUB when the target's hub differs from the current one (the subway car, hub 66, from any station; inc_transit.js:176 instances_enter). teleport.mp3 is a rising C-E-A chime, 2.3 s; the archive's Known Sound Files list calls it the teleport sound. Shipped under the 2026-10-28 original-sound rule (register G365).",
+   "doubt": "Name match only: the sounds XML is lost, and the file has no timestamp prefix. The GoodnightGroddleArchive's missing-files table (row 50) gives it as a possible TELEPORT_AWAY_HUB, beside 1352310225-Beam_Up_1.1.mp3 and 1318886785-Portal.mp3."
+  },
+  {
    "key": "TRANSCENDENTAL_MEDITATION_01",
    "zip": "1297359285-meditation_berg.mp3",
    "md5": "c276f6d24cbfefd5213085b6a19be888",

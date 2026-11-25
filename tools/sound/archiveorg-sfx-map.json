@@ -202,7 +202,7 @@
     { "item": "sfx", "file": "watering can.mp3", "key": "WATERING_CAN", "aliases": ["IRRIGATOR_9000"], "why": "The Irrigator 9000 is the upgraded watering can with no file of its own." },
     { "item": "sfx", "file": "yoga frog-pose.mp3", "key": "WARRIOR_POSE_FROG", "aliases": ["TREE_POSE_FROG", "DANCER_POSE_FROG"], "why": "npc_yoga_frog.js:311-317 doYoga picks one of three poses; one pose take survives." },
 
-    { "item": "unused", "file": "beam up.mp3", "key": "TELEPORT_AWAY", "aliases": ["TELEPORT_AWAY_HUB"], "why": "player.js:675-677 teleportToLocation. Unused/rejected take; no released file.", "doubt": "rejected take" },
+    { "item": "unused", "file": "beam up.mp3", "key": "TELEPORT_AWAY", "why": "player.js:675-677 teleportToLocation. Unused/rejected take; no released file.", "doubt": "rejected take" },
     { "item": "unused", "file": "butler-fall.mp3", "key": "BUTLER_DOLL_FALL", "why": "bag_butler.js:5214. Listed as unused, but the key exists in GSJS." },
     { "item": "unused", "file": "butler-idle.mp3", "key": "BUTLER_DOLL_IDLE_2", "why": "bag_butler.js:5211. Listed as unused, but the key exists in GSJS." },
     { "item": "unused", "file": "harvest been tree.mp3", "key": "BEEN_TREE", "why": "trants.js:327 onHarvestingComplete. Unused take; no released file." },

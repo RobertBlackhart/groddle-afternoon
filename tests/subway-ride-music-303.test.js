@@ -32,9 +32,11 @@ describe('#303: a subway ride plays the train loop alone', () => {
   });
 
   it('the station keeps its music, so it returns on arrival', () => {
+    // #674: its own SUBWAY_STATION_HUM is lost, so a station plays its region's set (main.js ambient_hub_map).
     const station = stationStreet(STATIONS[0]);
     assert.equal(station.musicFile, STATION_MUSIC);
-    assert.equal(resolveAmbientTheme(station), `street:${STATION_MUSIC}`);
+    assert.equal(resolveAmbientTheme(station), cfg.hubMap[String(station.hubId)] || cfg.defaultTheme);
+    assert.notEqual(resolveAmbientTheme(station), SILENT_THEME);
   });
 
   it('the train loop starts on departure and stops at the brakes', () => {

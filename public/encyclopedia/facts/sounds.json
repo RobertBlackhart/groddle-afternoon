@@ -564,7 +564,7 @@
 "talk_frog":"Tiny Speck’s code still names this sound, but the line that played it was switched off before the game closed.",
 "teleport_arrive":"About this sound: Arrive after a teleport.",
 "teleport_away":"The original recording: beam up.mp3, from Tiny Speck’s sound sets, kept on the Internet Archive.\nIn Tiny Speck’s game: Teleport away (Teleportation skill).\nIn the game: You, as you play",
-"teleport_away_hub":"Teleport to a hub.\nIn the game: You, as you play",
+"teleport_away_hub":"Teleport to a hub.\nThe original recording: teleport.mp3, from a fan’s copy of the game server’s sound folder.\nIn the game: You, as you play",
 "teleporter_visible_appear":"The original recording: teleporter appears.mp3, from Tiny Speck’s sound sets, kept on the Internet Archive.\nIn the game: Party spaces",
 "teleporter_visible_disappears":"The original recording: disappear.mp3, from Tiny Speck’s sound sets, kept on the Internet Archive.\nThings that play it: Collision-triggered Teleporter, Collision-Triggered Teleporter w/ Code, Teleporter",
 "teleporter_visible_portal":"The original recording: portal.mp3, from Tiny Speck’s sound sets, kept on the Internet Archive.\nIn the game: Party spaces",

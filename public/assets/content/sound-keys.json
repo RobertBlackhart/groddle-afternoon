@@ -10,10 +10,10 @@
   "mirrored": 1,
   "downloadsBestFit": 27,
   "archiveorgSfx": 214,
-  "soundsZip": 192,
+  "soundsZip": 193,
   "overlayFla": 3,
-  "withFile": 475,
-  "aliases": 89,
+  "withFile": 476,
+  "aliases": 88,
   "playable": 564,
   "dead": 3,
   "live": 635
@@ -9259,7 +9259,13 @@
    "sources": [
     "gsjs:players/player.js:675 (teleportToLocation)"
    ],
-   "alias": "TELEPORT_AWAY"
+   "file": "assets/audio/sfx/TELEPORT_AWAY_HUB.mp3",
+   "origin": "sounds-zip",
+   "why": "players/player.js:674-678 teleportToLocation: TELEPORT_AWAY_HUB when the target's hub differs from the current one (the subway car, hub 66, from any station; inc_transit.js:176 instances_enter). teleport.mp3 is a rising C-E-A chime, 2.3 s; the archive's Known Sound Files list calls it the teleport sound. Shipped under the 2026-10-28 original-sound rule (register G365).",
+   "doubt": "Name match only: the sounds XML is lost, and the file has no timestamp prefix. The GoodnightGroddleArchive's missing-files table (row 50) gives it as a possible TELEPORT_AWAY_HUB, beside 1352310225-Beam_Up_1.1.mp3 and 1318886785-Portal.mp3.",
+   "zipFile": "teleport.mp3",
+   "zipMd5": "4050932e0cefa99307d1566b46b7b5be",
+   "zipMatch": "filename"
   },
   "TELEPORTER_VISIBLE_APPEAR": {
    "category": "event",
