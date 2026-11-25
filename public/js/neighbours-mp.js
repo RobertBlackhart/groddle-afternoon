@@ -379,6 +379,16 @@ export function createVisitPassKeeper({ fetchView, onView, onGone = () => {}, on
   };
 }
 
+/** The owner's house from a visit answer ({ chassis, config, facingRight }), or null when the site sent none. */
+function visitHouse(house) {
+  if (!house || typeof house !== 'object' || typeof house.chassis !== 'string' || !/^[a-z]{1,24}$/.test(house.chassis)) return null;
+  const config = {};
+  if (house.config && typeof house.config === 'object' && !Array.isArray(house.config)) {
+    for (const [part, choice] of Object.entries(house.config).slice(0, 16)) if (/^[a-z]{1,24}$/.test(part) && Number.isInteger(choice)) config[part] = choice;
+  }
+  return { chassis: house.chassis, config, facingRight: house.facingRight === true };
+}
+
 /** The site's visit answer, checked: null unless it names an owner with a home. */
 export function normalizeHomeView(answer) {
   const owner = positiveId(answer?.owner?.id);
@@ -387,7 +397,10 @@ export function normalizeHomeView(answer) {
   const style = ['meadow', 'firebog', 'uralia'].includes(answer.home.style) ? answer.home.style : 'meadow';
   return {
     owner: { id: owner, name },
-    home: { owned: true, style },
+    // #682 (G796): the owner's house as their save holds it (Neighbours::homeHouse), checked for shape
+    // here and normalized against the art by visitorHomeState; without it a visitor saw the house the
+    // owner's region style moved to. Glitch drew the owner's own chassis config (inc_homes.js 2478-2501).
+    home: { owned: true, style, house: visitHouse(answer.home.house) },
     homes: answer.homes && typeof answer.homes === 'object' && !Array.isArray(answer.homes) ? answer.homes : {},
     key: answer.key === true,
     pass: typeof answer.pass?.token === 'string' && answer.pass.token ? answer.pass.token : '',
