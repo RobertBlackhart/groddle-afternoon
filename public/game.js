@@ -3504,6 +3504,10 @@ const audio = {
   /** js/sound-board.js instance (playSound). */
   board: null,
 };
+/** #660: js/audio-resume.js, which also hushes every sound while the page is hidden. */
+let audioResumer = null;
+/** #660: the page is hidden and hushed: no new sound starts (the suspended context would play them all on its return). */
+const audioHushed = () => Boolean(audioResumer?.hushed());
 
 function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
 
@@ -7714,7 +7718,7 @@ async function loadAudio() {
   audio.board = createSoundBoard({
     getContext: () => audio.ctx,
     getDestination: () => audio.sfxGain,
-    isMuted: () => state.muted,
+    isMuted: () => state.muted || audioHushed(),
     volume: sfxVolumeSetting(),
     // A cold file starts after playSound returns; keep data-last-sound honest.
     onPlayed: (last) => { if (app?.canvas) app.canvas.dataset.lastSound = last; },
@@ -7746,7 +7750,7 @@ function sfxVolumeSetting() {
  * @param {{ volume?: number, rate?: number, jitter?: number, variant?: number, allowMultiple?: boolean }} [opts]
  */
 function playSound(key, opts = {}) {
-  if (state.muted || !audio.board) return null;
+  if (state.muted || audioHushed() || !audio.board) return null;
   // G963: a verb's finish never plays again the tool sound its action loop just played.
   if (finishingVerb && toolLoopsEnded.repeats(finishingVerb.target, finishingVerb.verbId, key)) return null;
   const handle = audio.board.play(key, opts);
@@ -7847,7 +7851,7 @@ async function playMusicblockAudio(def) {
   } catch {
     return;
   }
-  if (token !== musicblockPlayToken || state.muted) return;
+  if (token !== musicblockPlayToken || state.muted || audioHushed()) return;
   const t = audio.ctx.currentTime;
   if (audio.musicblock) {
     const previous = audio.musicblock;
@@ -8028,7 +8032,8 @@ function startStreetTrack(url, loop, fadeSec) {
     if (list.gapSec > 0) setTimeout(next, list.gapSec * 1000);
     else next();
   });
-  voice.play();
+  // #660: a track that starts while the page is hidden waits, paused at its start, for the page to show.
+  if (!audioHushed()) voice.play();
   applyMute(fadeSec);
 }
 
@@ -15378,6 +15383,7 @@ const engine = {
     } catch {
       return () => {};
     }
+    if (audioHushed()) return () => {};
     if (audio.musicblock) try { audio.musicblock.stop(); } catch { /* ended */ }
     const src = audio.ctx.createBufferSource();
     const gain = effect ? audio.buses.sfxVoice(volume) : audio.buses.musicVoice(volume);
@@ -36334,12 +36340,15 @@ async function main() {
   // click or key press (G918: an iPhone tap counts when it ends, touchend), and after AFK, another
   // tab or Safari's "interrupted" (a call, Siri) the page coming back (visibilitychange, focus,
   // pageshow) resumes the AudioContext and plays a street music element the system paused (never
-  // one whose short loop runs from its buffer, #504). js/audio-resume.js.
-  createAudioResumer({
+  // one whose short loop runs from its buffer, #504). js/audio-resume.js. #660: the page hidden
+  // (visibilitychange, pagehide) pauses every sound until it shows again; the game loop and the
+  // network carry on as before.
+  audioResumer = createAudioResumer({
     getCtx: () => audio.ctx,
     getVoice: () => audio.music,
     isMuted: () => state.muted,
     rebuildVoice: rebuildStreetMusic,
+    hushWhenHidden: true,
     onResume: (reason, plan) => setCanvasData('audioResume', `${reason}:${plan.ctx ? 'ctx' : ''}${plan.el ? '+el' : ''}${plan.rebuild ? '+rebuild' : ''}`),
   });
   // Panel open/close and dialog button clicks (client CLICK_SUCCESS/FAILURE).
