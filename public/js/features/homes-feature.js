@@ -295,10 +295,12 @@ import {
   doorMoveAt,
   doorPlaceCheck,
   doorRole,
+  EXPAND_DIALOG,
   expandHouseFloors,
-  expandNote,
+  expandRowStatus,
   floorCount,
   floorDecor,
+  houseExpandView,
   itemsText,
   noteDoorPlaced,
   quoteHouseExpansion,
@@ -621,6 +623,9 @@ let furnupLast = '';
 let furnupSpent = 0;
 let autoplay = null;
 let ui = null;
+/** #687: HouseExpandDialog is open (Decoration Mode's Expand), and what it last drew. */
+let expandOpen = false;
+let expandDrawn = '';
 /** The chosen street style (inc_homes.js cfg.style on the exterior); null: the purchase look's. */
 let streetStyle = null;
 let stylePick = null; // the style highlighted in the Change Style dialog
@@ -4362,19 +4367,18 @@ function decorateBannerActions(engine) {
   }
   const quote = quoteHouseExpansion(floors, houseDecor, engine.inv);
   const many = floorCount(floors) > 1;
-  const segments = engine.inv.wall_segment || 0;
   const about = many
     ? `Your house is ${decor.wallSegments} wall segments wide (the most is 20) and ${floorCount(floors)} floors high. The next segment goes on every floor and takes ${itemsText(quote.items)}.`
     : `Your house is ${decor.wallSegments} wall segments wide (the most is 20). Each extra segment takes one Wall Segment, made with a Construction Tool.`;
   return [
     {
+      // #687: Expand always opens HouseExpandDialog (DecorateToolbarUI.as 319-320), which says what the
+      // next segment takes and what you hold; its own button does the expanding.
       label: 'Expand',
       icon: '↔',
-      disabled: !quote.ok,
-      title: `${about}${!quote.ok && quote.msg ? ` ${quote.msg}` : many ? '' : ` You have ${segments} Wall Segment${segments === 1 ? '' : 's'}.`}`,
-      // Report #182: the reason is on screen too (decorateModel's bannerNote), and read with the button.
-      attrs: { 'data-home-expand': 'house', ...(quote.ok ? {} : { 'aria-describedby': 'homes-banner-note' }) },
-      onClick: () => expandHouse(engine),
+      title: about,
+      attrs: { 'data-home-expand': 'house', 'aria-haspopup': 'dialog', 'aria-controls': 'homes-expand' },
+      onClick: () => openHouseExpandDialog(engine),
     },
     { label: UNEXPAND_TEXT.button, attrs: { 'data-home-unexpand': 'house' }, onClick: () => confirmUnexpand(engine) },
   ];
@@ -4390,8 +4394,6 @@ function decorateModel(engine) {
     closeLabel: 'Leave Decoration Mode',
     onClose: () => setMode(engine, null),
     bannerActions: decorateBannerActions(engine),
-    // Report #182: while the house's Expand is off, what it takes and what you hold (HouseExpandDialog's words).
-    bannerNote: inTower() ? '' : expandNote(quoteHouseExpansion(floors, houseDecor, engine.inv), engine.inv),
     // The Pack tab's tooltip says what it is for, as its footer does.
     tabs: DECOR_TABS.map(([id, label]) => ({ id, label, title: id === 'pack' ? BUILDER_TEXT.packNote : '' })),
     tab: tabId,
@@ -4985,6 +4987,8 @@ function setMode(engine, next) {
   if (next && !scene) return;
   const endsCultivation = mode === 'cultivate' && next !== 'cultivate';
   closeUpgradePicker(true);
+  // HandOfDecorator.as 937: leaving Decoration Mode ends HouseExpandDialog.
+  if (next !== 'decorate') closeHouseExpandDialog(engine);
   mode = next;
   placing = null;
   selected = null;
@@ -5244,6 +5248,103 @@ function expandHouse(engine) {
   engine.save();
   engine.refreshHomeScene?.();
   return result;
+}
+
+// ---------------------------------------------------------------------------
+// #687: HouseExpandDialog (DecorateToolbarUI Expand -> houses_extend)
+// ---------------------------------------------------------------------------
+
+/**
+ * Decoration Mode's Expand opens this whether or not the player can pay, as the original did
+ * (DecorateToolbarUI.as 319-320): "The next expansion will cost:", a row per item with what is still
+ * missing, and "Use these items to expand your house", off with its tip while something is short
+ * (HouseExpandDialog.as 248, 109, 579-588). It stays open after an expansion and shows the next one's
+ * cost (HouseManager.as onExpandReply leaves it open; the server's new costs redraw it), and it
+ * redraws while open as the pack changes (registerChangeSubscriber). Every floor grows together.
+ */
+function openHouseExpandDialog(engine) {
+  if (!ensureUi(engine) || inTower()) return false;
+  if (!ui.expand) {
+    ui.expand = el('section', { class: 'hb-pop hb-expand', id: 'homes-expand', hidden: true, role: 'dialog', 'aria-labelledby': 'homes-expand-title' });
+    ui.expand.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+      e.stopPropagation();
+      closeHouseExpandDialog(engine);
+    });
+    ui.root.append(ui.expand);
+  }
+  expandOpen = true;
+  drawHouseExpandDialog(engine, true);
+  ui.expand.querySelector('[data-home-expand-go]:not(:disabled), [data-home-expand-ok], .hb-close')?.focus({ preventScroll: true });
+  return true;
+}
+
+function closeHouseExpandDialog(engine) {
+  expandOpen = false;
+  expandDrawn = '';
+  if (ui?.expand) ui.expand.hidden = true;
+  engine?.setData?.('homeExpandDialog', '');
+}
+
+/** What the dialog depends on: the house, the floor project, and what the player holds of each item. */
+function houseExpandKey(engine) {
+  const inv = engine.inv || {};
+  return `${houseDecor.wallSegments}:${floorCount(floors)}:${floors.pending ? 1 : 0}:${inv.wall_segment || 0}:${inv.grade_aa_earth_block || 0}:${inv.girder || 0}`;
+}
+
+function drawHouseExpandDialog(engine, force = false) {
+  if (!expandOpen || !ui?.expand) return;
+  if (mode !== 'decorate' || inTower()) {
+    closeHouseExpandDialog(engine);
+    return;
+  }
+  const key = houseExpandKey(engine);
+  if (!force && key === expandDrawn) return;
+  expandDrawn = key;
+  const view = houseExpandView(floors, houseDecor, engine.inv);
+  const box = ui.expand;
+  const head = el('div', { class: 'hb-pop-head hb-expand-head' }, [
+    el('strong', { id: 'homes-expand-title', text: view.title }),
+    el('button', { type: 'button', class: 'hb-close', 'aria-label': 'Close', title: 'Close', text: '×', onclick: () => closeHouseExpandDialog(engine) }),
+  ]);
+  const parts = [head];
+  if (view.rows.length) {
+    parts.push(el('ul', { class: 'hb-expand-reqs' }, view.rows.map((row) => el('li', { class: `hb-expand-req${row.need > 0 ? ' is-short' : ''}`, 'data-expand-item': row.classTsid }, [
+      el('img', { class: 'hb-expand-ic', src: `assets/sprites/icons/${row.classTsid}.webp`, alt: '', width: 40, height: 40 }),
+      el('span', { class: 'hb-expand-count', text: `${row.count}x` }),
+      el('span', { class: 'hb-expand-name', text: row.label }),
+      el('span', { class: 'hb-expand-status', text: expandRowStatus(row) }),
+    ]))));
+  }
+  if (view.made) parts.push(el('p', { class: 'hb-expand-made', text: view.made }));
+  const actions = el('div', { class: 'hb-actions hb-expand-actions' });
+  if (view.maxed) {
+    actions.append(el('button', { type: 'button', class: 'hb-bt', 'data-home-expand-ok': '1', text: view.button.label, onclick: () => closeHouseExpandDialog(engine) }));
+  } else {
+    actions.append(el('button', {
+      type: 'button',
+      class: 'hb-bt primary',
+      'data-home-expand-go': '1',
+      disabled: view.button.disabled,
+      title: view.button.tip || false,
+      'aria-describedby': view.button.tip ? 'homes-expand-tip' : false,
+      text: view.button.label,
+      onclick: () => {
+        const res = expandHouse(engine);
+        engine.playSound?.(res?.ok ? 'CLICK_SUCCESS' : 'CLICK_FAILURE', { volume: 0.32 });
+        renderBar(engine);
+        drawHouseExpandDialog(engine, true);
+        ui?.expand?.querySelector('[data-home-expand-go]:not(:disabled), [data-home-expand-ok], .hb-close')?.focus({ preventScroll: true });
+      },
+    }));
+    // The tip is on screen too: a phone has no hover.
+    if (view.button.tip) actions.append(el('p', { class: 'hb-expand-tip', id: 'homes-expand-tip', text: view.button.tip }));
+  }
+  parts.push(actions);
+  parts.push(el('p', { class: 'hb-expand-left' }, [view.count, ...(view.unexpand ? [el('br'), EXPAND_DIALOG.unexpand] : [])]));
+  box.replaceChildren(...parts);
+  box.hidden = false;
+  engine.setData?.('homeExpandDialog', view.maxed ? 'max' : view.ok ? 'ready' : view.button.tip === EXPAND_DIALOG.lockedTip ? 'locked' : 'short');
 }
 
 const ITEM_NAMES = Object.freeze({
@@ -8696,7 +8797,10 @@ export const homesFeature = {
       ui.builder.render(null, { keepFold: true });
       ui.modes.hidden = true;
       if (ui.sign) ui.sign.hidden = true;
+      // #687: an expansion rebuilds the room in place; the expand dialog comes back with it (onTick).
+      if (ui.expand) ui.expand.hidden = true;
     }
+    expandDrawn = '';
   },
 
   onStreetEnter(street, engine) {
@@ -8707,6 +8811,7 @@ export const homesFeature = {
       stylePreview = null;
       stylePick = null;
       if (ui?.styles) ui.styles.hidden = true;
+      closeHouseExpandDialog(engine);
       mode = null;
       placing = null;
       selected = null;
@@ -8783,6 +8888,8 @@ export const homesFeature = {
     }
     // Ticket 52: the style column stays beside its piece while the camera eases.
     if (upgradePickerOpen()) placeUpgradePicker();
+    // #687: the expand dialog follows the pack (HouseExpandDialog registerChangeSubscriber).
+    if (expandOpen) drawHouseExpandDialog(engine);
   },
 
   onEvent(counter, amount, engine) {

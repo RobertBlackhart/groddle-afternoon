@@ -4055,6 +4055,15 @@
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--c-classic-ink) 15%, transparent);
 }
 :root[data-ui="classic"] #game-root .hb-pop .hb-pop-head { margin-bottom: calc(6 * var(--cu)); }
+:root[data-ui="classic"] #game-root .hb-pop.hb-expand { max-width: none; width: min(calc(380 * var(--cu)), calc(100% - 16px)); padding: calc(10 * var(--cu)) calc(14 * var(--cu)) calc(12 * var(--cu)); font-family: var(--font-classic-body); color: var(--c-classic-text); }
+/* #687: HouseExpandDialog's look: the title in the title face, the count line small, "Need N more" on a tinted tab (HouseExpandReqUI status_bg_color). */
+:root[data-ui="classic"] #game-root .hb-expand .hb-expand-head strong { color: var(--c-classic-title); font: 800 calc(var(--fs-classic-row-title) * var(--cu-n, 1))/1.15 var(--font-classic-title); text-align: center; }
+:root[data-ui="classic"] #game-root .hb-expand .hb-expand-count { color: var(--c-classic-title); font: 800 calc(var(--fs-classic-row) * var(--cu-n, 1))/1.1 var(--font-classic-title); }
+:root[data-ui="classic"] #game-root .hb-expand .hb-expand-name { font-size: calc(var(--fs-classic-count) * var(--cu-n, 1)); }
+:root[data-ui="classic"] #game-root .hb-expand .hb-expand-status { font-size: calc(var(--fs-classic-count) * var(--cu-n, 1)); }
+:root[data-ui="classic"] #game-root .hb-expand .is-short .hb-expand-status { background: color-mix(in srgb, var(--c-classic-ink) 12%, transparent); font-weight: 700; }
+:root[data-ui="classic"] #game-root .hb-expand :is(.hb-expand-made, .hb-expand-tip, .hb-expand-left) { font-size: calc(var(--fs-classic-count) * var(--cu-n, 1)); line-height: 1.3; }
+:root[data-ui="classic"] #game-root .hb-expand .hb-bt { white-space: normal; }
 :root[data-ui="classic"] #game-root .hb-pop .hb-pop-head strong { color: var(--c-classic-title); font: 800 calc(var(--fs-classic-row) * var(--cu-n, 1))/1.2 var(--font-classic-title); }
 :root[data-ui="classic"] #game-root .hb-pop .hb-pop-sub { color: var(--c-classic-text); font-size: calc(var(--fs-classic-count) * var(--cu-n, 1)); line-height: 1.3; }
 :root[data-ui="classic"] #game-root .hb-pop .hb-actions { gap: calc(4 * var(--cu)); }

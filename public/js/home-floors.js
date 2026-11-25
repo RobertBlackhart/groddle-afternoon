@@ -293,37 +293,67 @@ export function quoteHouseExpansion(fs, ground, inv = {}) {
 }
 
 /**
- * The words by the Expand button while it is off (report #182: the reason was only in its hover
- * tip). The original's Expand always opened HouseExpandDialog, which said all of this on screen:
- * its title "The next expansion will cost:" (HouseExpandDialog.as:248), a row per item with what
- * is still missing (HouseExpandReqUI.as:86 "Nx", 132 "Need N more"), the widest house's title
- * "Your house is already sooo wide!" (:400) and the Expand button's tip while a floor is being
- * built, "You need to finish up your floor project first!" (:584). `made` is ours: the client
- * linked each row to its item's info window, which named the recipe (catalog_recipes.js 261).
+ * #687 (Austin 2026-11-25 chose the original's dialog): Decoration Mode's Expand always opened
+ * HouseExpandDialog (DecorateToolbarUI.as 319-320), whether or not the player could pay. Its words:
+ * the title (HouseExpandDialog.as 248, the widest house's 400), the button (109, disabled with the
+ * tips at 581 and 584), "Okay" once the house can grow no more (120), the count line under it
+ * (446-452), and per item a row "Nx", its name and "Need N more" or "Got 'em" (HouseExpandReqUI.as
+ * 86, 132, 135) counting what sits in bags (pc.hasHowManyItems, PC.as:332). `made` is the remake's
+ * (report #182): the client linked each row to its item's info window, which named the recipe
+ * (catalog_recipes.js 261).
  */
-export const EXPAND_NOTE = Object.freeze({
-  cost: 'The next expansion will cost',
+export const EXPAND_DIALOG = Object.freeze({
+  title: 'The next expansion will cost:',
   max: 'Your house is already sooo wide!',
-  locked: 'You need to finish up your floor project first!',
+  button: 'Use these items to expand your house',
+  okay: 'Okay',
+  needTip: 'You need the materials first!',
+  lockedTip: 'You need to finish up your floor project first!',
+  got: 'Got \u2019em',
+  unexpand: 'You can also un-expand your house.',
   made: 'A Wall Segment is made with a Construction Tool.',
 });
 
+/** HouseExpandDialog setCountText, TYPE_WALL: how many more times the house can grow. */
+export function expandCountText(count) {
+  return count > 0 ? `This building can be expanded ${count} more ${count === 1 ? 'time' : 'times'}.` : 'This building can\u2019t be expanded anymore.';
+}
+
 /**
- * quoteHouseExpansion's quote as one line for the screen, '' while Expand is on: what the next
- * segment takes, how many of each the player holds (the inventory counts, so what sits in a bag
- * counts, as pc.hasHowManyItems did: PC.as:332), and how a Wall Segment is made.
+ * What HouseExpandDialog shows for the house as it stands (every floor grows together):
+ * { maxed, title, rows: [{ classTsid, label, count, have, need }], button: { label, disabled, tip },
+ * count, unexpand, made, ok }. `inv` counts what the player holds, bags included.
  */
-export function expandNote(quote, inv = {}) {
-  if (!quote || quote.ok) return '';
-  if (quote.reason === 'locked') return EXPAND_NOTE.locked;
-  if (quote.reason === 'max') return EXPAND_NOTE.max;
-  if (quote.reason !== 'need_items') return String(quote.msg || '');
+export function houseExpandView(fs, ground, inv = {}) {
+  const quote = quoteHouseExpansion(fs, ground, inv);
+  const left = Math.max(0, HOME_LIMITS.MAX_WALL_SEGMENTS - ground.wallSegments);
+  const unexpand = quoteInteriorUnexpand(ground).ok === true;
+  const count = expandCountText(left);
+  if (quote.reason === 'max' || !left) {
+    return { maxed: true, ok: false, title: EXPAND_DIALOG.max, rows: [], button: { label: EXPAND_DIALOG.okay, disabled: false, tip: '' }, count, unexpand, made: '' };
+  }
   const rows = Object.entries(quote.items || {}).map(([cls, n]) => {
     const have = Math.max(0, Math.floor(Number(inv?.[cls]) || 0));
-    return `${n} ${(NAMES[cls] || [cls, cls])[n === 1 ? 0 : 1]} (you have ${have})`;
+    return { classTsid: cls, label: (NAMES[cls] || [cls, cls])[0], count: n, have, need: Math.max(0, n - have) };
   });
-  const list = rows.length > 1 ? `${rows.slice(0, -1).join(', ')} and ${rows[rows.length - 1]}` : rows.join('');
-  return `${EXPAND_NOTE.cost} ${list}. ${EXPAND_NOTE.made}`;
+  const short = rows.some((r) => r.need > 0);
+  const locked = quote.reason === 'locked';
+  const tip = short ? EXPAND_DIALOG.needTip : locked ? EXPAND_DIALOG.lockedTip : '';
+  return {
+    maxed: false,
+    ok: quote.ok === true,
+    title: EXPAND_DIALOG.title,
+    rows,
+    button: { label: EXPAND_DIALOG.button, disabled: !quote.ok, tip },
+    count,
+    unexpand,
+    made: rows.some((r) => r.classTsid === 'wall_segment' && r.need > 0) ? EXPAND_DIALOG.made : '',
+  };
+}
+
+/** A row's status line: "Need N more" while short, else "Got 'em" (HouseExpandReqUI.as 132, 135). */
+export function expandRowStatus(row) {
+  return row.need > 0 ? `Need ${row.need} more` : EXPAND_DIALOG.got;
 }
 
 /** homes_extend: one segment on every floor, the items taken once. */

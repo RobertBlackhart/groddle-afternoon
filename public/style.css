@@ -14104,6 +14104,21 @@ body:has(#quest-dialogue:not([hidden])) .prompt-stack { z-index: calc(var(--z-mo
 #game-root .hb-pop .hb-actions { display: flex; flex-wrap: wrap; align-items: center; }
 #game-root .hb-pop .hb-pop-head strong { display: block; }
 #game-root .hb-pop .hb-pop-sub { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+/* #687: HouseExpandDialog, opened by Decoration Mode's Expand (features/homes-feature.js openExpandDialog):
+   centred over the room, the items in a row (HouseExpandReqUI: the icon, "Nx", the name, "Need N more"),
+   the button, its tip and the count line. Both skins dress it as a .hb-pop. */
+#game-root .hb-pop.hb-expand { left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: calc(var(--z-panel) + 1); width: min(380px, calc(100% - 16px - var(--safe-l) - var(--safe-r))); max-width: none; max-height: calc(100% - 16px - var(--safe-t) - var(--safe-b)); overflow: auto; overscroll-behavior: contain; text-align: center; }
+#game-root .hb-expand .hb-expand-head { display: flex; align-items: flex-start; gap: var(--sp-3); text-align: left; }
+#game-root .hb-expand .hb-expand-head strong { flex: 1 1 auto; }
+#game-root .hb-expand .hb-close { flex: 0 0 auto; border: 0; padding: 0 var(--sp-2); background: transparent; color: inherit; font: inherit; font-size: 1.4em; line-height: 1; cursor: pointer; }
+#game-root .hb-expand .hb-expand-reqs { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--sp-6); margin: var(--sp-4) 0; padding: 0; list-style: none; }
+#game-root .hb-expand .hb-expand-req { display: grid; justify-items: center; gap: 2px; min-width: 76px; }
+#game-root .hb-expand .hb-expand-ic { width: 40px; height: 40px; object-fit: contain; }
+#game-root .hb-expand .hb-expand-count { font-weight: 800; }
+#game-root .hb-expand .hb-expand-status { padding: 0 var(--sp-3); border-radius: 6px; }
+#game-root .hb-expand .hb-expand-actions { flex-direction: column; justify-content: center; }
+#game-root .hb-expand .hb-expand-actions .hb-bt { white-space: normal; text-align: center; justify-content: center; }
+#game-root .hb-expand :is(.hb-expand-made, .hb-expand-tip, .hb-expand-left) { margin: var(--sp-3) 0 0; }
 #game-root .hb-place { position: absolute; left: 0; top: 0; z-index: var(--z-panel); white-space: nowrap; cursor: pointer; font: inherit; }
 #game-root .hb-place.is-following { pointer-events: none; }
 /* The pack hides while the tray holds its place; the Pack tab shows it again, inside the tray. */
@@ -14235,6 +14250,12 @@ body:has(#quest-dialogue:not([hidden])) .prompt-stack { z-index: calc(var(--z-mo
   box-shadow: var(--shadow-2);
 }
 [data-ui="modern"] #game-root .hb-pop .hb-pop-head { margin-bottom: var(--sp-3); }
+[data-ui="modern"] #game-root .hb-pop.hb-expand { max-width: none; padding: var(--space-3) var(--space-4) var(--space-4); color: var(--text); font-family: var(--font-ui); font-size: var(--fs-s); }
+[data-ui="modern"] #game-root .hb-expand .hb-expand-head strong { font-size: var(--fs-m); }
+[data-ui="modern"] #game-root .hb-expand .hb-close { color: var(--text-muted); }
+[data-ui="modern"] #game-root .hb-expand .hb-expand-status { color: var(--text-muted); font-size: var(--fs-xs); }
+[data-ui="modern"] #game-root .hb-expand .is-short .hb-expand-status { background: var(--surface-sunken); color: var(--text); font-weight: var(--fw-heavy); }
+[data-ui="modern"] #game-root .hb-expand :is(.hb-expand-made, .hb-expand-tip, .hb-expand-left) { color: var(--text-muted); font-size: var(--fs-xs); line-height: var(--lh-snug); }
 [data-ui="modern"] #game-root .hb-pop .hb-pop-head strong { color: var(--text); font-size: var(--fs-s); font-weight: var(--fw-heavy); }
 [data-ui="modern"] #game-root .hb-pop .hb-pop-sub { color: var(--text-muted); font-size: var(--fs-xs); line-height: var(--lh-snug); }
 [data-ui="modern"] #game-root .hb-pop .hb-actions { gap: var(--sp-2); }
